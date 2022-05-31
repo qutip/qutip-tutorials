@@ -1,0 +1,2 @@
+notebook_metadata_filter = "-jupytext.cell_metadata_filter,-jupytext.notebook_metadata_filter"
+cell_metadata_filter = "-all"
