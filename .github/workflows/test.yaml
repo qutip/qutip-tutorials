@@ -41,4 +41,10 @@ jobs:
     - name: Run tests
       run: |
         jupyter kernel &
-        pytest --nbmake tutorials/notebooks/*.ipynb --nbmake-timeout=500
+        pytest --nbmake tutorials/notebooks/*.ipynb --overwrite --nbmake-timeout=500
+
+    - name: Create Notebook Artifact
+      uses: action/upload-artifact@v3
+      with:
+        name: executed-notebooks
+        path: tutorials/notebooks/*.ipynb
