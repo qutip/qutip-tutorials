@@ -1,0 +1,18 @@
+name: test-environment
+channels:
+- conda-forge
+dependencies:
+- python==3.7.3
+- pip==19.*
+- cython==0.29.20
+- numpy==1.19
+- scipy==1.2.1
+- matplotlib==3.0.3
+- imagemagick==7.0.8_49
+- ipython==7.10
+- jupyter
+- nbformat
+- nbconvert
+- pytest
+- nbmake
+- jupytext==1.13.8
