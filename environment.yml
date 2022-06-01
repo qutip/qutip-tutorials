@@ -1,0 +1,15 @@
+name: qutip-tutorials
+channels:
+- conda-forge
+dependencies:
+- python==3.10.4
+- pip==22.1.2
+- numpy==1.21.0
+- scipy==1.8.1
+- matplotlib==3.5.2
+- imagemagick==7.1.0_36
+- qutip==4.7.0
+- notebook==6.4.11
+- jupytext==1.13.8
+- pip:
+  - qutip-qip==0.2.1
