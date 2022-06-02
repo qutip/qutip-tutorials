@@ -48,3 +48,11 @@ jobs:
       with:
         name: executed-notebooks
         path: tutorials/notebooks/*.ipynb
+
+    - name: Commit Notebooks to Publish branch
+      run: | 
+        git config user.name "GitHub Actions Bot"
+        git config user.mail "<>"
+        git add tutorials/notebooks/*.ipynb
+        git commit -m "publish notebooks"
+        git push origin publish
