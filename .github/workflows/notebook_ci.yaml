@@ -58,6 +58,11 @@ jobs:
         with:
           ref: publish
 
+      - name: Remove old notebooks
+        run: | 
+          rm -rf notebooks
+          mkdir notebooks 
+
       - uses: actions/download-artifact@master
         with:
           name: executed-notebooks
