@@ -66,6 +66,5 @@ jobs:
 
       - name: Publish Notebooks
         run: | 
-          git config user.name "GitHub Actions Bot"
           ghp-import -m "Automatic push by ghp-import" -f -n -p -o -r origin -b gh-pages notebooks
 
