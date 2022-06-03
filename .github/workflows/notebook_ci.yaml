@@ -66,5 +66,5 @@ jobs:
 
       - name: Publish Notebooks
         run: | 
-          ghp-import -m "Automatic push by ghp-import" -f -o -r origin -b gh-pages notebooks
+          ghp-import -m "Automatic push by ghp-import" -f -p -o -r origin -b gh-pages notebooks
 
