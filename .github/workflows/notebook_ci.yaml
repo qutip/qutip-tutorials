@@ -75,6 +75,6 @@ jobs:
 
       - name: Commit Notebooks to Publish branch
         run: |
-          git add notebooks/*.ipynb
+          git add .
           git commit -m "publish notebooks"
           git push origin publish
