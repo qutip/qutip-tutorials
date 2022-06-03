@@ -63,9 +63,9 @@ jobs:
           path: tutorials/notebooks
 
       - name: Set git config
-          run: |
-            git config user.name "GitHub Actions Bot"
-            git config user.email "<>"
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
 
       - name: Commit Notebooks to Publish branch
         run: |
