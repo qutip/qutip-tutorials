@@ -74,8 +74,8 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "<>"
 
-      - name: Commit Notebooks to Publish branch
+      - name: Commit Notebooks to gh-pages branch
         run: |
           git add .
           git commit -m "publish notebooks"
-          git push origin publish
+          git push origin gh-pages
