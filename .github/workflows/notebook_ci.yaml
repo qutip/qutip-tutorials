@@ -34,20 +34,20 @@ jobs:
 
     - name: Convert Notebooks
       run: | 
-        mkdir tutorials/notebooks
+        mkdir notebooks
         jupytext --to notebook tutorials/*.md
-        mv tutorials/*.ipynb tutorials/notebooks
+        mv tutorials/*.ipynb notebooks
 
     - name: Run tests
       run: |
         jupyter kernel &
-        pytest --nbmake tutorials/notebooks/*.ipynb --overwrite --nbmake-timeout=500
+        pytest --nbmake notebooks/*.ipynb --overwrite --nbmake-timeout=500
 
     - name: Create Notebook Artifact
       uses: actions/upload-artifact@v3
       with:
         name: executed-notebooks
-        path: tutorials/notebooks/*.ipynb
+        path: notebooks/*.ipynb
 
   publish:
     needs: pytests
@@ -60,7 +60,7 @@ jobs:
       - uses: actions/download-artifact@master
         with:
           name: executed-notebooks
-          path: tutorials/notebooks
+          path: notebooks
 
       - name: Set git config
         run: |
@@ -69,6 +69,6 @@ jobs:
 
       - name: Commit Notebooks to Publish branch
         run: |
-          git add tutorials/notebooks/*.ipynb
+          git add notebooks/*.ipynb
           git commit -m "publish notebooks"
           git push origin publish
