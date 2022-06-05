@@ -1,4 +1,4 @@
-name: Tests
+name: CI build
 
 on:
   [push, pull_request]
@@ -34,17 +34,38 @@ jobs:
 
     - name: Convert Notebooks
       run: | 
-        mkdir tutorials/notebooks
+        rm -rf notebooks
+        mkdir notebooks
         jupytext --to notebook tutorials/*.md
-        mv tutorials/*.ipynb tutorials/notebooks
+        mv tutorials/*.ipynb notebooks
 
     - name: Run tests
       run: |
         jupyter kernel &
-        pytest --nbmake tutorials/notebooks/*.ipynb --overwrite --nbmake-timeout=500
+        pytest --nbmake notebooks/*.ipynb --overwrite --nbmake-timeout=500
 
     - name: Create Notebook Artifact
       uses: actions/upload-artifact@v3
       with:
         name: executed-notebooks
-        path: tutorials/notebooks/*.ipynb
+        path: notebooks/*.ipynb
+
+  publish:
+    needs: pytests
+    runs-on: ubuntu-latest
+    if: ${{ github.repository == 'qutip/qutip-tutorials' && github.ref == 'refs/heads/main' }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@master
+        with:
+          name: executed-notebooks
+          path: notebooks
+
+      - name: Install ghp-import
+        run: | 
+          python -m pip install ghp-import
+
+      - name: Publish Notebooks
+        run: | 
+          ghp-import -m "Automatic push by ghp-import" -f -n -p -o -r origin -b gh-pages notebooks
+
