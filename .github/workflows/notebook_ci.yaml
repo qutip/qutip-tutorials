@@ -61,6 +61,12 @@ jobs:
           name: executed-notebooks
           path: notebooks
 
+      - name: Add index.html
+        run: |
+          sudo apt-get install tree
+          cd notebooks
+          tree -H '.' -L 1 --noreport --charset utf-8 -T "QuTiP Tutorial index" -P "*.ipynb" -o index.html
+
       - name: Install ghp-import
         run: | 
           python -m pip install ghp-import
