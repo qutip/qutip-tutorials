@@ -10,6 +10,11 @@ defaults:
 jobs:
   pytests:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - qutip-branch: master
+          - qutip-branch: dev.major
     steps:
     - uses: actions/checkout@v3
     - name: Conda cache
@@ -30,9 +35,8 @@ jobs:
 
     - name: Install QuTiP and QuTiP-QIP
       run: |
-        sudo apt-get install git
         pip install --upgrade pip
-        git clone -b master https://github.com/qutip/qutip.git
+        git clone -b ${{ matrix.qutip-branch }} https://github.com/qutip/qutip.git
         cd qutip
         pip install -r requirements.txt
         python setup.py develop
@@ -57,6 +61,7 @@ jobs:
         pytest --nbmake notebooks/*.ipynb --overwrite --nbmake-timeout=500
 
     - name: Create Notebook Artifact
+      if: ${{ matrix.qutip-branch == master }}
       uses: actions/upload-artifact@v3
       with:
         name: executed-notebooks
