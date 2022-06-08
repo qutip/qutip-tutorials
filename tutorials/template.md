@@ -18,7 +18,7 @@ Author: C. Staufenbiel, 2022
 
 ### Introduction
 This notebook serves as a template for new Jupyter Notebooks that you want to create as a user guide for QuTiP. With this template we want to give you an idea of how a user guide can look like. Furthermore, we want to ensure that all notebooks have a similar style and that new users can easily understand them. 
-In this introductory section, you should explain the goal of this notebook, just as I did. We continue now with some steps. It is a good practice (and most of the times appreciated by new users) to comment every code cell with one markdown cell. Also please update the Notebook Title and the headings of
+In this introductory section, you should explain the goal of this notebook, just as I did. We continue now with some steps. It is a good practice (and most of the times appreciated by new users) to comment every code cell with one markdown cell. Also please update the notebook title and the headings of the different section.
 
 
 ### First Section

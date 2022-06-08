@@ -4,7 +4,7 @@ This repositories collects tutorials of different complexity for
 using [QuTiP](qutip.org). Some of the notebooks are also shown on
 the [QuTiP Tutorials website](qutip.org/tutorials).
 
-The notebooks in this repository are stored in a MarkDown format and thus 
+The notebooks in this repository are stored in a MarkDown format and thus
 have no outputs. To generate the outputs, follow the installation guide below.
 
 ## Installation Guide
@@ -42,7 +42,33 @@ Navigate into the `tutorials` directory and select one of the notebooks.
 Note that the format of the notebooks is `.md` (markdown), which is intended
 for better compatibility with git features.
 
-### LaTeX and ImageMagick installation
+## Contributing
+
+You are most welcome to contribute to QuTiP development by forking this
+repository and sending pull requests, or filing bug reports at
+the [issues page](https://github.com/qutip/qutip-tutorials/issues).
+Note that all notebooks are tested automatically to work with the latest
+version of QuTiP. Furthermore, this repository uses notebooks in the markdown
+format. See below how to convert the format of an already existing notebook.
+
+### Add a new notebook
+
+If you want to create a new notebook, copy the `template.md` located in the
+`tutorials` directory, edit it and save it as a new markdown file. Please
+keep in mind that new users might use the notebook as an entry point to
+QuTiP.
+
+### Add an existing notebook
+
+To add an already existing notebook to the repository, copy it to the
+`tutorials` directory and create a pull request. If the notebook is in the `.
+ipynb` format please convert it to markdown using JupyText by executing:
+
+```shell
+jupytext --to md my_notebook.ipynb
+```
+
+## LaTeX and ImageMagick installation
 
 Some functions of the notebooks (e.g. plotting QCircuits) require a working
 installation of [*ImageMagick*](https://imagemagick.org/) and *LaTeX*. If
