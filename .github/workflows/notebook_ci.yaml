@@ -13,8 +13,8 @@ jobs:
     strategy:
       matrix:
         include:
-          - qutip-branch: "master"
-          - qutip-branch: "dev.major"
+          - qutip-branch: 'master'
+          - qutip-branch: 'dev.major'
     steps:
     - uses: actions/checkout@v3
     - name: Conda cache
@@ -61,7 +61,7 @@ jobs:
         pytest --nbmake notebooks/*.ipynb --overwrite --nbmake-timeout=500
 
     - name: Create Notebook Artifact
-      if: ${{ matrix.qutip-branch == "master" }}
+      if: ${{ matrix.qutip-branch == 'master' }}
       uses: actions/upload-artifact@v3
       with:
         name: executed-notebooks
