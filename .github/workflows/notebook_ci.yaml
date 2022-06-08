@@ -25,9 +25,8 @@ jobs:
       with:
         activate-environment: test
         environment-file: test_environment.yml
-        auto-activate-base: false
+        channel-priority: strict
         use-only-tar-bz2: true
-        auto-update-conda: true
 
     - name: Install QuTiP and QuTiP-QIP
       run: |
