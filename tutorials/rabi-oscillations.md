@@ -18,7 +18,12 @@ Authors: J.R. Johansson and P.D. Nation
 
 Slight modifications: C. Staufenbiel (2022)
 
-This notebook demonstrates how to simulate the quantum vacuum rabi oscillations in the Jaynes-Cumming model, using QuTiP. We also consider the dissipative version of the Jaynes-Cumming model, i.e., the cavity and the atom are subject to dissipation.
+This notebook demonstrates how to simulate the quantum vacuum rabi 
+oscillations in the Jaynes-Cumming model, using the Master Equation Solver 
+`qutip.mesolve`. We also consider the dissipative version of the 
+Jaynes-Cumming model, i.e., the cavity and the atom are coupled to an 
+environment.
+
 
 For more information on the theory behind the Master Equation Solver see [the documentation](https://qutip.org/docs/latest/guide/dynamics/dynamics-master.html#non-unitary-evolution).
 
