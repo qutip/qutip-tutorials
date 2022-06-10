@@ -73,6 +73,16 @@ plt.xlabel('Time'), plt.ylabel('<sigma_y>')
 plt.show()
 ```
 
+Above we gave `sigmay()` as an operator to `sesolve` to directly calculate it's expectation value. If we pass an empty list at this argument to `sesolve` it will return the quantum state of the system for each time step in `times`. We can access the states by `result.states` and use them to calculate the expectation value manually.
+
+```python
+result = sesolve(H, psi, times, [])
+exp_y = qutip.expect(sigmay(), result.states)
+plt.plot(times, exp_y)
+plt.xlabel('Time'), plt.ylabel('<sigma_y>')
+plt.show()
+```
+
 ## Simulation with varying magnetic field
 
 Above we passed a constant Hamiltonian to `sesolve`. In QuTiP these constant operators are represented by `Qobj`. However, `sesolve` can also take time-dependent operators as an argument, which are represented by [`QobjEvo`](https://qutip.org/docs/latest/apidoc/classes.html?highlight=qobjevo#qutip.QobjEvo) in QuTiP. In this section we define the magnetic field with a linear and a periodic field strength, and observe the changes in the expecation value of $\sigma_y$.
