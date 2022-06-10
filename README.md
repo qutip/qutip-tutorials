@@ -4,7 +4,7 @@ This repositories collects tutorials of different complexity for
 using [QuTiP](qutip.org). Some of the notebooks are also shown on
 the [QuTiP Tutorials website](qutip.org/tutorials).
 
-The notebooks in this repository are stored in a MarkDown format and thus
+The notebooks in this repository are stored in a Markdown format and thus
 have no outputs. To generate the outputs, follow the installation guide below.
 
 ## Installation Guide
