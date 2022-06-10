@@ -73,14 +73,13 @@ plt.xlabel('Time'), plt.ylabel('<sigma_y>')
 plt.show()
 ```
 
-Above we gave `sigmay()` as an operator to `sesolve` to directly calculate it's expectation value. If we pass an empty list at this argument to `sesolve` it will return the quantum state of the system for each time step in `times`. We can access the states by `result.states` and use them to calculate the expectation value manually.
+Above we gave `sigmay()` as an operator to `sesolve` to directly calculate it's expectation value. If we pass an empty list at this argument to `sesolve` it will return the quantum state of the system for each time step in `times`. We can access the states by `result.states` and use them for example to plot the states on the Bloch sphere to see the precession. If the solver take a long time to run, it is also a good idea to return the states, so you can calculate different things, without specifying before the calculation.
 
 ```python
 res = sesolve(H, psi, times, [])
-exp_y = qutip.expect(sigmay(), res.states)
-plt.plot(times, exp_y)
-plt.xlabel('Time'), plt.ylabel('<sigma_y>')
-plt.show()
+b = Bloch()
+b.add_states(res.states[1:30])
+b.show()
 ```
 
 ## Simulation with varying magnetic field
@@ -148,8 +147,4 @@ assert np.allclose(result.expect[0][0], 0)
 assert np.allclose(result_lin.expect[0][0], 0)
 assert np.allclose(result_per.expect[0][0], 0)
 assert 1 == 1
-```
-
-```python
-
 ```
