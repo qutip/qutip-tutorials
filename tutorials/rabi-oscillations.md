@@ -7,33 +7,26 @@ jupyter:
       format_version: '1.3'
       jupytext_version: 1.13.8
   kernelspec:
-    display_name: Python 3
+    display_name: Python 3 (ipykernel)
     language: python
     name: python3
 ---
 
 # QuTiP example: Vacuum Rabi oscillations in the Jaynes-Cummings model
 
+Authors: J.R. Johansson and P.D. Nation
 
-J.R. Johansson and P.D. Nation
+Slight modifications: C. Staufenbiel (2022)
 
-This ipython notebook demonstrates how to simulate the quantum vacuum rabi oscillations in the Jaynes-Cumming model, using QuTiP: The Quantum Toolbox in Python.
+This notebook demonstrates how to simulate the quantum vacuum rabi oscillations in the Jaynes-Cumming model, using QuTiP. We also consider the dissipative version of the Jaynes-Cumming model, i.e., the cavity and the atom are subject to dissipation.
 
-For more information about QuTiP see project web page: http://code.google.com/p/qutip/
+
+### Package import
 
 ```python
 %matplotlib inline
-```
-
-```python
 import matplotlib.pyplot as plt
-```
-
-```python
 import numpy as np
-```
-
-```python
 from qutip import *
 ```
 
@@ -49,12 +42,14 @@ $H_{\rm RWA} = \hbar \omega_c a^\dagger a + \frac{1}{2}\hbar\omega_a\sigma_z + \
 
 where $\omega_c$ and $\omega_a$ are the frequencies of the cavity and atom, respectively, and $g$ is the interaction strength.
 
-<!-- #region -->
+**TODO : ADD EXPLANATION OF DISSIPATION RATES AND GENERATION FOR POSITIVE TEMPERATURE**
+
 ### Problem parameters
 
 
 Here we use units where $\hbar = 1$: 
-<!-- #endregion -->
+
+**TODO: Add some more description on the factors (already above)**
 
 ```python
 wc = 1.0  * 2 * np.pi  # cavity frequency
@@ -71,11 +66,15 @@ tlist = np.linspace(0,25,100)
 
 ### Setup the operators, the Hamiltonian and initial state
 
+Here we define the initial state and operators for the combined system, which consists of the cavity and the atom. We make use of the tensor product, where the first part refers to the cavity and the second part to the atom.
+
+The initial state  consists of the cavity ground state and the atom in the excited state. We define the collapse operator for the cavity/atom in the combined system and the Hamiltonian with and without the rotating-wave-approach.
+
 ```python
 # intial state
-psi0 = tensor(basis(N,0), basis(2,1))    # start with an excited atom
+psi0 = tensor(basis(N,0), basis(2,1))  
 
-# operators
+# collapse operators
 a  = tensor(destroy(N), qeye(2))
 sm = tensor(qeye(N), destroy(2))
 
@@ -88,25 +87,27 @@ else:
 
 ### Create a list of collapse operators that describe the dissipation
 
+We create a list of collapse operators `c_ops`, which is later passed on to `qutip.mesolve`. For each of the three processes one collapse operator is defined.
+
 ```python
 c_op_list = []
 
+# Cavity annihilation
 rate = kappa * (1 + n_th_a)
-if rate > 0.0:
-    c_op_list.append(np.sqrt(rate) * a)
+c_op_list.append(np.sqrt(rate) * a)
 
+# Cavity creation 
 rate = kappa * n_th_a
-if rate > 0.0:
-    c_op_list.append(np.sqrt(rate) * a.dag())
+c_op_list.append(np.sqrt(rate) * a.dag())
 
+# Atom annihilation
 rate = gamma
-if rate > 0.0:
-    c_op_list.append(np.sqrt(rate) * sm)
+c_op_list.append(np.sqrt(rate) * sm)
 ```
 
 ### Evolve the system
 
-Here we evolve the system with the Lindblad master equation solver, and we request that the expectation values of the operators $a^\dagger a$ and $\sigma_+\sigma_-$ are returned by the solver by passing the list `[a.dag()*a, sm.dag()*sm]` as the fifth argument to the solver.
+Here we evolve the system with the Lindblad master equation solver `qutip.mesolve`, and we request that the expectation values of the operators $a^\dagger a$ and $\sigma_+\sigma_-$ are returned by the solver by passing the list `[a.dag()*a, sm.dag()*sm]` as the fifth argument to the solver.
 
 ```python
 output = mesolve(H, psi0, tlist, c_op_list, [a.dag() * a, sm.dag() * sm])
@@ -129,7 +130,17 @@ ax.set_title('Vacuum Rabi oscillations');
 ### Software version:
 
 ```python
-from qutip.ipynbtools import version_table
+from qutip import about
+about()
+```
 
-version_table()
+### Testing
+
+```python
+assert np.allclose(output.expect[0][0], 0.0), output.expect[0][0]
+assert np.allclose(output.expect[1][0], 1.0), output.expect[1][0]
+```
+
+```python
+
 ```
