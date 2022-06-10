@@ -20,6 +20,8 @@ Slight modifications: C. Staufenbiel (2022)
 
 This notebook demonstrates how to simulate the quantum vacuum rabi oscillations in the Jaynes-Cumming model, using QuTiP. We also consider the dissipative version of the Jaynes-Cumming model, i.e., the cavity and the atom are subject to dissipation.
 
+For more information on the theory behind the Master Equation Solver see [the documentation](https://qutip.org/docs/latest/guide/dynamics/dynamics-master.html#non-unitary-evolution).
+
 
 ### Package import
 
@@ -42,26 +44,31 @@ $H_{\rm RWA} = \hbar \omega_c a^\dagger a + \frac{1}{2}\hbar\omega_a\sigma_z + \
 
 where $\omega_c$ and $\omega_a$ are the frequencies of the cavity and atom, respectively, and $g$ is the interaction strength.
 
-**TODO : ADD EXPLANATION OF DISSIPATION RATES AND GENERATION FOR POSITIVE TEMPERATURE**
+In this example we also consider the coupling of the Jaynes-Cummings model to an external environment, i.e., we need to solve the system using the Master Equation Solver `qutip.mesolve`. The coupling to the environment is described by the collapse operators (as described in [the docs](https://qutip.org/docs/latest/guide/dynamics/dynamics-master.html#non-unitary-evolution)). Here, we consider two collapse operators for the cavity $C_1, C_2$, describing creation and annihilation of photons, and one collapse operator for the atom $C_3$.
+
+$C_1 = \sqrt{\kappa (1+T)} a$
+
+$C_2 = \sqrt{\kappa T} a^\dagger$
+
+$C_3 = \sqrt{\gamma} \sigma_-$
+
+where $T$ is the temperature of the environment (in units of the frequency). By setting $T=0$ we remove the creation of photons and only consider the annihilation of photons.
 
 ### Problem parameters
 
-
 Here we use units where $\hbar = 1$: 
 
-**TODO: Add some more description on the factors (already above)**
-
 ```python
+N = 15                 # number of cavity fock states
 wc = 1.0  * 2 * np.pi  # cavity frequency
 wa = 1.0  * 2 * np.pi  # atom frequency
 g  = 0.05 * 2 * np.pi  # coupling strength
 kappa = 0.005          # cavity dissipation rate
 gamma = 0.05           # atom dissipation rate
-N = 15                 # number of cavity fock states
 n_th_a = 0.0           # temperature in frequency units
-use_rwa = True
+use_rwa = False
 
-tlist = np.linspace(0,25,100)
+tlist = np.linspace(0,40,100)
 ```
 
 ### Setup the operators, the Hamiltonian and initial state
@@ -92,11 +99,11 @@ We create a list of collapse operators `c_ops`, which is later passed on to `qut
 ```python
 c_op_list = []
 
-# Cavity annihilation
+# Photon annihilation
 rate = kappa * (1 + n_th_a)
 c_op_list.append(np.sqrt(rate) * a)
 
-# Cavity creation 
+# Photon creation
 rate = kappa * n_th_a
 c_op_list.append(np.sqrt(rate) * a.dag())
 
@@ -113,7 +120,7 @@ Here we evolve the system with the Lindblad master equation solver `qutip.mesolv
 output = mesolve(H, psi0, tlist, c_op_list, [a.dag() * a, sm.dag() * sm])
 ```
 
-## Visualize the results
+### Visualize the results
 
 Here we plot the excitation probabilities of the cavity and the atom (these expectation values were calculated by the `mesolve` above). We can clearly see how energy is being coherently transferred back and forth between the cavity and the atom.
 
@@ -124,7 +131,36 @@ ax.plot(tlist, output.expect[1], label="Atom excited state")
 ax.legend()
 ax.set_xlabel('Time')
 ax.set_ylabel('Occupation probability')
-ax.set_title('Vacuum Rabi oscillations');
+ax.set_title('Vacuum Rabi oscillations at T={}'.format(n_th_a));
+```
+
+### Non-zero temperature
+Above we set $T = 0$ and thereby discarded the photon creation by the environment. We can activate this term by setting the corresponding variable to a positive value and perform the same calculation as above. In comparison to the previous plot, we see that the cavity has more energy than the atom.
+
+```python
+# set temperature
+n_th_a = 2.0
+
+# set collapse operators
+c_op_list = []
+rate = kappa * (1 + n_th_a)
+c_op_list.append(np.sqrt(rate) * a)
+rate = kappa * n_th_a
+c_op_list.append(np.sqrt(rate) * a.dag())
+rate = gamma
+c_op_list.append(np.sqrt(rate) * sm)
+
+# evolve system
+output = mesolve(H, psi0, tlist, c_op_list, [a.dag() * a, sm.dag() * sm])
+
+# plot
+fig, ax = plt.subplots(figsize=(8,5))
+ax.plot(tlist, output.expect[0], label="Cavity")
+ax.plot(tlist, output.expect[1], label="Atom excited state")
+ax.legend()
+ax.set_xlabel('Time')
+ax.set_ylabel('Occupation probability')
+ax.set_title('Vacuum Rabi oscillations at T={}'.format(n_th_a));
 ```
 
 ### Software version:
@@ -139,8 +175,4 @@ about()
 ```python
 assert np.allclose(output.expect[0][0], 0.0), output.expect[0][0]
 assert np.allclose(output.expect[1][0], 1.0), output.expect[1][0]
-```
-
-```python
-
 ```
