@@ -74,7 +74,9 @@ for i in range(N):
     sz_list.append(tensor(op_list))
     
 # Hamiltonian - Energy splitting terms
-H = sum(-0.5 * h * sz_list)
+H = 0
+for i in range(N):
+  H -= 0.5 * h[i] * sz_list[i]  
 
 # Interaction terms
 for n in range(N-1):
