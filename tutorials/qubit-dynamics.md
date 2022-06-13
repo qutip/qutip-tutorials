@@ -114,11 +114,11 @@ We can visualise the state on the Bloch sphere by using the `qutip.Bloch` class.
 
 ```python
 # Extract expectation values for pauli matrices
-exp_sx, exp_sy, exp_sz = result.expect
+exp_sx_circ, exp_sy_circ, exp_sz_circ = result.expect
 
 # Create Bloch sphere plot
 sphere = Bloch()
-sphere.add_points([exp_sx, exp_sy, exp_sz], meth='l')
+sphere.add_points([exp_sx_circ, exp_sy_circ, exp_sz_circ], meth='l')
 sphere.add_states(psi0)
 sphere.show()
 ```
@@ -137,11 +137,11 @@ c_ops = [np.sqrt(gamma_phase) * sigmaz()]
 
 # solve dynamics
 result = mesolve(H, psi0, tlist, c_ops, [sigmax(), sigmay(), sigmaz()])
-exp_sx, exp_sy, exp_sz = result.expect
+exp_sx_dephase, exp_sy_dephase, exp_sz_dephase = result.expect
 
 # Create Bloch sphere plot
 sphere = Bloch()
-sphere.add_points([exp_sx, exp_sy, exp_sz], meth='l')
+sphere.add_points([exp_sx_dephase, exp_sy_dephase, exp_sz_dephase], meth='l')
 sphere.add_states(psi0)
 sphere.show()
 ```
@@ -162,11 +162,11 @@ c_ops = [np.sqrt(gamma_relax) * sigmam()]
 
 # solve dynamics
 result = mesolve(H, psi0, tlist, c_ops, [sigmax(), sigmay(), sigmaz()])
-exp_sx, exp_sy, exp_sz = result.expect
+exp_sx_relax, exp_sy_relax, exp_sz_relax = result.expect
 
 # Create Bloch sphere plot
 sphere = Bloch()
-sphere.add_points([exp_sx, exp_sy, exp_sz], meth='l')
+sphere.add_points([exp_sx_relax, exp_sy_relax, exp_sz_relax], meth='l')
 sphere.add_states(psi0)
 sphere.show()
 ```
@@ -181,4 +181,12 @@ Using the methods above, you can simulate any dissipative quantum system, whose 
 ```python
 from qutip import about
 about()
+```
+
+### Testing
+
+```python
+assert np.allclose(res.expect[0], sz_analytic,atol=0.05)
+assert np.allclose(exp_sz_circ**2 + exp_sy_circ**2 + exp_sx_circ**2, 1.0)
+assert np.all(np.diff(exp_sx_dephase**2 + exp_sy_dephase**2 + exp_sz_dephase**2) <= 0)
 ```
