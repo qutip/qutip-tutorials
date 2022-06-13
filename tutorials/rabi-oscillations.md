@@ -34,7 +34,7 @@ For more information on the theory behind the Master Equation Solver see [the do
 %matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import *
+from qutip import tensor, basis, destroy, qeye, mesolve
 ```
 
 # Introduction
@@ -180,4 +180,8 @@ about()
 ```python
 assert np.allclose(output.expect[0][0], 0.0), output.expect[0][0]
 assert np.allclose(output.expect[1][0], 1.0), output.expect[1][0]
+```
+
+```python
+
 ```
