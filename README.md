@@ -16,9 +16,9 @@ If you use Anaconda, you can install the required dependencies for this
 repository by:
 
 ```shell
-cd qutip-tutorials
+cd qutip-tutorials-v4
 conda env create --file environment.yml
-conda activate qutip-tutorials
+conda activate qutip-tutorials-v4
 ```
 
 Alternatively, you can install the requirements using `pip` (we recommend
