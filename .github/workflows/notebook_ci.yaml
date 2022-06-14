@@ -52,8 +52,10 @@ jobs:
 
     - name: Install environment
       if: steps.cache.outputs.cache-hit != 'true'
+      run: mamba env update -n test-environment -f test_environment.yml
+
+    - name: Install QuTiP
       run: |
-        mamba env update -n test-environment -f test_environment.yml
         pip install --upgrade pip
         git clone -b ${{ matrix.qutip-branch }} https://github.com/qutip/qutip.git
         cd qutip
@@ -66,8 +68,6 @@ jobs:
 
     - name: Convert Notebooks and create index
       run: | 
-        which pip
-        mamba list
         rm -rf notebooks
         mkdir notebooks
         jupytext --to notebook ${{ matrix.path_md }}
