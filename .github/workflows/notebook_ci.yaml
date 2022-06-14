@@ -13,10 +13,12 @@ jobs:
     strategy:
       matrix:
         include:
-          - qutip-branch: 'master'
+          - qutip-version: '4'
+            qutip-branch: 'master'
             path_md: 'tutorials-v4/*.md'
             path_ipynb: 'tutorials-v4/*.ipynb'
-          - qutip-branch: 'dev.major'
+          - qutip-version: '5'
+            qutip-branch: 'dev.major'
             path_md: 'tutorials-v5/*.md'
             path_ipynb: 'tutorials-v5/*.ipynb'
     steps:
@@ -24,25 +26,34 @@ jobs:
     - uses: gaurav-nelson/github-action-markdown-link-check@v1
       with:
         use-quiet-mode: 'yes'
-    - name: Conda cache
-      uses: actions/cache@v3
-      env:
-        # Increase this number to reset cache
-        CACHE_NUMBER: 0
+
+    - name: Setup Mambaforge
+      uses: conda-incubator/setup-miniconda@v2
       with:
-        path: ~/conda_pkgs_dir
-        key:
-          ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('test_environment.yml') }}
-    - uses: conda-incubator/setup-miniconda@v2
-      with:
-        activate-environment: test
-        environment-file: test_environment.yml
-        channel-priority: strict
-        use-only-tar-bz2: true
+        miniforge-variant: Mambaforge
+        miniforge-version: latest
+        activate-environment: test-environment
         use-mamba: true
 
-    - name: Install QuTiP and QuTiP-QIP
+    - name: Get Date
+      id: get-date
+      run: echo "::set-output name=today::$(/bin/date -u '+%Y%m%d')"
+      shell: bash
+
+    - name: Cache Conda env
+      uses: actions/cache@v2
+      with:
+        path: ${{ env.CONDA }}/envs
+        key: conda-${{ runner.os }}--${{ runner.arch }}--${{ steps.get-date.outputs.today }}-${{ hashFiles('test_environment.yml') }}-${{ env.CACHE_NUMBER }}-qutip-${{ matrix.qutip-version }}
+      env:
+        # Increase this value to reset cache if etc/example-environment.yml has not changed
+        CACHE_NUMBER: 0
+      id: cache
+
+    - name: Install environment
+      if: steps.cache.outputs.cache-hit != 'true'
       run: |
+        mamba env update -n test-environment -f test_environment.yml
         pip install --upgrade pip
         git clone -b ${{ matrix.qutip-branch }} https://github.com/qutip/qutip.git
         cd qutip
