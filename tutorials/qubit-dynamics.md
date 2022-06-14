@@ -53,7 +53,7 @@ g = 0.25
 # hamiltonian
 H = delta / 2.0 * sigmax()
 
-# list of collapse collapse operator
+# list of collapse operators
 c_ops = [np.sqrt(g)*sigmaz()]
 
 # initial state
@@ -148,7 +148,7 @@ sphere.show()
 
 We can observe the dephasing of the qubit by the decreasing radius of the qubit state movement.
 
-### Qubit relaxing
+### Qubit relaxation
 
 Another type of dissipation we can explore is the relaxation of the qubit originating from the collapse operator
 
@@ -171,7 +171,7 @@ sphere.add_states(psi0)
 sphere.show()
 ```
 
-We can see how the circular tracjectory shifts more to the ground state of the qubit. 
+We can see how the circular trajectory shifts more to the ground state of the qubit. 
 
 ### Conclusion
 Using the methods above, you can simulate any dissipative quantum system, whose dynamics are described by the master equation. Additionally you can make use of the methods to visualise the dynamics of a qubit state on the Bloch sphere.
