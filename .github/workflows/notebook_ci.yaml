@@ -66,6 +66,8 @@ jobs:
 
     - name: Convert Notebooks and create index
       run: | 
+        which pip
+        mamba list
         rm -rf notebooks
         mkdir notebooks
         jupytext --to notebook ${{ matrix.path_md }}
