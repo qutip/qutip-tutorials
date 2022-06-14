@@ -34,7 +34,7 @@ For more information on the theory behind the Master Equation Solver see [the do
 %matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import tensor, basis, destroy, qeye, mesolve
+from qutip import tensor, basis, destroy, qeye, mesolve, sigmaz
 ```
 
 # Introduction
@@ -51,13 +51,13 @@ where $\omega_c$ and $\omega_a$ are the frequencies of the cavity and atom, resp
 
 In this example we also consider the coupling of the Jaynes-Cummings model to an external environment, i.e., we need to solve the system using the Master Equation Solver `qutip.mesolve`. The coupling to the environment is described by the collapse operators (as described in [the docs](https://qutip.org/docs/latest/guide/dynamics/dynamics-master.html#non-unitary-evolution)). Here, we consider two collapse operators for the cavity $C_1, C_2$, describing creation and annihilation of photons, and one collapse operator for the atom $C_3$.
 
-$C_1 = \sqrt{\kappa (1+T)} a$
+$C_1 = \sqrt{\kappa (1+\langle n \rangle)} \; a$
 
-$C_2 = \sqrt{\kappa T} a^\dagger$
+$C_2 = \sqrt{\kappa \langle n \rangle}\; a^\dagger$
 
-$C_3 = \sqrt{\gamma} \sigma_-$
+$C_3 = \sqrt{\gamma} \; \sigma_-$
 
-where $T$ is the temperature of the environment (in units of the frequency). By setting $T=0$ we remove the creation of photons and only consider the annihilation of photons.
+where $\langle n \rangle$ is the average number of photons in the environment. By setting $\langle n \rangle=0$ we remove the creation of photons and only consider the annihilation of photons.
 
 ### Problem parameters
 
@@ -71,30 +71,31 @@ g  = 0.05 * 2 * np.pi  # coupling strength
 kappa = 0.005          # cavity dissipation rate
 gamma = 0.05           # atom dissipation rate
 n_th_a = 0.0           # temperature in frequency units
-use_rwa = False
+use_rwa = True
 
 tlist = np.linspace(0,40,100)
 ```
 
 ### Setup the operators, the Hamiltonian and initial state
 
-Here we define the initial state and operators for the combined system, which consists of the cavity and the atom. We make use of the tensor product, where the first part refers to the cavity and the second part to the atom.
+Here we define the initial state and operators for the combined system, which consists of the cavity and the atom. We make use of the tensor product, where the first part refers to the cavity and the second part to the atom. We define the atom to be in the excited state and the cavity in its ground state.
 
 The initial state  consists of the cavity ground state and the atom in the excited state. We define the collapse operator for the cavity/atom in the combined system and the Hamiltonian with and without the rotating-wave-approach.
 
 ```python
 # intial state
-psi0 = tensor(basis(N,0), basis(2,1))  
+psi0 = tensor(basis(N,0), basis(2,0))  
 
 # collapse operators
 a  = tensor(destroy(N), qeye(2))
-sm = tensor(qeye(N), destroy(2))
+sm = tensor(qeye(N), destroy(2).dag())
+sz = tensor(qeye(N), sigmaz())
 
 # Hamiltonian
 if use_rwa:
-    H = wc * a.dag() * a + wa * sm.dag() * sm + g * (a.dag() * sm + a * sm.dag())
+    H = wc * a.dag() * a + wa/2 * sz + g * (a.dag() * sm + a * sm.dag())
 else:
-    H = wc * a.dag() * a + wa * sm.dag() * sm + g * (a.dag() + a) * (sm + sm.dag())
+    H = wc * a.dag() * a + wa/2 * sz + g * (a.dag() + a) * (sm + sm.dag())
 ```
 
 ### Create a list of collapse operators that describe the dissipation
@@ -156,12 +157,12 @@ rate = gamma
 c_op_list.append(np.sqrt(rate) * sm)
 
 # evolve system
-output = mesolve(H, psi0, tlist, c_op_list, [a.dag() * a, sm.dag() * sm])
+output_temp = mesolve(H, psi0, tlist, c_op_list, [a.dag() * a, sm.dag() * sm])
 
 # plot
 fig, ax = plt.subplots(figsize=(8,5))
-ax.plot(tlist, output.expect[0], label="Cavity")
-ax.plot(tlist, output.expect[1], label="Atom excited state")
+ax.plot(tlist, output_temp.expect[0], label="Cavity")
+ax.plot(tlist, output_temp.expect[1], label="Atom excited state")
 ax.legend()
 ax.set_xlabel('Time')
 ax.set_ylabel('Occupation probability')
@@ -178,10 +179,11 @@ about()
 ### Testing
 
 ```python
-assert np.allclose(output.expect[0][0], 0.0), output.expect[0][0]
-assert np.allclose(output.expect[1][0], 1.0), output.expect[1][0]
-```
+# sum of atom and cavity
+assert np.all(np.diff(output.expect[0] + output.expect[1]) <= 0.0)
 
-```python
-
+# frequency for analytical solution (with RWA)
+output_no_cops = mesolve(H, psi0, tlist, [], [a.dag() * a, sm.dag() * sm])
+freq = 1/4 * np.sqrt(g**2 * (N+1))
+assert np.allclose(output_no_cops.expect[1], (np.cos(tlist*freq))**2, atol=10**-3)
 ```
