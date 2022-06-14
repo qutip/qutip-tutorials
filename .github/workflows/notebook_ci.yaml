@@ -14,10 +14,11 @@ jobs:
       matrix:
         include:
           - qutip-branch: 'master'
-            path_md: 'tutorials-v4-v4/*.md'
-            path_ipynb: 'tutorials-v4-v4/*.ipynb'
+            path_md: 'tutorials-v4/*.md'
+            path_ipynb: 'tutorials-v4/*.ipynb'
           - qutip-branch: 'dev.major'
-            path_ipynb: 'tutorials-v4-v5/*.ipynb'
+            path_md: 'tutorials-v5/*.md'
+            path_ipynb: 'tutorials-v5/*.ipynb'
     steps:
     - uses: actions/checkout@v3
     - name: Conda cache
@@ -35,6 +36,7 @@ jobs:
         environment-file: test_environment.yml
         channel-priority: strict
         use-only-tar-bz2: true
+        use-mamba: true
 
     - name: Install QuTiP and QuTiP-QIP
       run: |
@@ -72,7 +74,7 @@ jobs:
   publish:
     needs: pytests
     runs-on: ubuntu-latest
-    if: ${{ github.repository == 'qutip/qutip-tutorials-v4' && github.ref == 'refs/heads/main' }}
+    if: ${{ github.repository == 'qutip/qutip-tutorials' && github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@master

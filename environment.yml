@@ -1,4 +1,4 @@
-name: qutip-tutorials-v4
+name: qutip-tutorials
 channels:
 - conda-forge
 dependencies:
