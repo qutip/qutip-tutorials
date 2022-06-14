@@ -1,8 +1,8 @@
 # QuTiP Tutorials
 
 This repositories collects tutorials of different complexity for
-using [QuTiP](qutip.org). Some of the notebooks are also shown on
-the [QuTiP Tutorials website](qutip.org/tutorials).
+using [QuTiP](https://qutip.org/). Some of the notebooks are also shown on
+the [QuTiP Tutorials website](https://qutip.org/tutorials).
 
 The notebooks in this repository are stored in a Markdown format and thus
 have no outputs. To generate the outputs, follow the installation guide below.

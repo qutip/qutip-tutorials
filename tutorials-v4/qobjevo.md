@@ -291,11 +291,3 @@ liouv(0)
 ```python
 qutip.about()
 ```
-
-### Further development notebooks
-
-These notebooks contain timing information and other advanced (possibly internal) usage of the `QobjEvo` class.
-
-- [Development usage](../development/development-qobjevo.ipynb)
-- [Timings](../development/development-qobjevo-timings.ipynb)
-- [Advanced methods](../development/development-qobjevo-adv.ipynb)
