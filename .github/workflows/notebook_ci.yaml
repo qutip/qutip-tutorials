@@ -72,9 +72,6 @@ jobs:
         mkdir notebooks
         jupytext --to notebook ${{ matrix.path_md }}
         mv ${{ matrix.path_ipynb}} notebooks
-        sudo apt-get install tree
-        cd notebooks
-        tree -H '.' -L 1 --noreport --charset utf-8 -T "QuTiP Tutorial index" -P "*.ipynb" -o index.html
 
     - name: Run tests
       run: |
@@ -85,21 +82,23 @@ jobs:
       if: ${{ matrix.qutip-branch == 'master' }}
       uses: actions/upload-artifact@v3
       with:
-        name: executed-notebooks
+        name: executed-notebooks-v${{ matrix.qutip-version }}
         path: notebooks/*
   publish:
     needs: pytests
     runs-on: ubuntu-latest
-    if: ${{ github.repository == 'qutip/qutip-tutorials' && github.ref == 'refs/heads/main' }}
+    # if: ${{ github.repository == 'qutip/qutip-tutorials' && github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@master
-        with:
-          name: executed-notebooks
-          path: notebooks
+
+      - name: Create index
+        run: |
+          sudo apt-get install tree
+          tree -H '.' -L 1 --noreport --charset utf-8 -T "QuTiP Tutorial index" -P "*.ipynb" -o index.html
 
       - name: Publish Notebooks
         run: | 
           python -m pip install ghp-import
-          ghp-import -m "Automatic push by ghp-import" -f -n -p -o -r origin -b gh-pages notebooks
+          ghp-import -m "Automatic push by ghp-import" -f -n -p -o -r origin -b gh-pages .
 
