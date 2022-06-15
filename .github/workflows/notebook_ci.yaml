@@ -66,7 +66,7 @@ jobs:
         cd qutip-qip
         pip install -e .
 
-    - name: Convert Notebooks and create index
+    - name: Convert Notebooks
       run: | 
         rm -rf notebooks
         mkdir notebooks
@@ -77,6 +77,7 @@ jobs:
       run: |
         jupyter kernel &
         pytest --nbmake notebooks/*.ipynb --overwrite --nbmake-timeout=500
+        rm notebooks/template.ipynb
 
     - name: Create Notebook Artifact
       uses: actions/upload-artifact@v3
@@ -86,7 +87,7 @@ jobs:
   publish:
     needs: pytests
     runs-on: ubuntu-latest
-    # if: ${{ github.repository == 'qutip/qutip-tutorials' && github.ref == 'refs/heads/main' }}
+    if: ${{ github.repository == 'qutip/qutip-tutorials' && github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@master
