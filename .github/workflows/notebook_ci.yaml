@@ -79,7 +79,6 @@ jobs:
         pytest --nbmake notebooks/*.ipynb --overwrite --nbmake-timeout=500
 
     - name: Create Notebook Artifact
-      if: ${{ matrix.qutip-branch == 'master' }}
       uses: actions/upload-artifact@v3
       with:
         name: executed-notebooks-v${{ matrix.qutip-version }}
@@ -98,7 +97,7 @@ jobs:
         run: |
           sudo apt-get install tree
           cd publish
-          tree -H '.' -L 1 --noreport --charset utf-8 -T "QuTiP Tutorial index" -P "*.ipynb" -o index.html
+          tree -H '.' --noreport --charset utf-8 -T "QuTiP Tutorial index" -P "*.ipynb" -o index.html
 
       - name: Publish Notebooks
         run: | 
