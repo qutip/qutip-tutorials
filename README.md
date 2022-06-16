@@ -1,11 +1,14 @@
 # QuTiP Tutorials
 
 This repositories collects tutorials of different complexity for
-using [QuTiP](qutip.org). Some of the notebooks are also shown on
-the [QuTiP Tutorials website](qutip.org/tutorials).
+using [QuTiP](https://qutip.org/). Some of the notebooks are also shown on
+the [QuTiP Tutorials website](https://qutip.org/tutorials).
 
 The notebooks in this repository are stored in a Markdown format and thus
 have no outputs. To generate the outputs, follow the installation guide below.
+
+The notebooks are located in the folders `tutorials-v4` / `tutorials-v5`, 
+where the version number stands for the QuTiP version they work with.
 
 ## Installation Guide
 
@@ -38,7 +41,8 @@ jupyter notebook
 Your browser should automatically open the Jupyter Notebook frontend. Otherwise
 open the link displayed in the terminal.
 
-Navigate into the `tutorials` directory and select one of the notebooks.
+Navigate into the `tutorials-v4` or `tutorials-v5` directory and select one of 
+the notebooks.
 Note that the format of the notebooks is `.md` (markdown), which is intended
 for better compatibility with git features.
 

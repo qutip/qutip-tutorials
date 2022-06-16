@@ -10,49 +10,80 @@ defaults:
 jobs:
   pytests:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - qutip-version: '4'
+            qutip-branch: 'master'
+            path_md: 'tutorials-v4/*.md'
+            path_ipynb: 'tutorials-v4/*.ipynb'
+          - qutip-version: '5'
+            qutip-branch: 'dev.major'
+            path_md: 'tutorials-v5/*.md'
+            path_ipynb: 'tutorials-v5/*.ipynb'
     steps:
     - uses: actions/checkout@v3
-    - uses: conda-incubator/setup-miniconda@v2
+    - uses: gaurav-nelson/github-action-markdown-link-check@v1
       with:
-        activate-environment: test
-        environment-file: test_environment.yml
-        auto-activate-base: false
-        auto-update-conda: true
+        use-quiet-mode: 'yes'
 
-    - name: Install QuTiP and QuTiP-QIP
+    - name: Setup Mambaforge
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        miniforge-variant: Mambaforge
+        miniforge-version: latest
+        activate-environment: test-environment
+        use-mamba: true
+
+    - name: Get Date
+      id: get-date
+      run: echo "::set-output name=today::$(/bin/date -u '+%Y%m%d')"
+      shell: bash
+
+    - name: Cache Conda env
+      uses: actions/cache@v2
+      with:
+        path: ${{ env.CONDA }}/envs
+        key: conda-${{ runner.os }}--${{ runner.arch }}--${{ steps.get-date.outputs.today }}-${{ hashFiles('test_environment.yml') }}-${{ env.CACHE_NUMBER }}-qutip-${{ matrix.qutip-version }}
+      env:
+        # Increase this value to reset cache if etc/example-environment.yml has not changed
+        CACHE_NUMBER: 0
+      id: cache
+
+    - name: Install environment
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: mamba env update -n test-environment -f test_environment.yml
+
+    - name: Install QuTiP
       run: |
-        sudo apt-get install git
         pip install --upgrade pip
-        git clone https://github.com/qutip/qutip.git
+        git clone -b ${{ matrix.qutip-branch }} https://github.com/qutip/qutip.git
         cd qutip
         pip install -r requirements.txt
         python setup.py develop
         cd ..
-        git clone https://github.com/qutip/qutip-qip.git
+        git clone -b master https://github.com/qutip/qutip-qip.git
         cd qutip-qip
         pip install -e .
 
-    - name: Convert Notebooks and create index
+    - name: Convert Notebooks
       run: | 
         rm -rf notebooks
         mkdir notebooks
-        jupytext --to notebook tutorials/*.md
-        mv tutorials/*.ipynb notebooks
-        sudo apt-get install tree
-        cd notebooks
-        tree -H '.' -L 1 --noreport --charset utf-8 -T "QuTiP Tutorial index" -P "*.ipynb" -o index.html
+        jupytext --to notebook ${{ matrix.path_md }}
+        mv ${{ matrix.path_ipynb}} notebooks
 
     - name: Run tests
       run: |
         jupyter kernel &
         pytest --nbmake notebooks/*.ipynb --overwrite --nbmake-timeout=500
+        rm notebooks/template.ipynb
 
     - name: Create Notebook Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: executed-notebooks
+        name: executed-notebooks-v${{ matrix.qutip-version }}
         path: notebooks/*.ipynb
-
   publish:
     needs: pytests
     runs-on: ubuntu-latest
@@ -61,11 +92,22 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@master
         with:
-          name: executed-notebooks
-          path: notebooks
+          name: executed-notebooks-v4
+          path: publish/tutorials-v4
+
+      - uses: actions/download-artifact@master
+        with:
+          name: executed-notebooks-v5
+          path: publish/tutorials-v5
+
+      - name: Create index
+        run: |
+          sudo apt-get install tree
+          cd publish
+          tree -H '.' --noreport --charset utf-8 -T "QuTiP Tutorial index" -P "*.ipynb" -o index.html
 
       - name: Publish Notebooks
         run: | 
           python -m pip install ghp-import
-          ghp-import -m "Automatic push by ghp-import" -f -n -p -o -r origin -b gh-pages notebooks
+          ghp-import -m "Automatic push by ghp-import" -f -n -p -o -r origin -b gh-pages publish
 
