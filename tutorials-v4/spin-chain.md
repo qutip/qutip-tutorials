@@ -150,7 +150,3 @@ about()
 ```python
 assert np.allclose(np.array(exp_sz_dephase)[:,-1],0.6, atol=0.01)
 ```
-
-```python
-
-```
