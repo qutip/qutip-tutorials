@@ -128,11 +128,11 @@ c_ops = [np.sqrt(gamma[i]) * sz_list[i] for i in range(N)]
 result = result = mesolve(H, psi0, times, c_ops, [])
 
 # Expectation value
-exp_sz_dephase = np.array(expect(result.states, sz_list))
+exp_sz_dephase = expect(sz_list, result.states)
 
 # Plot the expecation value
-plt.plot(times, exp_sz_dephase[:,0], label=r'$\langle \sigma_z^{0} \rangle$')
-plt.plot(times, exp_sz_dephase[:,-1], label=r'$\langle \sigma_z^{-1} \rangle$')
+plt.plot(times, exp_sz_dephase[0], label=r'$\langle \sigma_z^{0} \rangle$')
+plt.plot(times, exp_sz_dephase[-1], label=r'$\langle \sigma_z^{-1} \rangle$')
 plt.legend()
 plt.xlabel('Time'), plt.ylabel(r'$\langle \sigma_z \rangle$')
 plt.title('Dynamics of spin chain with qubit dephasing');
@@ -148,5 +148,5 @@ about()
 ### Testing
 
 ```python
-assert np.allclose(exp_sz_dephase[-1,:],0.6, atol=0.01)
+assert np.allclose(np.array(exp_sz_dephase)[:,-1],0.6, atol=0.01)
 ```
