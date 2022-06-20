@@ -10,11 +10,11 @@ jupyter:
 
 # QuTiP lecture: Correlation functions 
 
-Author: J. R. Johansson (robert@riken.jp), http://dml.riken.jp/~rob/
+Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
 The latest version of this [IPython notebook](http://ipython.org/ipython-doc/dev/interactive/htmlnotebook.html) lecture is available at [http://github.com/jrjohansson/qutip-lectures](http://github.com/jrjohansson/qutip-lectures).
 
-The other notebooks in this lecture series are indexed at [http://jrjohansson.github.com](http://jrjohansson.github.com).
+The other notebooks in this lecture series are indexed at [https://qutip.org/tutorials](https://qutip.org/tutorials).
 
 ```python
 %matplotlib inline

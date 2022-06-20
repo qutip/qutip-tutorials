@@ -10,11 +10,11 @@ jupyter:
 
 # Lecture 0 - Introduction to QuTiP - The Quantum Toolbox in Python
 
-Author: J. R. Johansson (robert@riken.jp), http://dml.riken.jp/~rob/
+Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
 The latest version of this [IPython notebook](http://ipython.org/ipython-doc/dev/interactive/htmlnotebook.html) lecture is available at [http://github.com/jrjohansson/qutip-lectures](http://github.com/jrjohansson/qutip-lectures).
 
-The other notebooks in this lecture series are indexed at [http://jrjohansson.github.com](http://jrjohansson.github.com).
+The other notebooks in this lecture series are indexed at [https://qutip.org/tutorials](https://qutip.org/tutorials).
 
 ```python
 %matplotlib inline
@@ -31,16 +31,23 @@ It includes facilities for representing and doing calculations with quantum obje
 
 It also includes solvers for a time-evolution of quantum systems, according to: Schrodinger equation, von Neuman equation, master equations, Floquet formalism, Monte-Carlo quantum trajectors, experimental implementations of the stochastic Schrodinger/master equations.
 
-For more information see the project web site at http://qutip.googlecode.com, and the documentation at http://qutip.googlecode.com/svn/doc/2.1.0/html/index.html.
+For more information see the project web site at [qutip.org](https://qutip.org), and the 
+documentation 
+at [https://qutip.org/docs/latest/index.html](https://qutip.
+org/docs/latest/index.html).
 
 
 ### Installation
 
-To install QuTiP, download the latest release from http://code.google.com/p/qutip/downloads/list or get the latest code from https://github.com/qutip/qutip, and run
+Get the latest code from [https://github.com/qutip/qutip](https://github.
+com/qutip/qutip), and run
 
     $ sudo python setup.py install
 
-in the source code directory. For more detailed installation instructions and a list of dependencies that must be installed on the system (basically python+cython+numpy+scipy+matplotlib), see http://qutip.googlecode.com/svn/doc/2.1.0/html/installation.html.
+in the source code directory. For more detailed installation instructions 
+and a list of dependencies that must be installed on the system (basically 
+python+cython+numpy+scipy+matplotlib), see [https://github.com/qutip/qutip]
+(https://github.com/qutip/qutip).
 
 
 To use QuTiP in a Python program, first inlude the `qutip` module:
@@ -144,7 +151,7 @@ H.tr()
 H.eigenenergies()
 ```
 
-For a complete list of methods and properties of the `Qobj` class, see the [QuTiP documentation](http://qutip.googlecode.com/svn/doc/2.1.0/html/index.html) or try `help(Qobj)` or `dir(Qobj)`.
+For a complete list of methods and properties of the `Qobj` class, see the [QuTiP documentation](https://qutip.org/docs/latest/index.html) or try `help(Qobj)` or `dir(Qobj)`.
 
 
 ## States and operators

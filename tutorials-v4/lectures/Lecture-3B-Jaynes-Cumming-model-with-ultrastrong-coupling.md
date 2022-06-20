@@ -11,11 +11,11 @@ jupyter:
 # QuTiP lecture: Jaynes-Cummings-like model in the ultrastrong coupling regime
 
 
-Author: J. R. Johansson (robert@riken.jp), http://dml.riken.jp/~rob/
+Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
 The latest version of this [IPython notebook](http://ipython.org/ipython-doc/dev/interactive/htmlnotebook.html) lecture is available at [http://github.com/jrjohansson/qutip-lectures](http://github.com/jrjohansson/qutip-lectures).
 
-The other notebooks in this lecture series are indexed at [http://jrjohansson.github.com](http://jrjohansson.github.com).
+The other notebooks in this lecture series are indexed at [https://qutip.org/tutorials](https://qutip.org/tutorials).
 
 ```python
 # setup the matplotlib graphics library and configure it to show figures inline in the notebook

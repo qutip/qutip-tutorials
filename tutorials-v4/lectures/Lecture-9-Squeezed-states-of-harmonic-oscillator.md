@@ -12,7 +12,7 @@ jupyter:
 
 Author: J.R. Johansson, robert@riken.jp
 
-http://dml.riken.jp/~rob/
+https://jrjohansson.github.io/
 
 Latest version of this ipython notebook lecture is available at: http://github.com/jrjohansson/qutip-lectures
 
