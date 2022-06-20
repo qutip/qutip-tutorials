@@ -47,7 +47,7 @@ from qutip import destroy, basis, mcsolve, mesolve
 In this example, we consider a simple oscillator Hamiltonian $H = a^\dagger a$ and one initial photon in the cavity.
 
 ```python
-N=5             # number of modes in the
+N=5             # number of modes in the cavity
 a=destroy(N)    # Destroy operator
 H=a.dag()*a     # oscillator Hamiltonian
 psi0=basis(N,1) # Initial Fock state with one photon
