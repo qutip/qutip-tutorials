@@ -12,12 +12,11 @@ jupyter:
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-The latest version of this [IPython notebook](http://ipython.
-org/ipython-doc/dev/interactive/htmlnotebook.html) lecture is available at 
+The latest version of this lecture is available at 
 [the lecture repository](http://github.com/jrjohansson/qutip-lectures).
 
 The other notebooks in this lecture series are indexed at [the QuTiP 
-tutorial website](https://qutip.org/tutorials/).
+tutorial website](https://qutip.org/tutorials).
 
 ```python
 %matplotlib inline
