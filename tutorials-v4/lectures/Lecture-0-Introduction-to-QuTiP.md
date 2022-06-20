@@ -12,9 +12,12 @@ jupyter:
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-The latest version of this [IPython notebook](http://ipython.org/ipython-doc/dev/interactive/htmlnotebook.html) lecture is available at [http://github.com/jrjohansson/qutip-lectures](http://github.com/jrjohansson/qutip-lectures).
+The latest version of this [IPython notebook](http://ipython.
+org/ipython-doc/dev/interactive/htmlnotebook.html) lecture is available at 
+[the lecture repository](http://github.com/jrjohansson/qutip-lectures).
 
-The other notebooks in this lecture series are indexed at [https://qutip.org/tutorials](https://qutip.org/tutorials).
+The other notebooks in this lecture series are indexed at [the QuTiP 
+tutorial website](https://qutip.org/tutorials/).
 
 ```python
 %matplotlib inline
@@ -32,22 +35,19 @@ It includes facilities for representing and doing calculations with quantum obje
 It also includes solvers for a time-evolution of quantum systems, according to: Schrodinger equation, von Neuman equation, master equations, Floquet formalism, Monte-Carlo quantum trajectors, experimental implementations of the stochastic Schrodinger/master equations.
 
 For more information see the project web site at [qutip.org](https://qutip.org), and the 
-documentation 
-at [https://qutip.org/docs/latest/index.html](https://qutip.
-org/docs/latest/index.html).
+[QuTiP documentation](https://qutip.org/docs/latest/index.html).
 
 
 ### Installation
 
-Get the latest code from [https://github.com/qutip/qutip](https://github.
-com/qutip/qutip), and run
+Get the latest code from [the project repository](https://github.com/qutip/qutip), 
+and run
 
     $ sudo python setup.py install
 
 in the source code directory. For more detailed installation instructions 
 and a list of dependencies that must be installed on the system (basically 
-python+cython+numpy+scipy+matplotlib), see [https://github.com/qutip/qutip]
-(https://github.com/qutip/qutip).
+python+cython+numpy+scipy+matplotlib), see [the repository](https://github.com/qutip/qutip).
 
 
 To use QuTiP in a Python program, first inlude the `qutip` module:
