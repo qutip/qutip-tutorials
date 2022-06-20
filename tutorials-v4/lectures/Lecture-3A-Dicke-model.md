@@ -6,23 +6,24 @@ jupyter:
       format_name: markdown
       format_version: '1.3'
       jupytext_version: 1.13.8
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
 ---
 
 # QuTiP lecture: The Dicke model 
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-The latest version of this [IPython notebook](http://ipython.org/ipython-doc/dev/interactive/htmlnotebook.html) lecture is available at [http://github.com/jrjohansson/qutip-lectures](http://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
-The other notebooks in this lecture series are indexed at [https://qutip.org/tutorials](https://qutip.org/tutorials).
+This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
 %matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-```
-
-```python
 from qutip import *
 ```
 
@@ -56,7 +57,7 @@ w  = 1.0
 w0 = 1.0
 
 g = 1.0
-gc = sqrt(w * w0)/2 # critical coupling strength
+gc = np.sqrt(w * w0)/2 # critical coupling strength
 
 kappa = 0.05 
 gamma = 0.15
@@ -65,16 +66,16 @@ gamma = 0.15
 ```python
 M = 16
 N = 4
-j = N/2.0
+j = N/2
 n = 2*j + 1
 
-a  = tensor(destroy(M), qeye(n))
+a  = tensor(destroy(M), qeye(int(n)))
 Jp = tensor(qeye(M), jmat(j, '+'))
 Jm = tensor(qeye(M), jmat(j, '-'))
 Jz = tensor(qeye(M), jmat(j, 'z'))
 
 H0 = w * a.dag() * a + w0 * Jz
-H1 = 1.0 / sqrt(N) * (a + a.dag()) * (Jp + Jm)
+H1 = 1.0 / np.sqrt(N) * (a + a.dag()) * (Jp + Jm)
 H = H0 + g * H1
 
 H
@@ -143,7 +144,7 @@ for idx, psi_gnd in enumerate(psi_gnd_sublist):
 
     # plot its fock-state distribution
     ax = plt.subplot2grid(fig_grid, (1, idx))
-    ax.bar(arange(0, M), real(rho_gnd_cavity.diag()), color="blue", alpha=0.6)
+    ax.bar(np.arange(0, M), np.real(rho_gnd_cavity.diag()), color="blue", alpha=0.6)
     ax.set_ylim(0, 1)
     ax.set_xlim(0, M)    
     
@@ -162,9 +163,9 @@ for g in g_vec[::4]:
 ### Entropy/Entanglement between spins and cavity
 
 ```python
-entropy_tot    = zeros(shape(g_vec))
-entropy_cavity = zeros(shape(g_vec))
-entropy_spin   = zeros(shape(g_vec))
+entropy_tot    = np.zeros(shape(g_vec))
+entropy_cavity = np.zeros(shape(g_vec))
+entropy_spin   = np.zeros(shape(g_vec))
 
 for idx, psi_gnd in enumerate(psi_gnd_list):
 
@@ -200,19 +201,19 @@ def calulcate_entropy(M, N, g_vec):
     n = 2*j + 1
 
     # setup the hamiltonian for the requested hilbert space sizes
-    a  = tensor(destroy(M), qeye(n))
+    a  = tensor(destroy(M), qeye(int(n)))
     Jp = tensor(qeye(M), jmat(j, '+'))
     Jm = tensor(qeye(M), jmat(j, '-'))
     Jz = tensor(qeye(M), jmat(j, 'z'))
 
     H0 = w * a.dag() * a + w0 * Jz
-    H1 = 1.0 / sqrt(N) * (a + a.dag()) * (Jp + Jm)
+    H1 = 1.0 / np.sqrt(N) * (a + a.dag()) * (Jp + Jm)
 
     # Ground state and steady state for the Hamiltonian: H = H0 + g * H1
     psi_gnd_list = [(H0 + g * H1).groundstate()[1]  for g in g_vec]
     
-    entropy_cavity = zeros(shape(g_vec))
-    entropy_spin   = zeros(shape(g_vec))
+    entropy_cavity = np.zeros(shape(g_vec))
+    entropy_spin   = np.zeros(shape(g_vec))
 
     for idx, psi_gnd in enumerate(psi_gnd_list):
 
@@ -251,7 +252,7 @@ axes.legend()
 # average number thermal photons in the bath coupling to the resonator
 n_th = 0.25
 
-c_ops = [sqrt(kappa * (n_th + 1)) * a, sqrt(kappa * n_th) * a.dag()]
+c_ops = [np.sqrt(kappa * (n_th + 1)) * a, np.sqrt(kappa * n_th) * a.dag()]
 #c_ops = [sqrt(kappa) * a, sqrt(gamma) * Jm]
 ```
 
@@ -308,7 +309,7 @@ for idx, rho_ss in enumerate(rho_ss_sublist):
 
     # plot its fock-state distribution
     ax = plt.subplot2grid(fig_grid, (1, idx))
-    ax.bar(arange(0, M), real(rho_ss_cavity.diag()), color="blue", alpha=0.6)
+    ax.bar(np.arange(0, M), np.real(rho_ss_cavity.diag()), color="blue", alpha=0.6)
     ax.set_ylim(0, 1)
     
 # plot the cavity occupation probability in the ground state
@@ -327,9 +328,9 @@ for g in g_vec[::4]:
 ## Entropy
 
 ```python
-entropy_tot    = zeros(shape(g_vec))
-entropy_cavity = zeros(shape(g_vec))
-entropy_spin   = zeros(shape(g_vec))
+entropy_tot    = np.zeros(shape(g_vec))
+entropy_cavity = np.zeros(shape(g_vec))
+entropy_spin   = np.zeros(shape(g_vec))
 
 for idx, rho_ss in enumerate(rho_ss_list):
 
@@ -357,7 +358,6 @@ fig.tight_layout()
 ### Software versions
 
 ```python
-from qutip.ipynbtools import version_table
-
-version_table()
+from qutip import about
+about()
 ```

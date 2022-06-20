@@ -6,6 +6,10 @@ jupyter:
       format_name: markdown
       format_version: '1.3'
       jupytext_version: 1.13.8
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
 ---
 
 # QuTiP lecture: Quantum Monte-Carlo Trajectories
@@ -13,11 +17,9 @@ jupyter:
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-The latest version of this [IPython notebook](http://ipython.org/ipython-doc/dev/interactive/htmlnotebook.html) lecture is available at [http://github.com/jrjohansson/qutip-lectures](http://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
-The other notebooks in this lecture series are indexed at [https://qutip.org/tutorials](https://qutip.org/tutorials).
-
-The example in this lecture is based on an example by P.D. Nation.
+This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
 %matplotlib inline
@@ -103,10 +105,10 @@ psi0 = basis(N,1)   # initial Fock state with one photon: |1>
 c_op_list = []
 
 # decay operator
-c_op_list.append(sqrt(kappa * (1 + nth)) * a)
+c_op_list.append(np.sqrt(kappa * (1 + nth)) * a)
 
 # excitation operator
-c_op_list.append(sqrt(kappa * nth) * a.dag())
+c_op_list.append(np.sqrt(kappa * nth) * a.dag())
 ```
 
 ## Monte-Carlo simulation
@@ -169,7 +171,6 @@ axes[3].set_xlabel('Time (sec)',fontsize=14);
 ### Software versions:
 
 ```python
-from qutip.ipynbtools import version_table
-
-version_table()
+from qutip import about
+about()
 ```

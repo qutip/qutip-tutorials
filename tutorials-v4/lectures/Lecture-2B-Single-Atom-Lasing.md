@@ -6,6 +6,10 @@ jupyter:
       format_name: markdown
       format_version: '1.3'
       jupytext_version: 1.13.8
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
 ---
 
 # QuTiP lecture: Single-Atom-Lasing
@@ -13,22 +17,22 @@ jupyter:
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-The latest version of this [IPython notebook](http://ipython.org/ipython-doc/dev/interactive/htmlnotebook.html) lecture is available at [http://github.com/jrjohansson/qutip-lectures](http://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
-The other notebooks in this lecture series are indexed at [https://qutip.org/tutorials](https://qutip.org/tutorials).
+This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
 # setup the matplotlib graphics library and configure it to show 
 # figures inline in the notebook
 %matplotlib inline
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import numpy as np
 ```
 
 ```python
 # make qutip available in the rest of the notebook
 from qutip import *
-
 from IPython.display import Image
 ```
 
@@ -71,9 +75,9 @@ References:
 ### Problem parameters
 
 ```python
-w0 = 1.0  * 2 * pi  # cavity frequency
-wa = 1.0  * 2 * pi  # atom frequency
-g  = 0.05 * 2 * pi  # coupling strength
+w0 = 1.0  * 2 * np.pi  # cavity frequency
+wa = 1.0  * 2 * np.pi  # atom frequency
+g  = 0.05 * 2 * np.pi  # coupling strength
 
 kappa = 0.04        # cavity dissipation rate
 gamma = 0.00        # atom dissipation rate
@@ -112,19 +116,19 @@ c_ops = []
 
 rate = kappa * (1 + n_th_a)
 if rate > 0.0:
-    c_ops.append(sqrt(rate) * a)
+    c_ops.append(np.sqrt(rate) * a)
 
 rate = kappa * n_th_a
 if rate > 0.0:
-    c_ops.append(sqrt(rate) * a.dag())
+    c_ops.append(np.sqrt(rate) * a.dag())
 
 rate = gamma
 if rate > 0.0:
-    c_ops.append(sqrt(rate) * sm)
+    c_ops.append(np.sqrt(rate) * sm)
 
 rate = Gamma
 if rate > 0.0:
-    c_ops.append(sqrt(rate) * sm.dag())
+    c_ops.append(np.sqrt(rate) * sm.dag())
 ```
 
 ### Evolve the system
@@ -132,7 +136,7 @@ if rate > 0.0:
 Here we evolve the system with the Lindblad master equation solver, and we request that the expectation values of the operators $a^\dagger a$ and $\sigma_+\sigma_-$ are returned by the solver by passing the list `[a.dag()*a, sm.dag()*sm]` as the fifth argument to the solver.
 
 ```python
-opt = Odeoptions(nsteps=2000) # allow extra time-steps 
+opt = Options(nsteps=2000) # allow extra time-steps 
 output = mesolve(H, psi0, tlist, c_ops, [a.dag() * a, sm.dag() * sm], options=opt)
 ```
 
@@ -173,7 +177,7 @@ axes[1].contourf(xvec, xvec, W, 100, norm=mpl.colors.Normalize(-wlim,wlim), cmap
 axes[1].set_xlabel(r'Im $\alpha$', fontsize=18)
 axes[1].set_ylabel(r'Re $\alpha$', fontsize=18)
 
-axes[0].bar(arange(0, N), real(rho_cavity.diag()), color="blue", alpha=0.6)
+axes[0].bar(np.arange(0, N), np.real(rho_cavity.diag()), color="blue", alpha=0.6)
 axes[0].set_ylim(0, 1)
 axes[0].set_xlim(0, N)
 axes[0].set_xlabel('Fock number', fontsize=18)
@@ -184,7 +188,7 @@ axes[0].set_ylabel('Occupation probability', fontsize=18);
 
 ```python
 tlist = np.linspace(0, 25, 5)
-output = mesolve(H, psi0, tlist, c_ops, [], options=Odeoptions(nsteps=5000))
+output = mesolve(H, psi0, tlist, c_ops, [], options=Options(nsteps=5000))
 ```
 
 ```python
@@ -208,7 +212,7 @@ for idx, rho_ss in enumerate(rho_ss_sublist):
     axes[0,idx].set_title(r'$t = %.1f$' % tlist[idx])
     
     # plot its fock-state distribution
-    axes[1,idx].bar(arange(0, N), real(rho_ss_cavity.diag()), color="blue", alpha=0.8)
+    axes[1,idx].bar(np.arange(0, N), np.real(rho_ss_cavity.diag()), color="blue", alpha=0.8)
     axes[1,idx].set_ylim(0, 1)
     axes[1,idx].set_xlim(0, 15)
 ```
@@ -227,19 +231,19 @@ def calulcate_avg_photons(N, Gamma):
 
     rate = kappa * (1 + n_th_a)
     if rate > 0.0:
-        c_ops.append(sqrt(rate) * a)
+        c_ops.append(np.sqrt(rate) * a)
 
     rate = kappa * n_th_a
     if rate > 0.0:
-        c_ops.append(sqrt(rate) * a.dag())
+        c_ops.append(np.sqrt(rate) * a.dag())
 
     rate = gamma
     if rate > 0.0:
-        c_ops.append(sqrt(rate) * sm)
+        c_ops.append(np.sqrt(rate) * sm)
 
     rate = Gamma
     if rate > 0.0:
-        c_ops.append(sqrt(rate) * sm.dag())
+        c_ops.append(np.sqrt(rate) * sm.dag())
       
     # Ground state and steady state for the Hamiltonian: H = H0 + g * H1
     rho_ss = steadystate(H, c_ops)
@@ -302,7 +306,7 @@ Gamma = 0.5 * (4*g**2) / kappa
 ```
 
 ```python
-c_ops = [sqrt(kappa * (1 + n_th_a)) * a, sqrt(kappa * n_th_a) * a.dag(), sqrt(gamma) * sm, sqrt(Gamma) * sm.dag()]
+c_ops = [np.sqrt(kappa * (1 + n_th_a)) * a, np.sqrt(kappa * n_th_a) * a.dag(), np.sqrt(gamma) * sm, np.sqrt(Gamma) * sm.dag()]
 
 rho_ss = steadystate(H, c_ops)
 ```
@@ -319,7 +323,7 @@ axes[1].contourf(xvec, xvec, W, 100, norm=mpl.colors.Normalize(-wlim,wlim), cmap
 axes[1].set_xlabel(r'Im $\alpha$', fontsize=18)
 axes[1].set_ylabel(r'Re $\alpha$', fontsize=18)
 
-axes[0].bar(arange(0, N), real(rho_cavity.diag()), color="blue", alpha=0.6)
+axes[0].bar(np.arange(0, N), np.real(rho_cavity.diag()), color="blue", alpha=0.6)
 axes[0].set_xlabel(r'$n$', fontsize=18)
 axes[0].set_ylabel(r'Occupation probability', fontsize=18)
 axes[0].set_ylim(0, 1)
@@ -333,7 +337,7 @@ Gamma = 1.5 * (4*g**2) / kappa
 ```
 
 ```python
-c_ops = [sqrt(kappa * (1 + n_th_a)) * a, sqrt(kappa * n_th_a) * a.dag(), sqrt(gamma) * sm, sqrt(Gamma) * sm.dag()]
+c_ops = [np.sqrt(kappa * (1 + n_th_a)) * a, np.sqrt(kappa * n_th_a) * a.dag(), np.sqrt(gamma) * sm, np.sqrt(Gamma) * sm.dag()]
 
 rho_ss = steadystate(H, c_ops)
 ```
@@ -350,7 +354,7 @@ axes[1].contourf(xvec, xvec, W, 100, norm=mpl.colors.Normalize(-wlim,wlim), cmap
 axes[1].set_xlabel(r'Im $\alpha$', fontsize=18)
 axes[1].set_ylabel(r'Re $\alpha$', fontsize=18)
 
-axes[0].bar(arange(0, N), real(rho_cavity.diag()), color="blue", alpha=0.6)
+axes[0].bar(np.arange(0, N), np.real(rho_cavity.diag()), color="blue", alpha=0.6)
 axes[0].set_xlabel(r'$n$', fontsize=18)
 axes[0].set_ylabel(r'Occupation probability', fontsize=18)
 axes[0].set_ylim(0, 1)
@@ -363,7 +367,6 @@ Too large pumping rate $\Gamma$ kills the lasing process: reversed threshold.
 ### Software version
 
 ```python
-from qutip.ipynbtools import version_table
-
-version_table()
+from qutip import about
+about()
 ```

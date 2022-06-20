@@ -6,6 +6,10 @@ jupyter:
       format_name: markdown
       format_version: '1.3'
       jupytext_version: 1.13.8
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
 ---
 
 # QuTiP lecture: Vacuum Rabi oscillations in the Jaynes-Cummings model
@@ -13,15 +17,14 @@ jupyter:
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-The latest version of this [IPython notebook](http://ipython.org/ipython-doc/dev/interactive/htmlnotebook.html) lecture is available at [http://github.com/jrjohansson/qutip-lectures](http://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
-The other notebooks in this lecture series are indexed at [https://qutip.org/tutorials](https://qutip.org/tutorials).
+This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
-# setup the matplotlib graphics library and configure it to show 
-# figures inline in the notebook
 %matplotlib inline
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import numpy as np
 ```
 
@@ -50,9 +53,9 @@ Here we use units where $\hbar = 1$:
 <!-- #endregion -->
 
 ```python
-wc = 1.0  * 2 * pi  # cavity frequency
-wa = 1.0  * 2 * pi  # atom frequency
-g  = 0.05 * 2 * pi  # coupling strength
+wc = 1.0  * 2 * np.pi  # cavity frequency
+wa = 1.0  * 2 * np.pi  # atom frequency
+g  = 0.05 * 2 * np.pi  # coupling strength
 kappa = 0.005       # cavity dissipation rate
 gamma = 0.05        # atom dissipation rate
 N = 15              # number of cavity fock states
@@ -87,17 +90,17 @@ c_ops = []
 # cavity relaxation
 rate = kappa * (1 + n_th_a)
 if rate > 0.0:
-    c_ops.append(sqrt(rate) * a)
+    c_ops.append(np.sqrt(rate) * a)
 
 # cavity excitation, if temperature > 0
 rate = kappa * n_th_a
 if rate > 0.0:
-    c_ops.append(sqrt(rate) * a.dag())
+    c_ops.append(np.sqrt(rate) * a.dag())
 
 # qubit relaxation
 rate = gamma
 if rate > 0.0:
-    c_ops.append(sqrt(rate) * sm)
+    c_ops.append(np.sqrt(rate) * sm)
 ```
 
 ### Evolve the system
@@ -123,7 +126,7 @@ axes.plot(tlist, n_a, label="Atom excited state")
 axes.legend(loc=0)
 axes.set_xlabel('Time')
 axes.set_ylabel('Occupation probability')
-axes.set_title('Vacuum Rabi oscillations')
+axes.set_title('Vacuum Rabi oscillations');
 ```
 
 ## Cavity wigner function
@@ -164,13 +167,13 @@ For each of these points in time we need to:
 
 ```python
 # find the indices of the density matrices for the times we are interested in
-t_idx = where([tlist == t for t in [0.0, 5.0, 15.0, 25.0]])[1]
+t_idx = np.where([tlist == t for t in [0.0, 5.0, 15.0, 25.0]])[1]
 tlist[t_idx]
 ```
 
 ```python
 # get a list density matrices
-rho_list = array(output.states)[t_idx]
+rho_list = np.array(output.states)[t_idx]
 ```
 
 ```python
@@ -202,8 +205,8 @@ At $t =0$, the cavity is in it's ground state. At $t = 5, 15, 25$ it reaches it'
 ### Alternative view of the same thing
 
 ```python
-t_idx = where([tlist == t for t in [0.0, 5.0, 10, 15, 20, 25]])[1]
-rho_list = array(output.states)[t_idx]
+t_idx = np.where([tlist == t for t in [0.0, 5.0, 10, 15, 20, 25]])[1]
+rho_list = np.array(output.states)[t_idx]
 
 fig_grid = (2, len(rho_list)*2)
 fig = plt.figure(figsize=(2.5*len(rho_list),5))
@@ -227,7 +230,6 @@ ax.set_ylabel('Occupation probability');
 ### Software versions
 
 ```python
-from qutip.ipynbtools import version_table
-
-version_table()
+from qutip import about
+about()
 ```

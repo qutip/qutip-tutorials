@@ -6,6 +6,10 @@ jupyter:
       format_name: markdown
       format_version: '1.3'
       jupytext_version: 1.13.8
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
 ---
 
 # QuTiP lecture: Jaynes-Cummings-like model in the ultrastrong coupling regime
@@ -13,15 +17,16 @@ jupyter:
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-The latest version of this [IPython notebook](http://ipython.org/ipython-doc/dev/interactive/htmlnotebook.html) lecture is available at [http://github.com/jrjohansson/qutip-lectures](http://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
-The other notebooks in this lecture series are indexed at [https://qutip.org/tutorials](https://qutip.org/tutorials).
+This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
 # setup the matplotlib graphics library and configure it to show figures inline in the notebook
 %matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib as mpl
 ```
 
 ```python
@@ -64,8 +69,8 @@ Here we use units where $\hbar = 1$:
 <!-- #endregion -->
 
 ```python
-wc = 1.0  * 2 * pi  # cavity frequency
-wa = 1.0  * 2 * pi  # atom frequency
+wc = 1.0  * 2 * np.pi  # cavity frequency
+wa = 1.0  * 2 * np.pi  # atom frequency
 
 N = 15              # number of cavity fock states
 use_rwa = False
@@ -94,7 +99,7 @@ else:
 ## Find ground state as a function of coupling strength
 
 ```python
-g_vec = np.linspace(0, 2.0, 101) * 2 * pi # coupling strength vector
+g_vec = np.linspace(0, 2.0, 101) * 2 * np.pi # coupling strength vector
 
 psi_list = []
 
@@ -121,8 +126,8 @@ Plot the ground state occupation probabilities of the cavity and the atom as a f
 ```python
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8,4))
 
-axes.plot(g_vec/(2*pi), nc_expt, 'r', linewidth=2, label="cavity")
-axes.plot(g_vec/(2*pi), na_expt, 'b', linewidth=2, label="atom")
+axes.plot(g_vec/(2*np.pi), nc_expt, 'r', linewidth=2, label="cavity")
+axes.plot(g_vec/(2*np.pi), na_expt, 'b', linewidth=2, label="atom")
 axes.set_ylabel("Occupation probability", fontsize=16)
 axes.set_xlabel("coupling strenght", fontsize=16)
 axes.legend(loc=0)
@@ -133,9 +138,11 @@ fig.tight_layout()
 # Plot the wigner functions of the cavity as a function of coupling strength
 
 ```python
-g_idx = where([g_vec == 2*pi*g for g in [0.0, 0.5, 1.0, 1.5, 2.0]])[1]
-psi_sublist = array(psi_list)[g_idx]
-
+g_idx = np.where([g_vec == 2*np.pi*g for g in [0.0, 0.5, 1.0, 1.5, 2.0]])[1]
+psi_sublist = []
+for idx in g_idx:
+    psi_sublist.append(psi_list[idx])
+    
 xvec = np.linspace(-5,5,200)
 
 fig_grid = (2, len(psi_sublist)*2)
@@ -146,22 +153,22 @@ for idx, psi in enumerate(psi_sublist):
     W = wigner(rho_cavity, xvec, xvec)
     ax = plt.subplot2grid(fig_grid, (0, 2*idx), colspan=2)
     ax.contourf(xvec, xvec, W, 100, norm=mpl.colors.Normalize(-.125,.125), cmap=plt.get_cmap('RdBu'))
-    ax.set_title(r"$g = %.1f$" % (g_vec[g_idx][idx]/(2*pi)), fontsize=16)
+    ax.set_title(r"$g = %.1f$" % (g_vec[g_idx][idx]/(2*np.pi)), fontsize=16)
 
 # plot the cavity occupation probability in the ground state
 ax = plt.subplot2grid(fig_grid, (1, 1), colspan=(fig_grid[1]-2))
-ax.plot(g_vec/(2*pi), nc_expt, label="Cavity")
-ax.plot(g_vec/(2*pi), na_expt, label="Atom excited state")
+ax.plot(g_vec/(2*np.pi), nc_expt, label="Cavity")
+ax.plot(g_vec/(2*np.pi), na_expt, label="Atom excited state")
 ax.legend(loc=0)
 ax.set_xlabel('coupling strength')
-ax.set_ylabel('Occupation probability')
+ax.set_ylabel('Occupation probability');
 ```
 
 ## Entropy of atom/cavity as a measure of entanglement
 
 ```python
-entropy_cavity = zeros(shape(g_vec))
-entropy_atom   = zeros(shape(g_vec))
+entropy_cavity = np.zeros(shape(g_vec))
+entropy_atom   = np.zeros(shape(g_vec))
 
 for idx, psi in enumerate(psi_list):
     
@@ -174,18 +181,18 @@ for idx, psi in enumerate(psi_list):
 
 ```python
 fig, axes = plt.subplots(1, 1, figsize=(12,6))
-axes.plot(g_vec/(2*pi), entropy_cavity, 'b', label="cavity", linewidth=2)
-axes.plot(g_vec/(2*pi), entropy_atom, 'r--', label="atom", linewidth=2)
+axes.plot(g_vec/(2*np.pi), entropy_cavity, 'b', label="cavity", linewidth=2)
+axes.plot(g_vec/(2*np.pi), entropy_atom, 'r--', label="atom", linewidth=2)
 axes.set_ylim(0,1)
 axes.set_ylabel("entropy", fontsize=16)
 axes.set_xlabel("coupling strength", fontsize=16)
-axes.legend(loc=0)
+axes.legend(loc=0);
 ```
 
 ## Dynamics of an initially excited cavity
 
 ```python
-H = H0 + 1.0 * 2 * pi * H1
+H = H0 + 1.0 * 2 * np.pi * H1
 
 psi0 = tensor(basis(N,1), basis(2,0))
 ```
@@ -198,8 +205,8 @@ output = mesolve(H, psi0, tlist, [], [a.dag() * a, sm.dag() * sm])
 ```python
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8,4))
 
-axes.plot(tlist, real(output.expect[0]), 'r', linewidth=2, label="cavity")
-axes.plot(tlist, real(output.expect[1]), 'b', linewidth=2, label="atom")
+axes.plot(tlist, np.real(output.expect[0]), 'r', linewidth=2, label="cavity")
+axes.plot(tlist, np.real(output.expect[1]), 'b', linewidth=2, label="atom")
 axes.legend(loc=0)
 
 fig.tight_layout()
@@ -232,7 +239,7 @@ for idx, rho_ss in enumerate(rho_ss_sublist):
                          cmap=plt.get_cmap('RdBu'))
 
     # plot its fock-state distribution
-    axes[1,idx].bar(arange(0, N), real(rho_ss_cavity.diag()), color="blue", alpha=0.6)
+    axes[1,idx].bar(np.arange(0, N), np.real(rho_ss_cavity.diag()), color="blue", alpha=0.6)
     axes[1,idx].set_ylim(0, 1)
     axes[1,idx].set_xlim(0, N)
 ```
@@ -245,19 +252,19 @@ kappa = 0.25
 
 ```python
 tlist = np.linspace(0, 20, 1000)
-output = mesolve(H, psi0, tlist, [sqrt(kappa) * a], [a.dag() * a, sm.dag() * sm])
+output = mesolve(H, psi0, tlist, [np.sqrt(kappa) * a], [a.dag() * a, sm.dag() * sm])
 ```
 
 ```python
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8,4))
 axes.plot(tlist, output.expect[0], 'r', linewidth=2, label="cavity")
 axes.plot(tlist, output.expect[1], 'b', linewidth=2, label="atom")
-axes.legend(loc=0)
+axes.legend(loc=0);
 ```
 
 ```python
 tlist = np.linspace(0, 10, 8)
-output = mesolve(H, psi0, tlist, [sqrt(kappa) * a], [])
+output = mesolve(H, psi0, tlist, [np.sqrt(kappa) * a], [])
 ```
 
 ```python
@@ -278,7 +285,7 @@ for idx, rho_ss in enumerate(output.states):
                          norm=mpl.colors.Normalize(-.25,.25), cmap=plt.get_cmap('RdBu'))
 
     # plot its fock-state distribution
-    axes[1,idx].bar(arange(0, N), real(rho_ss_cavity.diag()), color="blue", alpha=0.6)
+    axes[1,idx].bar(np.arange(0, N), np.real(rho_ss_cavity.diag()), color="blue", alpha=0.6)
     axes[1,idx].set_ylim(0, 1)
     axes[1,idx].set_xlim(0, N)
 ```
@@ -290,13 +297,13 @@ tlist = np.linspace(0, 30, 50)
 
 psi0 = H.groundstate()[1]
 
-output = mesolve(H, psi0, tlist, [sqrt(kappa) * a], [])
+output = mesolve(H, psi0, tlist, [np.sqrt(kappa) * a], [])
 ```
 
 ```python
-entropy_tot    = zeros(shape(tlist))
-entropy_cavity = zeros(shape(tlist))
-entropy_atom   = zeros(shape(tlist))
+entropy_tot    = np.zeros(shape(tlist))
+entropy_cavity = np.zeros(shape(tlist))
+entropy_atom   = np.zeros(shape(tlist))
 
 for idx, rho in enumerate(output.states):
     
@@ -317,13 +324,12 @@ axes.plot(tlist, entropy_atom, 'r--', label="atom", linewidth=2)
 axes.set_ylabel("entropy", fontsize=16)
 axes.set_xlabel("coupling strength", fontsize=16)
 axes.set_ylim(0, 1.5)
-axes.legend(loc=0)
+axes.legend(loc=0);
 ```
 
 ### Software versions
 
 ```python
-from qutip.ipynbtools import version_table
-
-version_table()
+from qutip import about
+about()
 ```

@@ -6,15 +6,19 @@ jupyter:
       format_name: markdown
       format_version: '1.3'
       jupytext_version: 1.13.8
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
 ---
 
 # Lecture 7 - Two-qubit iSWAP gate and process tomography
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-The latest version of this [IPython notebook](http://ipython.org/ipython-doc/dev/interactive/htmlnotebook.html) lecture is available at [http://github.com/jrjohansson/qutip-lectures](http://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
-The other notebooks in this lecture series are indexed at [https://qutip.org/tutorials](https://qutip.org/tutorials).
+This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
 %matplotlib inline
@@ -40,12 +44,12 @@ Here we will solve for the dynamics of the two qubits subject to this Hamiltonia
 ### Parameters
 
 ```python
-g = 1.0 * 2 * pi # coupling strength
+g = 1.0 * 2 * np.pi # coupling strength
 g1 = 0.75        # relaxation rate
 g2 = 0.25        # dephasing rate
 n_th = 1.5       # bath temperature
 
-T = pi/(4*g)
+T = np.pi/(4*g)
 ```
 
 ### Hamiltonian and initial state
@@ -65,16 +69,16 @@ c_ops = []
 # qubit 1 collapse operators
 sm1 = tensor(sigmam(), qeye(2))
 sz1 = tensor(sigmaz(), qeye(2))
-c_ops.append(sqrt(g1 * (1+n_th)) * sm1)
-c_ops.append(sqrt(g1 * n_th) * sm1.dag())
-c_ops.append(sqrt(g2) * sz1)
+c_ops.append(np.sqrt(g1 * (1+n_th)) * sm1)
+c_ops.append(np.sqrt(g1 * n_th) * sm1.dag())
+c_ops.append(np.sqrt(g2) * sz1)
 
 # qubit 2 collapse operators
 sm2 = tensor(qeye(2), sigmam())
 sz2 = tensor(qeye(2), sigmaz())
-c_ops.append(sqrt(g1 * (1+n_th)) * sm2)
-c_ops.append(sqrt(g1 * n_th) * sm2.dag())
-c_ops.append(sqrt(g2) * sz2)
+c_ops.append(np.sqrt(g1 * (1+n_th)) * sm2)
+c_ops.append(np.sqrt(g1 * n_th) * sm2.dag())
+c_ops.append(np.sqrt(g2) * sz2)
 ```
 
 ### Process tomography basis
@@ -126,7 +130,6 @@ fig = qpt_plot_combined(chi, op_label, fig=fig)
 ### Software versions:
 
 ```python
-from qutip.ipynbtools import version_table
-
-version_table()
+from qutip import about
+about()
 ```

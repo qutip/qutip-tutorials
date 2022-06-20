@@ -6,19 +6,24 @@ jupyter:
       format_name: markdown
       format_version: '1.3'
       jupytext_version: 1.13.8
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
 ---
 
 # QuTiP lecture: Evolution and quantum statistics of a quantum parameter amplifier
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-The latest version of this [IPython notebook](http://ipython.org/ipython-doc/dev/interactive/htmlnotebook.html) lecture is available at [http://github.com/jrjohansson/qutip-lectures](http://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
-The other notebooks in this lecture series are indexed at [https://qutip.org/tutorials](https://qutip.org/tutorials).
+This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
 %matplotlib inline
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 from matplotlib import cm
 import numpy as np
 ```
@@ -79,10 +84,10 @@ output
 
 
 ```python
-na_e = zeros(shape(tlist))
-na_s = zeros(shape(tlist))
-nb_e = zeros(shape(tlist))
-nb_s = zeros(shape(tlist))
+na_e = np.zeros(shape(tlist))
+na_s = np.zeros(shape(tlist))
+nb_e = np.zeros(shape(tlist))
+nb_s = np.zeros(shape(tlist))
 
 for idx, psi in enumerate(output.states):
     na_e[idx] = expect(na, psi)
@@ -150,8 +155,8 @@ for idx, t_idx in enumerate(t_idx_vec):
     psi_a = ptrace(output.states[t_idx], 0)
     psi_b = ptrace(output.states[t_idx], 1)
     
-    cont1 = axes[idx,0].bar(range(0, N1), real(psi_a.diag()))
-    cont2 = axes[idx,1].bar(range(0, N2), real(psi_b.diag()))
+    cont1 = axes[idx,0].bar(range(0, N1), np.real(psi_a.diag()))
+    cont2 = axes[idx,1].bar(range(0, N2), np.real(psi_b.diag()))
     
 fig.tight_layout()
 ```
@@ -160,16 +165,16 @@ fig.tight_layout()
 
 ```python
 # second-order photon correlations
-g2_1  = zeros(shape(tlist))
-g2_2  = zeros(shape(tlist))
-g2_12 = zeros(shape(tlist))
+g2_1  = np.zeros(shape(tlist))
+g2_2  = np.zeros(shape(tlist))
+g2_12 = np.zeros(shape(tlist))
 
 ad_ad_a_a = a.dag() * a.dag() * a * a
 bd_bd_b_b = b.dag() * b.dag() * b * b
 ad_a_bd_b = a.dag() * a * b.dag() * b
 
-cs_rhs = zeros(shape(tlist))
-cs_lhs = zeros(shape(tlist))
+cs_rhs = np.zeros(shape(tlist))
+cs_lhs = np.zeros(shape(tlist))
 
 for idx, psi in enumerate(output.states):
     # g2 correlations
@@ -275,15 +280,15 @@ for idx, psi in enumerate(output.states):
     e_bd_b_p_b_bd[idx] = expect(op_bd_b_p_b_bd, psi)
     
 # calculate the sigma_2
-theta = 3*pi/4
+theta = 3*np.pi/4
 w_a = w_b = 1
-sigma2 = 2 * sqrt(w_a * w_b) * (e_a_b * exp(2j * theta) + e_ad_bd * exp(-2j * theta)) / (w_a * e_ad_a_p_a_ad + w_b * e_bd_b_p_b_bd)
+sigma2 = 2 * np.sqrt(w_a * w_b) * (e_a_b * np.exp(2j * theta) + e_ad_bd * np.exp(-2j * theta)) / (w_a * e_ad_a_p_a_ad + w_b * e_bd_b_p_b_bd)
 ```
 
 ```python
 fig, axes = plt.subplots(1, 1, figsize=(8,4))
 
-line1 = axes.plot(tlist, real(sigma2), 'b', tlist, imag(sigma2), 'r--', linewidth=2)
+line1 = axes.plot(tlist, np.real(sigma2), 'b', tlist, np.imag(sigma2), 'r--', linewidth=2)
 axes.set_xlabel("$t$", fontsize=18)
 axes.set_ylabel(r'$\sigma_2(t)$', fontsize=18)
 axes.set_ylim(-1, 1)
@@ -322,16 +327,16 @@ for idx, psi in enumerate(output.states):
     
 # calculate the sigma_2, function of the angle parameter theta
 def F_theta(theta):
-    return 2 * e_ad_a + 2 * e_bd_b + 2j * (exp(2j * theta) * e_a_b - exp(-2j * theta) * e_ad_bd)
+    return 2 * e_ad_a + 2 * e_bd_b + 2j * (np.exp(2j * theta) * e_a_b - np.exp(-2j * theta) * e_ad_bd)
 ```
 
 ```python
 fig, axes = plt.subplots(1, 1, figsize=(8,3))
 
-for theta in np.linspace(0.0, 2*pi, 100):
-    line1 = axes.plot(tlist, real(F_theta(theta)), 'b', tlist, imag(F_theta(theta)), 'g--', linewidth=2)
+for theta in np.linspace(0.0, 2*np.pi, 100):
+    line1 = axes.plot(tlist, np.real(F_theta(theta)), 'b', tlist, np.imag(F_theta(theta)), 'g--', linewidth=2)
 
-line = axes.plot(tlist, real(F_theta(0)), 'r', linewidth=4)
+line = axes.plot(tlist, np.real(F_theta(0)), 'r', linewidth=4)
     
 axes.set_xlabel("$t$", fontsize=18)
 axes.set_ylabel(r'$\langle:f_\theta^\dagger f_\theta:\rangle$', fontsize=18)
@@ -372,10 +377,10 @@ def plot_covariance_matrix(V, ax):
     Plot a matrix-histogram representation of the supplied Wigner covariance matrix.
     """
     num_elem = 16
-    xpos,ypos = meshgrid(range(4),range(4))
+    xpos,ypos = np.meshgrid(range(4),range(4))
     xpos = xpos.T.flatten()-0.5 
     ypos = ypos.T.flatten()-0.5 
-    zpos = zeros(num_elem)   
+    zpos = np.zeros(num_elem)   
     dx = 0.75 * np.ones(num_elem) 
     dy = dx.copy()           
     dz = V.flatten()
@@ -429,7 +434,6 @@ fig.tight_layout()
 ### Software versions:
 
 ```python
-from qutip.ipynbtools import version_table
-
-version_table()
+from qutip import about
+about()
 ```

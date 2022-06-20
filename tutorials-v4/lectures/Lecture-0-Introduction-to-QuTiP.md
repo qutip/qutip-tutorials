@@ -6,17 +6,19 @@ jupyter:
       format_name: markdown
       format_version: '1.3'
       jupytext_version: 1.13.8
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
 ---
 
 # Lecture 0 - Introduction to QuTiP - The Quantum Toolbox in Python
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-The latest version of this lecture is available at 
-[the lecture repository](http://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
-The other notebooks in this lecture series are indexed at [the QuTiP 
-tutorial website](https://qutip.org/tutorials).
+This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
 %matplotlib inline
@@ -36,17 +38,13 @@ It also includes solvers for a time-evolution of quantum systems, according to: 
 For more information see the project web site at [qutip.org](https://qutip.org), and the 
 [QuTiP documentation](https://qutip.org/docs/latest/index.html).
 
-
 ### Installation
 
-Get the latest code from [the project repository](https://github.com/qutip/qutip), 
-and run
+You can install QuTiP directly from `pip` by running:
 
-    $ sudo python setup.py install
+`pip install qutip`
 
-in the source code directory. For more detailed installation instructions 
-and a list of dependencies that must be installed on the system (basically 
-python+cython+numpy+scipy+matplotlib), see [the repository](https://github.com/qutip/qutip).
+For further installation details, refer to the [GitHub repository](https://github.com/qutip/qutip).
 
 
 To use QuTiP in a Python program, first inlude the `qutip` module:
@@ -259,8 +257,8 @@ commutator(a, a.dag())
 $[x,p] = i$
 
 ```python
-x =       (a + a.dag())/sqrt(2)
-p = -1j * (a - a.dag())/sqrt(2)
+x =       (a + a.dag())/np.sqrt(2)
+p = -1j * (a - a.dag())/np.sqrt(2)
 ```
 
 ```python
@@ -495,7 +493,7 @@ rho0 = fock_dm(10, 5) # initial state, fock state with 5 photons
 H = w * a.dag() * a   # Hamiltonian
 
 # A list of collapse operators
-c_ops = [sqrt(kappa) * a]
+c_ops = [np.sqrt(kappa) * a]
 ```
 
 ```python
@@ -512,10 +510,9 @@ axes.set_xlabel(r'$t$', fontsize=20)
 axes.set_ylabel(r"Photon number", fontsize=16);
 ```
 
-### Software versions
+### Installation information
 
 ```python
-from qutip.ipynbtools import version_table
-
-version_table()
+from qutip import about
+about()
 ```

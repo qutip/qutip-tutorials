@@ -6,15 +6,19 @@ jupyter:
       format_name: markdown
       format_version: '1.3'
       jupytext_version: 1.13.8
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
 ---
 
 # QuTiP lecture: Correlation functions 
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-The latest version of this [IPython notebook](http://ipython.org/ipython-doc/dev/interactive/htmlnotebook.html) lecture is available at [http://github.com/jrjohansson/qutip-lectures](http://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
-The other notebooks in this lecture series are indexed at [https://qutip.org/tutorials](https://qutip.org/tutorials).
+This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
 %matplotlib inline
@@ -47,12 +51,12 @@ The following code calculates and plots $g^{(1)}(\tau)$ as a function of $\tau$.
 N = 20
 taulist = np.linspace(0,10.0,200)
 a = destroy(N)
-H = 2*pi*a.dag()*a
+H = 2*np.pi*a.dag()*a
 
 # collapse operator
 G1 = 0.75
 n_th = 2.00  # bath temperature in terms of excitation number
-c_ops = [sqrt(G1*(1+n_th)) * a, sqrt(G1*n_th) * a.dag()]
+c_ops = [np.sqrt(G1*(1+n_th)) * a, np.sqrt(G1*n_th) * a.dag()]
 
 # start with a coherent state
 rho0 = coherent_dm(N, 2.0)
@@ -62,14 +66,14 @@ n = mesolve(H, rho0, taulist, c_ops, [a.dag() * a]).expect[0]
 
 # calculate the correlation function G1 and normalize with n to obtain g1
 G1 = correlation(H, rho0, None, taulist, c_ops, a.dag(), a)
-g1 = G1 / sqrt(n[0] * n)
+g1 = G1 / np.sqrt(n[0] * n)
 ```
 
 ```python
 fig, axes = plt.subplots(2, 1, sharex=True, figsize=(12,6))
 
-axes[0].plot(taulist, real(g1), 'b', label=r'First-order coherence function $g^{(1)}(\tau)$')
-axes[1].plot(taulist, real(n),  'r', label=r'occupation number $n(\tau)$')
+axes[0].plot(taulist, np.real(g1), 'b', label=r'First-order coherence function $g^{(1)}(\tau)$')
+axes[1].plot(taulist, np.real(n),  'r', label=r'occupation number $n(\tau)$')
 axes[0].legend()
 axes[1].legend()
 axes[1].set_xlabel(r'$\tau$');
@@ -112,8 +116,8 @@ g2 = G2 / n**2
 ```python
 fig, axes = plt.subplots(2, 1, sharex=True, figsize=(12,6))
 
-axes[0].plot(taulist, real(g2), 'b', label=r'Second-order coherence function $g^{(2)}(\tau)$')
-axes[1].plot(taulist, real(n),  'r', label=r'occupation number $n(\tau)$')
+axes[0].plot(taulist, np.real(g2), 'b', label=r'Second-order coherence function $g^{(2)}(\tau)$')
+axes[1].plot(taulist, np.real(n),  'r', label=r'occupation number $n(\tau)$')
 axes[0].legend(loc=0)
 axes[1].legend()
 axes[1].set_xlabel(r'$\tau$');
@@ -180,16 +184,16 @@ References:
 <!-- #endregion -->
 
 ```python
-wc = 1.0  * 2 * pi  # cavity frequency
-wa = 1.0  * 2 * pi  # resonator frequency
-g  = 0.3  * 2 * pi  # coupling strength
+wc = 1.0  * 2 * np.pi  # cavity frequency
+wa = 1.0  * 2 * np.pi  # resonator frequency
+g  = 0.3  * 2 * np.pi  # coupling strength
 kappa = 0.075       # cavity dissipation rate
 gamma = 0.005       # resonator dissipation rate
 Na = Nc = 3         # number of cavity fock states
 n_th = 0.0          # avg number of thermal bath excitation
 
 tlist = np.linspace(0, 7.5, 251)
-tlist_sub = tlist[0:(len(tlist)/2)]
+tlist_sub = tlist[0:int((len(tlist)/2))]
 ```
 
 ```python
@@ -217,19 +221,19 @@ c_op_list = []
 
 rate = kappa * (1 + n_th)
 if rate > 0.0:
-    c_op_list.append(sqrt(rate) * c)
+    c_op_list.append(np.sqrt(rate) * c)
 
 rate = kappa * n_th
 if rate > 0.0:
-    c_op_list.append(sqrt(rate) * c.dag())
+    c_op_list.append(np.sqrt(rate) * c.dag())
 
 rate = gamma * (1 + n_th)
 if rate > 0.0:
-    c_op_list.append(sqrt(rate) * a)
+    c_op_list.append(np.sqrt(rate) * a)
     
 rate = gamma * n_th
 if rate > 0.0:
-    c_op_list.append(sqrt(rate) * a.dag())
+    c_op_list.append(np.sqrt(rate) * a.dag())
 ```
 
 ### Calculate the correlation function $\langle Q(t_1+t_2)Q(t_1)\rangle$
@@ -262,9 +266,9 @@ axes[1].set_ylabel(r'$t_2$')
 axes[1].autoscale(tight=True)
 
 fig, axes = plt.subplots(1, 1, figsize=(12,4))
-axes.plot(tlist_sub, np.diag(real(LG_tt)), label=r'$\tau = t_1 = t_2$')
+axes.plot(tlist_sub, np.diag(np.real(LG_tt)), label=r'$\tau = t_1 = t_2$')
 axes.plot(tlist_sub, np.ones(shape(tlist_sub)), 'k', label=r'quantum boundary')
-axes.fill_between(tlist_sub, np.diag(real(LG_tt)), 1, where=(np.diag(real(LG_tt))>1), color="green", alpha=0.5)
+axes.fill_between(tlist_sub, np.diag(np.real(LG_tt)), 1, where=(np.diag(np.real(LG_tt))>1), color="green", alpha=0.5)
 axes.set_xlim([0, max(tlist_sub)])
 axes.legend(loc=0)
 axes.set_xlabel(r'$\tau$', fontsize=18)
@@ -274,7 +278,6 @@ axes.set_ylabel(r'LG($\tau$)', fontsize=18);
 ### Software versions
 
 ```python
-from qutip.ipynbtools import version_table
-
-version_table()
+from qutip import about
+about()
 ```
