@@ -26,7 +26,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from IPython.display import HTML
 from matplotlib import animation
-from qutip import (coherent, destroy, displace, expect, mesolve, num,
+from qutip import (basis, coherent, destroy, displace, expect, mesolve, num,
                    plot_wigner_fock_distribution, squeeze, variance)
 ```
 
@@ -56,7 +56,7 @@ In this QuTiP notebook we look at how expectation values and variances of the qu
 ```python
 N = 35
 w = 1 * 2 * np.pi  # oscillator frequency
-tlist = np.linspace(0, 4, 101)  # periods
+tlist = np.linspace(0, 2, 31)  # periods
 ```
 
 ```python
@@ -143,11 +143,12 @@ fig, axes = plt.subplots(1, 2, figsize=(10, 5))
 def update(n):
     axes[0].cla()
     plot_wigner_fock_distribution(result.states[n], fig=fig, axes=axes)
+    return axes[0].artists + axes[1].artists
 
 
 anim = animation.FuncAnimation(fig, update, frames=len(result.states), blit=True)
 
-anim.save("/tmp/animation-coherent-state.mp4", fps=20, writer="avconv", codec="libx264")
+anim.save("/tmp/animation-coherent-state.mp4", fps=10, writer="ffmpeg")
 
 plt.close(fig)
 ```
@@ -177,13 +178,12 @@ fig, axes = plt.subplots(1, 2, figsize=(10, 5))
 def update(n):
     axes[0].cla()
     plot_wigner_fock_distribution(result.states[n], fig=fig, axes=axes)
+    return axes[0].artists + axes[1].artists
 
 
 anim = animation.FuncAnimation(fig, update, frames=len(result.states), blit=True)
 
-anim.save(
-    "/tmp/animation-squeezed-vacuum.mp4", fps=20, writer="avconv", codec="libx264"
-)
+anim.save("/tmp/animation-squeezed-vacuum.mp4", fps=10, writer="ffmpeg")
 
 plt.close(fig)
 ```
@@ -215,16 +215,12 @@ fig, axes = plt.subplots(1, 2, figsize=(10, 5))
 def update(n):
     axes[0].cla()
     plot_wigner_fock_distribution(result.states[n], fig=fig, axes=axes)
+    return axes[0].artists + axes[1].artists
 
 
 anim = animation.FuncAnimation(fig, update, frames=len(result.states), blit=True)
 
-anim.save(
-    "/tmp/animation-squeezed-coherent-state.mp4",
-    fps=20,
-    writer="avconv",
-    codec="libx264",
-)
+anim.save("/tmp/animation-squeezed-coherent-state.mp4", fps=10, writer="ffmpeg")
 
 plt.close(fig)
 ```
@@ -239,8 +235,4 @@ display_embedded_video("/tmp/animation-squeezed-coherent-state.mp4")
 from qutip import about
 
 about()
-```
-
-```python
-
 ```

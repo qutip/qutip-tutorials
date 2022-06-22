@@ -47,7 +47,7 @@ In this notebook we'll see how to setup the model in QuTiP and look at some inte
 ```python
 N = 15
 chi = 1 * 2 * np.pi  # Kerr-nonlinearity
-tlist = np.linspace(0, 1.0, 101)  # time
+tlist = np.linspace(0, 1.0, 51)  # time
 ```
 
 ```python
@@ -207,12 +207,12 @@ fig, ax = plt.subplots(1, 1, figsize=(8, 8))
 
 def update(n):
     plot_wigner(result.states[n], fig=fig, ax=ax)
+    return ax.artists
 
 
 anim = animation.FuncAnimation(fig, update, frames=len(result.states), blit=True)
 
-anim.save("animation-kerr-coherent-state.mp4", fps=10, writer="avconv", codec="libx264")
-# anim.save('animation-kerr-coherent-state.gif', writer='imagemagick', fps=10)
+anim.save("animation-kerr-coherent-state.mp4", fps=10, writer="ffmpeg")
 
 plt.close(fig)
 ```
@@ -231,19 +231,14 @@ fig, ax = plt.subplots(1, 1, figsize=(8, 8))
 
 def update(n):
     plot_wigner(result.states[n], fig=fig, ax=ax)
+    return ax.artists
 
 
 anim = animation.FuncAnimation(
     fig, update, frames=int(len(result.states) / 2 + 1), blit=True
 )
 
-# anim.save('animation-kerr-coherent-state-half-period.mp4', fps=10, extra_args=['-vcodec', 'libx264'])
-anim.save(
-    "animation-kerr-coherent-state-half-period.mp4",
-    fps=10,
-    writer="avconv",
-    codec="libx264",
-)
+anim.save("animation-kerr-coherent-state-half-period.mp4", fps=10, writer="ffmpeg")
 
 plt.close(fig)
 ```
