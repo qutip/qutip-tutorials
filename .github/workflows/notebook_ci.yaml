@@ -66,6 +66,9 @@ jobs:
         cd qutip-qip
         pip install -e .
 
+    - name: Install ffmpeg
+      run: sudo apt install ffmpeg
+
     - name: Convert Notebooks
       run: | 
         rm -rf notebooks
