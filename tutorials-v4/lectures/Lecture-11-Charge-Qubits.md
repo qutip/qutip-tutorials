@@ -24,7 +24,7 @@ This is a slightly modified version of the lectures, to work with the current re
 %matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import Qobj, energy_level_diagram, mesolve, ket2dm
+from qutip import Qobj, energy_level_diagram, ket2dm, mesolve
 ```
 
 ### Introduction
@@ -51,8 +51,9 @@ def hamiltonian(Ec, Ej, N, ng):
     """
     Return the charge qubit hamiltonian as a Qobj instance.
     """
-    m = np.diag(4 * Ec * (np.arange(-N,N+1)-ng)**2) + 0.5 * Ej * (np.diag(-np.ones(2*N), 1) + 
-                                                               np.diag(-np.ones(2*N), -1))
+    m = np.diag(4 * Ec * (np.arange(-N, N + 1) - ng) ** 2) + 0.5 * Ej * (
+        np.diag(-np.ones(2 * N), 1) + np.diag(-np.ones(2 * N), -1)
+    )
     return Qobj(m)
 ```
 
@@ -61,19 +62,22 @@ def plot_energies(ng_vec, energies, ymax=(20, 3)):
     """
     Plot energy levels as a function of bias parameter ng_vec.
     """
-    fig, axes = plt.subplots(1,2, figsize=(16,6))
+    fig, axes = plt.subplots(1, 2, figsize=(16, 6))
 
-    for n in range(len(energies[0,:])):
-        axes[0].plot(ng_vec, energies[:,n])
+    for n in range(len(energies[0, :])):
+        axes[0].plot(ng_vec, energies[:, n])
     axes[0].set_ylim(-2, ymax[0])
-    axes[0].set_xlabel(r'$n_g$', fontsize=18)
-    axes[0].set_ylabel(r'$E_n$', fontsize=18)
+    axes[0].set_xlabel(r"$n_g$", fontsize=18)
+    axes[0].set_ylabel(r"$E_n$", fontsize=18)
 
-    for n in range(len(energies[0,:])):
-        axes[1].plot(ng_vec, (energies[:,n]-energies[:,0])/(energies[:,1]-energies[:,0]))
+    for n in range(len(energies[0, :])):
+        axes[1].plot(
+            ng_vec,
+            (energies[:, n] - energies[:, 0]) / (energies[:, 1] - energies[:, 0]),
+        )
     axes[1].set_ylim(-0.1, ymax[1])
-    axes[1].set_xlabel(r'$n_g$', fontsize=18)
-    axes[1].set_ylabel(r'$(E_n-E_0)/(E_1-E_0)$', fontsize=18)
+    axes[1].set_xlabel(r"$n_g$", fontsize=18)
+    axes[1].set_ylabel(r"$(E_n-E_0)/(E_1-E_0)$", fontsize=18)
     return fig, axes
 ```
 
@@ -82,12 +86,12 @@ def visualize_dynamics(result, ylabel):
     """
     Plot the evolution of the expectation values stored in result.
     """
-    fig, ax = plt.subplots(figsize=(12,5))
+    fig, ax = plt.subplots(figsize=(12, 5))
 
     ax.plot(result.times, result.expect[0])
 
     ax.set_ylabel(ylabel, fontsize=16)
-    ax.set_xlabel(r'$t$', fontsize=16);
+    ax.set_xlabel(r"$t$", fontsize=16);
 ```
 
 ### Charge qubit regime
@@ -231,11 +235,11 @@ abs(ekets[1].full()) > 0.1
 We can use these two isolated eigenstates to define a qubit basis:
 
 ```python
-psi_g = ekets[0] # basis(2, 0)
-psi_e = ekets[1] # basis(2, 1)
+psi_g = ekets[0]  # basis(2, 0)
+psi_e = ekets[1]  # basis(2, 1)
 
-#psi_g = basis(2, 0)
-#psi_e = basis(2, 1)
+# psi_g = basis(2, 0)
+# psi_e = basis(2, 1)
 ```
 
 and corresponding Pauli matrices:
@@ -251,15 +255,15 @@ sz = psi_g * psi_g.dag() - psi_e * psi_e.dag()
 and an effective qubit Hamiltonian
 
 ```python
-evals[1]-evals[0]
+evals[1] - evals[0]
 ```
 
 ```python
-H0 = 0.5 * (evals[1]-evals[0]) * sz
+H0 = 0.5 * (evals[1] - evals[0]) * sz
 
 A = 0.25  # some driving amplitude
-Hd = 0.5 * A * sx # obtained by driving ng(t), 
-                  #but now H0 is in the eigenbasis so the drive becomes a sigma_x
+Hd = 0.5 * A * sx  # obtained by driving ng(t),
+# but now H0 is in the eigenbasis so the drive becomes a sigma_x
 ```
 
 Doing this we have a bunch of extra energy levels in the system that aren't involved in the dynamics, but so far they are still in the Hamiltonian.
@@ -271,15 +275,15 @@ qubit_evals - qubit_evals[0]
 ```
 
 ```python
-energy_level_diagram([H0, Hd], figsize=(4,2));
+energy_level_diagram([H0, Hd], figsize=(4, 2));
 ```
 
 Imagine that we also can drive a $\sigma_x$ type of interaction (e.g., external field):
 
 ```python
-Heff = [H0, [Hd, 'sin(wd*t)']]
+Heff = [H0, [Hd, "sin(wd*t)"]]
 
-args = {'wd': (evals[1]-evals[0])}
+args = {"wd": (evals[1] - evals[0])}
 ```
 
 Let's look at the Rabi oscillation dynamics of the qubit when initially placed in the ground state:
@@ -294,7 +298,7 @@ result = mesolve(Heff, psi0, tlist, [], [ket2dm(psi_e)], args=args)
 ```
 
 ```python
-visualize_dynamics(result, r'$\rho_{ee}$');
+visualize_dynamics(result, r"$\rho_{ee}$");
 ```
 
 We can see that only the two selected states are included in the dynamics, and very little leakage to other levels occur.
@@ -328,13 +332,13 @@ Hd
 And if we look at the energy level diagram now we see that we only have two states in the system, as desired.
 
 ```python
-energy_level_diagram([H0, Hd], figsize=(4,2));
+energy_level_diagram([H0, Hd], figsize=(4, 2));
 ```
 
 ```python
-Heff = [H0, [Hd, 'sin(wd*t)']]
+Heff = [H0, [Hd, "sin(wd*t)"]]
 
-args = {'wd': (evals[1]-evals[0])}
+args = {"wd": (evals[1] - evals[0])}
 ```
 
 ```python
@@ -351,12 +355,13 @@ result = mesolve(Heff, psi0, tlist, [], [ket2dm(psi_e)], args=args)
 ```
 
 ```python
-visualize_dynamics(result, r'$\rho_{ee}$');
+visualize_dynamics(result, r"$\rho_{ee}$");
 ```
 
 ### Software versions
 
 ```python
-from qutip import about 
+from qutip import about
+
 about()
 ```

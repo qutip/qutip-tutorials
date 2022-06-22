@@ -23,14 +23,14 @@ This is a slightly modified version of the lectures, to work with the current re
 
 ```python
 %matplotlib inline
-import matplotlib.pyplot as plt
 import matplotlib as mpl
+import matplotlib.pyplot as plt
 import numpy as np
 ```
 
 ```python
 # import functionality used in this notebook
-from qutip import tensor, basis, destroy, qeye, mesolve, ptrace, wigner
+from qutip import basis, destroy, mesolve, ptrace, qeye, tensor, wigner
 ```
 
 # Introduction
@@ -53,26 +53,26 @@ Here we use units where $\hbar = 1$:
 <!-- #endregion -->
 
 ```python
-wc = 1.0  * 2 * np.pi  # cavity frequency
-wa = 1.0  * 2 * np.pi  # atom frequency
-g  = 0.05 * 2 * np.pi  # coupling strength
-kappa = 0.005       # cavity dissipation rate
-gamma = 0.05        # atom dissipation rate
-N = 15              # number of cavity fock states
-n_th_a = 0.0        # avg number of thermal bath excitation
+wc = 1.0 * 2 * np.pi  # cavity frequency
+wa = 1.0 * 2 * np.pi  # atom frequency
+g = 0.05 * 2 * np.pi  # coupling strength
+kappa = 0.005  # cavity dissipation rate
+gamma = 0.05  # atom dissipation rate
+N = 15  # number of cavity fock states
+n_th_a = 0.0  # avg number of thermal bath excitation
 use_rwa = True
 
-tlist = np.linspace(0,25,101)
+tlist = np.linspace(0, 25, 101)
 ```
 
 ### Setup the operators, the Hamiltonian and initial state
 
 ```python
 # intial state
-psi0 = tensor(basis(N,0), basis(2,1))    # start with an excited atom
+psi0 = tensor(basis(N, 0), basis(2, 1))  # start with an excited atom
 
 # operators
-a  = tensor(destroy(N), qeye(2))
+a = tensor(destroy(N), qeye(2))
 sm = tensor(qeye(N), destroy(2))
 
 # Hamiltonian
@@ -119,14 +119,14 @@ Here we plot the excitation probabilities of the cavity and the atom (these expe
 n_c = output.expect[0]
 n_a = output.expect[1]
 
-fig, axes = plt.subplots(1, 1, figsize=(10,6))
+fig, axes = plt.subplots(1, 1, figsize=(10, 6))
 
 axes.plot(tlist, n_c, label="Cavity")
 axes.plot(tlist, n_a, label="Atom excited state")
 axes.legend(loc=0)
-axes.set_xlabel('Time')
-axes.set_ylabel('Occupation probability')
-axes.set_title('Vacuum Rabi oscillations');
+axes.set_xlabel("Time")
+axes.set_ylabel("Occupation probability")
+axes.set_title("Vacuum Rabi oscillations");
 ```
 
 ## Cavity wigner function
@@ -154,7 +154,7 @@ len(output.states)
 ```
 
 ```python
-output.states[-1] # indexing the list with -1 results in the last element in the list
+output.states[-1]  # indexing the list with -1 results in the last element in the list
 ```
 
 Now let's look at the Wigner functions at the point in time when atom is in its ground state: $t = \\{5, 15, 25\\}$ (see the plot above). 
@@ -179,24 +179,30 @@ rho_list = [output.states[i] for i in t_idx]
 ```python
 # loop over the list of density matrices
 
-xvec = np.linspace(-3,3,200)
+xvec = np.linspace(-3, 3, 200)
 
-fig, axes = plt.subplots(1,len(rho_list), sharex=True, figsize=(3*len(rho_list),3))
+fig, axes = plt.subplots(1, len(rho_list), sharex=True, figsize=(3 * len(rho_list), 3))
 
 for idx, rho in enumerate(rho_list):
 
     # trace out the atom from the density matrix, to obtain
     # the reduced density matrix for the cavity
     rho_cavity = ptrace(rho, 0)
-    
+
     # calculate its wigner function
     W = wigner(rho_cavity, xvec, xvec)
-    
+
     # plot its wigner function
-    axes[idx].contourf(xvec, xvec, W, 100, norm=mpl.colors.Normalize(-.25,.25), cmap=plt.get_cmap('RdBu'))
+    axes[idx].contourf(
+        xvec,
+        xvec,
+        W,
+        100,
+        norm=mpl.colors.Normalize(-0.25, 0.25),
+        cmap=plt.get_cmap("RdBu"),
+    )
 
     axes[idx].set_title(r"$t = %.1f$" % tlist[t_idx][idx], fontsize=16)
-    
 ```
 
 At $t =0$, the cavity is in it's ground state. At $t = 5, 15, 25$ it reaches it's maxium occupation in this Rabi-vacuum oscillation process. We can note that for $t=5$ and $t=15$ the Wigner function has negative values, indicating a truely quantum mechanical state. At $t=25$, however, the wigner function no longer has negative values and can therefore be considered a classical state.
@@ -208,29 +214,37 @@ At $t =0$, the cavity is in it's ground state. At $t = 5, 15, 25$ it reaches it'
 t_idx = np.where([tlist == t for t in [0.0, 5.0, 10, 15, 20, 25]])[1]
 rho_list = [output.states[i] for i in t_idx]
 
-fig_grid = (2, len(rho_list)*2)
-fig = plt.figure(figsize=(2.5*len(rho_list),5))
+fig_grid = (2, len(rho_list) * 2)
+fig = plt.figure(figsize=(2.5 * len(rho_list), 5))
 
 for idx, rho in enumerate(rho_list):
     rho_cavity = ptrace(rho, 0)
     W = wigner(rho_cavity, xvec, xvec)
-    ax = plt.subplot2grid(fig_grid, (0, 2*idx), colspan=2)
-    ax.contourf(xvec, xvec, W, 100, norm=mpl.colors.Normalize(-.25,.25), cmap=plt.get_cmap('RdBu'))
+    ax = plt.subplot2grid(fig_grid, (0, 2 * idx), colspan=2)
+    ax.contourf(
+        xvec,
+        xvec,
+        W,
+        100,
+        norm=mpl.colors.Normalize(-0.25, 0.25),
+        cmap=plt.get_cmap("RdBu"),
+    )
     ax.set_title(r"$t = %.1f$" % tlist[t_idx][idx], fontsize=16)
 
 # plot the cavity occupation probability in the ground state
-ax = plt.subplot2grid(fig_grid, (1, 1), colspan=(fig_grid[1]-2))
+ax = plt.subplot2grid(fig_grid, (1, 1), colspan=(fig_grid[1] - 2))
 ax.plot(tlist, n_c, label="Cavity")
 ax.plot(tlist, n_a, label="Atom excited state")
 ax.legend()
-ax.set_xlabel('Time')
-ax.set_ylabel('Occupation probability');
+ax.set_xlabel("Time")
+ax.set_ylabel("Occupation probability");
 ```
 
 ### Software versions
 
 ```python
 from qutip import about
+
 about()
 ```
 

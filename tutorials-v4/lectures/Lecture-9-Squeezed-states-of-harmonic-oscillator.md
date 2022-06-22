@@ -26,7 +26,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from IPython.display import HTML
 from matplotlib import animation
-from qutip import destroy, num, expect, variance, coherent, mesolve, squeeze, displace, plot_wigner_fock_distribution
+from qutip import (coherent, destroy, displace, expect, mesolve, num,
+                   plot_wigner_fock_distribution, squeeze, variance)
 ```
 
 ## Introduction
@@ -54,16 +55,16 @@ In this QuTiP notebook we look at how expectation values and variances of the qu
 
 ```python
 N = 35
-w = 1 * 2 * np.pi              # oscillator frequency
-tlist = np.linspace(0, 4, 101) # periods
+w = 1 * 2 * np.pi  # oscillator frequency
+tlist = np.linspace(0, 4, 101)  # periods
 ```
 
 ```python
 # operators
 a = destroy(N)
 n = num(N)
-x = (a + a.dag())/np.sqrt(2)
-p = -1j * (a - a.dag())/np.sqrt(2)
+x = (a + a.dag()) / np.sqrt(2)
+p = -1j * (a - a.dag()) / np.sqrt(2)
 ```
 
 ```python
@@ -88,17 +89,19 @@ def plot_expect_with_variance(N, op_list, op_title, states):
     Plot the expectation value of an operator (list of operators)
     with an envelope that describes the operators variance.
     """
-    
-    fig, axes = plt.subplots(1, len(op_list), figsize=(14,3))
+
+    fig, axes = plt.subplots(1, len(op_list), figsize=(14, 3))
 
     for idx, op in enumerate(op_list):
-        
+
         e_op = expect(op, states)
         v_op = variance(op, states)
 
-        axes[idx].fill_between(tlist, e_op - np.sqrt(v_op), e_op + np.sqrt(v_op), color="green", alpha=0.5);
+        axes[idx].fill_between(
+            tlist, e_op - np.sqrt(v_op), e_op + np.sqrt(v_op), color="green", alpha=0.5
+        )
         axes[idx].plot(tlist, e_op, label="expectation")
-        axes[idx].set_xlabel('Time')
+        axes[idx].set_xlabel("Time")
         axes[idx].set_title(op_title[idx])
 
     return fig, axes
@@ -107,10 +110,13 @@ def plot_expect_with_variance(N, op_list, op_title, states):
 ```python
 from base64 import b64encode
 
+
 def display_embedded_video(filename):
     video = open(filename, "rb").read()
     video_encoded = b64encode(video).decode("ascii")
-    video_tag = '<video controls alt="test" src="data:video/x-m4v;base64,{0}">'.format(video_encoded)
+    video_tag = '<video controls alt="test" src="data:video/x-m4v;base64,{0}">'.format(
+        video_encoded
+    )
     return HTML(video_tag)
 ```
 
@@ -127,19 +133,21 @@ result = mesolve(H, psi0, tlist, c_ops, [])
 ```
 
 ```python
-plot_expect_with_variance(N, [n, x, p], [r'$n$', r'$x$', r'$p$'], result.states);
+plot_expect_with_variance(N, [n, x, p], [r"$n$", r"$x$", r"$p$"], result.states);
 ```
 
 ```python
-fig, axes = plt.subplots(1, 2, figsize=(10,5))
+fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+
 
 def update(n):
     axes[0].cla()
     plot_wigner_fock_distribution(result.states[n], fig=fig, axes=axes)
 
+
 anim = animation.FuncAnimation(fig, update, frames=len(result.states), blit=True)
 
-anim.save('/tmp/animation-coherent-state.mp4', fps=20, writer="avconv", codec="libx264")
+anim.save("/tmp/animation-coherent-state.mp4", fps=20, writer="avconv", codec="libx264")
 
 plt.close(fig)
 ```
@@ -159,19 +167,23 @@ result = mesolve(H, psi0, tlist, c_ops, [])
 ```
 
 ```python
-plot_expect_with_variance(N, [n, x, p], [r'$n$', r'$x$', r'$p$'], result.states);
+plot_expect_with_variance(N, [n, x, p], [r"$n$", r"$x$", r"$p$"], result.states);
 ```
 
 ```python
-fig, axes = plt.subplots(1, 2, figsize=(10,5))
+fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+
 
 def update(n):
     axes[0].cla()
     plot_wigner_fock_distribution(result.states[n], fig=fig, axes=axes)
 
+
 anim = animation.FuncAnimation(fig, update, frames=len(result.states), blit=True)
 
-anim.save('/tmp/animation-squeezed-vacuum.mp4', fps=20, writer="avconv", codec="libx264")
+anim.save(
+    "/tmp/animation-squeezed-vacuum.mp4", fps=20, writer="avconv", codec="libx264"
+)
 
 plt.close(fig)
 ```
@@ -183,7 +195,9 @@ display_embedded_video("/tmp/animation-squeezed-vacuum.mp4")
 ## Squeezed coherent state
 
 ```python
-psi0 = displace(N, 2) * squeeze(N, 1.0) * basis(N, 0)  # first squeeze vacuum and then displace
+psi0 = (
+    displace(N, 2) * squeeze(N, 1.0) * basis(N, 0)
+)  # first squeeze vacuum and then displace
 ```
 
 ```python
@@ -191,19 +205,26 @@ result = mesolve(H, psi0, tlist, c_ops, [])
 ```
 
 ```python
-plot_expect_with_variance(N, [n, x, p], [r'$n$', r'$x$', r'$p$'], result.states);
+plot_expect_with_variance(N, [n, x, p], [r"$n$", r"$x$", r"$p$"], result.states);
 ```
 
 ```python
-fig, axes = plt.subplots(1, 2, figsize=(10,5))
+fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+
 
 def update(n):
     axes[0].cla()
     plot_wigner_fock_distribution(result.states[n], fig=fig, axes=axes)
 
+
 anim = animation.FuncAnimation(fig, update, frames=len(result.states), blit=True)
 
-anim.save('/tmp/animation-squeezed-coherent-state.mp4', fps=20, writer="avconv", codec="libx264")
+anim.save(
+    "/tmp/animation-squeezed-coherent-state.mp4",
+    fps=20,
+    writer="avconv",
+    codec="libx264",
+)
 
 plt.close(fig)
 ```
@@ -216,6 +237,7 @@ display_embedded_video("/tmp/animation-squeezed-coherent-state.mp4")
 
 ```python
 from qutip import about
+
 about()
 ```
 

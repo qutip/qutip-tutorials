@@ -25,7 +25,8 @@ This is a slightly modified version of the lectures, to work with the current re
 %matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import basis, plot_wigner, thermal_dm, coherent, coherent_dm, fock, squeeze, ket2dm, displace
+from qutip import (basis, coherent, coherent_dm, displace, fock, ket2dm,
+                   plot_wigner, squeeze, thermal_dm)
 ```
 
 ## Introduction
@@ -39,15 +40,15 @@ N = 20
 
 ```python
 def plot_wigner_2d_3d(psi):
-    #fig, axes = plt.subplots(1, 2, subplot_kw={'projection': '3d'}, figsize=(12, 6))
+    # fig, axes = plt.subplots(1, 2, subplot_kw={'projection': '3d'}, figsize=(12, 6))
     fig = plt.figure(figsize=(17, 8))
-    
-    ax = fig.add_subplot(1, 2, 1)
-    plot_wigner(psi, fig=fig, ax=ax, alpha_max=6);
 
-    ax = fig.add_subplot(1, 2, 2, projection='3d')
-    plot_wigner(psi, fig=fig, ax=ax, projection='3d', alpha_max=6);
-    
+    ax = fig.add_subplot(1, 2, 1)
+    plot_wigner(psi, fig=fig, ax=ax, alpha_max=6)
+
+    ax = fig.add_subplot(1, 2, 2, projection="3d")
+    plot_wigner(psi, fig=fig, ax=ax, projection="3d", alpha_max=6)
+
     plt.close(fig)
     return fig
 ```
@@ -103,12 +104,14 @@ plot_wigner_2d_3d(psi)
 ```python
 NN = 8
 
-fig, axes = plt.subplots(NN, 1, figsize=(5, 5 * NN), sharex=True, sharey=True) 
+fig, axes = plt.subplots(NN, 1, figsize=(5, 5 * NN), sharex=True, sharey=True)
 for n in range(NN):
-    psi = sum([coherent(N, 2*np.exp(2j * np.pi * m / (n + 2))) for m in range(n + 2)]).unit()
+    psi = sum(
+        [coherent(N, 2 * np.exp(2j * np.pi * m / (n + 2))) for m in range(n + 2)]
+    ).unit()
     plot_wigner(psi, fig=fig, ax=axes[n])
 
-    #if n < NN - 1:
+    # if n < NN - 1:
     #    axes[n].set_ylabel("")
 ```
 
@@ -136,12 +139,12 @@ for n in range(6):
 ```python
 NN = MM = 5
 
-fig, axes = plt.subplots(NN, MM, figsize=(18, 18), sharex=True, sharey=True) 
+fig, axes = plt.subplots(NN, MM, figsize=(18, 18), sharex=True, sharey=True)
 for n in range(NN):
     for m in range(MM):
         psi = (fock(N, n) + fock(N, m)).unit()
         plot_wigner(psi, fig=fig, ax=axes[n, m])
-        #axes[n, m].set_title(r"$(\left|%d\right> + \left|%d\right>)/\sqrt{2}$" % (n, m))
+        # axes[n, m].set_title(r"$(\left|%d\right> + \left|%d\right>)/\sqrt{2}$" % (n, m))
         if n < NN - 1:
             axes[n, m].set_xlabel("")
         if m > 0:
@@ -171,7 +174,9 @@ display(plot_wigner_2d_3d(psi))
 ### Mixture of squeezed vacuum
 
 ```python
-psi = (ket2dm(squeeze(N, 0.75j) * basis(N, 0)) + ket2dm(squeeze(N, -0.75j) * basis(N, 0))).unit()
+psi = (
+    ket2dm(squeeze(N, 0.75j) * basis(N, 0)) + ket2dm(squeeze(N, -0.75j) * basis(N, 0))
+).unit()
 display(plot_wigner_2d_3d(psi))
 ```
 
@@ -185,7 +190,10 @@ display(plot_wigner_2d_3d(psi))
 ### Superposition of two displaced squeezed states
 
 ```python
-psi = (displace(N, -1) * squeeze(N, 0.75) * basis(N, 0) - displace(N, 1) * squeeze(N, -0.75) * basis(N, 0)).unit()
+psi = (
+    displace(N, -1) * squeeze(N, 0.75) * basis(N, 0)
+    - displace(N, 1) * squeeze(N, -0.75) * basis(N, 0)
+).unit()
 display(plot_wigner_2d_3d(psi))
 ```
 
@@ -193,5 +201,6 @@ display(plot_wigner_2d_3d(psi))
 
 ```python
 from qutip import about
+
 about()
 ```

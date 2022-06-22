@@ -24,7 +24,8 @@ This is a slightly modified version of the lectures, to work with the current re
 %matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import tensor, destroy, qeye, basis, sigmaz, mesolve, expect, ptrace, ket2dm, phasegate, sqrtiswap, fidelity, concurrence
+from qutip import (basis, concurrence, destroy, expect, fidelity, ket2dm,
+                   mesolve, phasegate, ptrace, qeye, sigmaz, sqrtiswap, tensor)
 ```
 
 ## Parameters
@@ -45,11 +46,11 @@ width = 0.5
 
 # resonant SQRT iSWAP gate
 T0_1 = 20
-T_gate_1 = (1*np.pi)/(4 * g1)
+T_gate_1 = (1 * np.pi) / (4 * g1)
 
 # resonant iSWAP gate
 T0_2 = 60
-T_gate_2 = (2*np.pi)/(4 * g2)
+T_gate_2 = (2 * np.pi) / (4 * g2)
 ```
 
 ### Operators, Hamiltonian and initial state 
@@ -73,12 +74,12 @@ n2 = sm2.dag() * sm2
 ```python
 # Hamiltonian using QuTiP
 Hc = a.dag() * a
-H1 = - 0.5 * sz1
-H2 = - 0.5 * sz2
+H1 = -0.5 * sz1
+H2 = -0.5 * sz2
 Hc1 = g1 * (a.dag() * sm1 + a * sm1.dag())
 Hc2 = g2 * (a.dag() * sm2 + a * sm2.dag())
 
-H = wc * Hc + w1 * H1 + w2 * H2 + Hc1 + Hc2 
+H = wc * Hc + w1 * H1 + w2 * H2 + Hc1 + Hc2
 ```
 
 ```python
@@ -87,7 +88,7 @@ H
 
 ```python
 # initial state: start with one of the qubits in its excited state
-psi0 = tensor(basis(N,0),basis(2,1),basis(2,0))
+psi0 = tensor(basis(N, 0), basis(2, 1), basis(2, 0))
 ```
 
 # Ideal two-qubit iSWAP gate
@@ -96,13 +97,13 @@ psi0 = tensor(basis(N,0),basis(2,1),basis(2,0))
 def step_t(w1, w2, t0, width, t):
     """
     Step function that goes from w1 to w2 at time t0
-    as a function of t. 
+    as a function of t.
     """
     return w1 + (w2 - w1) * (t > t0)
 
 
-fig, axes = plt.subplots(1, 1, figsize=(8,2))
-axes.plot(tlist, [step_t(0.5, 1.5, 50, 0.0, t) for t in tlist], 'k')
+fig, axes = plt.subplots(1, 1, figsize=(8, 2))
+axes.plot(tlist, [step_t(0.5, 1.5, 50, 0.0, t) for t in tlist], "k")
 axes.set_ylim(0, 2)
 fig.tight_layout()
 ```
@@ -111,14 +112,24 @@ fig.tight_layout()
 def wc_t(t, args=None):
     return wc
 
+
 def w1_t(t, args=None):
-    return w1 + step_t(0.0, wc-w1, T0_1, width, t) - step_t(0.0, wc-w1, T0_1+T_gate_1, width, t)
+    return (
+        w1
+        + step_t(0.0, wc - w1, T0_1, width, t)
+        - step_t(0.0, wc - w1, T0_1 + T_gate_1, width, t)
+    )
+
 
 def w2_t(t, args=None):
-    return w2 + step_t(0.0, wc-w2, T0_2, width, t) - step_t(0.0, wc-w2, T0_2+T_gate_2, width, t)
+    return (
+        w2
+        + step_t(0.0, wc - w2, T0_2, width, t)
+        - step_t(0.0, wc - w2, T0_2 + T_gate_2, width, t)
+    )
 
 
-H_t = [[Hc, wc_t], [H1, w1_t], [H2, w2_t], Hc1+Hc2]
+H_t = [[Hc, wc_t], [H1, w1_t], [H2, w2_t], Hc1 + Hc2]
 ```
 
 ### Evolve the system
@@ -130,21 +141,36 @@ res = mesolve(H_t, psi0, tlist, [], [])
 ### Plot the results
 
 ```python
-fig, axes = plt.subplots(2, 1, sharex=True, figsize=(12,8))
+fig, axes = plt.subplots(2, 1, sharex=True, figsize=(12, 8))
 
-axes[0].plot(tlist, np.array(list(map(wc_t, tlist))) / (2*np.pi), 'r', 
-             linewidth=2, label="cavity")
-axes[0].plot(tlist, np.array(list(map(w1_t, tlist))) / (2*np.pi), 'b', 
-             linewidth=2, label="qubit 1")
-axes[0].plot(tlist, np.array(list(map(w2_t, tlist))) / (2*np.pi), 'g', 
-             linewidth=2, label="qubit 2")
+axes[0].plot(
+    tlist,
+    np.array(list(map(wc_t, tlist))) / (2 * np.pi),
+    "r",
+    linewidth=2,
+    label="cavity",
+)
+axes[0].plot(
+    tlist,
+    np.array(list(map(w1_t, tlist))) / (2 * np.pi),
+    "b",
+    linewidth=2,
+    label="qubit 1",
+)
+axes[0].plot(
+    tlist,
+    np.array(list(map(w2_t, tlist))) / (2 * np.pi),
+    "g",
+    linewidth=2,
+    label="qubit 2",
+)
 axes[0].set_ylim(1, 6)
 axes[0].set_ylabel("Energy (GHz)", fontsize=16)
 axes[0].legend()
 
-axes[1].plot(tlist, np.real(expect(n, res.states)), 'r', linewidth=2, label="cavity")
-axes[1].plot(tlist, np.real(expect(n1, res.states)), 'b', linewidth=2, label="qubit 1")
-axes[1].plot(tlist, np.real(expect(n2, res.states)), 'g', linewidth=2, label="qubit 2")
+axes[1].plot(tlist, np.real(expect(n, res.states)), "r", linewidth=2, label="cavity")
+axes[1].plot(tlist, np.real(expect(n1, res.states)), "b", linewidth=2, label="qubit 1")
+axes[1].plot(tlist, np.real(expect(n2, res.states)), "g", linewidth=2, label="qubit 2")
 axes[1].set_ylim(0, 1)
 
 axes[1].set_xlabel("Time (ns)", fontsize=16)
@@ -163,13 +189,17 @@ rho_final = res.states[-1]
 
 ```python
 # trace out the resonator mode and print the two-qubit density matrix
-rho_qubits = ptrace(rho_final, [1,2])
+rho_qubits = ptrace(rho_final, [1, 2])
 rho_qubits
 ```
 
 ```python
 # compare to the ideal result of the sqrtiswap gate (plus phase correction) for the current initial state
-rho_qubits_ideal = ket2dm(tensor(phasegate(0), phasegate(-np.pi/2)) * sqrtiswap() * tensor(basis(2,1), basis(2,0)))
+rho_qubits_ideal = ket2dm(
+    tensor(phasegate(0), phasegate(-np.pi / 2))
+    * sqrtiswap()
+    * tensor(basis(2, 1), basis(2, 0))
+)
 rho_qubits_ideal
 ```
 
@@ -207,18 +237,36 @@ res = mesolve(H_t, psi0, tlist, c_ops, [])
 ### Plot the results
 
 ```python
-fig, axes = plt.subplots(2, 1, sharex=True, figsize=(12,8))
+fig, axes = plt.subplots(2, 1, sharex=True, figsize=(12, 8))
 
-axes[0].plot(tlist, np.array(list(map(wc_t, tlist))) / (2*np.pi), 'r', linewidth=2, label="cavity")
-axes[0].plot(tlist, np.array(list(map(w1_t, tlist))) / (2*np.pi), 'b', linewidth=2, label="qubit 1")
-axes[0].plot(tlist, np.array(list(map(w2_t, tlist))) / (2*np.pi), 'g', linewidth=2, label="qubit 2")
+axes[0].plot(
+    tlist,
+    np.array(list(map(wc_t, tlist))) / (2 * np.pi),
+    "r",
+    linewidth=2,
+    label="cavity",
+)
+axes[0].plot(
+    tlist,
+    np.array(list(map(w1_t, tlist))) / (2 * np.pi),
+    "b",
+    linewidth=2,
+    label="qubit 1",
+)
+axes[0].plot(
+    tlist,
+    np.array(list(map(w2_t, tlist))) / (2 * np.pi),
+    "g",
+    linewidth=2,
+    label="qubit 2",
+)
 axes[0].set_ylim(1, 6)
 axes[0].set_ylabel("Energy (GHz)", fontsize=16)
 axes[0].legend()
 
-axes[1].plot(tlist, np.real(expect(n, res.states)), 'r', linewidth=2, label="cavity")
-axes[1].plot(tlist, np.real(expect(n1, res.states)), 'b', linewidth=2, label="qubit 1")
-axes[1].plot(tlist, np.real(expect(n2, res.states)), 'g', linewidth=2, label="qubit 2")
+axes[1].plot(tlist, np.real(expect(n, res.states)), "r", linewidth=2, label="cavity")
+axes[1].plot(tlist, np.real(expect(n1, res.states)), "b", linewidth=2, label="qubit 1")
+axes[1].plot(tlist, np.real(expect(n2, res.states)), "g", linewidth=2, label="qubit 2")
 axes[1].set_ylim(0, 1)
 
 axes[1].set_xlabel("Time (ns)", fontsize=16)
@@ -232,7 +280,7 @@ fig.tight_layout()
 
 ```python
 rho_final = res.states[-1]
-rho_qubits = ptrace(rho_final, [1,2])
+rho_qubits = ptrace(rho_final, [1, 2])
 ```
 
 ```python
@@ -252,11 +300,11 @@ def step_t(w1, w2, t0, width, t):
     as a function of t, with finite rise time defined
     by the parameter width.
     """
-    return w1 + (w2 - w1) / (1 + np.exp(-(t-t0)/width))
+    return w1 + (w2 - w1) / (1 + np.exp(-(t - t0) / width))
 
 
-fig, axes = plt.subplots(1, 1, figsize=(8,2))
-axes.plot(tlist, [step_t(0.5, 1.5, 50, width, t) for t in tlist], 'k')
+fig, axes = plt.subplots(1, 1, figsize=(8, 2))
+axes.plot(tlist, [step_t(0.5, 1.5, 50, width, t) for t in tlist], "k")
 axes.set_ylim(0, 2)
 fig.tight_layout()
 ```
@@ -270,18 +318,36 @@ res = mesolve(H_t, psi0, tlist, [], [])
 ### Plot the results
 
 ```python
-fig, axes = plt.subplots(2, 1, sharex=True, figsize=(12,8))
+fig, axes = plt.subplots(2, 1, sharex=True, figsize=(12, 8))
 
-axes[0].plot(tlist, np.array(list(map(wc_t, tlist))) / (2*np.pi), 'r', linewidth=2, label="cavity")
-axes[0].plot(tlist, np.array(list(map(w1_t, tlist))) / (2*np.pi), 'b', linewidth=2, label="qubit 1")
-axes[0].plot(tlist, np.array(list(map(w2_t, tlist))) / (2*np.pi), 'g', linewidth=2, label="qubit 2")
+axes[0].plot(
+    tlist,
+    np.array(list(map(wc_t, tlist))) / (2 * np.pi),
+    "r",
+    linewidth=2,
+    label="cavity",
+)
+axes[0].plot(
+    tlist,
+    np.array(list(map(w1_t, tlist))) / (2 * np.pi),
+    "b",
+    linewidth=2,
+    label="qubit 1",
+)
+axes[0].plot(
+    tlist,
+    np.array(list(map(w2_t, tlist))) / (2 * np.pi),
+    "g",
+    linewidth=2,
+    label="qubit 2",
+)
 axes[0].set_ylim(1, 6)
 axes[0].set_ylabel("Energy (GHz)", fontsize=16)
 axes[0].legend()
 
-axes[1].plot(tlist, np.real(expect(n, res.states)), 'r', linewidth=2, label="cavity")
-axes[1].plot(tlist, np.real(expect(n1, res.states)), 'b', linewidth=2, label="qubit 1")
-axes[1].plot(tlist, np.real(expect(n2, res.states)), 'g', linewidth=2, label="qubit 2")
+axes[1].plot(tlist, np.real(expect(n, res.states)), "r", linewidth=2, label="cavity")
+axes[1].plot(tlist, np.real(expect(n1, res.states)), "b", linewidth=2, label="qubit 1")
+axes[1].plot(tlist, np.real(expect(n2, res.states)), "g", linewidth=2, label="qubit 2")
 axes[1].set_ylim(0, 1)
 
 axes[1].set_xlabel("Time (ns)", fontsize=16)
@@ -295,7 +361,7 @@ fig.tight_layout()
 
 ```python
 rho_final = res.states[-1]
-rho_qubits = ptrace(rho_final, [1,2])
+rho_qubits = ptrace(rho_final, [1, 2])
 ```
 
 ```python
@@ -311,18 +377,19 @@ concurrence(rho_qubits)
 ```python
 from scipy.special import sici
 
+
 def step_t(w1, w2, t0, width, t):
     """
     Step function that goes from w1 to w2 at time t0
-    as a function of t, with finite rise time and 
+    as a function of t, with finite rise time and
     and overshoot defined by the parameter width.
     """
 
-    return w1 + (w2-w1) * (0.5 + sici((t-t0)/width)[0]/(np.pi))
+    return w1 + (w2 - w1) * (0.5 + sici((t - t0) / width)[0] / (np.pi))
 
 
-fig, axes = plt.subplots(1, 1, figsize=(8,2))
-axes.plot(tlist, [step_t(0.5, 1.5, 50, width, t) for t in tlist], 'k')
+fig, axes = plt.subplots(1, 1, figsize=(8, 2))
+axes.plot(tlist, [step_t(0.5, 1.5, 50, width, t) for t in tlist], "k")
 axes.set_ylim(0, 2)
 fig.tight_layout()
 ```
@@ -336,18 +403,36 @@ res = mesolve(H_t, psi0, tlist, [], [])
 ### Plot the results
 
 ```python
-fig, axes = plt.subplots(2, 1, sharex=True, figsize=(12,8))
+fig, axes = plt.subplots(2, 1, sharex=True, figsize=(12, 8))
 
-axes[0].plot(tlist, np.array(list(map(wc_t, tlist))) / (2*np.pi), 'r', linewidth=2, label="cavity")
-axes[0].plot(tlist, np.array(list(map(w1_t, tlist))) / (2*np.pi), 'b', linewidth=2, label="qubit 1")
-axes[0].plot(tlist, np.array(list(map(w2_t, tlist))) / (2*np.pi), 'g', linewidth=2, label="qubit 2")
+axes[0].plot(
+    tlist,
+    np.array(list(map(wc_t, tlist))) / (2 * np.pi),
+    "r",
+    linewidth=2,
+    label="cavity",
+)
+axes[0].plot(
+    tlist,
+    np.array(list(map(w1_t, tlist))) / (2 * np.pi),
+    "b",
+    linewidth=2,
+    label="qubit 1",
+)
+axes[0].plot(
+    tlist,
+    np.array(list(map(w2_t, tlist))) / (2 * np.pi),
+    "g",
+    linewidth=2,
+    label="qubit 2",
+)
 axes[0].set_ylim(1, 6)
 axes[0].set_ylabel("Energy (GHz)", fontsize=16)
 axes[0].legend()
 
-axes[1].plot(tlist, np.real(expect(n, res.states)), 'r', linewidth=2, label="cavity")
-axes[1].plot(tlist, np.real(expect(n1, res.states)), 'b', linewidth=2, label="qubit 1")
-axes[1].plot(tlist, np.real(expect(n2, res.states)), 'g', linewidth=2, label="qubit 2")
+axes[1].plot(tlist, np.real(expect(n, res.states)), "r", linewidth=2, label="cavity")
+axes[1].plot(tlist, np.real(expect(n1, res.states)), "b", linewidth=2, label="qubit 1")
+axes[1].plot(tlist, np.real(expect(n2, res.states)), "g", linewidth=2, label="qubit 2")
 axes[1].set_ylim(0, 1)
 
 axes[1].set_xlabel("Time (ns)", fontsize=16)
@@ -361,7 +446,7 @@ fig.tight_layout()
 
 ```python
 rho_final = res.states[-1]
-rho_qubits = ptrace(rho_final, [1,2])
+rho_qubits = ptrace(rho_final, [1, 2])
 ```
 
 ```python
@@ -379,7 +464,7 @@ concurrence(rho_qubits)
 width = 0.6
 
 # high-Q resonator but dissipative qubits
-kappa  = 0.00001
+kappa = 0.00001
 gamma1 = 0.005
 gamma2 = 0.005
 
@@ -395,18 +480,36 @@ res = mesolve(H_t, psi0, tlist, c_ops, [])
 ### Plot results
 
 ```python
-fig, axes = plt.subplots(2, 1, sharex=True, figsize=(12,8))
+fig, axes = plt.subplots(2, 1, sharex=True, figsize=(12, 8))
 
-axes[0].plot(tlist, np.array(list(map(wc_t, tlist))) / (2*np.pi), 'r', linewidth=2, label="cavity")
-axes[0].plot(tlist, np.array(list(map(w1_t, tlist))) / (2*np.pi), 'b', linewidth=2, label="qubit 1")
-axes[0].plot(tlist, np.array(list(map(w2_t, tlist))) / (2*np.pi), 'g', linewidth=2, label="qubit 2")
+axes[0].plot(
+    tlist,
+    np.array(list(map(wc_t, tlist))) / (2 * np.pi),
+    "r",
+    linewidth=2,
+    label="cavity",
+)
+axes[0].plot(
+    tlist,
+    np.array(list(map(w1_t, tlist))) / (2 * np.pi),
+    "b",
+    linewidth=2,
+    label="qubit 1",
+)
+axes[0].plot(
+    tlist,
+    np.array(list(map(w2_t, tlist))) / (2 * np.pi),
+    "g",
+    linewidth=2,
+    label="qubit 2",
+)
 axes[0].set_ylim(1, 6)
 axes[0].set_ylabel("Energy (GHz)", fontsize=16)
 axes[0].legend()
 
-axes[1].plot(tlist, np.real(expect(n, res.states)), 'r', linewidth=2, label="cavity")
-axes[1].plot(tlist, np.real(expect(n1, res.states)), 'b', linewidth=2, label="qubit 1")
-axes[1].plot(tlist, np.real(expect(n2, res.states)), 'g', linewidth=2, label="qubit 2")
+axes[1].plot(tlist, np.real(expect(n, res.states)), "r", linewidth=2, label="cavity")
+axes[1].plot(tlist, np.real(expect(n1, res.states)), "b", linewidth=2, label="qubit 1")
+axes[1].plot(tlist, np.real(expect(n2, res.states)), "g", linewidth=2, label="qubit 2")
 axes[1].set_ylim(0, 1)
 
 axes[1].set_xlabel("Time (ns)", fontsize=16)
@@ -420,7 +523,7 @@ fig.tight_layout()
 
 ```python
 rho_final = res.states[-1]
-rho_qubits = ptrace(rho_final, [1,2])
+rho_qubits = ptrace(rho_final, [1, 2])
 ```
 
 ```python
@@ -437,11 +540,18 @@ concurrence(rho_qubits)
 # reduce the rise time
 width = 0.25
 
-def wc_t(t, args=None):
-    return wc - step_t(0.0, wc-w1, T0_1, width, t) + step_t(0.0, wc-w1, T0_1+T_gate_1, width, t) \
-              - step_t(0.0, wc-w2, T0_2, width, t) + step_t(0.0, wc-w2, T0_2+T_gate_2, width, t)
 
-H_t = [[Hc, wc_t], H1 * w1 + H2 * w2 + Hc1+Hc2]
+def wc_t(t, args=None):
+    return (
+        wc
+        - step_t(0.0, wc - w1, T0_1, width, t)
+        + step_t(0.0, wc - w1, T0_1 + T_gate_1, width, t)
+        - step_t(0.0, wc - w2, T0_2, width, t)
+        + step_t(0.0, wc - w2, T0_2 + T_gate_2, width, t)
+    )
+
+
+H_t = [[Hc, wc_t], H1 * w1 + H2 * w2 + Hc1 + Hc2]
 ```
 
 ### Evolve the system
@@ -453,18 +563,36 @@ res = mesolve(H_t, psi0, tlist, c_ops, [])
 ### Plot the results
 
 ```python
-fig, axes = plt.subplots(2, 1, sharex=True, figsize=(12,8))
+fig, axes = plt.subplots(2, 1, sharex=True, figsize=(12, 8))
 
-axes[0].plot(tlist, np.array(list(map(wc_t, tlist))) / (2*np.pi), 'r', linewidth=2, label="cavity")
-axes[0].plot(tlist, np.array(list(map(w1_t, tlist))) / (2*np.pi), 'b', linewidth=2, label="qubit 1")
-axes[0].plot(tlist, np.array(list(map(w2_t, tlist))) / (2*np.pi), 'g', linewidth=2, label="qubit 2")
+axes[0].plot(
+    tlist,
+    np.array(list(map(wc_t, tlist))) / (2 * np.pi),
+    "r",
+    linewidth=2,
+    label="cavity",
+)
+axes[0].plot(
+    tlist,
+    np.array(list(map(w1_t, tlist))) / (2 * np.pi),
+    "b",
+    linewidth=2,
+    label="qubit 1",
+)
+axes[0].plot(
+    tlist,
+    np.array(list(map(w2_t, tlist))) / (2 * np.pi),
+    "g",
+    linewidth=2,
+    label="qubit 2",
+)
 axes[0].set_ylim(1, 6)
 axes[0].set_ylabel("Energy (GHz)", fontsize=16)
 axes[0].legend()
 
-axes[1].plot(tlist, np.real(expect(n, res.states)), 'r', linewidth=2, label="cavity")
-axes[1].plot(tlist, np.real(expect(n1, res.states)), 'b', linewidth=2, label="qubit 1")
-axes[1].plot(tlist, np.real(expect(n2, res.states)), 'g', linewidth=2, label="qubit 2")
+axes[1].plot(tlist, np.real(expect(n, res.states)), "r", linewidth=2, label="cavity")
+axes[1].plot(tlist, np.real(expect(n1, res.states)), "b", linewidth=2, label="qubit 1")
+axes[1].plot(tlist, np.real(expect(n2, res.states)), "g", linewidth=2, label="qubit 2")
 axes[1].set_ylim(0, 1)
 
 axes[1].set_xlabel("Time (ns)", fontsize=16)
@@ -478,7 +606,7 @@ fig.tight_layout()
 
 ```python
 rho_final = res.states[-1]
-rho_qubits = ptrace(rho_final, [1,2])
+rho_qubits = ptrace(rho_final, [1, 2])
 ```
 
 ```python
@@ -493,5 +621,6 @@ concurrence(rho_qubits)
 
 ```python
 from qutip import about
+
 about()
 ```

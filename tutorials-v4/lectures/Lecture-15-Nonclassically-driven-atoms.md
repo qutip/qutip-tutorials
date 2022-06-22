@@ -25,7 +25,9 @@ This is a slightly modified version of the lectures, to work with the current re
 %matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import tensor, destroy, identity, spre, spost, steadystate, correlation_2op_1t, spectrum_correlation_fft, liouvillian, plot_wigner_fock_distribution, correlation_4op_1t, expect
+from qutip import (correlation_2op_1t, correlation_4op_1t, destroy, expect,
+                   identity, liouvillian, plot_wigner_fock_distribution,
+                   spectrum_correlation_fft, spost, spre, steadystate, tensor)
 ```
 
 ## Introduction
@@ -71,32 +73,35 @@ eta = 0.9
 
 ```python
 def solve(N, gamma, kappa, eta):
-    
+
     E = kappa * 0.25
-    
+
     # create operators
     a = tensor(destroy(N), identity(2))
     sm = tensor(identity(N), destroy(2))
 
     # Hamiltonian
-    H = 0.5j * (E * a.dag() ** 2 - np.conjugate(E) * a ** 2)
+    H = 0.5j * (E * a.dag() ** 2 - np.conjugate(E) * a**2)
 
     # master equation superoperators
     L0 = liouvillian(H, [np.sqrt(kappa) * a, np.sqrt(gamma) * sm])
-    L1 = - np.sqrt(kappa * gamma * eta) * (
-        spre(sm.dag() * a) - spre(a) * spost(sm.dag()) + 
-        spost(a.dag() * sm) - spre(sm) * spost(a.dag()))
-    
+    L1 = -np.sqrt(kappa * gamma * eta) * (
+        spre(sm.dag() * a)
+        - spre(a) * spost(sm.dag())
+        + spost(a.dag() * sm)
+        - spre(sm) * spost(a.dag())
+    )
+
     L = L0 + L1
-    
+
     # steady state
     rhoss = steadystate(L)
-    
+
     # correlation function and spectrum
     taulist = np.linspace(0, 500, 2500)
     c = correlation_2op_1t(L, rhoss, taulist, [], sm.dag(), sm)
     w, S = spectrum_correlation_fft(taulist, c)
-    
+
     ww = np.hstack([np.fliplr(-np.array([w])).squeeze(), w])
     SS = np.hstack([np.fliplr(np.array([S])).squeeze(), S])
 
@@ -110,20 +115,20 @@ rhoss8, w8, S8 = solve(N, gamma, 8, eta)
 ```
 
 ```python
-plot_wigner_fock_distribution(rhoss2.ptrace(0));
-plot_wigner_fock_distribution(rhoss4.ptrace(0));
+plot_wigner_fock_distribution(rhoss2.ptrace(0))
+plot_wigner_fock_distribution(rhoss4.ptrace(0))
 plot_wigner_fock_distribution(rhoss8.ptrace(0));
 ```
 
 ```python
 fig, ax = plt.subplots()
-ax.plot(w2, S2 / S2.max(), label=r'$\kappa = 2$')
-ax.plot(w4, S4 / S4.max(), label=r'$\kappa = 4$')
-ax.plot(w8, S8 / S8.max(), label=r'$\kappa = 8$')
-ax.plot(w8, 0.25/((0.5 * gamma)**2 + w8**2), 'k:', label=r'Lorentian')
+ax.plot(w2, S2 / S2.max(), label=r"$\kappa = 2$")
+ax.plot(w4, S4 / S4.max(), label=r"$\kappa = 4$")
+ax.plot(w8, S8 / S8.max(), label=r"$\kappa = 8$")
+ax.plot(w8, 0.25 / ((0.5 * gamma) ** 2 + w8**2), "k:", label=r"Lorentian")
 ax.legend()
-ax.set_ylabel(r'Flouresence spectrum', fontsize=16)
-ax.set_xlabel(r'$\omega$', fontsize=18)
+ax.set_ylabel(r"Flouresence spectrum", fontsize=16)
+ax.set_xlabel(r"$\omega$", fontsize=18)
 ax.set_xlim(-2, 2);
 ```
 
@@ -173,9 +178,9 @@ L0 = liouvillian(H, [np.sqrt(gamma1) * sm1, np.sqrt(gamma2) * sm2])
 ```
 
 ```python
-L1 = - np.sqrt((1 - e1) * (1 - e2) * gamma1 * gamma2) * \
-        (spre(sp2 * sm1) - spre(sm1) * spost(sp2) + 
-         spost(sp1 * sm2) - spre(sm2) * spost(sp1))
+L1 = -np.sqrt((1 - e1) * (1 - e2) * gamma1 * gamma2) * (
+    spre(sp2 * sm1) - spre(sm1) * spost(sp2) + spost(sp1 * sm2) - spre(sm2) * spost(sp1)
+)
 ```
 
 ```python
@@ -194,34 +199,34 @@ taulist = np.linspace(0, 4, 250)
 
 ```python
 G2_11 = correlation_4op_1t(L, rhoss, taulist, [], sp1, sp1, sm1, sm1)
-g2_11 = G2_11 / (expect(sp1*sm1, rhoss) * expect(sp1*sm1, rhoss))
+g2_11 = G2_11 / (expect(sp1 * sm1, rhoss) * expect(sp1 * sm1, rhoss))
 ```
 
 ```python
 G2_22 = correlation_4op_1t(L, rhoss, taulist, [], sp2, sp2, sm2, sm2)
-g2_22 = G2_22 / (expect(sp2*sm2, rhoss) * expect(sp2*sm2, rhoss))
+g2_22 = G2_22 / (expect(sp2 * sm2, rhoss) * expect(sp2 * sm2, rhoss))
 ```
 
 ```python
 G2_12 = correlation_4op_1t(L, rhoss, taulist, [], sp2, sp1, sm1, sm2)
-g2_12 = G2_12 / (expect(sp1*sm1, rhoss) * expect(sp2*sm2, rhoss))
+g2_12 = G2_12 / (expect(sp1 * sm1, rhoss) * expect(sp2 * sm2, rhoss))
 ```
 
 ```python
 G2_21 = correlation_4op_1t(L, rhoss, taulist, [], sp1, sp2, sm2, sm1)
-g2_21 = G2_21 / (expect(sp2*sm2, rhoss) * expect(sp1*sm1, rhoss))
+g2_21 = G2_21 / (expect(sp2 * sm2, rhoss) * expect(sp1 * sm1, rhoss))
 ```
 
 ```python
 fig, ax = plt.subplots()
 
-ax.plot(taulist, np.real(g2_11), label=r'$g^{(2)}_{11}(\tau)$')
-ax.plot(taulist, np.real(g2_22), label=r'$g^{(2)}_{22}(\tau)$')
-ax.plot(taulist, np.real(g2_12), label=r'$g^{(2)}_{12}(\tau)$')
-ax.plot(taulist, np.real(g2_21), label=r'$g^{(2)}_{21}(\tau)$')
+ax.plot(taulist, np.real(g2_11), label=r"$g^{(2)}_{11}(\tau)$")
+ax.plot(taulist, np.real(g2_22), label=r"$g^{(2)}_{22}(\tau)$")
+ax.plot(taulist, np.real(g2_12), label=r"$g^{(2)}_{12}(\tau)$")
+ax.plot(taulist, np.real(g2_21), label=r"$g^{(2)}_{21}(\tau)$")
 
 ax.legend(loc=4)
-ax.set_xlabel(r'$\tau$');
+ax.set_xlabel(r"$\tau$");
 ```
 
 Fig. 12.6 in Quantum Noise.
@@ -261,7 +266,7 @@ taulist = np.linspace(0, 5, 250)
 ```
 
 ```python
-a   = tensor(destroy(N), identity(2), identity(2))
+a = tensor(destroy(N), identity(2), identity(2))
 sm1 = tensor(identity(N), destroy(2), identity(2))
 sp1 = sm1.dag()
 sm2 = tensor(identity(N), identity(2), destroy(2))
@@ -270,45 +275,58 @@ sp2 = sm2.dag()
 
 ```python
 def solve(ek, e1, e2, gamma1, gamma2, kappa, n_th, E):
-    
+
     eta1 = (1 - ek) * e1
     eta2 = (1 - e1) * (1 - e2)
-    
+
     H = 1j * E * (a - a.dag())
-    
-    L0 = liouvillian(H, [np.sqrt(kappa * (1 + n_th)) * a, np.sqrt(kappa * n_th) * a.dag(),
-                     np.sqrt(gamma1) * sm1, np.sqrt(gamma2) * sm2])
-    
-    L1 = - np.sqrt(2 * kappa * eta1 * gamma1) * \
-            (spre(sp1 * a) - spre(a) * spost(sp1) + 
-             spost(a.dag() * sm1) - spre(sm1) * spost(a.dag())) + \
-         - np.sqrt(eta2 * gamma1 * gamma2) * \
-            (spre(sp2 * sm1) - spre(sm1) * spost(sp2) + 
-             spost(sp1 * sm2) - spre(sm2) * spost(sp1))
-    
+
+    L0 = liouvillian(
+        H,
+        [
+            np.sqrt(kappa * (1 + n_th)) * a,
+            np.sqrt(kappa * n_th) * a.dag(),
+            np.sqrt(gamma1) * sm1,
+            np.sqrt(gamma2) * sm2,
+        ],
+    )
+
+    L1 = -np.sqrt(2 * kappa * eta1 * gamma1) * (
+        spre(sp1 * a)
+        - spre(a) * spost(sp1)
+        + spost(a.dag() * sm1)
+        - spre(sm1) * spost(a.dag())
+    ) + -np.sqrt(eta2 * gamma1 * gamma2) * (
+        spre(sp2 * sm1)
+        - spre(sm1) * spost(sp2)
+        + spost(sp1 * sm2)
+        - spre(sm2) * spost(sp1)
+    )
+
     L = L0 + L1
-    
+
     rhoss = steadystate(L)
-    
+
     G2_11 = correlation_4op_1t(L, rhoss, taulist, [], sp1, sp1, sm1, sm1)
-    g2_11 = G2_11 / (expect(sp1*sm1, rhoss) * expect(sp1*sm1, rhoss))
+    g2_11 = G2_11 / (expect(sp1 * sm1, rhoss) * expect(sp1 * sm1, rhoss))
 
     G2_22 = correlation_4op_1t(L, rhoss, taulist, [], sp2, sp2, sm2, sm2)
-    g2_22 = G2_22 / (expect(sp2*sm2, rhoss) * expect(sp2*sm2, rhoss))
+    g2_22 = G2_22 / (expect(sp2 * sm2, rhoss) * expect(sp2 * sm2, rhoss))
 
     G2_12 = correlation_4op_1t(L, rhoss, taulist, [], sp2, sp1, sm1, sm2)
-    g2_12 = G2_12 / (expect(sp1*sm1, rhoss) * expect(sp2*sm2, rhoss))
-    
+    g2_12 = G2_12 / (expect(sp1 * sm1, rhoss) * expect(sp2 * sm2, rhoss))
+
     G2_21 = correlation_4op_1t(L, rhoss, taulist, [], sp1, sp2, sm2, sm1)
-    g2_21 = G2_21 / (expect(sp2*sm2, rhoss) * expect(sp1*sm1, rhoss))
-    
+    g2_21 = G2_21 / (expect(sp2 * sm2, rhoss) * expect(sp1 * sm1, rhoss))
+
     return rhoss, g2_11, g2_12, g2_21, g2_22
 ```
 
 ```python
 # thermal
-rhoss_t, g2_11_t, g2_12_t, g2_21_t, g2_22_t = solve(ek, e1, e2, gamma1, gamma2, 
-                                                    kappa, n_th, 0.0)
+rhoss_t, g2_11_t, g2_12_t, g2_21_t, g2_22_t = solve(
+    ek, e1, e2, gamma1, gamma2, kappa, n_th, 0.0
+)
 ```
 
 ```python
@@ -317,15 +335,15 @@ plot_wigner_fock_distribution(rhoss_t.ptrace(0));
 ```
 
 ```python
-fig, ax = plt.subplots(figsize=(8,4))
+fig, ax = plt.subplots(figsize=(8, 4))
 
-ax.plot(taulist, np.real(g2_11_t), label=r'$g^{(2)}_{11}(\tau)$')
-ax.plot(taulist, np.real(g2_22_t), label=r'$g^{(2)}_{22}(\tau)$')
-ax.plot(taulist, np.real(g2_12_t), label=r'$g^{(2)}_{12}(\tau)$')
-ax.plot(taulist, np.real(g2_21_t), label=r'$g^{(2)}_{21}(\tau)$')
+ax.plot(taulist, np.real(g2_11_t), label=r"$g^{(2)}_{11}(\tau)$")
+ax.plot(taulist, np.real(g2_22_t), label=r"$g^{(2)}_{22}(\tau)$")
+ax.plot(taulist, np.real(g2_12_t), label=r"$g^{(2)}_{12}(\tau)$")
+ax.plot(taulist, np.real(g2_21_t), label=r"$g^{(2)}_{21}(\tau)$")
 
 ax.legend(loc=4)
-ax.set_xlabel(r'$\tau$', fontsize=16);
+ax.set_xlabel(r"$\tau$", fontsize=16);
 ```
 
 Similar to Fig. 12.8 in Quantum Noise, although not exactly because of different parameters.
@@ -335,5 +353,6 @@ Similar to Fig. 12.8 in Quantum Noise, although not exactly because of different
 
 ```python
 from qutip import about
+
 about()
 ```

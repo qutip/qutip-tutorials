@@ -24,7 +24,8 @@ This is a slightly modified version of the lectures, to work with the current re
 %matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import tensor, sigmax, sigmay, sigmaz, sigmap, sigmam, qeye, basis, spre, spost, qpt, qpt_plot_combined, propagator
+from qutip import (basis, propagator, qeye, qpt, qpt_plot_combined, sigmam,
+                   sigmap, sigmax, sigmay, sigmaz, spost, spre, tensor)
 ```
 
 ### Introduction
@@ -41,19 +42,19 @@ Here we will solve for the dynamics of the two qubits subject to this Hamiltonia
 ### Parameters
 
 ```python
-g = 1.0 * 2 * np.pi # coupling strength
-g1 = 0.75        # relaxation rate
-g2 = 0.25        # dephasing rate
-n_th = 1.5       # bath temperature
+g = 1.0 * 2 * np.pi  # coupling strength
+g1 = 0.75  # relaxation rate
+g2 = 0.25  # dephasing rate
+n_th = 1.5  # bath temperature
 
-T = np.pi/(4*g)
+T = np.pi / (4 * g)
 ```
 
 ### Hamiltonian and initial state
 
 ```python
 H = g * (tensor(sigmax(), sigmax()) + tensor(sigmay(), sigmay()))
-psi0 = tensor(basis(2,1), basis(2,0))
+psi0 = tensor(basis(2, 1), basis(2, 0))
 ```
 
 ### Collapse operators
@@ -66,14 +67,14 @@ c_ops = []
 # qubit 1 collapse operators
 sm1 = tensor(sigmam(), qeye(2))
 sz1 = tensor(sigmaz(), qeye(2))
-c_ops.append(np.sqrt(g1 * (1+n_th)) * sm1)
+c_ops.append(np.sqrt(g1 * (1 + n_th)) * sm1)
 c_ops.append(np.sqrt(g1 * n_th) * sm1.dag())
 c_ops.append(np.sqrt(g2) * sz1)
 
 # qubit 2 collapse operators
 sm2 = tensor(qeye(2), sigmam())
 sz2 = tensor(qeye(2), sigmaz())
-c_ops.append(np.sqrt(g1 * (1+n_th)) * sm2)
+c_ops.append(np.sqrt(g1 * (1 + n_th)) * sm2)
 c_ops.append(np.sqrt(g1 * n_th) * sm2.dag())
 c_ops.append(np.sqrt(g2) * sz2)
 ```
@@ -103,7 +104,7 @@ chi = qpt(U_ideal, op_basis)
 ```
 
 ```python
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(8, 6))
 fig = qpt_plot_combined(chi, op_label, fig=fig)
 ```
 
@@ -120,7 +121,7 @@ chi = qpt(U_diss, op_basis)
 ```
 
 ```python
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(8, 6))
 fig = qpt_plot_combined(chi, op_label, fig=fig)
 ```
 
@@ -128,5 +129,6 @@ fig = qpt_plot_combined(chi, op_label, fig=fig)
 
 ```python
 from qutip import about
+
 about()
 ```

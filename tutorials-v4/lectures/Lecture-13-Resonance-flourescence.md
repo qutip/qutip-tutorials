@@ -25,7 +25,8 @@ This is a slightly modified version of the lectures, to work with the current re
 %matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import n_thermal, sigmap, sigmam, sigmax, sigmay, sigmaz, num, basis, mesolve, correlation_2op_1t, spectrum_correlation_fft
+from qutip import (basis, correlation_2op_1t, mesolve, n_thermal, num, sigmam,
+                   sigmap, sigmax, sigmay, sigmaz, spectrum_correlation_fft)
 ```
 
 <!-- #region -->
@@ -46,7 +47,7 @@ Omega = 1.0 * 2 * np.pi
 
 ```python
 gamma0 = 0.05
-w_th = 0.0 
+w_th = 0.0
 N = n_thermal(Omega, w_th)
 ```
 
@@ -70,23 +71,23 @@ psi0 = basis(2, 0)
 ```
 
 ```python
-tlist = np.linspace(0, 20/(2*np.pi), 200)
+tlist = np.linspace(0, 20 / (2 * np.pi), 200)
 result = mesolve(HL, psi0, tlist, c_ops, e_ops)
 ```
 
 ```python
 fig, axes = plt.subplots(2, 1, figsize=(12, 6), sharex=True)
 
-axes[0].plot(result.times, result.expect[0], 'r', label=r'$\langle\sigma_x\rangle$')
-axes[0].plot(result.times, result.expect[1], 'g', label=r'$\langle\sigma_y\rangle$')
-axes[0].plot(result.times, result.expect[2], 'b', label=r'$\langle\sigma_z\rangle$')
+axes[0].plot(result.times, result.expect[0], "r", label=r"$\langle\sigma_x\rangle$")
+axes[0].plot(result.times, result.expect[1], "g", label=r"$\langle\sigma_y\rangle$")
+axes[0].plot(result.times, result.expect[2], "b", label=r"$\langle\sigma_z\rangle$")
 axes[0].legend()
-axes[0].set_ylim(-1, 1);
+axes[0].set_ylim(-1, 1)
 
 
-axes[1].plot(result.times, result.expect[5], 'b', label=r'$P_e$')
+axes[1].plot(result.times, result.expect[5], "b", label=r"$P_e$")
 
-#axes[1].set_ylabel(r'$\langle\sigma_z\rangle$', fontsize=16)
+# axes[1].set_ylabel(r'$\langle\sigma_z\rangle$', fontsize=16)
 axes[1].set_xlabel("time", fontsize=16)
 axes[1].legend()
 axes[1].set_ylim(0, 1);
@@ -101,7 +102,7 @@ for idx, gamma0 in enumerate([0.1 * Omega, 0.5 * Omega, 1.0 * Omega]):
     HL, c_ops = system_spec(Omega, gamma0, N)
     result = mesolve(HL, psi0, tlist, c_ops, e_ops)
 
-    ax.plot(result.times, result.expect[5], 'b', label=r'$\langle\sigma_z\rangle$')
+    ax.plot(result.times, result.expect[5], "b", label=r"$\langle\sigma_z\rangle$")
 
 ax.set_ylim(0, 1);
 ```
@@ -115,9 +116,11 @@ for idx, gamma0 in enumerate([0.1 * Omega, 0.5 * Omega, 1.0 * Omega]):
     HL, c_ops = system_spec(Omega, gamma0, N)
     result = mesolve(HL, psi0, tlist, c_ops, e_ops)
 
-    ax.plot(result.times, np.imag(result.expect[4]), label=r'im $\langle\sigma_+\rangle$')
+    ax.plot(
+        result.times, np.imag(result.expect[4]), label=r"im $\langle\sigma_+\rangle$"
+    )
 
-ax.set_ylim(-.5, 0.5);
+ax.set_ylim(-0.5, 0.5);
 ```
 
 ```python
@@ -131,9 +134,9 @@ for idx, gamma0 in enumerate([2 * Omega, 0.5 * Omega, 0.25 * Omega]):
     corr_vec = correlation_2op_1t(HL, None, taulist, c_ops, sigmap(), sigmam())
     w, S = spectrum_correlation_fft(taulist, corr_vec)
 
-    axes[0].plot(taulist, corr_vec, label=r'$<\sigma_+(\tau)\sigma_-(0)>$')
-    axes[1].plot(-w / (gamma0), S, 'b', label=r'$S(\omega)$')
-    axes[1].plot( w / (gamma0), S, 'b', label=r'$S(\omega)$')
+    axes[0].plot(taulist, corr_vec, label=r"$<\sigma_+(\tau)\sigma_-(0)>$")
+    axes[1].plot(-w / (gamma0), S, "b", label=r"$S(\omega)$")
+    axes[1].plot(w / (gamma0), S, "b", label=r"$S(\omega)$")
 
 axes[0].set_xlim(0, 10)
 axes[1].set_xlim(-5, 5);
@@ -143,5 +146,6 @@ axes[1].set_xlim(-5, 5);
 
 ```python
 from qutip import about
+
 about()
 ```

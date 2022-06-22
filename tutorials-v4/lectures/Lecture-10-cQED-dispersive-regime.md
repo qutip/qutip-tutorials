@@ -22,10 +22,12 @@ This is a slightly modified version of the lectures, to work with the current re
 
 ```python
 %matplotlib inline
-import matplotlib.pyplot as plt
 import matplotlib as mpl
+import matplotlib.pyplot as plt
 import numpy as np
-from qutip import tensor, destroy, qeye, sigmax, sigmay, sigmaz, coherent, basis, mesolve, expect, correlation, spectrum_correlation_fft, ptrace, Options, wigner
+from qutip import (Options, basis, coherent, correlation, destroy, expect,
+                   mesolve, ptrace, qeye, sigmax, sigmay, sigmaz,
+                   spectrum_correlation_fft, tensor, wigner)
 ```
 
 # Introduction
@@ -56,17 +58,17 @@ In a beautiful experiment by D. I. Schuster et al., the dispersive regime was us
 ```python
 N = 20
 
-wr = 2.0 * 2 * np.pi      # resonator frequency
-wq = 3.0 * 2 * np.pi      # qubit frequency
-chi = 0.025 * 2 * np.pi   # parameter in the dispersive hamiltonian
+wr = 2.0 * 2 * np.pi  # resonator frequency
+wq = 3.0 * 2 * np.pi  # qubit frequency
+chi = 0.025 * 2 * np.pi  # parameter in the dispersive hamiltonian
 
-delta = abs(wr - wq)        # detuning
+delta = abs(wr - wq)  # detuning
 g = np.sqrt(delta * chi)  # coupling strength that is consistent with chi
 ```
 
 ```python
 # compare detuning and g, the first should be much larger than the second
-delta/(2*np.pi), g/(2*np.pi)
+delta / (2 * np.pi), g / (2 * np.pi)
 ```
 
 ```python
@@ -87,21 +89,21 @@ I = tensor(qeye(N), qeye(2))
 
 ```python
 # dispersive hamiltonian
-H = wr * (a.dag() * a + I/2.0) + (wq / 2.0) * sz + chi * (a.dag() * a + I/2) * sz
+H = wr * (a.dag() * a + I / 2.0) + (wq / 2.0) * sz + chi * (a.dag() * a + I / 2) * sz
 ```
 
 Try different initial state of the resonator, and see how the spectrum further down in the notebook reflects the photon distribution chosen here.
 
 ```python
-#psi0 = tensor(coherent(N, sqrt(6)), (basis(2,0)+basis(2,1)).unit())
+# psi0 = tensor(coherent(N, sqrt(6)), (basis(2,0)+basis(2,1)).unit())
 ```
 
 ```python
-#psi0 = tensor(thermal_dm(N, 3), ket2dm(basis(2,0)+basis(2,1))).unit()
+# psi0 = tensor(thermal_dm(N, 3), ket2dm(basis(2,0)+basis(2,1))).unit()
 ```
 
 ```python
-psi0 = tensor(coherent(N, np.sqrt(4)), (basis(2,0)+basis(2,1)).unit())
+psi0 = tensor(coherent(N, np.sqrt(4)), (basis(2, 0) + basis(2, 1)).unit())
 ```
 
 ## Time evolution
@@ -124,10 +126,10 @@ nq_list = expect(nq, res.states)
 ```
 
 ```python
-fig, ax = plt.subplots(1, 1, sharex=True, figsize=(12,4))
+fig, ax = plt.subplots(1, 1, sharex=True, figsize=(12, 4))
 
-ax.plot(tlist, nc_list, 'r', linewidth=2, label="cavity")
-ax.plot(tlist, nq_list, 'b--', linewidth=2, label="qubit")
+ax.plot(tlist, nc_list, "r", linewidth=2, label="cavity")
+ax.plot(tlist, nq_list, "b--", linewidth=2, label="qubit")
 ax.set_ylim(0, 7)
 ax.set_ylabel("n", fontsize=16)
 ax.set_xlabel("Time (ns)", fontsize=16)
@@ -146,9 +148,9 @@ xc_list = expect(xc, res.states)
 ```
 
 ```python
-fig, ax = plt.subplots(1, 1, sharex=True, figsize=(12,4))
+fig, ax = plt.subplots(1, 1, sharex=True, figsize=(12, 4))
 
-ax.plot(tlist, xc_list, 'r', linewidth=2, label="cavity")
+ax.plot(tlist, xc_list, "r", linewidth=2, label="cavity")
 ax.set_ylabel("x", fontsize=16)
 ax.set_xlabel("Time (ns)", fontsize=16)
 ax.legend()
@@ -167,13 +169,13 @@ corr_vec = correlation(H, psi0, None, tlist, [], a.dag(), a)
 ```
 
 ```python
-fig, ax = plt.subplots(1, 1, sharex=True, figsize=(12,4))
+fig, ax = plt.subplots(1, 1, sharex=True, figsize=(12, 4))
 
-ax.plot(tlist, np.real(corr_vec), 'r', linewidth=2, label="resonator")
+ax.plot(tlist, np.real(corr_vec), "r", linewidth=2, label="resonator")
 ax.set_ylabel("correlation", fontsize=16)
 ax.set_xlabel("Time (ns)", fontsize=16)
 ax.legend()
-ax.set_xlim(0,50)
+ax.set_xlim(0, 50)
 fig.tight_layout()
 ```
 
@@ -184,19 +186,19 @@ w, S = spectrum_correlation_fft(tlist, corr_vec)
 ```
 
 ```python
-fig, ax = plt.subplots(figsize=(9,3))
+fig, ax = plt.subplots(figsize=(9, 3))
 ax.plot(w / (2 * np.pi), abs(S))
-ax.set_xlabel(r'$\omega$', fontsize=18)
-ax.set_xlim(wr/(2*np.pi)-.5, wr/(2*np.pi)+.5);
+ax.set_xlabel(r"$\omega$", fontsize=18)
+ax.set_xlim(wr / (2 * np.pi) - 0.5, wr / (2 * np.pi) + 0.5);
 ```
 
 Here we can see how the resonator peak is split and shiften up and down due to the superposition of 0 and 1 states of the qubit! We can also verify that the splitting is exactly $2\chi$, as expected:
 
 ```python
-fig, ax = plt.subplots(figsize=(9,3))
-ax.plot((w-wr)/chi, abs(S))
-ax.set_xlabel(r'$(\omega-\omega_r)/\chi$', fontsize=18)
-ax.set_xlim(-2,2);
+fig, ax = plt.subplots(figsize=(9, 3))
+ax.plot((w - wr) / chi, abs(S))
+ax.set_xlabel(r"$(\omega-\omega_r)/\chi$", fontsize=18)
+ax.set_xlim(-2, 2);
 ```
 
 ### Correlation function of the qubit
@@ -206,13 +208,13 @@ corr_vec = correlation(H, psi0, None, tlist, [], sx, sx)
 ```
 
 ```python
-fig, ax = plt.subplots(1, 1, sharex=True, figsize=(12,4))
+fig, ax = plt.subplots(1, 1, sharex=True, figsize=(12, 4))
 
-ax.plot(tlist, np.real(corr_vec), 'r', linewidth=2, label="qubit")
+ax.plot(tlist, np.real(corr_vec), "r", linewidth=2, label="qubit")
 ax.set_ylabel("correlation", fontsize=16)
 ax.set_xlabel("Time (ns)", fontsize=16)
 ax.legend()
-ax.set_xlim(0,50)
+ax.set_xlim(0, 50)
 fig.tight_layout()
 ```
 
@@ -225,18 +227,18 @@ w, S = spectrum_correlation_fft(tlist, corr_vec)
 ```
 
 ```python
-fig, ax = plt.subplots(figsize=(9,3))
+fig, ax = plt.subplots(figsize=(9, 3))
 ax.plot(w / (2 * np.pi), abs(S))
-ax.set_xlabel(r'$\omega$', fontsize=18)
+ax.set_xlabel(r"$\omega$", fontsize=18)
 ```
 
 It's a bit clearer if we shift the spectrum and scale it with $2\chi$
 
 ```python
-fig, ax = plt.subplots(figsize=(9,3))
+fig, ax = plt.subplots(figsize=(9, 3))
 ax.plot((w - wq - chi) / (2 * chi), abs(S))
-ax.set_xlabel(r'$(\omega - \omega_q - \chi)/2\chi$', fontsize=18)
-ax.set_xlim(-.5, N);
+ax.set_xlabel(r"$(\omega - \omega_q - \chi)/2\chi$", fontsize=18)
+ax.set_xlim(-0.5, N);
 ```
 
 Compare to the cavity fock state distribution:
@@ -246,33 +248,41 @@ rho_cavity = ptrace(res.states[-1], 0)
 ```
 
 ```python
-fig, axes = plt.subplots(1, 1, figsize=(9,3))
+fig, axes = plt.subplots(1, 1, figsize=(9, 3))
 
-axes.bar(np.arange(0, N)-.4, np.real(rho_cavity.diag()), color="blue", alpha=0.6)
+axes.bar(np.arange(0, N) - 0.4, np.real(rho_cavity.diag()), color="blue", alpha=0.6)
 axes.set_ylim(0, 1)
 axes.set_xlim(-0.5, N)
 axes.set_xticks(np.arange(0, N))
-axes.set_xlabel('Fock number', fontsize=12)
-axes.set_ylabel('Occupation probability', fontsize=12);
+axes.set_xlabel("Fock number", fontsize=12)
+axes.set_ylabel("Occupation probability", fontsize=12);
 ```
 
 And if we look at the cavity wigner function we can see that after interacting dispersively with the qubit, the cavity is no longer in a coherent state, but in a superposition of coherent states.
 
 ```python
-fig, axes = plt.subplots(1, 1, figsize=(6,6))
+fig, axes = plt.subplots(1, 1, figsize=(6, 6))
 
-xvec = np.linspace(-5,5,200)
+xvec = np.linspace(-5, 5, 200)
 W = wigner(rho_cavity, xvec, xvec)
 wlim = abs(W).max()
 
-axes.contourf(xvec, xvec, W, 100, norm=mpl.colors.Normalize(-wlim,wlim), cmap=plt.get_cmap('RdBu'))
-axes.set_xlabel(r'Im $\alpha$', fontsize=18)
-axes.set_ylabel(r'Re $\alpha$', fontsize=18);
+axes.contourf(
+    xvec,
+    xvec,
+    W,
+    100,
+    norm=mpl.colors.Normalize(-wlim, wlim),
+    cmap=plt.get_cmap("RdBu"),
+)
+axes.set_xlabel(r"Im $\alpha$", fontsize=18)
+axes.set_ylabel(r"Re $\alpha$", fontsize=18);
 ```
 
 ### Software versions
 
 ```python
 from qutip import about
+
 about()
 ```

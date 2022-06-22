@@ -24,7 +24,8 @@ This is a slightly modified version of the lectures, to work with the current re
 %matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import destroy, coherent_dm, mesolve, correlation, tensor, fock_dm, qeye
+from qutip import (coherent_dm, correlation, destroy, fock_dm, mesolve, qeye,
+                   tensor)
 ```
 
 <!-- #region -->
@@ -46,14 +47,14 @@ The following code calculates and plots $g^{(1)}(\tau)$ as a function of $\tau$.
 
 ```python
 N = 20
-taulist = np.linspace(0,10.0,200)
+taulist = np.linspace(0, 10.0, 200)
 a = destroy(N)
-H = 2*np.pi*a.dag()*a
+H = 2 * np.pi * a.dag() * a
 
 # collapse operator
 G1 = 0.75
 n_th = 2.00  # bath temperature in terms of excitation number
-c_ops = [np.sqrt(G1*(1+n_th)) * a, np.sqrt(G1*n_th) * a.dag()]
+c_ops = [np.sqrt(G1 * (1 + n_th)) * a, np.sqrt(G1 * n_th) * a.dag()]
 
 # start with a coherent state
 rho0 = coherent_dm(N, 2.0)
@@ -67,13 +68,15 @@ g1 = G1 / np.sqrt(n[0] * n)
 ```
 
 ```python
-fig, axes = plt.subplots(2, 1, sharex=True, figsize=(12,6))
+fig, axes = plt.subplots(2, 1, sharex=True, figsize=(12, 6))
 
-axes[0].plot(taulist, np.real(g1), 'b', label=r'First-order coherence function $g^{(1)}(\tau)$')
-axes[1].plot(taulist, np.real(n),  'r', label=r'occupation number $n(\tau)$')
+axes[0].plot(
+    taulist, np.real(g1), "b", label=r"First-order coherence function $g^{(1)}(\tau)$"
+)
+axes[1].plot(taulist, np.real(n), "r", label=r"occupation number $n(\tau)$")
 axes[0].legend()
 axes[1].legend()
-axes[1].set_xlabel(r'$\tau$');
+axes[1].set_xlabel(r"$\tau$");
 ```
 
 ## Second-order coherence function
@@ -92,11 +95,11 @@ def correlation_ss_gtt(H, tlist, c_ops, a_op, b_op, c_op, d_op, rho0=None):
     Calculate the correlation function <A(0)B(tau)C(tau)D(0)>
 
     (ss_gtt = steadystate general two-time)
-    
+
     See, Gardiner, Quantum Noise, Section 5.2.1
 
     .. note::
-        Experimental. 
+        Experimental.
     """
     if rho0 == None:
         rho0 = steadystate(H, c_ops)
@@ -111,13 +114,15 @@ g2 = G2 / n**2
 ```
 
 ```python
-fig, axes = plt.subplots(2, 1, sharex=True, figsize=(12,6))
+fig, axes = plt.subplots(2, 1, sharex=True, figsize=(12, 6))
 
-axes[0].plot(taulist, np.real(g2), 'b', label=r'Second-order coherence function $g^{(2)}(\tau)$')
-axes[1].plot(taulist, np.real(n),  'r', label=r'occupation number $n(\tau)$')
+axes[0].plot(
+    taulist, np.real(g2), "b", label=r"Second-order coherence function $g^{(2)}(\tau)$"
+)
+axes[1].plot(taulist, np.real(n), "r", label=r"occupation number $n(\tau)$")
 axes[0].legend(loc=0)
 axes[1].legend()
-axes[1].set_xlabel(r'$\tau$');
+axes[1].set_xlabel(r"$\tau$");
 ```
 
 <!-- #region -->
@@ -152,21 +157,20 @@ def leggett_garg(c_mat):
     """
     For a given correlation matrix c_mat = <Q(t1+t2)Q(t1)>, calculate the Leggett-Garg correlation.
     """
-    
+
     N, M = c_mat.shape
 
-    lg_mat = np.zeros([N//2,M//2], dtype=complex)
-    lg_vec = np.zeros(N//2, dtype=complex)
+    lg_mat = np.zeros([N // 2, M // 2], dtype=complex)
+    lg_vec = np.zeros(N // 2, dtype=complex)
 
     # c_mat(i, j) = <Q(dt i+dt j)Q(dt i)>
     # LG = <Q(t_1)Q(0)> + <Q(t_1+t_2)Q(t_1)> - <Q(t_1+t_2)Q(0)>
 
-    for i in range(N//2):
-        lg_vec[i] = 2*c_mat[0, i] - c_mat[0, 2*i];
-    
-        for j in range(M//2):
-            lg_mat[i, j] = c_mat[0, i] + c_mat[i, j] - c_mat[0, i+j];
+    for i in range(N // 2):
+        lg_vec[i] = 2 * c_mat[0, i] - c_mat[0, 2 * i]
 
+        for j in range(M // 2):
+            lg_mat[i, j] = c_mat[0, i] + c_mat[i, j] - c_mat[0, i + j]
 
     return lg_mat, lg_vec
 ```
@@ -181,21 +185,21 @@ References:
 <!-- #endregion -->
 
 ```python
-wc = 1.0  * 2 * np.pi  # cavity frequency
-wa = 1.0  * 2 * np.pi  # resonator frequency
-g  = 0.3  * 2 * np.pi  # coupling strength
-kappa = 0.075       # cavity dissipation rate
-gamma = 0.005       # resonator dissipation rate
-Na = Nc = 3         # number of cavity fock states
-n_th = 0.0          # avg number of thermal bath excitation
+wc = 1.0 * 2 * np.pi  # cavity frequency
+wa = 1.0 * 2 * np.pi  # resonator frequency
+g = 0.3 * 2 * np.pi  # coupling strength
+kappa = 0.075  # cavity dissipation rate
+gamma = 0.005  # resonator dissipation rate
+Na = Nc = 3  # number of cavity fock states
+n_th = 0.0  # avg number of thermal bath excitation
 
 tlist = np.linspace(0, 7.5, 251)
-tlist_sub = tlist[0:int((len(tlist)/2))]
+tlist_sub = tlist[0 : int((len(tlist) / 2))]
 ```
 
 ```python
 # start with an excited resonator
-rho0 = tensor(fock_dm(Na,0), fock_dm(Nc,1))    
+rho0 = tensor(fock_dm(Na, 0), fock_dm(Nc, 1))
 
 a = tensor(qeye(Nc), destroy(Na))
 c = tensor(destroy(Nc), qeye(Na))
@@ -208,9 +212,9 @@ H = wa * na + wc * nc - g * (a + a.dag()) * (c + c.dag())
 
 ```python
 # measurement operator on resonator
-Q = na                                              # photon number resolving detector
-#Q = tensor(qeye(Nc), 2 * fock_dm(Na, 1) - qeye(Na)) # fock-state |1> detector
-#Q = tensor(qeye(Nc), qeye(Na) - 2 * fock_dm(Na, 0)) # click or no-click detector
+Q = na  # photon number resolving detector
+# Q = tensor(qeye(Nc), 2 * fock_dm(Na, 1) - qeye(Na)) # fock-state |1> detector
+# Q = tensor(qeye(Nc), qeye(Na) - 2 * fock_dm(Na, 0)) # click or no-click detector
 ```
 
 ```python
@@ -227,7 +231,7 @@ if rate > 0.0:
 rate = gamma * (1 + n_th)
 if rate > 0.0:
     c_op_list.append(np.sqrt(rate) * a)
-    
+
 rate = gamma * n_th
 if rate > 0.0:
     c_op_list.append(np.sqrt(rate) * a.dag())
@@ -250,31 +254,39 @@ LG_tt, LG_t = leggett_garg(corr_mat)
 ### Plot results
 
 ```python
-fig, axes = plt.subplots(1, 2, figsize=(12,4))
+fig, axes = plt.subplots(1, 2, figsize=(12, 4))
 
-axes[0].pcolor(tlist,tlist,abs(corr_mat),edgecolors='none')
-axes[0].set_xlabel(r'$t_1 + t_2$')
-axes[0].set_ylabel(r'$t_1$')
+axes[0].pcolor(tlist, tlist, abs(corr_mat), edgecolors="none")
+axes[0].set_xlabel(r"$t_1 + t_2$")
+axes[0].set_ylabel(r"$t_1$")
 axes[0].autoscale(tight=True)
 
-axes[1].pcolor(tlist_sub,tlist_sub,abs(LG_tt),edgecolors='none')
-axes[1].set_xlabel(r'$t_1$')
-axes[1].set_ylabel(r'$t_2$')
+axes[1].pcolor(tlist_sub, tlist_sub, abs(LG_tt), edgecolors="none")
+axes[1].set_xlabel(r"$t_1$")
+axes[1].set_ylabel(r"$t_2$")
 axes[1].autoscale(tight=True)
 
-fig, axes = plt.subplots(1, 1, figsize=(12,4))
-axes.plot(tlist_sub, np.diag(np.real(LG_tt)), label=r'$\tau = t_1 = t_2$')
-axes.plot(tlist_sub, np.ones(tlist_sub.shape), 'k', label=r'quantum boundary')
-axes.fill_between(tlist_sub, np.diag(np.real(LG_tt)), 1, where=(np.diag(np.real(LG_tt))>1), color="green", alpha=0.5)
+fig, axes = plt.subplots(1, 1, figsize=(12, 4))
+axes.plot(tlist_sub, np.diag(np.real(LG_tt)), label=r"$\tau = t_1 = t_2$")
+axes.plot(tlist_sub, np.ones(tlist_sub.shape), "k", label=r"quantum boundary")
+axes.fill_between(
+    tlist_sub,
+    np.diag(np.real(LG_tt)),
+    1,
+    where=(np.diag(np.real(LG_tt)) > 1),
+    color="green",
+    alpha=0.5,
+)
 axes.set_xlim([0, max(tlist_sub)])
 axes.legend(loc=0)
-axes.set_xlabel(r'$\tau$', fontsize=18)
-axes.set_ylabel(r'LG($\tau$)', fontsize=18);
+axes.set_xlabel(r"$\tau$", fontsize=18)
+axes.set_ylabel(r"LG($\tau$)", fontsize=18);
 ```
 
 ### Software versions
 
 ```python
 from qutip import about
+
 about()
 ```

@@ -25,7 +25,7 @@ This is a slightly modified version of the lectures, to work with the current re
 %matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import destroy, basis, mcsolve, mesolve, steadystate, expect
+from qutip import basis, destroy, expect, mcsolve, mesolve, steadystate
 ```
 
 ## Introduction to the Quantum Monte-Carlo trajectory method
@@ -72,17 +72,18 @@ The parameters chosen here correspond to those from S. Gleyzes, et al., Nature 4
 
 ```python
 from IPython.display import Image
-Image(filename='images/exdecay.png')
+
+Image(filename="images/exdecay.png")
 ```
 
 ### Problem parameters
 
 ```python
-N = 4               # number of basis states to consider
-kappa = 1.0/0.129   # coupling to heat bath
-nth = 0.063         # temperature with <n>=0.063
+N = 4  # number of basis states to consider
+kappa = 1.0 / 0.129  # coupling to heat bath
+nth = 0.063  # temperature with <n>=0.063
 
-tlist = np.linspace(0,0.6,100)
+tlist = np.linspace(0, 0.6, 100)
 ```
 
 ## Create operators, Hamiltonian and initial state
@@ -90,9 +91,9 @@ tlist = np.linspace(0,0.6,100)
 Here we create QuTiP `Qobj` representations of the operators and state that are involved in this problem.
 
 ```python
-a = destroy(N)      # cavity destruction operator
-H = a.dag() * a     # harmonic oscillator Hamiltonian
-psi0 = basis(N,1)   # initial Fock state with one photon: |1>
+a = destroy(N)  # cavity destruction operator
+H = a.dag() * a  # harmonic oscillator Hamiltonian
+psi0 = basis(N, 1)  # initial Fock state with one photon: |1>
 ```
 
 ## Create a list of collapse operators that describe the dissipation
@@ -113,9 +114,9 @@ c_op_list.append(np.sqrt(kappa * nth) * a.dag())
 Here we start the Monte-Carlo simulation, and we request expectation values of photon number operators with 1, 5, 15, and 904 trajectories (compare with experimental results above).
 
 ```python
-ntraj = [1, 5, 15, 904] # list of number of trajectories to avg. over
+ntraj = [1, 5, 15, 904]  # list of number of trajectories to avg. over
 
-mc = mcsolve(H, psi0, tlist, c_op_list, [a.dag()*a], ntraj)
+mc = mcsolve(H, psi0, tlist, c_op_list, [a.dag() * a], ntraj)
 ```
 
 The expectation values of $a^\dagger a$ are now available in array ``mc.expect[idx][0]`` where ``idx`` takes values in ``[0,1,2,3]`` corresponding to the averages of ``1, 5, 15, 904`` Monte Carlo trajectories, as specified above. Below we plot the array ``mc.expect[idx][0]`` vs. ``tlist`` for each index ``idx``.
@@ -127,47 +128,53 @@ For comparison with the averages of single quantum trajectories provided by the 
 
 ```python
 # run master equation to get ensemble average expectation values
-me = mesolve(H, psi0, tlist, c_op_list, [a.dag()*a])
+me = mesolve(H, psi0, tlist, c_op_list, [a.dag() * a])
 
 # calulate final state using steadystate solver
-final_state = steadystate(H, c_op_list) # find steady-state
-fexpt = expect(a.dag()*a, final_state)  # find expectation value for particle number
+final_state = steadystate(H, c_op_list)  # find steady-state
+fexpt = expect(a.dag() * a, final_state)  # find expectation value for particle number
 ```
 
 ## Plot the results
 
 ```python
 import matplotlib.font_manager
+
 leg_prop = matplotlib.font_manager.FontProperties(size=10)
 
-fig, axes = plt.subplots(4, 1, sharex=True, figsize=(8,12))
+fig, axes = plt.subplots(4, 1, sharex=True, figsize=(8, 12))
 
-fig.subplots_adjust(hspace=0.1) # reduce space between plots
+fig.subplots_adjust(hspace=0.1)  # reduce space between plots
 
 for idx, n in enumerate(ntraj):
 
-    axes[idx].step(tlist, mc.expect[idx][0], 'b', lw=2)
-    axes[idx].plot(tlist, me.expect[0], 'r--', lw=1.5)
-    axes[idx].axhline(y=fexpt, color='k', lw=1.5)
-    
+    axes[idx].step(tlist, mc.expect[idx][0], "b", lw=2)
+    axes[idx].plot(tlist, me.expect[0], "r--", lw=1.5)
+    axes[idx].axhline(y=fexpt, color="k", lw=1.5)
+
     axes[idx].set_yticks(np.linspace(0, 2, 5))
     axes[idx].set_ylim([0, 1.5])
-    axes[idx].set_ylabel(r'$\left<N\right>$', fontsize=14)
-    
+    axes[idx].set_ylabel(r"$\left<N\right>$", fontsize=14)
+
     if idx == 0:
         axes[idx].set_title("Ensemble Averaging of Monte Carlo Trajectories")
-        axes[idx].legend(('Single trajectory', 'master equation', 'steady state'), prop=leg_prop)
+        axes[idx].legend(
+            ("Single trajectory", "master equation", "steady state"), prop=leg_prop
+        )
     else:
-        axes[idx].legend(('%d trajectories' % n, 'master equation', 'steady state'), prop=leg_prop)
-        
+        axes[idx].legend(
+            ("%d trajectories" % n, "master equation", "steady state"), prop=leg_prop
+        )
+
 
 axes[3].xaxis.set_major_locator(plt.MaxNLocator(4))
-axes[3].set_xlabel('Time (sec)',fontsize=14);
+axes[3].set_xlabel("Time (sec)", fontsize=14);
 ```
 
 ### Software versions:
 
 ```python
 from qutip import about
+
 about()
 ```

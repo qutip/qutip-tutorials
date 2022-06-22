@@ -24,7 +24,8 @@ This is a slightly modified version of the lectures, to work with the current re
 %matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import tensor, destroy, qeye, jmat, expect, ptrace, wigner, hinton, entropy_vn, steadystate
+from qutip import (destroy, entropy_vn, expect, hinton, jmat, ptrace, qeye,
+                   steadystate, tensor, wigner)
 ```
 
 ## Introduction
@@ -53,26 +54,26 @@ $\displaystyle J_\pm = \sum_{i=1}^N \sigma_\pm^{(i)}$
 ## Setup problem in QuTiP
 
 ```python
-w  = 1.0
+w = 1.0
 w0 = 1.0
 
 g = 1.0
-gc = np.sqrt(w * w0)/2 # critical coupling strength
+gc = np.sqrt(w * w0) / 2  # critical coupling strength
 
-kappa = 0.05 
+kappa = 0.05
 gamma = 0.15
 ```
 
 ```python
 M = 16
 N = 4
-j = N/2
-n = 2*j + 1
+j = N / 2
+n = 2 * j + 1
 
-a  = tensor(destroy(M), qeye(int(n)))
-Jp = tensor(qeye(M), jmat(j, '+'))
-Jm = tensor(qeye(M), jmat(j, '-'))
-Jz = tensor(qeye(M), jmat(j, 'z'))
+a = tensor(destroy(M), qeye(int(n)))
+Jp = tensor(qeye(M), jmat(j, "+"))
+Jm = tensor(qeye(M), jmat(j, "-"))
+Jz = tensor(qeye(M), jmat(j, "z"))
 
 H0 = w * a.dag() * a + w0 * Jz
 H1 = 1.0 / np.sqrt(N) * (a + a.dag()) * (Jp + Jm)
@@ -84,7 +85,7 @@ H
 ### Structure of the Hamiltonian
 
 ```python
-fig, ax = plt.subplots(1, 1, figsize=(10,10))
+fig, ax = plt.subplots(1, 1, figsize=(10, 10))
 hinton(H, ax=ax);
 ```
 
@@ -100,19 +101,19 @@ psi_gnd_list = [(H0 + g * H1).groundstate()[1] for g in g_vec]
 ## Cavity ground state occupation probability
 
 ```python
-n_gnd_vec = expect(a.dag() * a, psi_gnd_list)  
-Jz_gnd_vec = expect(Jz, psi_gnd_list)  
+n_gnd_vec = expect(a.dag() * a, psi_gnd_list)
+Jz_gnd_vec = expect(Jz, psi_gnd_list)
 ```
 
 ```python
-fig, axes = plt.subplots(1, 2, sharex=True, figsize=(12,4))
+fig, axes = plt.subplots(1, 2, sharex=True, figsize=(12, 4))
 
-axes[0].plot(g_vec, n_gnd_vec, 'b', linewidth=2, label="cavity occupation")
+axes[0].plot(g_vec, n_gnd_vec, "b", linewidth=2, label="cavity occupation")
 axes[0].set_ylim(0, max(n_gnd_vec))
 axes[0].set_ylabel("Cavity gnd occ. prob.", fontsize=16)
 axes[0].set_xlabel("interaction strength", fontsize=16)
 
-axes[1].plot(g_vec, Jz_gnd_vec, 'b', linewidth=2, label="cavity occupation")
+axes[1].plot(g_vec, Jz_gnd_vec, "b", linewidth=2, label="cavity occupation")
 axes[1].set_ylim(-j, j)
 axes[1].set_ylabel(r"$\langle J_z\rangle$", fontsize=16)
 axes[1].set_xlabel("interaction strength", fontsize=16)
@@ -125,19 +126,19 @@ fig.tight_layout()
 ```python
 psi_gnd_sublist = psi_gnd_list[::4]
 
-xvec = np.linspace(-7,7,200)
+xvec = np.linspace(-7, 7, 200)
 
 fig_grid = (3, len(psi_gnd_sublist))
-fig = plt.figure(figsize=(3*len(psi_gnd_sublist),9))
+fig = plt.figure(figsize=(3 * len(psi_gnd_sublist), 9))
 
 for idx, psi_gnd in enumerate(psi_gnd_sublist):
 
     # trace out the cavity density matrix
     rho_gnd_cavity = ptrace(psi_gnd, 0)
-    
+
     # calculate its wigner function
     W = wigner(rho_gnd_cavity, xvec, xvec)
-    
+
     # plot its wigner function
     ax = plt.subplot2grid(fig_grid, (0, idx))
     ax.contourf(xvec, xvec, W, 100)
@@ -146,40 +147,42 @@ for idx, psi_gnd in enumerate(psi_gnd_sublist):
     ax = plt.subplot2grid(fig_grid, (1, idx))
     ax.bar(np.arange(0, M), np.real(rho_gnd_cavity.diag()), color="blue", alpha=0.6)
     ax.set_ylim(0, 1)
-    ax.set_xlim(0, M)    
-    
+    ax.set_xlim(0, M)
+
 # plot the cavity occupation probability in the ground state
 ax = plt.subplot2grid(fig_grid, (2, 0), colspan=fig_grid[1])
-ax.plot(g_vec, n_gnd_vec, 'r', linewidth=2, label="cavity occupation")
+ax.plot(g_vec, n_gnd_vec, "r", linewidth=2, label="cavity occupation")
 ax.set_xlim(0, max(g_vec))
-ax.set_ylim(0, max(n_gnd_vec)*1.2)
+ax.set_ylim(0, max(n_gnd_vec) * 1.2)
 ax.set_ylabel("Cavity gnd occ. prob.", fontsize=16)
 ax.set_xlabel("interaction strength", fontsize=16)
 
 for g in g_vec[::4]:
-    ax.plot([g,g],[0,max(n_gnd_vec)*1.2], 'b:', linewidth=2.5)
+    ax.plot([g, g], [0, max(n_gnd_vec) * 1.2], "b:", linewidth=2.5)
 ```
 
 ### Entropy/Entanglement between spins and cavity
 
 ```python
-entropy_tot    = np.zeros(g_vec.shape)
+entropy_tot = np.zeros(g_vec.shape)
 entropy_cavity = np.zeros(g_vec.shape)
-entropy_spin   = np.zeros(g_vec.shape)
+entropy_spin = np.zeros(g_vec.shape)
 
 for idx, psi_gnd in enumerate(psi_gnd_list):
 
     rho_gnd_cavity = ptrace(psi_gnd, 0)
-    rho_gnd_spin   = ptrace(psi_gnd, 1)
-    
-    entropy_tot[idx]    = entropy_vn(psi_gnd, 2)
+    rho_gnd_spin = ptrace(psi_gnd, 1)
+
+    entropy_tot[idx] = entropy_vn(psi_gnd, 2)
     entropy_cavity[idx] = entropy_vn(rho_gnd_cavity, 2)
-    entropy_spin[idx]   = entropy_vn(rho_gnd_spin, 2)
+    entropy_spin[idx] = entropy_vn(rho_gnd_spin, 2)
 ```
 
 ```python
-fig, axes = plt.subplots(1, 1, figsize=(12,6))
-axes.plot(g_vec, entropy_tot, 'k', g_vec, entropy_cavity, 'b', g_vec, entropy_spin, 'r--')
+fig, axes = plt.subplots(1, 1, figsize=(12, 6))
+axes.plot(
+    g_vec, entropy_tot, "k", g_vec, entropy_cavity, "b", g_vec, entropy_spin, "r--"
+)
 
 axes.set_ylim(0, 1.5)
 axes.set_ylabel("Entropy of subsystems", fontsize=16)
@@ -196,33 +199,33 @@ fig.tight_layout()
 
 ```python
 def calulcate_entropy(M, N, g_vec):
-    
-    j = N/2.0
-    n = 2*j + 1
+
+    j = N / 2.0
+    n = 2 * j + 1
 
     # setup the hamiltonian for the requested hilbert space sizes
-    a  = tensor(destroy(M), qeye(int(n)))
-    Jp = tensor(qeye(M), jmat(j, '+'))
-    Jm = tensor(qeye(M), jmat(j, '-'))
-    Jz = tensor(qeye(M), jmat(j, 'z'))
+    a = tensor(destroy(M), qeye(int(n)))
+    Jp = tensor(qeye(M), jmat(j, "+"))
+    Jm = tensor(qeye(M), jmat(j, "-"))
+    Jz = tensor(qeye(M), jmat(j, "z"))
 
     H0 = w * a.dag() * a + w0 * Jz
     H1 = 1.0 / np.sqrt(N) * (a + a.dag()) * (Jp + Jm)
 
     # Ground state and steady state for the Hamiltonian: H = H0 + g * H1
-    psi_gnd_list = [(H0 + g * H1).groundstate()[1]  for g in g_vec]
-    
+    psi_gnd_list = [(H0 + g * H1).groundstate()[1] for g in g_vec]
+
     entropy_cavity = np.zeros(g_vec.shape)
-    entropy_spin   = np.zeros(g_vec.shape)
+    entropy_spin = np.zeros(g_vec.shape)
 
     for idx, psi_gnd in enumerate(psi_gnd_list):
 
         rho_gnd_cavity = ptrace(psi_gnd, 0)
-        rho_gnd_spin   = ptrace(psi_gnd, 1)
-    
+        rho_gnd_spin = ptrace(psi_gnd, 1)
+
         entropy_cavity[idx] = entropy_vn(rho_gnd_cavity, 2)
-        entropy_spin[idx]   = entropy_vn(rho_gnd_spin, 2)
-        
+        entropy_spin[idx] = entropy_vn(rho_gnd_spin, 2)
+
     return entropy_cavity, entropy_spin
 ```
 
@@ -231,14 +234,14 @@ g_vec = np.linspace(0.2, 0.8, 60)
 N_vec = [4, 8, 12, 16, 24, 32]
 MM = 25
 
-fig, axes = plt.subplots(1, 1, figsize=(12,6))
+fig, axes = plt.subplots(1, 1, figsize=(12, 6))
 
 for NN in N_vec:
-    
+
     entropy_cavity, entropy_spin = calulcate_entropy(MM, NN, g_vec)
-    
-    axes.plot(g_vec, entropy_cavity, 'b', label="N = %d" % NN)
-    axes.plot(g_vec, entropy_spin, 'r--')
+
+    axes.plot(g_vec, entropy_cavity, "b", label="N = %d" % NN)
+    axes.plot(g_vec, entropy_spin, "r--")
 
 axes.set_ylim(0, 1.75)
 axes.set_ylabel("Entropy of subsystems", fontsize=16)
@@ -253,7 +256,7 @@ axes.legend();
 n_th = 0.25
 
 c_ops = [np.sqrt(kappa * (n_th + 1)) * a, np.sqrt(kappa * n_th) * a.dag()]
-#c_ops = [sqrt(kappa) * a, sqrt(gamma) * Jm]
+# c_ops = [sqrt(kappa) * a, sqrt(gamma) * Jm]
 ```
 
 ## Find the ground state as a function of cavity-spin interaction strength
@@ -273,10 +276,10 @@ n_ss_vec = expect(a.dag() * a, rho_ss_list)
 ```
 
 ```python
-fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8,4))
+fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 4))
 
-axes.plot(g_vec, n_gnd_vec,'b', linewidth=2, label="cavity groundstate")
-axes.plot(g_vec, n_ss_vec, 'r', linewidth=2, label="cavity steadystate")
+axes.plot(g_vec, n_gnd_vec, "b", linewidth=2, label="cavity groundstate")
+axes.plot(g_vec, n_ss_vec, "r", linewidth=2, label="cavity steadystate")
 axes.set_ylim(0, max(n_ss_vec))
 axes.set_ylabel("Cavity occ. prob.", fontsize=16)
 axes.set_xlabel("interaction strength", fontsize=16)
@@ -290,19 +293,19 @@ fig.tight_layout()
 ```python
 rho_ss_sublist = rho_ss_list[::4]
 
-xvec = np.linspace(-6,6,200)
+xvec = np.linspace(-6, 6, 200)
 
 fig_grid = (3, len(rho_ss_sublist))
-fig = plt.figure(figsize=(3*len(rho_ss_sublist),9))
+fig = plt.figure(figsize=(3 * len(rho_ss_sublist), 9))
 
 for idx, rho_ss in enumerate(rho_ss_sublist):
 
     # trace out the cavity density matrix
     rho_ss_cavity = ptrace(rho_ss, 0)
-    
+
     # calculate its wigner function
     W = wigner(rho_ss_cavity, xvec, xvec)
-    
+
     # plot its wigner function
     ax = plt.subplot2grid(fig_grid, (0, idx))
     ax.contourf(xvec, xvec, W, 100)
@@ -311,43 +314,43 @@ for idx, rho_ss in enumerate(rho_ss_sublist):
     ax = plt.subplot2grid(fig_grid, (1, idx))
     ax.bar(np.arange(0, M), np.real(rho_ss_cavity.diag()), color="blue", alpha=0.6)
     ax.set_ylim(0, 1)
-    
+
 # plot the cavity occupation probability in the ground state
 ax = plt.subplot2grid(fig_grid, (2, 0), colspan=fig_grid[1])
-ax.plot(g_vec, n_gnd_vec,'b', linewidth=2, label="cavity groundstate")
-ax.plot(g_vec, n_ss_vec, 'r', linewidth=2, label="cavity steadystate")
+ax.plot(g_vec, n_gnd_vec, "b", linewidth=2, label="cavity groundstate")
+ax.plot(g_vec, n_ss_vec, "r", linewidth=2, label="cavity steadystate")
 ax.set_xlim(0, max(g_vec))
-ax.set_ylim(0, max(n_ss_vec)*1.2)
+ax.set_ylim(0, max(n_ss_vec) * 1.2)
 ax.set_ylabel("Cavity gnd occ. prob.", fontsize=16)
 ax.set_xlabel("interaction strength", fontsize=16)
 
 for g in g_vec[::4]:
-    ax.plot([g,g],[0,max(n_ss_vec)*1.2], 'b:', linewidth=5)
+    ax.plot([g, g], [0, max(n_ss_vec) * 1.2], "b:", linewidth=5)
 ```
 
 ## Entropy
 
 ```python
-entropy_tot    = np.zeros(g_vec.shape)
+entropy_tot = np.zeros(g_vec.shape)
 entropy_cavity = np.zeros(g_vec.shape)
-entropy_spin   = np.zeros(g_vec.shape)
+entropy_spin = np.zeros(g_vec.shape)
 
 for idx, rho_ss in enumerate(rho_ss_list):
 
     rho_gnd_cavity = ptrace(rho_ss, 0)
-    rho_gnd_spin   = ptrace(rho_ss, 1)
-    
-    entropy_tot[idx]    = entropy_vn(rho_ss, 2)
+    rho_gnd_spin = ptrace(rho_ss, 1)
+
+    entropy_tot[idx] = entropy_vn(rho_ss, 2)
     entropy_cavity[idx] = entropy_vn(rho_gnd_cavity, 2)
-    entropy_spin[idx]   = entropy_vn(rho_gnd_spin, 2)
+    entropy_spin[idx] = entropy_vn(rho_gnd_spin, 2)
 ```
 
 ```python
-fig, axes = plt.subplots(1, 1, figsize=(12,6))
+fig, axes = plt.subplots(1, 1, figsize=(12, 6))
 
-axes.plot(g_vec, entropy_tot, 'k', label="total")
-axes.plot(g_vec, entropy_cavity, 'b', label="cavity")
-axes.plot(g_vec, entropy_spin, 'r--', label="spin")
+axes.plot(g_vec, entropy_tot, "k", label="total")
+axes.plot(g_vec, entropy_cavity, "b", label="cavity")
+axes.plot(g_vec, entropy_spin, "r--", label="spin")
 
 axes.set_ylabel("Entropy of subsystems", fontsize=16)
 axes.set_xlabel("interaction strength", fontsize=16)
@@ -359,6 +362,7 @@ fig.tight_layout()
 
 ```python
 from qutip import about
+
 about()
 ```
 
