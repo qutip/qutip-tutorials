@@ -24,7 +24,7 @@ This is a slightly modified version of the lectures, to work with the current re
 %matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import *
+from qutip import tensor, destroy, qeye, basis, sigmaz, mesolve, expect, ptrace, ket2dm, phasegate, sqrtiswap, fidelity, concurrence
 ```
 
 ## Parameters
@@ -494,8 +494,4 @@ concurrence(rho_qubits)
 ```python
 from qutip import about
 about()
-```
-
-```python
-
 ```

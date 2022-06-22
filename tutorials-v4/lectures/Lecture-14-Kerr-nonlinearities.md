@@ -6,33 +6,28 @@ jupyter:
       format_name: markdown
       format_version: '1.3'
       jupytext_version: 1.13.8
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
 ---
 
 # Lecture 14: Kerr nonlinearities
 
-Author: J.R. Johansson, robert@riken.jp
+Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-http://jrjohansson.github.io
+This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
-Latest version of this ipython notebook is available at: http://github.com/jrjohansson/qutip-lectures
+This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
 %matplotlib inline
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-from numpy import *
-```
-
-```python
+import numpy as np
 from IPython.display import HTML
-```
-
-```python
 from matplotlib import animation
-```
-
-```python
-from qutip import *
+from qutip import destroy, num, expect, variance, coherent, mesolve, ket2dm, isket, wigner
 ```
 
 ## Introduction
@@ -50,8 +45,8 @@ In this notebook we'll see how to setup the model in QuTiP and look at some inte
 
 ```python
 N = 15
-chi = 1 * 2 * pi              # Kerr-nonlinearity
-tlist = linspace(0, 1.0, 101) # time
+chi = 1 * 2 * np.pi              # Kerr-nonlinearity
+tlist = np.linspace(0, 1.0, 101) # time
 ```
 
 ```python
@@ -88,7 +83,7 @@ def plot_expect_with_variance(N, op_list, op_title, states):
         e_op = expect(op, states)
         v_op = variance(op, states)
 
-        axes[idx].fill_between(tlist, e_op - sqrt(v_op), e_op + sqrt(v_op), color="green", alpha=0.5);
+        axes[idx].fill_between(tlist, e_op - np.sqrt(v_op), e_op + np.sqrt(v_op), color="green", alpha=0.5);
         axes[idx].plot(tlist, e_op)
         axes[idx].set_xlabel('Time')
         axes[idx].set_title(op_title[idx])
@@ -110,7 +105,7 @@ def plot_wigner(rho, fig=None, ax=None):
     if isket(rho):
         rho = ket2dm(rho)
     
-    xvec = linspace(-7.5,7.5,200)
+    xvec = np.linspace(-7.5,7.5,200)
 
     W = wigner(rho, xvec, xvec)
     wlim = abs(W).max()
@@ -125,15 +120,15 @@ def plot_wigner(rho, fig=None, ax=None):
 ```python
 def plot_fock_distribution_vs_time(tlist, states, fig=None, ax=None):
     
-    Z = zeros((len(tlist), states[0].shape[0]))
+    Z = np.zeros((len(tlist), states[0].shape[0]))
     
     for state_idx, state in enumerate(states):
-        Z[state_idx,:] = real(ket2dm(state).diag())
+        Z[state_idx,:] = np.real(ket2dm(state).diag())
         
     if fig is None or axes is None:
         fig, ax = plt.subplots(1, 1, figsize=(8,6))
 
-    Y, X = meshgrid(tlist, range(states[0].shape[0]))
+    Y, X = np.meshgrid(tlist, range(states[0].shape[0]))
     p = ax.pcolor(X, Y, Z.T, norm=mpl.colors.Normalize(0, 0.5), cmap=mpl.cm.get_cmap('Reds'), edgecolors='k')
     ax.set_xlabel(r'$N$', fontsize=16)
     ax.set_ylabel(r'$t$', fontsize=16)    
@@ -233,7 +228,7 @@ $\psi = \frac{1}{\sqrt{2}}\left(e^{i\pi/4}|-i\alpha\rangle + e^{-i\pi/4}|i\alpha
 (See Walls and Milburn, Quantum Optics, p91)
 
 ```python
-psi = (exp(1j*pi/4) * coherent(N, -2.0j) + exp(-1j*pi/4) * coherent(N, 2.0j)).unit()
+psi = (np.exp(1j*np.pi/4) * coherent(N, -2.0j) + np.exp(-1j*np.pi/4) * coherent(N, 2.0j)).unit()
 ```
 
 ```python
@@ -243,9 +238,8 @@ plot_wigner(psi);
 ### Software versions
 
 ```python
-from qutip.ipynbtools import version_table
-
-version_table()
+from qutip import about
+about()
 ```
 
 ### Acknowledgements

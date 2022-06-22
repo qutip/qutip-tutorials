@@ -6,29 +6,27 @@ jupyter:
       format_name: markdown
       format_version: '1.3'
       jupytext_version: 1.13.8
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
 ---
 
 # Lecture 9: Squeezed states of a quantum harmonic oscillator
 
-Author: J.R. Johansson, robert@riken.jp
+Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-https://jrjohansson.github.io/
+This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
-Latest version of this ipython notebook lecture is available at: http://github.com/jrjohansson/qutip-lectures
+This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
 %matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-```
-
-```python
 from IPython.display import HTML
 from matplotlib import animation
-```
-
-```python
-from qutip import *
+from qutip import destroy, num, expect, variance, coherent, mesolve, squeeze, displace, plot_wigner_fock_distribution
 ```
 
 ## Introduction
@@ -217,5 +215,10 @@ display_embedded_video("/tmp/animation-squeezed-coherent-state.mp4")
 ### Software versions
 
 ```python
-from qutip.ipynbtools import version_table; version_table()
+from qutip import about
+about()
+```
+
+```python
+
 ```

@@ -6,6 +6,10 @@ jupyter:
       format_name: markdown
       format_version: '1.3'
       jupytext_version: 1.13.8
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
 ---
 
 # Lecture 13: Resonance flourescence
@@ -13,18 +17,15 @@ jupyter:
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-The latest version of this [IPython notebook](http://ipython.org/ipython-doc/dev/interactive/htmlnotebook.html) lecture is available at [http://github.com/jrjohansson/qutip-lectures](http://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
-The other notebooks in this lecture series are indexed at [https://qutip.org/tutorials](https://qutip.org/tutorials).
+This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
 %matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-```
-
-```python
-from qutip import *
+from qutip import n_thermal, sigmap, sigmam, sigmax, sigmay, sigmaz, num, basis, mesolve, correlation_2op_1t, spectrum_correlation_fft
 ```
 
 <!-- #region -->
@@ -40,7 +41,7 @@ $\displaystyle \frac{d}{dt}\rho = -i[H_L, \rho] + \gamma_0(N+1)\left(\sigma_-\rh
 ### Problem definition in QuTiP
 
 ```python
-Omega = 1.0 * 2 * pi
+Omega = 1.0 * 2 * np.pi
 ```
 
 ```python
@@ -52,7 +53,7 @@ N = n_thermal(Omega, w_th)
 ```python
 def system_spec(Omega, gamma0, N):
     HL = -0.5 * Omega * (sigmap() + sigmam())
-    c_ops = [sqrt(gamma0 * (N + 1)) * sigmam(), sqrt(gamma0 * N) * sigmap()]
+    c_ops = [np.sqrt(gamma0 * (N + 1)) * sigmam(), np.sqrt(gamma0 * N) * sigmap()]
     return HL, c_ops
 ```
 
@@ -69,7 +70,7 @@ psi0 = basis(2, 0)
 ```
 
 ```python
-tlist = np.linspace(0, 20/(2*pi), 200)
+tlist = np.linspace(0, 20/(2*np.pi), 200)
 result = mesolve(HL, psi0, tlist, c_ops, e_ops)
 ```
 
@@ -114,7 +115,7 @@ for idx, gamma0 in enumerate([0.1 * Omega, 0.5 * Omega, 1.0 * Omega]):
     HL, c_ops = system_spec(Omega, gamma0, N)
     result = mesolve(HL, psi0, tlist, c_ops, e_ops)
 
-    ax.plot(result.times, imag(result.expect[4]), label=r'im $\langle\sigma_+\rangle$')
+    ax.plot(result.times, np.imag(result.expect[4]), label=r'im $\langle\sigma_+\rangle$')
 
 ax.set_ylim(-.5, 0.5);
 ```
@@ -141,5 +142,6 @@ axes[1].set_xlim(-5, 5);
 ### Software versions
 
 ```python
-from qutip.ipynbtools import version_table; version_table()
+from qutip import about
+about()
 ```

@@ -24,7 +24,7 @@ This is a slightly modified version of the lectures, to work with the current re
 %matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import *
+from qutip import tensor, destroy, qeye, jmat, expect, ptrace, wigner, hinton, entropy_vn, steadystate
 ```
 
 ## Introduction
@@ -163,9 +163,9 @@ for g in g_vec[::4]:
 ### Entropy/Entanglement between spins and cavity
 
 ```python
-entropy_tot    = np.zeros(shape(g_vec))
-entropy_cavity = np.zeros(shape(g_vec))
-entropy_spin   = np.zeros(shape(g_vec))
+entropy_tot    = np.zeros(g_vec.shape)
+entropy_cavity = np.zeros(g_vec.shape)
+entropy_spin   = np.zeros(g_vec.shape)
 
 for idx, psi_gnd in enumerate(psi_gnd_list):
 
@@ -212,8 +212,8 @@ def calulcate_entropy(M, N, g_vec):
     # Ground state and steady state for the Hamiltonian: H = H0 + g * H1
     psi_gnd_list = [(H0 + g * H1).groundstate()[1]  for g in g_vec]
     
-    entropy_cavity = np.zeros(shape(g_vec))
-    entropy_spin   = np.zeros(shape(g_vec))
+    entropy_cavity = np.zeros(g_vec.shape)
+    entropy_spin   = np.zeros(g_vec.shape)
 
     for idx, psi_gnd in enumerate(psi_gnd_list):
 
@@ -243,7 +243,7 @@ for NN in N_vec:
 axes.set_ylim(0, 1.75)
 axes.set_ylabel("Entropy of subsystems", fontsize=16)
 axes.set_xlabel("interaction strength", fontsize=16)
-axes.legend()
+axes.legend();
 ```
 
 # Dissipative cavity: steady state instead of the ground state
@@ -328,9 +328,9 @@ for g in g_vec[::4]:
 ## Entropy
 
 ```python
-entropy_tot    = np.zeros(shape(g_vec))
-entropy_cavity = np.zeros(shape(g_vec))
-entropy_spin   = np.zeros(shape(g_vec))
+entropy_tot    = np.zeros(g_vec.shape)
+entropy_cavity = np.zeros(g_vec.shape)
+entropy_spin   = np.zeros(g_vec.shape)
 
 for idx, rho_ss in enumerate(rho_ss_list):
 
@@ -360,4 +360,8 @@ fig.tight_layout()
 ```python
 from qutip import about
 about()
+```
+
+```python
+
 ```

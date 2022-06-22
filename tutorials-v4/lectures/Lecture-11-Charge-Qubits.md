@@ -6,20 +6,25 @@ jupyter:
       format_name: markdown
       format_version: '1.3'
       jupytext_version: 1.13.8
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
 ---
 
 # QuTiP lecture: Superconducting Josephson charge qubits
 
-J.R. Johansson (robert@riken.jp)
+Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
+
+This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
+
+This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
 %matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-```
-
-```python
-from qutip import *
+from qutip import Qobj, energy_level_diagram, mesolve, ket2dm
 ```
 
 ### Introduction
@@ -46,7 +51,7 @@ def hamiltonian(Ec, Ej, N, ng):
     """
     Return the charge qubit hamiltonian as a Qobj instance.
     """
-    m = np.diag(4 * Ec * (arange(-N,N+1)-ng)**2) + 0.5 * Ej * (np.diag(-np.ones(2*N), 1) + 
+    m = np.diag(4 * Ec * (np.arange(-N,N+1)-ng)**2) + 0.5 * Ej * (np.diag(-np.ones(2*N), 1) + 
                                                                np.diag(-np.ones(2*N), -1))
     return Qobj(m)
 ```
@@ -96,7 +101,7 @@ Ej = 1.0
 ```python
 ng_vec = np.linspace(-4, 4, 200)
 
-energies = array([hamiltonian(Ec, Ej, N, ng).eigenenergies() for ng in ng_vec])
+energies = np.array([hamiltonian(Ec, Ej, N, ng).eigenenergies() for ng in ng_vec])
 ```
 
 ```python
@@ -106,7 +111,7 @@ plot_energies(ng_vec, energies);
 ```python
 ng_vec = np.linspace(-1, 1, 200)
 
-energies = array([hamiltonian(Ec, Ej, N, ng).eigenenergies() for ng in ng_vec])
+energies = np.array([hamiltonian(Ec, Ej, N, ng).eigenenergies() for ng in ng_vec])
 ```
 
 ```python
@@ -125,7 +130,7 @@ Ej = 5.0
 ```
 
 ```python
-energies = array([hamiltonian(Ec, Ej, N, ng).eigenenergies() for ng in ng_vec])
+energies = np.array([hamiltonian(Ec, Ej, N, ng).eigenenergies() for ng in ng_vec])
 ```
 
 ```python
@@ -138,7 +143,7 @@ Ej = 10.0
 ```
 
 ```python
-energies = array([hamiltonian(Ec, Ej, N, ng).eigenenergies() for ng in ng_vec])
+energies = np.array([hamiltonian(Ec, Ej, N, ng).eigenenergies() for ng in ng_vec])
 ```
 
 ```python
@@ -153,7 +158,7 @@ Ej = 50.0
 ```
 
 ```python
-energies = array([hamiltonian(Ec, Ej, N, ng).eigenenergies() for ng in ng_vec])
+energies = np.array([hamiltonian(Ec, Ej, N, ng).eigenenergies() for ng in ng_vec])
 ```
 
 ```python
@@ -178,7 +183,7 @@ ng_vec = np.linspace(-1, 1, 200)
 ```
 
 ```python
-energies = array([hamiltonian(Ec, Ej, N, ng).eigenenergies() for ng in ng_vec])
+energies = np.array([hamiltonian(Ec, Ej, N, ng).eigenenergies() for ng in ng_vec])
 ```
 
 ```python
@@ -189,7 +194,7 @@ We can see that around $n_g = 0.5$ we have two lowest energy levels that are wel
 
 ```python
 ng_vec = np.linspace(0.25, 0.75, 200)
-energies = array([hamiltonian(Ec, Ej, N, ng).eigenenergies() for ng in ng_vec])
+energies = np.array([hamiltonian(Ec, Ej, N, ng).eigenenergies() for ng in ng_vec])
 plot_energies(ng_vec, energies, ymax=(10, 1.1));
 ```
 
@@ -297,15 +302,15 @@ We can see that only the two selected states are included in the dynamics, and v
 Instead of keeping all the inactive quantum states in the calculation we can eliminate them using Qobj.extract_state, so that we obtain a true two-level system.
 
 ```python
-where(abs(ekets[0].full().flatten()) > 0.1)[0]
+np.where(abs(ekets[0].full().flatten()) > 0.1)[0]
 ```
 
 ```python
-where(abs(ekets[1].full().flatten()) > 0.1)[0]
+np.where(abs(ekets[1].full().flatten()) > 0.1)[0]
 ```
 
 ```python
-keep_states = where(abs(ekets[1].full().flatten()) > 0.1)[0]
+keep_states = np.where(abs(ekets[1].full().flatten()) > 0.1)[0]
 ```
 
 ```python
@@ -352,5 +357,6 @@ visualize_dynamics(result, r'$\rho_{ee}$');
 ### Software versions
 
 ```python
-from qutip.ipynbtools import version_table; version_table()
+from qutip import about 
+about()
 ```

@@ -6,24 +6,26 @@ jupyter:
       format_name: markdown
       format_version: '1.3'
       jupytext_version: 1.13.8
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
 ---
 
 # Lecture 10: Cavity-QED in the dispersive regime
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-The latest version of this [IPython notebook](http://ipython.org/ipython-doc/dev/interactive/htmlnotebook.html) lecture is available at [http://github.com/jrjohansson/qutip-lectures](http://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
-The other notebooks in this lecture series are indexed at [https://qutip.org/tutorials](https://qutip.org/tutorials).
+This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
 %matplotlib inline
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import numpy as np
-```
-
-```python
-from qutip import *
+from qutip import tensor, destroy, qeye, sigmax, sigmay, sigmaz, coherent, basis, mesolve, expect, correlation, spectrum_correlation_fft, ptrace, Options, wigner
 ```
 
 # Introduction
@@ -54,17 +56,17 @@ In a beautiful experiment by D. I. Schuster et al., the dispersive regime was us
 ```python
 N = 20
 
-wr = 2.0 * 2 * pi      # resonator frequency
-wq = 3.0 * 2 * pi      # qubit frequency
-chi = 0.025 * 2 * pi   # parameter in the dispersive hamiltonian
+wr = 2.0 * 2 * np.pi      # resonator frequency
+wq = 3.0 * 2 * np.pi      # qubit frequency
+chi = 0.025 * 2 * np.pi   # parameter in the dispersive hamiltonian
 
 delta = abs(wr - wq)        # detuning
-g = sqrt(delta * chi)  # coupling strength that is consistent with chi
+g = np.sqrt(delta * chi)  # coupling strength that is consistent with chi
 ```
 
 ```python
 # compare detuning and g, the first should be much larger than the second
-delta/(2*pi), g/(2*pi)
+delta/(2*np.pi), g/(2*np.pi)
 ```
 
 ```python
@@ -99,7 +101,7 @@ Try different initial state of the resonator, and see how the spectrum further d
 ```
 
 ```python
-psi0 = tensor(coherent(N, sqrt(4)), (basis(2,0)+basis(2,1)).unit())
+psi0 = tensor(coherent(N, np.sqrt(4)), (basis(2,0)+basis(2,1)).unit())
 ```
 
 ## Time evolution
@@ -109,7 +111,7 @@ tlist = np.linspace(0, 250, 1000)
 ```
 
 ```python
-res = mesolve(H, psi0, tlist, [], [], options=Odeoptions(nsteps=5000))
+res = mesolve(H, psi0, tlist, [], [], options=Options(nsteps=5000))
 ```
 
 ### Excitation numbers
@@ -157,7 +159,7 @@ fig.tight_layout()
 ### Correlation function for the resonator
 
 ```python
-tlist = np.linspace(0, 1000, 10000)
+tlist = np.linspace(0, 100, 1000)
 ```
 
 ```python
@@ -167,7 +169,7 @@ corr_vec = correlation(H, psi0, None, tlist, [], a.dag(), a)
 ```python
 fig, ax = plt.subplots(1, 1, sharex=True, figsize=(12,4))
 
-ax.plot(tlist, real(corr_vec), 'r', linewidth=2, label="resonator")
+ax.plot(tlist, np.real(corr_vec), 'r', linewidth=2, label="resonator")
 ax.set_ylabel("correlation", fontsize=16)
 ax.set_xlabel("Time (ns)", fontsize=16)
 ax.legend()
@@ -183,9 +185,9 @@ w, S = spectrum_correlation_fft(tlist, corr_vec)
 
 ```python
 fig, ax = plt.subplots(figsize=(9,3))
-ax.plot(w / (2 * pi), abs(S))
+ax.plot(w / (2 * np.pi), abs(S))
 ax.set_xlabel(r'$\omega$', fontsize=18)
-ax.set_xlim(wr/(2*pi)-.5, wr/(2*pi)+.5);
+ax.set_xlim(wr/(2*np.pi)-.5, wr/(2*np.pi)+.5);
 ```
 
 Here we can see how the resonator peak is split and shiften up and down due to the superposition of 0 and 1 states of the qubit! We can also verify that the splitting is exactly $2\chi$, as expected:
@@ -206,7 +208,7 @@ corr_vec = correlation(H, psi0, None, tlist, [], sx, sx)
 ```python
 fig, ax = plt.subplots(1, 1, sharex=True, figsize=(12,4))
 
-ax.plot(tlist, real(corr_vec), 'r', linewidth=2, label="qubit")
+ax.plot(tlist, np.real(corr_vec), 'r', linewidth=2, label="qubit")
 ax.set_ylabel("correlation", fontsize=16)
 ax.set_xlabel("Time (ns)", fontsize=16)
 ax.legend()
@@ -224,7 +226,7 @@ w, S = spectrum_correlation_fft(tlist, corr_vec)
 
 ```python
 fig, ax = plt.subplots(figsize=(9,3))
-ax.plot(w / (2 * pi), abs(S))
+ax.plot(w / (2 * np.pi), abs(S))
 ax.set_xlabel(r'$\omega$', fontsize=18)
 ```
 
@@ -246,10 +248,10 @@ rho_cavity = ptrace(res.states[-1], 0)
 ```python
 fig, axes = plt.subplots(1, 1, figsize=(9,3))
 
-axes.bar(arange(0, N)-.4, real(rho_cavity.diag()), color="blue", alpha=0.6)
+axes.bar(np.arange(0, N)-.4, np.real(rho_cavity.diag()), color="blue", alpha=0.6)
 axes.set_ylim(0, 1)
 axes.set_xlim(-0.5, N)
-axes.set_xticks(arange(0, N))
+axes.set_xticks(np.arange(0, N))
 axes.set_xlabel('Fock number', fontsize=12)
 axes.set_ylabel('Occupation probability', fontsize=12);
 ```
@@ -271,6 +273,6 @@ axes.set_ylabel(r'Re $\alpha$', fontsize=18);
 ### Software versions
 
 ```python
-from qutip.ipynbtools import version_table
-version_table()
+from qutip import about
+about()
 ```

@@ -24,10 +24,7 @@ This is a slightly modified version of the lectures, to work with the current re
 %matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-```
-
-```python
-from qutip import *
+from qutip import tensor, sigmax, sigmay, sigmaz, sigmap, sigmam, qeye, basis, spre, spost, qpt, qpt_plot_combined, propagator
 ```
 
 ### Introduction

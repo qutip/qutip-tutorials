@@ -24,10 +24,7 @@ This is a slightly modified version of the lectures, to work with the current re
 %matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-```
-
-```python
-from qutip import *
+from qutip import destroy, coherent_dm, mesolve, correlation, tensor, fock_dm, qeye
 ```
 
 <!-- #region -->
@@ -156,7 +153,7 @@ def leggett_garg(c_mat):
     For a given correlation matrix c_mat = <Q(t1+t2)Q(t1)>, calculate the Leggett-Garg correlation.
     """
     
-    N, M = shape(c_mat)
+    N, M = c_mat.shape
 
     lg_mat = np.zeros([N//2,M//2], dtype=complex)
     lg_vec = np.zeros(N//2, dtype=complex)
@@ -267,7 +264,7 @@ axes[1].autoscale(tight=True)
 
 fig, axes = plt.subplots(1, 1, figsize=(12,4))
 axes.plot(tlist_sub, np.diag(np.real(LG_tt)), label=r'$\tau = t_1 = t_2$')
-axes.plot(tlist_sub, np.ones(shape(tlist_sub)), 'k', label=r'quantum boundary')
+axes.plot(tlist_sub, np.ones(tlist_sub.shape), 'k', label=r'quantum boundary')
 axes.fill_between(tlist_sub, np.diag(np.real(LG_tt)), 1, where=(np.diag(np.real(LG_tt))>1), color="green", alpha=0.5)
 axes.set_xlim([0, max(tlist_sub)])
 axes.legend(loc=0)

@@ -26,10 +26,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 from matplotlib import cm
 import numpy as np
-```
-
-```python
-from qutip import *
+from qutip import tensor, destroy, qeye, num, basis, mesolve, expect, ptrace, wigner, correlation_matrix_quadrature, wigner_covariance_matrix, logarithmic_negativity
 ```
 
 Parameters
@@ -84,10 +81,10 @@ output
 
 
 ```python
-na_e = np.zeros(shape(tlist))
-na_s = np.zeros(shape(tlist))
-nb_e = np.zeros(shape(tlist))
-nb_s = np.zeros(shape(tlist))
+na_e = np.zeros(tlist.shape)
+na_s = np.zeros(tlist.shape)
+nb_e = np.zeros(tlist.shape)
+nb_s = np.zeros(tlist.shape)
 
 for idx, psi in enumerate(output.states):
     na_e[idx] = expect(na, psi)
@@ -165,16 +162,16 @@ fig.tight_layout()
 
 ```python
 # second-order photon correlations
-g2_1  = np.zeros(shape(tlist))
-g2_2  = np.zeros(shape(tlist))
-g2_12 = np.zeros(shape(tlist))
+g2_1  = np.zeros(tlist.shape)
+g2_2  = np.zeros(tlist.shape)
+g2_12 = np.zeros(tlist.shape)
 
 ad_ad_a_a = a.dag() * a.dag() * a * a
 bd_bd_b_b = b.dag() * b.dag() * b * b
 ad_a_bd_b = a.dag() * a * b.dag() * b
 
-cs_rhs = np.zeros(shape(tlist))
-cs_lhs = np.zeros(shape(tlist))
+cs_rhs = np.zeros(tlist.shape)
+cs_lhs = np.zeros(tlist.shape)
 
 for idx, psi in enumerate(output.states):
     # g2 correlations
@@ -267,10 +264,10 @@ op_ad_bd = a.dag() * b.dag()
 op_ad_a_p_a_ad  = a.dag() * a + a * a.dag()
 op_bd_b_p_b_bd  = b.dag() * b + b * b.dag()
 
-e_a_b   = np.zeros(shape(tlist), dtype=complex)
-e_ad_bd = np.zeros(shape(tlist), dtype=complex)
-e_ad_a_p_a_ad = np.zeros(shape(tlist), dtype=complex)
-e_bd_b_p_b_bd = np.zeros(shape(tlist), dtype=complex)
+e_a_b   = np.zeros(tlist.shape, dtype=complex)
+e_ad_bd = np.zeros(tlist.shape, dtype=complex)
+e_ad_a_p_a_ad = np.zeros(tlist.shape, dtype=complex)
+e_bd_b_p_b_bd = np.zeros(tlist.shape, dtype=complex)
 
 for idx, psi in enumerate(output.states):
     
@@ -313,10 +310,10 @@ op_bd_b  = b.dag() * b
 op_a_b   = a * b
 op_ad_bd = a.dag() * b.dag()
 
-e_ad_a  = np.zeros(shape(tlist), dtype=complex)
-e_bd_b  = np.zeros(shape(tlist), dtype=complex)
-e_a_b   = np.zeros(shape(tlist), dtype=complex)
-e_ad_bd = np.zeros(shape(tlist), dtype=complex)
+e_ad_a  = np.zeros(tlist.shape, dtype=complex)
+e_bd_b  = np.zeros(tlist.shape, dtype=complex)
+e_a_b   = np.zeros(tlist.shape, dtype=complex)
+e_ad_bd = np.zeros(tlist.shape, dtype=complex)
 
 for idx, psi in enumerate(output.states):
     
@@ -416,7 +413,7 @@ fig.tight_layout()
 """
 Calculate the wigner covariance matrix logarithmic negativity for each time step
 """
-logneg = np.zeros(shape(tlist))
+logneg = np.zeros(tlist.shape)
 
 for idx, t_idx in enumerate(tlist):
     

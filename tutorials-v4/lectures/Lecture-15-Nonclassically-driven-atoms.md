@@ -6,6 +6,10 @@ jupyter:
       format_name: markdown
       format_version: '1.3'
       jupytext_version: 1.13.8
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
 ---
 
 # Lecture 15: Nonclassically driven atoms (cascaded quantum systems)
@@ -13,22 +17,15 @@ jupyter:
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-The latest version of this [IPython notebook](http://ipython.org/ipython-doc/dev/interactive/htmlnotebook.html) lecture is available at [http://github.com/jrjohansson/qutip-lectures](http://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
-The other notebooks in this lecture series are indexed at [https://qutip.org/tutorials](https://qutip.org/tutorials).
+This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
 %matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-```
-
-```python
-from scipy import *
-```
-
-```python
-from qutip import *
+from qutip import tensor, destroy, identity, spre, spost, steadystate, correlation_2op_1t, spectrum_correlation_fft, liouvillian, plot_wigner_fock_distribution, correlation_4op_1t, expect
 ```
 
 ## Introduction
@@ -82,11 +79,11 @@ def solve(N, gamma, kappa, eta):
     sm = tensor(identity(N), destroy(2))
 
     # Hamiltonian
-    H = 0.5j * (E * a.dag() ** 2 - conjugate(E) * a ** 2)
+    H = 0.5j * (E * a.dag() ** 2 - np.conjugate(E) * a ** 2)
 
     # master equation superoperators
-    L0 = liouvillian(H, [sqrt(kappa) * a, sqrt(gamma) * sm])
-    L1 = - sqrt(kappa * gamma * eta) * (
+    L0 = liouvillian(H, [np.sqrt(kappa) * a, np.sqrt(gamma) * sm])
+    L1 = - np.sqrt(kappa * gamma * eta) * (
         spre(sm.dag() * a) - spre(a) * spost(sm.dag()) + 
         spost(a.dag() * sm) - spre(sm) * spost(a.dag()))
     
@@ -96,12 +93,12 @@ def solve(N, gamma, kappa, eta):
     rhoss = steadystate(L)
     
     # correlation function and spectrum
-    taulist = linspace(0, 500, 2500)
+    taulist = np.linspace(0, 500, 2500)
     c = correlation_2op_1t(L, rhoss, taulist, [], sm.dag(), sm)
     w, S = spectrum_correlation_fft(taulist, c)
     
-    ww = hstack([fliplr(-array([w])).squeeze(), w])
-    SS = hstack([fliplr(array([S])).squeeze(), S])
+    ww = np.hstack([np.fliplr(-np.array([w])).squeeze(), w])
+    SS = np.hstack([np.fliplr(np.array([S])).squeeze(), S])
 
     return rhoss, ww, SS
 ```
@@ -113,9 +110,9 @@ rhoss8, w8, S8 = solve(N, gamma, 8, eta)
 ```
 
 ```python
-wigner_fock_distribution(rhoss2.ptrace(0));
-wigner_fock_distribution(rhoss4.ptrace(0));
-wigner_fock_distribution(rhoss8.ptrace(0));
+plot_wigner_fock_distribution(rhoss2.ptrace(0));
+plot_wigner_fock_distribution(rhoss4.ptrace(0));
+plot_wigner_fock_distribution(rhoss8.ptrace(0));
 ```
 
 ```python
@@ -157,7 +154,7 @@ e2 = 0.5
 gamma1 = 2
 gamma2 = 2
 
-E = 2 / sqrt(e1 * gamma1)
+E = 2 / np.sqrt(e1 * gamma1)
 ```
 
 ```python
@@ -168,15 +165,15 @@ sp2 = sm2.dag()
 ```
 
 ```python
-H = -1j * sqrt(e1 * gamma1) * (E * sp1 - conjugate(E) * sm1)
+H = -1j * np.sqrt(e1 * gamma1) * (E * sp1 - np.conjugate(E) * sm1)
 ```
 
 ```python
-L0 = liouvillian(H, [sqrt(gamma1) * sm1, sqrt(gamma2) * sm2])
+L0 = liouvillian(H, [np.sqrt(gamma1) * sm1, np.sqrt(gamma2) * sm2])
 ```
 
 ```python
-L1 = - sqrt((1 - e1) * (1 - e2) * gamma1 * gamma2) * \
+L1 = - np.sqrt((1 - e1) * (1 - e2) * gamma1 * gamma2) * \
         (spre(sp2 * sm1) - spre(sm1) * spost(sp2) + 
          spost(sp1 * sm2) - spre(sm2) * spost(sp1))
 ```
@@ -192,7 +189,7 @@ rhoss = steadystate(L)
 
 ```python
 # correlation function and spectrum
-taulist = linspace(0, 4, 250)
+taulist = np.linspace(0, 4, 250)
 ```
 
 ```python
@@ -218,10 +215,10 @@ g2_21 = G2_21 / (expect(sp2*sm2, rhoss) * expect(sp1*sm1, rhoss))
 ```python
 fig, ax = plt.subplots()
 
-ax.plot(taulist, g2_11, label=r'$g^{(2)}_{11}(\tau)$')
-ax.plot(taulist, g2_22, label=r'$g^{(2)}_{22}(\tau)$')
-ax.plot(taulist, g2_12, label=r'$g^{(2)}_{12}(\tau)$')
-ax.plot(taulist, g2_21, label=r'$g^{(2)}_{21}(\tau)$')
+ax.plot(taulist, np.real(g2_11), label=r'$g^{(2)}_{11}(\tau)$')
+ax.plot(taulist, np.real(g2_22), label=r'$g^{(2)}_{22}(\tau)$')
+ax.plot(taulist, np.real(g2_12), label=r'$g^{(2)}_{12}(\tau)$')
+ax.plot(taulist, np.real(g2_21), label=r'$g^{(2)}_{21}(\tau)$')
 
 ax.legend(loc=4)
 ax.set_xlabel(r'$\tau$');
@@ -260,7 +257,7 @@ gamma2 = 1
 
 E = 0.025
 
-taulist = linspace(0, 5, 250)
+taulist = np.linspace(0, 5, 250)
 ```
 
 ```python
@@ -279,13 +276,13 @@ def solve(ek, e1, e2, gamma1, gamma2, kappa, n_th, E):
     
     H = 1j * E * (a - a.dag())
     
-    L0 = liouvillian(H, [sqrt(kappa * (1 + n_th)) * a, sqrt(kappa * n_th) * a.dag(),
-                     sqrt(gamma1) * sm1, sqrt(gamma2) * sm2])
+    L0 = liouvillian(H, [np.sqrt(kappa * (1 + n_th)) * a, np.sqrt(kappa * n_th) * a.dag(),
+                     np.sqrt(gamma1) * sm1, np.sqrt(gamma2) * sm2])
     
-    L1 = - sqrt(2 * kappa * eta1 * gamma1) * \
+    L1 = - np.sqrt(2 * kappa * eta1 * gamma1) * \
             (spre(sp1 * a) - spre(a) * spost(sp1) + 
              spost(a.dag() * sm1) - spre(sm1) * spost(a.dag())) + \
-         - sqrt(eta2 * gamma1 * gamma2) * \
+         - np.sqrt(eta2 * gamma1 * gamma2) * \
             (spre(sp2 * sm1) - spre(sm1) * spost(sp2) + 
              spost(sp1 * sm2) - spre(sm2) * spost(sp1))
     
@@ -316,16 +313,16 @@ rhoss_t, g2_11_t, g2_12_t, g2_21_t, g2_22_t = solve(ek, e1, e2, gamma1, gamma2,
 
 ```python
 # visualize the cavity state
-wigner_fock_distribution(rhoss_t.ptrace(0));
+plot_wigner_fock_distribution(rhoss_t.ptrace(0));
 ```
 
 ```python
 fig, ax = plt.subplots(figsize=(8,4))
 
-ax.plot(taulist, g2_11_t, label=r'$g^{(2)}_{11}(\tau)$')
-ax.plot(taulist, g2_22_t, label=r'$g^{(2)}_{22}(\tau)$')
-ax.plot(taulist, g2_12_t, label=r'$g^{(2)}_{12}(\tau)$')
-ax.plot(taulist, g2_21_t, label=r'$g^{(2)}_{21}(\tau)$')
+ax.plot(taulist, np.real(g2_11_t), label=r'$g^{(2)}_{11}(\tau)$')
+ax.plot(taulist, np.real(g2_22_t), label=r'$g^{(2)}_{22}(\tau)$')
+ax.plot(taulist, np.real(g2_12_t), label=r'$g^{(2)}_{12}(\tau)$')
+ax.plot(taulist, np.real(g2_21_t), label=r'$g^{(2)}_{21}(\tau)$')
 
 ax.legend(loc=4)
 ax.set_xlabel(r'$\tau$', fontsize=16);
@@ -337,5 +334,6 @@ Similar to Fig. 12.8 in Quantum Noise, although not exactly because of different
 ## Versions
 
 ```python
-from qutip.ipynbtools import version_table; version_table()
+from qutip import about
+about()
 ```

@@ -28,12 +28,8 @@ This is a slightly modified version of the lectures, to work with the current re
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
-```
-
-```python
-# make qutip available in the rest of the notebook
-from qutip import *
 from IPython.display import Image
+from qutip import tensor, basis, destroy, qeye, sigmax, mesolve, steadystate, ptrace, wigner, Options, expect
 ```
 
 # Introduction and model

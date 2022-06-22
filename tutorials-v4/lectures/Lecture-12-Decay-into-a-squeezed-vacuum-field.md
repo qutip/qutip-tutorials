@@ -6,6 +6,10 @@ jupyter:
       format_name: markdown
       format_version: '1.3'
       jupytext_version: 1.13.8
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
 ---
 
 # Lecture 12: Decay into a squeezed vacuum field
@@ -13,18 +17,15 @@ jupyter:
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-The latest version of this [IPython notebook](http://ipython.org/ipython-doc/dev/interactive/htmlnotebook.html) lecture is available at [http://github.com/jrjohansson/qutip-lectures](http://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
-The other notebooks in this lecture series are indexed at [https://qutip.org/tutorials](https://qutip.org/tutorials).
+This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
 %matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-```
-
-```python
-from qutip import *
+from qutip import n_thermal, sigmam, sigmap, sigmax, sigmay , sigmaz, liouvillian, spre, spost, basis, mesolve, Bloch
 ```
 
 ## Introduction
@@ -56,13 +57,13 @@ Below we will solve these master equations numerically using QuTiP, and visualiz
 ### Problem parameters
 
 ```python
-w0 = 1.0 * 2 * pi
+w0 = 1.0 * 2 * np.pi
 gamma0 = 0.05
 ```
 
 ```python
 # the temperature of the environment in frequency units
-w_th = 0.0 * 2 * pi
+w_th = 0.0 * 2 * np.pi
 ```
 
 ```python
@@ -77,17 +78,17 @@ Nth
 ```python
 # squeezing parameter for the environment
 r = 1.0
-theta = 0.1 * pi
+theta = 0.1 * np.pi
 ```
 
 ```python
-N = Nth * (cosh(r) ** 2 + sinh(r) ** 2) + sinh(r) ** 2
+N = Nth * (np.cosh(r) ** 2 + np.sinh(r) ** 2) + np.sinh(r) ** 2
 
 N
 ```
 
 ```python
-M = - cosh(r) * sinh(r) * exp(-1j * theta) * (2 * Nth + 1)
+M = - np.cosh(r) * np.sinh(r) * np.exp(-1j * theta) * (2 * Nth + 1)
 
 M
 ```
@@ -109,7 +110,7 @@ H = - 0.5 * w0 * sigmaz()  # by adding the hamiltonian here, so we move back to 
 ```
 
 ```python
-c_ops = [sqrt(gamma0 * (N + 1)) * sm, sqrt(gamma0 * N) * sp]
+c_ops = [np.sqrt(gamma0 * (N + 1)) * sm, np.sqrt(gamma0 * N) * sp]
 ```
 
 Let's first construct the standard part of the Liouvillian, corresponding the unitary contribution and the first two terms in the first master equation given above:
@@ -123,7 +124,7 @@ L0
 Next we manually construct the Liouvillian for the effect of the squeeing in the environment, which is not on standard form we can therefore not use the `liouvillian` function in QuTiP
 
 ```python
-Lsq = - gamma0 * M * spre(sp) * spost(sp) - gamma0 * conjugate(M) * spre(sm) * spost(sm)
+Lsq = - gamma0 * M * spre(sp) * spost(sp) - gamma0 * M.conj() * spre(sm) * spost(sm)
 
 Lsq
 ```
@@ -165,7 +166,7 @@ ax.plot(result1.times, result1.expect[1], 'g', label=r'$\langle\sigma_y\rangle$'
 ax.plot(result1.times, result1.expect[2], 'b', label=r'$\langle\sigma_z\rangle$')
 
 sz_ss_analytical = - 1 / (2 * N + 1)
-ax.plot(result1.times, sz_ss_analytical * np.ones(shape(result1.times)), 'k--', 
+ax.plot(result1.times, sz_ss_analytical * np.ones(result1.times.shape), 'k--', 
         label=r'$\langle\sigma_z\rangle_s$ analytical')
 
 
@@ -186,7 +187,7 @@ b.show()
 We can solve the alternative master equation, which is on the standard Lindblad form, directly using the QuTiP `mesolve` function:
 
 ```python
-c_ops = [sqrt(gamma0) * (sm * cosh(r) + sp * sinh(r) * exp(1j*theta))]
+c_ops = [np.sqrt(gamma0) * (sm * np.cosh(r) + sp * np.sinh(r) * np.exp(1j*theta))]
 ```
 
 ```python
@@ -203,7 +204,7 @@ ax.plot(result2.times, result2.expect[1], 'g', label=r'$\langle\sigma_y\rangle$'
 ax.plot(result2.times, result2.expect[2], 'b', label=r'$\langle\sigma_z\rangle$')
 
 sz_ss_analytical = - 1 / (2 * N + 1)
-ax.plot(result2.times, sz_ss_analytical * np.ones(shape(result2.times)), 'k--', 
+ax.plot(result2.times, sz_ss_analytical * np.ones(result2.times.shape), 'k--', 
         label=r'$\langle\sigma_z\rangle_s$ analytical')
 
 
@@ -241,7 +242,7 @@ axes[2].set_xlabel("time", fontsize=16);
 # for vacuum: 
 r = 0
 theta = 0.0
-c_ops = [sqrt(gamma0) * (sm * cosh(r) + sp * sinh(r) * exp(1j*theta))]
+c_ops = [np.sqrt(gamma0) * (sm * np.cosh(r) + sp * np.sinh(r) * np.exp(1j*theta))]
 ```
 
 ```python
@@ -252,7 +253,7 @@ result1 = mesolve(H, psi0, tlist, c_ops, e_ops)
 # for squeezed vacuum: 
 r = 1.0
 theta = 0.0
-c_ops = [sqrt(gamma0) * (sm * cosh(r) + sp * sinh(r) * exp(1j*theta))]
+c_ops = [np.sqrt(gamma0) * (sm * np.cosh(r) + sp * np.sinh(r) * np.exp(1j*theta))]
 ```
 
 ```python
@@ -285,5 +286,6 @@ From this comparison it's clear that dissipation into a squeezed vacuum is faste
 ### Software versions
 
 ```python
-from qutip.ipynbtools import version_table; version_table()
+from qutip import about
+about()
 ```

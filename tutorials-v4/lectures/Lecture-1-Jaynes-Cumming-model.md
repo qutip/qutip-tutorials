@@ -29,8 +29,8 @@ import numpy as np
 ```
 
 ```python
-# make qutip available in the rest of the notebook
-from qutip import *
+# import functionality used in this notebook
+from qutip import tensor, basis, destroy, qeye, mesolve, ptrace, wigner
 ```
 
 # Introduction
@@ -173,7 +173,7 @@ tlist[t_idx]
 
 ```python
 # get a list density matrices
-rho_list = np.array(output.states)[t_idx]
+rho_list = [output.states[i] for i in t_idx]
 ```
 
 ```python
@@ -206,7 +206,7 @@ At $t =0$, the cavity is in it's ground state. At $t = 5, 15, 25$ it reaches it'
 
 ```python
 t_idx = np.where([tlist == t for t in [0.0, 5.0, 10, 15, 20, 25]])[1]
-rho_list = np.array(output.states)[t_idx]
+rho_list = [output.states[i] for i in t_idx]
 
 fig_grid = (2, len(rho_list)*2)
 fig = plt.figure(figsize=(2.5*len(rho_list),5))
@@ -232,4 +232,8 @@ ax.set_ylabel('Occupation probability');
 ```python
 from qutip import about
 about()
+```
+
+```python
+
 ```

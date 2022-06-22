@@ -6,15 +6,19 @@ jupyter:
       format_name: markdown
       format_version: '1.3'
       jupytext_version: 1.13.8
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
 ---
 
 # Lecture 8 - Adiabatic sweep
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-The latest version of this [IPython notebook](http://ipython.org/ipython-doc/dev/interactive/htmlnotebook.html) lecture is available at [http://github.com/jrjohansson/qutip-lectures](http://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
-The other notebooks in this lecture series are indexed at [https://qutip.org/tutorials](https://qutip.org/tutorials).
+This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 
 ## Introduction
@@ -35,11 +39,7 @@ In this notebook we explore the dynamics of a spin Hamiltonian that is transform
 %matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-```
-
-```python
-from qutip import *
-from scipy import *
+from qutip import qeye, sigmax, sigmay, sigmaz, tensor, basis, qobj_list_evaluate, mesolve
 ```
 
 ### Parameters
@@ -49,10 +49,10 @@ N = 6   # number of spins
 M = 20  # number of eigenenergies to plot
 
 # array of spin energy splittings and coupling strengths (random values). 
-h  = 1.0 * 2 * pi * (1 - 2 * rand(N))
-Jz = 1.0 * 2 * pi * (1 - 2 * rand(N))
-Jx = 1.0 * 2 * pi * (1 - 2 * rand(N))
-Jy = 1.0 * 2 * pi * (1 - 2 * rand(N))
+h  = 1.0 * 2 * np.pi * (1 - 2 * np.random.rand(N))
+Jz = 1.0 * 2 * np.pi * (1 - 2 * np.random.rand(N))
+Jx = 1.0 * 2 * np.pi * (1 - 2 * np.random.rand(N))
+Jy = 1.0 * 2 * np.pi * (1 - 2 * np.random.rand(N))
 
 # increase taumax to get make the sweep more adiabatic
 taumax = 5.0
@@ -136,7 +136,7 @@ def process_rho(tau, psi):
     # find the M lowest eigenvalues of the system
     evals, ekets = H.eigenstates(eigvals=M)
 
-    evals_mat[idx[0],:] = real(evals)
+    evals_mat[idx[0],:] = np.real(evals)
     
     # find the overlap between the eigenstates and psi 
     for n, eket in enumerate(ekets):
@@ -168,7 +168,7 @@ fig, axes = plt.subplots(2, 1, figsize=(12,10))
 # first draw thin lines outlining the energy spectrum
 for n in range(len(evals_mat[0,:])):
     ls,lw = ('b',1) if n == 0 else ('k', 0.25)
-    axes[0].plot(taulist/max(taulist), evals_mat[:,n] / (2*pi), ls, lw=lw)
+    axes[0].plot(taulist/max(taulist), evals_mat[:,n] / (2*np.pi), ls, lw=lw)
 
 # second, draw line that encode the occupation probability of each state in 
 # its linewidth. thicker line => high occupation probability.
@@ -176,8 +176,8 @@ for idx in range(len(taulist)-1):
     for n in range(len(P_mat[0,:])):
         lw = 0.5 + 4*P_mat[idx,n]    
         if lw > 0.55:
-           axes[0].plot(array([taulist[idx], taulist[idx+1]])/taumax, 
-                        array([evals_mat[idx,n], evals_mat[idx+1,n]])/(2*pi), 
+           axes[0].plot(np.array([taulist[idx], taulist[idx+1]])/taumax, 
+                        np.array([evals_mat[idx,n], evals_mat[idx+1,n]])/(2*np.pi), 
                         'r', linewidth=lw)    
         
 axes[0].set_xlabel(r'$\tau$')
@@ -204,7 +204,6 @@ axes[1].legend(("Ground state",));
 ### Software versions:
 
 ```python
-from qutip.ipynbtools import version_table
-
-version_table()
+from qutip import about
+about()
 ```

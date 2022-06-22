@@ -27,11 +27,7 @@ This is a slightly modified version of the lectures, to work with the current re
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib as mpl
-```
-
-```python
-# make qutip available in the rest of the notebook
-from qutip import *
+from qutip import tensor, destroy, qeye, basis, expect, ptrace, wigner, entropy_vn, mesolve
 ```
 
 <!-- #region -->
@@ -167,8 +163,8 @@ ax.set_ylabel('Occupation probability');
 ## Entropy of atom/cavity as a measure of entanglement
 
 ```python
-entropy_cavity = np.zeros(shape(g_vec))
-entropy_atom   = np.zeros(shape(g_vec))
+entropy_cavity = np.zeros(g_vec.shape)
+entropy_atom   = np.zeros(g_vec.shape)
 
 for idx, psi in enumerate(psi_list):
     
@@ -301,9 +297,9 @@ output = mesolve(H, psi0, tlist, [np.sqrt(kappa) * a], [])
 ```
 
 ```python
-entropy_tot    = np.zeros(shape(tlist))
-entropy_cavity = np.zeros(shape(tlist))
-entropy_atom   = np.zeros(shape(tlist))
+entropy_tot    = np.zeros(tlist.shape)
+entropy_cavity = np.zeros(tlist.shape)
+entropy_atom   = np.zeros(tlist.shape)
 
 for idx, rho in enumerate(output.states):
     
@@ -332,4 +328,8 @@ axes.legend(loc=0);
 ```python
 from qutip import about
 about()
+```
+
+```python
+
 ```
