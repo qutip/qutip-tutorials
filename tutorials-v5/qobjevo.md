@@ -7,7 +7,7 @@ jupyter:
       format_version: '1.3'
       jupytext_version: 1.13.8
   kernelspec:
-    display_name: Python 3
+    display_name: Python 3 (ipykernel)
     language: python
     name: python3
 ---
@@ -119,8 +119,6 @@ proj pi
 ```
 In addition, `np` refers to `numpy` and `spe` to `scipy.special`.
 
-String dependence can be compiled down to C code if Cython is available (or to pure Python if it isn't).  Compiling to C takes a comparatively long time, but if you plan to reuse the same time dependence a lot, this will produce the fastest code.
-
 ```python
 string_form = qutip.QobjEvo([n, [a + ad, "cos(t)"]])
 ```
@@ -161,15 +159,8 @@ string_form(2)
 array_form(2)
 ```
 
-## Compilation
-
-
-If you have Cython available, `QobjEvo` can compile itself down to C code for speed.  This will be most successful with the string format of time dependence.  The compilation process is likely to be slow, but afterwards the `QobjEvo` should return values significantly faster.
-
-Compilation is done with the `QobjEvo.compile()` method, and modifies the object in-place.  Calling the same method again will not force a recompilation.  This is important for re-using compiled `QobjEvo` objects - the solvers will not need to recompile each time the same object is passed.
 
 ```python
-string_form.compile()
 string_form(4)
 ```
 
@@ -217,11 +208,10 @@ td_args_str(2, args={"delta": 10})
 
 ### Using objects
 
-The argument value need not just be a number.  Even Cython-compiled strings can accept functions which Cython can call natively, such as the core `numpy` functions.
+The argument value need not just be a number. Even strings can accept functions which Cython can call natively, such as the core `numpy` functions.
 
 ```python
 td_args_str = qutip.QobjEvo([I, "f(t)"], args={"f": np.cos})
-td_args_str.compile()
 td_args_str(0.0)
 ```
 
@@ -293,4 +283,8 @@ liouv(0)
 
 ```python
 qutip.about()
+```
+
+```python
+
 ```

@@ -39,10 +39,10 @@ import needed packages.
 
 ```python
 %matplotlib inline
-from qutip import Qobj, sesolve, basis, Bloch, sigmaz, sigmay
-import qutip
 import matplotlib.pyplot as plt
 import numpy as np
+import qutip
+from qutip import Bloch, Qobj, basis, sesolve, sigmay, sigmaz
 ```
 
 In the next step we setup some qubit state and plot it on the bloch sphere. It's
@@ -69,7 +69,7 @@ result = sesolve(H, psi, times, [sigmay()])
 
 # plot the expectation value
 plt.plot(times, result.expect[0])
-plt.xlabel('Time'), plt.ylabel('<sigma_y>')
+plt.xlabel("Time"), plt.ylabel("<sigma_y>")
 plt.show()
 ```
 
@@ -93,7 +93,6 @@ so it's not interfering with the user experience. Please, define the tests
 using `assert`, so that the cell execution fails if a wrong output is generated.
 
 ```python
-assert np.allclose(result.expect[0][0],
-                   0), 'Expectation value does not start at 1'
+assert np.allclose(result.expect[0][0], 0), "Expectation value does not start at 1"
 assert 1 == 1
 ```
