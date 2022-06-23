@@ -17,8 +17,9 @@ Made by Eric Giguere, updated by Jake Lishman
 
 ```python
 # Basic setup
-import qutip
 import numpy as np
+import qutip
+
 size = 4
 t = 1.0
 a = qutip.destroy(size)
@@ -88,7 +89,8 @@ where `t` is the time, `args` is a dictionary containing arguments which you can
 def cos_t(t, args):
     return np.cos(t)
 
-function_form = qutip.QobjEvo([n, [a+ad, cos_t]])
+
+function_form = qutip.QobjEvo([n, [a + ad, cos_t]])
 ```
 
 If you need something more complex, such as a state with memory or to build a parametrised set of functions where the arguments will not change once set, you can use a class which implements `__call__`.
@@ -97,11 +99,12 @@ If you need something more complex, such as a state with memory or to build a pa
 class callable_time_dependence:
     def __init__(self, add):
         self.add = add
-    
+
     def __call__(self, t, args):
         return self.add + np.cos(t)
-    
-callable_form = qutip.QobjEvo([n, [a+ad, callable_time_dependence(2)]])
+
+
+callable_form = qutip.QobjEvo([n, [a + ad, callable_time_dependence(2)]])
 ```
 
 ### String time dependence
@@ -117,7 +120,7 @@ proj pi
 In addition, `np` refers to `numpy` and `spe` to `scipy.special`.
 
 ```python
-string_form = qutip.QobjEvo([n, [a+ad, "cos(t)"]])
+string_form = qutip.QobjEvo([n, [a + ad, "cos(t)"]])
 ```
 
 ### Array dependence
@@ -129,7 +132,7 @@ The times in `tlist` must be sorted, but they don't need to be evenly distribute
 ```python
 tlist = np.linspace(0, 10, 101)
 values = np.cos(tlist)
-array_form = qutip.QobjEvo([n, [a+ad, values]], tlist=tlist)
+array_form = qutip.QobjEvo([n, [a + ad, values]], tlist=tlist)
 ```
 
 ## Evaluation
@@ -175,9 +178,10 @@ You can pass `args` directly at instantiation, and these will be used in every c
 
 ```python
 def coeff_with_args(t, args):
-    return t + args['delta']
+    return t + args["delta"]
 
-td_args = qutip.QobjEvo([I, coeff_with_args], args={'delta': 1.}) 
+
+td_args = qutip.QobjEvo([I, coeff_with_args], args={"delta": 1.0})
 td_args(2)
 ```
 
@@ -194,7 +198,7 @@ td_args(2)
 ### String form
 
 ```python
-td_args_str = qutip.QobjEvo([I, "t + delta"], args={"delta": 1.}) 
+td_args_str = qutip.QobjEvo([I, "t + delta"], args={"delta": 1.0})
 td_args_str(2)
 ```
 
@@ -207,8 +211,8 @@ td_args_str(2, args={"delta": 10})
 The argument value need not just be a number. Even strings can accept functions which Cython can call natively, such as the core `numpy` functions.
 
 ```python
-td_args_str = qutip.QobjEvo([I, "f(t)"], args={'f': np.cos}) 
-td_args_str(0.)
+td_args_str = qutip.QobjEvo([I, "f(t)"], args={"f": np.cos})
+td_args_str(0.0)
 ```
 
 ```python
@@ -230,21 +234,20 @@ There several of these "magic" variables, mostly revolving around the state curr
 ```python
 args = {"state": None}
 
+
 def print_args(t, args):
-    print("\n".join([
-        '"' + key + '":\n' + repr(value)
-        for key, value in args.items()
-    ]))
+    print("\n".join(['"' + key + '":\n' + repr(value) for key, value in args.items()]))
     return t
 
-td_args = qutip.QobjEvo([I, print_args], args=args) 
+
+td_args = qutip.QobjEvo([I, print_args], args=args)
 td_args(0)
 ```
 
 ```python
 # The `state` keyword argument is typically unused.
 # Here it just simulates being inside a solver at a particular state.
-td_args(0, state=qutip.basis(4,2))
+td_args(0, state=qutip.basis(4, 2))
 ```
 
 ## Mathematics
