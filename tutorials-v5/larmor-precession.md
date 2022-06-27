@@ -29,11 +29,12 @@ You can also find more on time evolutions with QuTiP [here](https://qutip.org/do
 
 First thing is to import the required functions, classes and modules.
 ```python
-%matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
 import qutip
-from qutip import Bloch, Qobj, QobjEvo, basis, sesolve, sigmay, sigmaz
+from qutip import Bloch, QobjEvo, basis, sesolve, sigmay, sigmaz
+
+%matplotlib inline
 ```
 
 We setup a arbitrary qubit state, which is in a superposition of the two qubit states. We use the `qutip.Bloch` class to visualize the state on the Bloch sphere.
@@ -132,8 +133,6 @@ limited to constant Hamiltonians, but we can also make use of time-dependent Ham
 ### About
 
 ```python
-import qutip
-
 qutip.about()
 ```
 
