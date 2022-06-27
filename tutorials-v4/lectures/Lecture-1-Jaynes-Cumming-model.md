@@ -22,15 +22,12 @@ This lecture series was developed by J.R. Johannson. The original lecture notebo
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
-%matplotlib inline
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
-```
+from qutip import about, basis, destroy, mesolve, ptrace, qeye, tensor, wigner
 
-```python
-# import functionality used in this notebook
-from qutip import basis, destroy, mesolve, ptrace, qeye, tensor, wigner
+%matplotlib inline
 ```
 
 # Introduction
@@ -77,9 +74,11 @@ sm = tensor(qeye(N), destroy(2))
 
 # Hamiltonian
 if use_rwa:
-    H = wc * a.dag() * a + wa * sm.dag() * sm + g * (a.dag() * sm + a * sm.dag())
+    H = wc * a.dag() * a + wa * sm.dag() * sm + \
+        g * (a.dag() * sm + a * sm.dag())
 else:
-    H = wc * a.dag() * a + wa * sm.dag() * sm + g * (a.dag() + a) * (sm + sm.dag())
+    H = wc * a.dag() * a + wa * sm.dag() * sm + \
+        g * (a.dag() + a) * (sm + sm.dag())
 ```
 
 ### Create a list of collapse operators that describe the dissipation
@@ -154,7 +153,8 @@ len(output.states)
 ```
 
 ```python
-output.states[-1]  # indexing the list with -1 results in the last element in the list
+# indexing the list with -1 results in the last element in the list
+output.states[-1]
 ```
 
 Now let's look at the Wigner functions at the point in time when atom is in its ground state: $t = \\{5, 15, 25\\}$ (see the plot above). 
@@ -181,7 +181,8 @@ rho_list = [output.states[i] for i in t_idx]
 
 xvec = np.linspace(-3, 3, 200)
 
-fig, axes = plt.subplots(1, len(rho_list), sharex=True, figsize=(3 * len(rho_list), 3))
+fig, axes = plt.subplots(1, len(rho_list), sharex=True,
+                         figsize=(3 * len(rho_list), 3))
 
 for idx, rho in enumerate(rho_list):
 
@@ -243,8 +244,6 @@ ax.set_ylabel("Occupation probability");
 ### Software versions
 
 ```python
-from qutip import about
-
 about()
 ```
 

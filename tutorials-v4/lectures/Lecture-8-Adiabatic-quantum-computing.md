@@ -36,11 +36,12 @@ If the Hamiltonian is transformed from $H_0$ to $H_1$ too quickly, the system wi
 In this notebook we explore the dynamics of a spin Hamiltonian that is transformed from a simple Hamiltonian with an easy to prepare ground state, into a random spin Hamiltonian with a complicated ground state.
 
 ```python
-%matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import (basis, mesolve, qeye, qobj_list_evaluate, sigmax, sigmay,
-                   sigmaz, tensor)
+from qutip import (about, basis, mesolve, qeye, qobj_list_evaluate, sigmax,
+                   sigmay, sigmaz, tensor)
+
+%matplotlib inline
 ```
 
 ### Parameters
@@ -173,7 +174,8 @@ fig, axes = plt.subplots(2, 1, figsize=(12, 10))
 # first draw thin lines outlining the energy spectrum
 for n in range(len(evals_mat[0, :])):
     ls, lw = ("b", 1) if n == 0 else ("k", 0.25)
-    axes[0].plot(taulist / max(taulist), evals_mat[:, n] / (2 * np.pi), ls, lw=lw)
+    axes[0].plot(taulist / max(taulist), evals_mat[:, n] / (2 * np.pi), ls,
+                 lw=lw)
 
 # second, draw line that encode the occupation probability of each state in
 # its linewidth. thicker line => high occupation probability.
@@ -183,7 +185,8 @@ for idx in range(len(taulist) - 1):
         if lw > 0.55:
             axes[0].plot(
                 np.array([taulist[idx], taulist[idx + 1]]) / taumax,
-                np.array([evals_mat[idx, n], evals_mat[idx + 1, n]]) / (2 * np.pi),
+                np.array([evals_mat[idx, n], evals_mat[idx + 1, n]])
+                / (2 * np.pi),
                 "r",
                 linewidth=lw,
             )
@@ -216,7 +219,5 @@ axes[1].legend(("Ground state",));
 ### Software versions:
 
 ```python
-from qutip import about
-
 about()
 ```

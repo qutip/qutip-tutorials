@@ -24,13 +24,14 @@ This is a slightly modified version of the lectures, to work with the current re
 ```python
 # setup the matplotlib graphics library and configure it to show
 # figures inline in the notebook
-%matplotlib inline
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 from IPython.display import Image
-from qutip import (Options, basis, destroy, expect, mesolve, ptrace, qeye,
-                   sigmax, steadystate, tensor, wigner)
+from qutip import (Options, about, basis, destroy, expect, mesolve, ptrace,
+                   qeye, sigmax, steadystate, tensor, wigner)
+
+%matplotlib inline
 ```
 
 # Introduction and model
@@ -134,7 +135,8 @@ Here we evolve the system with the Lindblad master equation solver, and we reque
 
 ```python
 opt = Options(nsteps=2000)  # allow extra time-steps
-output = mesolve(H, psi0, tlist, c_ops, [a.dag() * a, sm.dag() * sm], options=opt)
+output = mesolve(H, psi0, tlist, c_ops, [a.dag() * a, sm.dag() * sm],
+                 options=opt)
 ```
 
 ## Visualize the results
@@ -181,7 +183,8 @@ axes[1].contourf(
 axes[1].set_xlabel(r"Im $\alpha$", fontsize=18)
 axes[1].set_ylabel(r"Re $\alpha$", fontsize=18)
 
-axes[0].bar(np.arange(0, N), np.real(rho_cavity.diag()), color="blue", alpha=0.6)
+axes[0].bar(np.arange(0, N), np.real(rho_cavity.diag()), color="blue",
+            alpha=0.6)
 axes[0].set_ylim(0, 1)
 axes[0].set_xlim(0, N)
 axes[0].set_xlabel("Fock number", fontsize=18)
@@ -192,7 +195,8 @@ axes[0].set_ylabel("Occupation probability", fontsize=18);
 
 ```python
 tlist = np.linspace(0, 25, 5)
-output = mesolve(H, psi0, tlist, c_ops, [], options=Options(nsteps=5000))
+output = mesolve(H, psi0, tlist, c_ops, [],
+                 options=Options(nsteps=5000))
 ```
 
 ```python
@@ -200,7 +204,8 @@ rho_ss_sublist = output.states
 
 xvec = np.linspace(-5, 5, 200)
 
-fig, axes = plt.subplots(2, len(rho_ss_sublist), figsize=(3 * len(rho_ss_sublist), 6))
+fig, axes = plt.subplots(2, len(rho_ss_sublist),
+                         figsize=(3 * len(rho_ss_sublist), 6))
 
 for idx, rho_ss in enumerate(rho_ss_sublist):
 
@@ -223,9 +228,8 @@ for idx, rho_ss in enumerate(rho_ss_sublist):
     axes[0, idx].set_title(r"$t = %.1f$" % tlist[idx])
 
     # plot its fock-state distribution
-    axes[1, idx].bar(
-        np.arange(0, N), np.real(rho_ss_cavity.diag()), color="blue", alpha=0.8
-    )
+    axes[1, idx].bar(np.arange(0, N), np.real(rho_ss_cavity.diag()),
+                     color="blue", alpha=0.8)
     axes[1, idx].set_ylim(0, 1)
     axes[1, idx].set_xlim(0, 15)
 ```
@@ -295,16 +299,16 @@ axes.plot(
 )
 
 axes.set_xlabel(r"$\Gamma\kappa/(4g^2)$", fontsize=18)
-axes.set_ylabel(r"Occupation probability $\langle n \rangle$", fontsize=18)
+axes.set_ylabel(r"Occupation probability $\langle n \rangle$",
+                fontsize=18)
 axes.set_xlim(0, 2);
 ```
 
 ```python
 fig, axes = plt.subplots(1, 1, figsize=(12, 6))
 
-axes.plot(
-    Gamma_vec * kappa / (4 * g**2), g2_vec, color="blue", alpha=0.6, label="numerical"
-)
+axes.plot(Gamma_vec * kappa / (4 * g**2), g2_vec, color="blue", alpha=0.6,
+          label="numerical")
 
 axes.set_xlabel(r"$\Gamma\kappa/(4g^2)$", fontsize=18)
 axes.set_ylabel(r"$g^{(2)}(0)$", fontsize=18)
@@ -356,7 +360,8 @@ axes[1].contourf(
 axes[1].set_xlabel(r"Im $\alpha$", fontsize=18)
 axes[1].set_ylabel(r"Re $\alpha$", fontsize=18)
 
-axes[0].bar(np.arange(0, N), np.real(rho_cavity.diag()), color="blue", alpha=0.6)
+axes[0].bar(np.arange(0, N), np.real(rho_cavity.diag()), color="blue",
+            alpha=0.6)
 axes[0].set_xlabel(r"$n$", fontsize=18)
 axes[0].set_ylabel(r"Occupation probability", fontsize=18)
 axes[0].set_ylim(0, 1)
@@ -399,7 +404,8 @@ axes[1].contourf(
 axes[1].set_xlabel(r"Im $\alpha$", fontsize=18)
 axes[1].set_ylabel(r"Re $\alpha$", fontsize=18)
 
-axes[0].bar(np.arange(0, N), np.real(rho_cavity.diag()), color="blue", alpha=0.6)
+axes[0].bar(np.arange(0, N), np.real(rho_cavity.diag()), color="blue",
+            alpha=0.6)
 axes[0].set_xlabel(r"$n$", fontsize=18)
 axes[0].set_ylabel(r"Occupation probability", fontsize=18)
 axes[0].set_ylim(0, 1)
@@ -412,7 +418,5 @@ Too large pumping rate $\Gamma$ kills the lasing process: reversed threshold.
 ### Software version
 
 ```python
-from qutip import about
-
 about()
 ```

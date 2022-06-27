@@ -21,14 +21,17 @@ This lecture series was developed by J.R. Johannson. The original lecture notebo
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
-%matplotlib inline
+from base64 import b64encode
+
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 from IPython.display import HTML
 from matplotlib import animation
-from qutip import (coherent, destroy, expect, isket, ket2dm, mesolve, num,
-                   variance, wigner)
+from qutip import (about, coherent, destroy, expect, isket, ket2dm, mesolve,
+                   num, variance, wigner)
+
+%matplotlib inline
 ```
 
 ## Introduction
@@ -85,7 +88,8 @@ def plot_expect_with_variance(N, op_list, op_title, states):
         v_op = variance(op, states)
 
         axes[idx].fill_between(
-            tlist, e_op - np.sqrt(v_op), e_op + np.sqrt(v_op), color="green", alpha=0.5
+            tlist, e_op - np.sqrt(v_op), e_op + np.sqrt(v_op), color="green",
+            alpha=0.5
         )
         axes[idx].plot(tlist, e_op)
         axes[idx].set_xlabel("Time")
@@ -98,8 +102,8 @@ def plot_expect_with_variance(N, op_list, op_title, states):
 ```python
 def plot_wigner(rho, fig=None, ax=None):
     """
-    Plot the Wigner function and the Fock state distribution given a density matrix for
-    a harmonic oscillator mode.
+    Plot the Wigner function and the Fock state distribution given a density
+    matrix for a harmonic oscillator mode.
     """
 
     if fig is None or ax is None:
@@ -135,7 +139,7 @@ def plot_fock_distribution_vs_time(tlist, states, fig=None, ax=None):
     for state_idx, state in enumerate(states):
         Z[state_idx, :] = np.real(ket2dm(state).diag())
 
-    if fig is None or axes is None:
+    if fig is None or ax is None:
         fig, ax = plt.subplots(1, 1, figsize=(8, 6))
 
     Y, X = np.meshgrid(tlist, range(states[0].shape[0]))
@@ -157,13 +161,11 @@ def plot_fock_distribution_vs_time(tlist, states, fig=None, ax=None):
 ```
 
 ```python
-from base64 import b64encode
-
-
 def display_embedded_video(filename):
     video = open(filename, "rb").read()
     video_encoded = b64encode(video).decode("ascii")
-    video_tag = '<video controls alt="test" src="data:video/x-m4v;base64,{0}">'.format(
+    video_tag = '<video controls alt="test" \
+                src="data:video/x-m4v;base64,{0}">'.format(
         video_encoded
     )
     return HTML(video_tag)
@@ -210,7 +212,8 @@ def update(n):
     return ax.artists
 
 
-anim = animation.FuncAnimation(fig, update, frames=len(result.states), blit=True)
+anim = animation.FuncAnimation(fig, update, frames=len(result.states),
+                               blit=True)
 
 anim.save("animation-kerr-coherent-state.mp4", fps=10, writer="ffmpeg")
 
@@ -238,7 +241,8 @@ anim = animation.FuncAnimation(
     fig, update, frames=int(len(result.states) / 2 + 1), blit=True
 )
 
-anim.save("animation-kerr-coherent-state-half-period.mp4", fps=10, writer="ffmpeg")
+anim.save("animation-kerr-coherent-state-half-period.mp4",
+          fps=10, writer="ffmpeg")
 
 plt.close(fig)
 ```
@@ -267,8 +271,6 @@ plot_wigner(psi);
 ### Software versions
 
 ```python
-from qutip import about
-
 about()
 ```
 

@@ -38,11 +38,12 @@ The first thing we do in this notebook (and possibly in any notebook) is that we
 import needed packages.
 
 ```python
-%matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
 import qutip
-from qutip import Bloch, Qobj, basis, sesolve, sigmay, sigmaz
+from qutip import Bloch, basis, sesolve, sigmay, sigmaz
+
+%matplotlib inline
 ```
 
 In the next step we setup some qubit state and plot it on the bloch sphere. It's
@@ -80,8 +81,6 @@ notebook was executed and make it reproducible for others.
 ### About
 
 ```python
-import qutip
-
 qutip.about()
 ```
 
@@ -93,6 +92,7 @@ so it's not interfering with the user experience. Please, define the tests
 using `assert`, so that the cell execution fails if a wrong output is generated.
 
 ```python
-assert np.allclose(result.expect[0][0], 0), "Expectation value does not start at 1"
+assert np.allclose(result.expect[0][0], 0), 
+    "Expectation value does not start at 1"
 assert 1 == 1
 ```

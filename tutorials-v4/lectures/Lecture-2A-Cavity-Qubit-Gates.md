@@ -21,11 +21,14 @@ This lecture series was developed by J.R. Johannson. The original lecture notebo
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
-%matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import (basis, concurrence, destroy, expect, fidelity, ket2dm,
-                   mesolve, phasegate, ptrace, qeye, sigmaz, sqrtiswap, tensor)
+from qutip import (about, basis, concurrence, destroy, expect, fidelity,
+                   ket2dm, mesolve, phasegate, ptrace, qeye, sigmaz, sqrtiswap,
+                   tensor)
+from scipy.special import sici
+
+%matplotlib inline
 ```
 
 ## Parameters
@@ -168,9 +171,12 @@ axes[0].set_ylim(1, 6)
 axes[0].set_ylabel("Energy (GHz)", fontsize=16)
 axes[0].legend()
 
-axes[1].plot(tlist, np.real(expect(n, res.states)), "r", linewidth=2, label="cavity")
-axes[1].plot(tlist, np.real(expect(n1, res.states)), "b", linewidth=2, label="qubit 1")
-axes[1].plot(tlist, np.real(expect(n2, res.states)), "g", linewidth=2, label="qubit 2")
+axes[1].plot(tlist, np.real(expect(n, res.states)), "r",
+             linewidth=2, label="cavity")
+axes[1].plot(tlist, np.real(expect(n1, res.states)), "b",
+             linewidth=2, label="qubit 1")
+axes[1].plot(tlist, np.real(expect(n2, res.states)), "g",
+             linewidth=2, label="qubit 2")
 axes[1].set_ylim(0, 1)
 
 axes[1].set_xlabel("Time (ns)", fontsize=16)
@@ -194,7 +200,8 @@ rho_qubits
 ```
 
 ```python
-# compare to the ideal result of the sqrtiswap gate (plus phase correction) for the current initial state
+# compare to the ideal result of the sqrtiswap gate (plus phase correction)
+# for the current initial state
 rho_qubits_ideal = ket2dm(
     tensor(phasegate(0), phasegate(-np.pi / 2))
     * sqrtiswap()
@@ -264,9 +271,12 @@ axes[0].set_ylim(1, 6)
 axes[0].set_ylabel("Energy (GHz)", fontsize=16)
 axes[0].legend()
 
-axes[1].plot(tlist, np.real(expect(n, res.states)), "r", linewidth=2, label="cavity")
-axes[1].plot(tlist, np.real(expect(n1, res.states)), "b", linewidth=2, label="qubit 1")
-axes[1].plot(tlist, np.real(expect(n2, res.states)), "g", linewidth=2, label="qubit 2")
+axes[1].plot(tlist, np.real(expect(n, res.states)), "r", linewidth=2,
+             label="cavity")
+axes[1].plot(tlist, np.real(expect(n1, res.states)), "b", linewidth=2,
+             label="qubit 1")
+axes[1].plot(tlist, np.real(expect(n2, res.states)), "g", linewidth=2,
+             label="qubit 2")
 axes[1].set_ylim(0, 1)
 
 axes[1].set_xlabel("Time (ns)", fontsize=16)
@@ -345,9 +355,12 @@ axes[0].set_ylim(1, 6)
 axes[0].set_ylabel("Energy (GHz)", fontsize=16)
 axes[0].legend()
 
-axes[1].plot(tlist, np.real(expect(n, res.states)), "r", linewidth=2, label="cavity")
-axes[1].plot(tlist, np.real(expect(n1, res.states)), "b", linewidth=2, label="qubit 1")
-axes[1].plot(tlist, np.real(expect(n2, res.states)), "g", linewidth=2, label="qubit 2")
+axes[1].plot(tlist, np.real(expect(n, res.states)), "r", linewidth=2,
+             label="cavity")
+axes[1].plot(tlist, np.real(expect(n1, res.states)), "b", linewidth=2,
+             label="qubit 1")
+axes[1].plot(tlist, np.real(expect(n2, res.states)), "g", linewidth=2,
+             label="qubit 2")
 axes[1].set_ylim(0, 1)
 
 axes[1].set_xlabel("Time (ns)", fontsize=16)
@@ -375,9 +388,6 @@ concurrence(rho_qubits)
 # Two-qubit iSWAP gate: Finite rise time with overshoot
 
 ```python
-from scipy.special import sici
-
-
 def step_t(w1, w2, t0, width, t):
     """
     Step function that goes from w1 to w2 at time t0
@@ -430,9 +440,12 @@ axes[0].set_ylim(1, 6)
 axes[0].set_ylabel("Energy (GHz)", fontsize=16)
 axes[0].legend()
 
-axes[1].plot(tlist, np.real(expect(n, res.states)), "r", linewidth=2, label="cavity")
-axes[1].plot(tlist, np.real(expect(n1, res.states)), "b", linewidth=2, label="qubit 1")
-axes[1].plot(tlist, np.real(expect(n2, res.states)), "g", linewidth=2, label="qubit 2")
+axes[1].plot(tlist, np.real(expect(n, res.states)), "r", linewidth=2,
+             label="cavity")
+axes[1].plot(tlist, np.real(expect(n1, res.states)), "b", linewidth=2,
+             label="qubit 1")
+axes[1].plot(tlist, np.real(expect(n2, res.states)), "g", linewidth=2,
+             label="qubit 2")
 axes[1].set_ylim(0, 1)
 
 axes[1].set_xlabel("Time (ns)", fontsize=16)
@@ -507,9 +520,12 @@ axes[0].set_ylim(1, 6)
 axes[0].set_ylabel("Energy (GHz)", fontsize=16)
 axes[0].legend()
 
-axes[1].plot(tlist, np.real(expect(n, res.states)), "r", linewidth=2, label="cavity")
-axes[1].plot(tlist, np.real(expect(n1, res.states)), "b", linewidth=2, label="qubit 1")
-axes[1].plot(tlist, np.real(expect(n2, res.states)), "g", linewidth=2, label="qubit 2")
+axes[1].plot(tlist, np.real(expect(n, res.states)), "r", linewidth=2,
+             label="cavity")
+axes[1].plot(tlist, np.real(expect(n1, res.states)), "b", linewidth=2,
+             label="qubit 1")
+axes[1].plot(tlist, np.real(expect(n2, res.states)), "g", linewidth=2,
+             label="qubit 2")
 axes[1].set_ylim(0, 1)
 
 axes[1].set_xlabel("Time (ns)", fontsize=16)
@@ -590,9 +606,12 @@ axes[0].set_ylim(1, 6)
 axes[0].set_ylabel("Energy (GHz)", fontsize=16)
 axes[0].legend()
 
-axes[1].plot(tlist, np.real(expect(n, res.states)), "r", linewidth=2, label="cavity")
-axes[1].plot(tlist, np.real(expect(n1, res.states)), "b", linewidth=2, label="qubit 1")
-axes[1].plot(tlist, np.real(expect(n2, res.states)), "g", linewidth=2, label="qubit 2")
+axes[1].plot(tlist, np.real(expect(n, res.states)), "r", linewidth=2,
+             label="cavity")
+axes[1].plot(tlist, np.real(expect(n1, res.states)), "b", linewidth=2,
+             label="qubit 1")
+axes[1].plot(tlist, np.real(expect(n2, res.states)), "g", linewidth=2,
+             label="qubit 2")
 axes[1].set_ylim(0, 1)
 
 axes[1].set_xlabel("Time (ns)", fontsize=16)
@@ -620,7 +639,5 @@ concurrence(rho_qubits)
 ### Software versions
 
 ```python
-from qutip import about
-
 about()
 ```

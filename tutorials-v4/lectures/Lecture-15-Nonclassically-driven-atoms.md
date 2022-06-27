@@ -22,12 +22,14 @@ This lecture series was developed by J.R. Johannson. The original lecture notebo
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
-%matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import (correlation_2op_1t, correlation_4op_1t, destroy, expect,
-                   identity, liouvillian, plot_wigner_fock_distribution,
-                   spectrum_correlation_fft, spost, spre, steadystate, tensor)
+from qutip import (about, correlation_2op_1t, correlation_4op_1t, destroy,
+                   expect, identity, liouvillian,
+                   plot_wigner_fock_distribution, spectrum_correlation_fft,
+                   spost, spre, steadystate, tensor)
+
+%matplotlib inline
 ```
 
 ## Introduction
@@ -179,7 +181,8 @@ L0 = liouvillian(H, [np.sqrt(gamma1) * sm1, np.sqrt(gamma2) * sm2])
 
 ```python
 L1 = -np.sqrt((1 - e1) * (1 - e2) * gamma1 * gamma2) * (
-    spre(sp2 * sm1) - spre(sm1) * spost(sp2) + spost(sp1 * sm2) - spre(sm2) * spost(sp1)
+    spre(sp2 * sm1) - spre(sm1) * spost(sp2) +
+    spost(sp1 * sm2) - spre(sm2) * spost(sp1)
 )
 ```
 
@@ -352,7 +355,5 @@ Similar to Fig. 12.8 in Quantum Noise, although not exactly because of different
 ## Versions
 
 ```python
-from qutip import about
-
 about()
 ```

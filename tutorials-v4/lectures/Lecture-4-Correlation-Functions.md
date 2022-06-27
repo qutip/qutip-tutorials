@@ -21,11 +21,12 @@ This lecture series was developed by J.R. Johannson. The original lecture notebo
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
-%matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import (coherent_dm, correlation, destroy, fock_dm, mesolve, qeye,
-                   tensor)
+from qutip import (about, coherent_dm, correlation, destroy, fock_dm, mesolve,
+                   qeye, steadystate, tensor)
+
+%matplotlib inline
 ```
 
 <!-- #region -->
@@ -71,7 +72,8 @@ g1 = G1 / np.sqrt(n[0] * n)
 fig, axes = plt.subplots(2, 1, sharex=True, figsize=(12, 6))
 
 axes[0].plot(
-    taulist, np.real(g1), "b", label=r"First-order coherence function $g^{(1)}(\tau)$"
+    taulist, np.real(g1), "b",
+    label=r"First-order coherence function $g^{(1)}(\tau)$"
 )
 axes[1].plot(taulist, np.real(n), "r", label=r"occupation number $n(\tau)$")
 axes[0].legend()
@@ -101,10 +103,11 @@ def correlation_ss_gtt(H, tlist, c_ops, a_op, b_op, c_op, d_op, rho0=None):
     .. note::
         Experimental.
     """
-    if rho0 == None:
+    if rho0 is None:
         rho0 = steadystate(H, c_ops)
 
-    return mesolve(H, d_op * rho0 * a_op, tlist, c_ops, [b_op * c_op]).expect[0]
+    return mesolve(H, d_op * rho0 * a_op, tlist, c_ops,
+                   [b_op * c_op]).expect[0]
 ```
 
 ```python
@@ -117,7 +120,8 @@ g2 = G2 / n**2
 fig, axes = plt.subplots(2, 1, sharex=True, figsize=(12, 6))
 
 axes[0].plot(
-    taulist, np.real(g2), "b", label=r"Second-order coherence function $g^{(2)}(\tau)$"
+    taulist, np.real(g2), "b",
+    label=r"Second-order coherence function $g^{(2)}(\tau)$"
 )
 axes[1].plot(taulist, np.real(n), "r", label=r"occupation number $n(\tau)$")
 axes[0].legend(loc=0)
@@ -155,7 +159,8 @@ $L(\tau) = 2\langle Q(\tau)Q(0)\rangle - \langle Q(2\tau)Q(0)\rangle \leq 1$
 ```python
 def leggett_garg(c_mat):
     """
-    For a given correlation matrix c_mat = <Q(t1+t2)Q(t1)>, calculate the Leggett-Garg correlation.
+    For a given correlation matrix c_mat = <Q(t1+t2)Q(t1)>,
+    calculate the Leggett-Garg correlation.
     """
 
     N, M = c_mat.shape
@@ -194,7 +199,7 @@ Na = Nc = 3  # number of cavity fock states
 n_th = 0.0  # avg number of thermal bath excitation
 
 tlist = np.linspace(0, 7.5, 251)
-tlist_sub = tlist[0 : int((len(tlist) / 2))]
+tlist_sub = tlist[0:int((len(tlist) / 2))]
 ```
 
 ```python
@@ -213,8 +218,10 @@ H = wa * na + wc * nc - g * (a + a.dag()) * (c + c.dag())
 ```python
 # measurement operator on resonator
 Q = na  # photon number resolving detector
-# Q = tensor(qeye(Nc), 2 * fock_dm(Na, 1) - qeye(Na)) # fock-state |1> detector
-# Q = tensor(qeye(Nc), qeye(Na) - 2 * fock_dm(Na, 0)) # click or no-click detector
+# fock-state |1> detector
+# Q = tensor(qeye(Nc), 2 * fock_dm(Na, 1) - qeye(Na))
+# click or no-click detector
+# Q = tensor(qeye(Nc), qeye(Na) - 2 * fock_dm(Na, 0))
 ```
 
 ```python
@@ -286,7 +293,5 @@ axes.set_ylabel(r"LG($\tau$)", fontsize=18);
 ### Software versions
 
 ```python
-from qutip import about
-
 about()
 ```

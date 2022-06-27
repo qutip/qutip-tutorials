@@ -21,13 +21,14 @@ This lecture series was developed by J.R. Johannson. The original lecture notebo
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
-%matplotlib inline
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import (Options, basis, coherent, correlation, destroy, expect,
-                   mesolve, ptrace, qeye, sigmax, sigmay, sigmaz,
+from qutip import (Options, about, basis, coherent, correlation, destroy,
+                   expect, mesolve, ptrace, qeye, sigmax, sigmaz,
                    spectrum_correlation_fft, tensor, wigner)
+
+%matplotlib inline
 ```
 
 # Introduction
@@ -84,12 +85,13 @@ sx = tensor(qeye(N), sigmax())
 nq = sm.dag() * sm
 xq = sm + sm.dag()
 
-I = tensor(qeye(N), qeye(2))
+Id = tensor(qeye(N), qeye(2))
 ```
 
 ```python
 # dispersive hamiltonian
-H = wr * (a.dag() * a + I / 2.0) + (wq / 2.0) * sz + chi * (a.dag() * a + I / 2) * sz
+H = wr * (a.dag() * a + Id / 2.0) + (wq / 2.0) * sz + chi * \
+    (a.dag() * a + Id / 2) * sz
 ```
 
 Try different initial state of the resonator, and see how the spectrum further down in the notebook reflects the photon distribution chosen here.
@@ -250,7 +252,8 @@ rho_cavity = ptrace(res.states[-1], 0)
 ```python
 fig, axes = plt.subplots(1, 1, figsize=(9, 3))
 
-axes.bar(np.arange(0, N) - 0.4, np.real(rho_cavity.diag()), color="blue", alpha=0.6)
+axes.bar(np.arange(0, N) - 0.4, np.real(rho_cavity.diag()), color="blue",
+         alpha=0.6)
 axes.set_ylim(0, 1)
 axes.set_xlim(-0.5, N)
 axes.set_xticks(np.arange(0, N))
@@ -282,7 +285,5 @@ axes.set_ylabel(r"Re $\alpha$", fontsize=18);
 ### Software versions
 
 ```python
-from qutip import about
-
 about()
 ```

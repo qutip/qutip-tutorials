@@ -21,14 +21,15 @@ This lecture series was developed by J.R. Johannson. The original lecture notebo
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
-%matplotlib inline
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import cm
-from qutip import (basis, correlation_matrix_quadrature, destroy, expect,
-                   logarithmic_negativity, mesolve, num, ptrace, qeye, tensor,
-                   wigner, wigner_covariance_matrix)
+from qutip import (about, basis, correlation_matrix_quadrature, destroy,
+                   expect, logarithmic_negativity, mesolve, num, ptrace, qeye,
+                   tensor, wigner, wigner_covariance_matrix)
+
+%matplotlib inline
 ```
 
 Parameters
@@ -126,7 +127,8 @@ xvec = np.linspace(-5, 5, 200)
 t_idx_vec = [0, 10, 20, 30]
 
 fig, axes = plt.subplots(
-    len(t_idx_vec), 2, sharex=True, sharey=True, figsize=(8, 4 * len(t_idx_vec))
+    len(t_idx_vec), 2, sharex=True, sharey=True,
+    figsize=(8, 4 * len(t_idx_vec))
 )
 
 for idx, t_idx in enumerate(t_idx_vec):
@@ -149,7 +151,8 @@ Fock-state distribution
 t_idx_vec = range(0, len(tlist), 25)
 
 fig, axes = plt.subplots(
-    len(t_idx_vec), 2, sharex=True, sharey=True, figsize=(8, 2 * len(t_idx_vec))
+    len(t_idx_vec), 2, sharex=True, sharey=True,
+    figsize=(8, 2 * len(t_idx_vec))
 )
 
 for idx, t_idx in enumerate(t_idx_vec):
@@ -334,6 +337,8 @@ for idx, psi in enumerate(output.states):
     e_ad_bd[idx] = expect(op_ad_bd, psi)
 
 # calculate the sigma_2, function of the angle parameter theta
+
+
 def F_theta(theta):
     return (
         2 * e_ad_a
@@ -394,7 +399,8 @@ R_op = correlation_matrix_quadrature(a, b)
 ```python
 def plot_covariance_matrix(V, ax):
     """
-    Plot a matrix-histogram representation of the supplied Wigner covariance matrix.
+    Plot a matrix-histogram representation of the
+    supplied Wigner covariance matrix.
     """
     num_elem = 16
     xpos, ypos = np.meshgrid(range(4), range(4))
@@ -412,8 +418,10 @@ def plot_covariance_matrix(V, ax):
     ax.bar3d(xpos, ypos, zpos, dx, dy, dz, color=colors)
     ax.axes.w_xaxis.set_major_locator(plt.IndexLocator(1, -0.5))
     ax.axes.w_yaxis.set_major_locator(plt.IndexLocator(1, -0.5))
-    ax.axes.w_xaxis.set_ticklabels(("$q_-$", "$p_-$", "$q_+$", "$p_+$"), fontsize=20)
-    ax.axes.w_yaxis.set_ticklabels(("$q_-$", "$p_-$", "$q_+$", "$p_+$"), fontsize=20)
+    ax.axes.w_xaxis.set_ticklabels(("$q_-$", "$p_-$", "$q_+$", "$p_+$"),
+                                   fontsize=20)
+    ax.axes.w_yaxis.set_ticklabels(("$q_-$", "$p_-$", "$q_+$", "$p_+$"),
+                                   fontsize=20)
 ```
 
 ```python
@@ -421,7 +429,8 @@ def plot_covariance_matrix(V, ax):
 t_idx_vec = [0, 20, 40]
 
 fig, axes = plt.subplots(
-    len(t_idx_vec), 1, subplot_kw={"projection": "3d"}, figsize=(6, 3 * len(t_idx_vec))
+    len(t_idx_vec), 1, subplot_kw={"projection": "3d"},
+    figsize=(6, 3 * len(t_idx_vec))
 )
 
 for idx, t_idx in enumerate(t_idx_vec):
@@ -436,7 +445,8 @@ fig.tight_layout()
 
 ```python
 """
-Calculate the wigner covariance matrix logarithmic negativity for each time step
+Calculate the wigner covariance matrix logarithmic negativity
+for each time step
 """
 logneg = np.zeros(tlist.shape)
 
@@ -456,7 +466,5 @@ fig.tight_layout()
 ### Software versions:
 
 ```python
-from qutip import about
-
 about()
 ```

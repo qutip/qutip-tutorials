@@ -22,10 +22,13 @@ This lecture series was developed by J.R. Johannson. The original lecture notebo
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
-%matplotlib inline
+import matplotlib.font_manager
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import basis, destroy, expect, mcsolve, mesolve, steadystate
+from IPython.display import Image
+from qutip import about, basis, destroy, expect, mcsolve, mesolve, steadystate
+
+%matplotlib inline
 ```
 
 ## Introduction to the Quantum Monte-Carlo trajectory method
@@ -71,8 +74,6 @@ Here, the coupling strength is given by the inverse of the cavity ring-down time
 The parameters chosen here correspond to those from S. Gleyzes, et al., Nature 446, 297 (2007), and we will carry out a simulation that corresponds to these experimental results from that paper:
 
 ```python
-from IPython.display import Image
-
 Image(filename="images/exdecay.png")
 ```
 
@@ -132,14 +133,13 @@ me = mesolve(H, psi0, tlist, c_op_list, [a.dag() * a])
 
 # calulate final state using steadystate solver
 final_state = steadystate(H, c_op_list)  # find steady-state
-fexpt = expect(a.dag() * a, final_state)  # find expectation value for particle number
+# find expectation value for particle number
+fexpt = expect(a.dag() * a, final_state)
 ```
 
 ## Plot the results
 
 ```python
-import matplotlib.font_manager
-
 leg_prop = matplotlib.font_manager.FontProperties(size=10)
 
 fig, axes = plt.subplots(4, 1, sharex=True, figsize=(8, 12))
@@ -159,11 +159,13 @@ for idx, n in enumerate(ntraj):
     if idx == 0:
         axes[idx].set_title("Ensemble Averaging of Monte Carlo Trajectories")
         axes[idx].legend(
-            ("Single trajectory", "master equation", "steady state"), prop=leg_prop
+            ("Single trajectory", "master equation", "steady state"),
+            prop=leg_prop
         )
     else:
         axes[idx].legend(
-            ("%d trajectories" % n, "master equation", "steady state"), prop=leg_prop
+            ("%d trajectories" % n, "master equation", "steady state"),
+            prop=leg_prop
         )
 
 
@@ -174,7 +176,5 @@ axes[3].set_xlabel("Time (sec)", fontsize=14);
 ### Software versions:
 
 ```python
-from qutip import about
-
 about()
 ```

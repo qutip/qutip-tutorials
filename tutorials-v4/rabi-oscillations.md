@@ -31,10 +31,11 @@ For more information on the theory behind the Master Equation Solver see [the do
 ### Package import
 
 ```python
-%matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import basis, destroy, mesolve, qeye, sigmaz, tensor
+from qutip import about, basis, destroy, mesolve, qeye, sigmaz, tensor
+
+%matplotlib inline
 ```
 
 # Introduction
@@ -172,8 +173,6 @@ ax.set_title("Vacuum Rabi oscillations at T={}".format(n_th_a));
 ### Software version:
 
 ```python
-from qutip import about
-
 about()
 ```
 
@@ -186,5 +185,6 @@ assert np.all(np.diff(output.expect[0] + output.expect[1]) <= 0.0)
 # frequency for analytical solution (with RWA)
 output_no_cops = mesolve(H, psi0, tlist, [], [a.dag() * a, sm.dag() * sm])
 freq = 1 / 4 * np.sqrt(g**2 * (N + 1))
-assert np.allclose(output_no_cops.expect[1], (np.cos(tlist * freq)) ** 2, atol=10**-3)
+assert np.allclose(output_no_cops.expect[1],
+                   (np.cos(tlist * freq)) ** 2, atol=10**-3)
 ```

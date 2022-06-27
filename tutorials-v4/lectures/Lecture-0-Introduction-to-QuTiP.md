@@ -21,10 +21,14 @@ This lecture series was developed by J.R. Johannson. The original lecture notebo
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
-%matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
 from IPython.display import Image
+from qutip import (Qobj, about, basis, coherent, coherent_dm, create, destroy,
+                   expect, fock, fock_dm, mesolve, qeye, sigmax, sigmay,
+                   sigmaz, tensor, thermal_dm)
+
+%matplotlib inline
 ```
 
 ## Introduction
@@ -50,9 +54,7 @@ For further installation details, refer to the [GitHub repository](https://githu
 To use QuTiP in a Python program, first inlude the relevant functionality from the `qutip` module:
 
 ```python
-from qutip import (Qobj, basis, coherent, coherent_dm, create, destroy, expect,
-                   fock, fock_dm, mesolve, qeye, sigmax, sigmay, sigmaz,
-                   tensor, thermal_dm)
+
 ```
 
 This will make the functions and classes in QuTiP available in the rest of the program.
@@ -312,11 +314,14 @@ psi2 = tensor(basis(N, 0), basis(N, 1))  # excited second qubit
 ```
 
 ```python
-sz1 * psi1 == psi1  # this should not be true, because sz1 should flip the sign of the excited state of psi1
+# this should not be true,
+# because sz1 should flip the sign of the excited state of psi1
+sz1 * psi1 == psi1
 ```
 
 ```python
-sz1 * psi2 == psi2  # this should be true, because sz1 should leave psi2 unaffected
+# this should be true, because sz1 should leave psi2 unaffected
+sz1 * psi2 == psi2
 ```
 
 Above we used the `qeye(N)` function, which generates the identity operator with `N` quantum states. If we want to do the same thing for the second qubit we can do:
@@ -501,7 +506,8 @@ c_ops = [np.sqrt(kappa) * a]
 ```python
 tlist = np.linspace(0, 50, 100)
 
-# request that the solver return the expectation value of the photon number state operator a.dag() * a
+# request that the solver return the expectation value
+# of the photon number state operator a.dag() * a
 result = mesolve(H, rho0, tlist, c_ops, [a.dag() * a])
 ```
 
@@ -515,7 +521,5 @@ axes.set_ylabel(r"Photon number", fontsize=16);
 ### Installation information
 
 ```python
-from qutip import about
-
 about()
 ```

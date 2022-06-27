@@ -21,11 +21,12 @@ This lecture series was developed by J.R. Johannson. The original lecture notebo
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
-%matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import (basis, propagator, qeye, qpt, qpt_plot_combined, sigmam,
-                   sigmap, sigmax, sigmay, sigmaz, spost, spre, tensor)
+from qutip import (about, basis, propagator, qeye, qpt, qpt_plot_combined,
+                   sigmam, sigmax, sigmay, sigmaz, spost, spre, tensor)
+
+%matplotlib inline
 ```
 
 ### Introduction
@@ -128,7 +129,5 @@ fig = qpt_plot_combined(chi, op_label, fig=fig)
 ### Software versions:
 
 ```python
-from qutip import about
-
 about()
 ```

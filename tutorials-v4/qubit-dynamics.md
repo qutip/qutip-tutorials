@@ -27,10 +27,11 @@ You can read more about the master equation solver (and the theory behind it) in
 Here we import the required modules for this example.
 
 ```python
-%matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import Bloch, basis, mesolve, sigmam, sigmax, sigmay, sigmaz
+from qutip import Bloch, about, basis, mesolve, sigmam, sigmax, sigmay, sigmaz
+
+%matplotlib inline
 ```
 
 ### System setup
@@ -179,8 +180,6 @@ Using the methods above, you can simulate any dissipative quantum system, whose 
 ## About
 
 ```python
-from qutip import about
-
 about()
 ```
 

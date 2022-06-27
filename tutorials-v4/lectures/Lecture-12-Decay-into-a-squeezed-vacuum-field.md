@@ -22,11 +22,12 @@ This lecture series was developed by J.R. Johannson. The original lecture notebo
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
-%matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import (Bloch, basis, liouvillian, mesolve, n_thermal, sigmam,
-                   sigmap, sigmax, sigmay, sigmaz, spost, spre)
+from qutip import (Bloch, about, basis, liouvillian, mesolve, n_thermal,
+                   sigmam, sigmap, sigmax, sigmay, sigmaz, spost, spre)
+
+%matplotlib inline
 ```
 
 ## Introduction
@@ -68,7 +69,8 @@ w_th = 0.0 * 2 * np.pi
 ```
 
 ```python
-# the number of average excitations in the environment mode w0 at temperture w_th
+# the number of average excitations in the
+# environment mode w0 at temperture w_th
 Nth = n_thermal(w0, w_th)
 
 Nth
@@ -127,7 +129,8 @@ L0
 Next we manually construct the Liouvillian for the effect of the squeeing in the environment, which is not on standard form we can therefore not use the `liouvillian` function in QuTiP
 
 ```python
-Lsq = -gamma0 * M * spre(sp) * spost(sp) - gamma0 * M.conj() * spre(sm) * spost(sm)
+Lsq = -gamma0 * M * spre(sp) * spost(sp) - gamma0 * \
+      M.conj() * spre(sm) * spost(sm)
 
 Lsq
 ```
@@ -164,9 +167,12 @@ result1 = mesolve(L, psi0, tlist, [], e_ops)
 ```python
 fig, ax = plt.subplots(figsize=(12, 6))
 
-ax.plot(result1.times, result1.expect[0], "r", label=r"$\langle\sigma_x\rangle$")
-ax.plot(result1.times, result1.expect[1], "g", label=r"$\langle\sigma_y\rangle$")
-ax.plot(result1.times, result1.expect[2], "b", label=r"$\langle\sigma_z\rangle$")
+ax.plot(result1.times, result1.expect[0], "r",
+        label=r"$\langle\sigma_x\rangle$")
+ax.plot(result1.times, result1.expect[1], "g",
+        label=r"$\langle\sigma_y\rangle$")
+ax.plot(result1.times, result1.expect[2], "b",
+        label=r"$\langle\sigma_z\rangle$")
 
 sz_ss_analytical = -1 / (2 * N + 1)
 ax.plot(
@@ -194,7 +200,8 @@ b.show()
 We can solve the alternative master equation, which is on the standard Lindblad form, directly using the QuTiP `mesolve` function:
 
 ```python
-c_ops = [np.sqrt(gamma0) * (sm * np.cosh(r) + sp * np.sinh(r) * np.exp(1j * theta))]
+c_ops = [np.sqrt(gamma0) *
+         (sm * np.cosh(r) + sp * np.sinh(r) * np.exp(1j * theta))]
 ```
 
 ```python
@@ -206,9 +213,12 @@ And we can verify that it indeed gives the same results:
 ```python
 fig, ax = plt.subplots(figsize=(12, 6))
 
-ax.plot(result2.times, result2.expect[0], "r", label=r"$\langle\sigma_x\rangle$")
-ax.plot(result2.times, result2.expect[1], "g", label=r"$\langle\sigma_y\rangle$")
-ax.plot(result2.times, result2.expect[2], "b", label=r"$\langle\sigma_z\rangle$")
+ax.plot(result2.times, result2.expect[0], "r",
+        label=r"$\langle\sigma_x\rangle$")
+ax.plot(result2.times, result2.expect[1], "g",
+        label=r"$\langle\sigma_y\rangle$")
+ax.plot(result2.times, result2.expect[2], "b",
+        label=r"$\langle\sigma_z\rangle$")
 
 sz_ss_analytical = -1 / (2 * N + 1)
 ax.plot(
@@ -231,7 +241,8 @@ ax.set_ylim(-1, 1);
 fig, axes = plt.subplots(3, 1, sharex=True, figsize=(12, 9))
 
 axes[0].plot(
-    result1.times, result1.expect[0], "r", label=r"$\langle\sigma_x\rangle$ - me"
+    result1.times, result1.expect[0], "r",
+    label=r"$\langle\sigma_x\rangle$ - me"
 )
 axes[0].plot(
     result2.times,
@@ -243,7 +254,8 @@ axes[0].legend()
 axes[0].set_ylim(-1, 1)
 
 axes[1].plot(
-    result1.times, result1.expect[1], "r", label=r"$\langle\sigma_y\rangle$ - me"
+    result1.times, result1.expect[1], "r",
+    label=r"$\langle\sigma_y\rangle$ - me"
 )
 axes[1].plot(
     result2.times,
@@ -255,7 +267,8 @@ axes[1].legend()
 axes[1].set_ylim(-1, 1)
 
 axes[2].plot(
-    result1.times, result1.expect[2], "r", label=r"$\langle\sigma_y\rangle$ - me"
+    result1.times, result1.expect[2], "r",
+    label=r"$\langle\sigma_y\rangle$ - me"
 )
 axes[2].plot(
     result2.times,
@@ -274,7 +287,8 @@ axes[2].set_xlabel("time", fontsize=16);
 # for vacuum:
 r = 0
 theta = 0.0
-c_ops = [np.sqrt(gamma0) * (sm * np.cosh(r) + sp * np.sinh(r) * np.exp(1j * theta))]
+c_ops = [np.sqrt(gamma0) *
+         (sm * np.cosh(r) + sp * np.sinh(r) * np.exp(1j * theta))]
 ```
 
 ```python
@@ -285,7 +299,8 @@ result1 = mesolve(H, psi0, tlist, c_ops, e_ops)
 # for squeezed vacuum:
 r = 1.0
 theta = 0.0
-c_ops = [np.sqrt(gamma0) * (sm * np.cosh(r) + sp * np.sinh(r) * np.exp(1j * theta))]
+c_ops = [np.sqrt(gamma0) *
+         (sm * np.cosh(r) + sp * np.sinh(r) * np.exp(1j * theta))]
 ```
 
 ```python
@@ -296,7 +311,8 @@ result2 = mesolve(H, psi0, tlist, c_ops, e_ops)
 fig, axes = plt.subplots(3, 1, sharex=True, figsize=(12, 9))
 
 axes[0].plot(
-    result1.times, result1.expect[0], "r", label=r"$\langle\sigma_x\rangle$ - vacuum"
+    result1.times, result1.expect[0], "r",
+    label=r"$\langle\sigma_x\rangle$ - vacuum"
 )
 axes[0].plot(
     result2.times,
@@ -308,7 +324,8 @@ axes[0].legend()
 axes[0].set_ylim(-1, 1)
 
 axes[1].plot(
-    result1.times, result1.expect[1], "r", label=r"$\langle\sigma_y\rangle$ - vacuum"
+    result1.times, result1.expect[1], "r",
+    label=r"$\langle\sigma_y\rangle$ - vacuum"
 )
 axes[1].plot(
     result2.times,
@@ -320,7 +337,8 @@ axes[1].legend()
 axes[1].set_ylim(-1, 1)
 
 axes[2].plot(
-    result1.times, result1.expect[2], "r", label=r"$\langle\sigma_y\rangle$ - vacuum"
+    result1.times, result1.expect[2], "r",
+    label=r"$\langle\sigma_y\rangle$ - vacuum"
 )
 axes[2].plot(
     result2.times,
@@ -339,7 +357,5 @@ From this comparison it's clear that dissipation into a squeezed vacuum is faste
 ### Software versions
 
 ```python
-from qutip import about
-
 about()
 ```

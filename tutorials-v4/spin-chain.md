@@ -27,10 +27,12 @@ The one dimensional Heisenberg model, which we consider here, can be solved exac
 ### Imports
 
 ```python
-%matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import basis, expect, mesolve, qeye, sigmax, sigmay, sigmaz, tensor
+from qutip import (about, basis, expect, mesolve, qeye, sigmax, sigmay, sigmaz,
+                   tensor)
+
+%matplotlib inline
 ```
 
 ### Setup System
@@ -141,8 +143,6 @@ plt.title("Dynamics of spin chain with qubit dephasing");
 ### About
 
 ```python
-from qutip import about
-
 about()
 ```
 

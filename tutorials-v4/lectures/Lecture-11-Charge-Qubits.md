@@ -21,10 +21,11 @@ This lecture series was developed by J.R. Johannson. The original lecture notebo
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
-%matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import Qobj, energy_level_diagram, ket2dm, mesolve
+from qutip import Qobj, about, energy_level_diagram, ket2dm, mesolve
+
+%matplotlib inline
 ```
 
 ### Introduction
@@ -73,7 +74,8 @@ def plot_energies(ng_vec, energies, ymax=(20, 3)):
     for n in range(len(energies[0, :])):
         axes[1].plot(
             ng_vec,
-            (energies[:, n] - energies[:, 0]) / (energies[:, 1] - energies[:, 0]),
+            (energies[:, n] - energies[:, 0]) /
+            (energies[:, 1] - energies[:, 0]),
         )
     axes[1].set_ylim(-0.1, ymax[1])
     axes[1].set_xlabel(r"$n_g$", fontsize=18)
@@ -105,7 +107,8 @@ Ej = 1.0
 ```python
 ng_vec = np.linspace(-4, 4, 200)
 
-energies = np.array([hamiltonian(Ec, Ej, N, ng).eigenenergies() for ng in ng_vec])
+energies = np.array([hamiltonian(Ec, Ej, N, ng).eigenenergies()
+                     for ng in ng_vec])
 ```
 
 ```python
@@ -115,7 +118,8 @@ plot_energies(ng_vec, energies);
 ```python
 ng_vec = np.linspace(-1, 1, 200)
 
-energies = np.array([hamiltonian(Ec, Ej, N, ng).eigenenergies() for ng in ng_vec])
+energies = np.array([hamiltonian(Ec, Ej, N, ng).eigenenergies()
+                     for ng in ng_vec])
 ```
 
 ```python
@@ -134,7 +138,8 @@ Ej = 5.0
 ```
 
 ```python
-energies = np.array([hamiltonian(Ec, Ej, N, ng).eigenenergies() for ng in ng_vec])
+energies = np.array([hamiltonian(Ec, Ej, N, ng).eigenenergies()
+                     for ng in ng_vec])
 ```
 
 ```python
@@ -147,7 +152,8 @@ Ej = 10.0
 ```
 
 ```python
-energies = np.array([hamiltonian(Ec, Ej, N, ng).eigenenergies() for ng in ng_vec])
+energies = np.array([hamiltonian(Ec, Ej, N, ng).eigenenergies()
+                     for ng in ng_vec])
 ```
 
 ```python
@@ -162,7 +168,8 @@ Ej = 50.0
 ```
 
 ```python
-energies = np.array([hamiltonian(Ec, Ej, N, ng).eigenenergies() for ng in ng_vec])
+energies = np.array([hamiltonian(Ec, Ej, N, ng).eigenenergies()
+                     for ng in ng_vec])
 ```
 
 ```python
@@ -187,7 +194,8 @@ ng_vec = np.linspace(-1, 1, 200)
 ```
 
 ```python
-energies = np.array([hamiltonian(Ec, Ej, N, ng).eigenenergies() for ng in ng_vec])
+energies = np.array([hamiltonian(Ec, Ej, N, ng).eigenenergies()
+                     for ng in ng_vec])
 ```
 
 ```python
@@ -198,7 +206,8 @@ We can see that around $n_g = 0.5$ we have two lowest energy levels that are wel
 
 ```python
 ng_vec = np.linspace(0.25, 0.75, 200)
-energies = np.array([hamiltonian(Ec, Ej, N, ng).eigenenergies() for ng in ng_vec])
+energies = np.array([hamiltonian(Ec, Ej, N, ng).eigenenergies()
+                     for ng in ng_vec])
 plot_energies(ng_vec, energies, ymax=(10, 1.1));
 ```
 
@@ -361,7 +370,5 @@ visualize_dynamics(result, r"$\rho_{ee}$");
 ### Software versions
 
 ```python
-from qutip import about
-
 about()
 ```

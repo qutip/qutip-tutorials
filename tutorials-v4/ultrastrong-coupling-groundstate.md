@@ -26,14 +26,16 @@ We will observe that the rotating-wave approximation fails when the coupling str
 First we do some imports.
 
 ```python
-%matplotlib inline
-import time
+from base64 import b64encode
 
 import matplotlib.pyplot as plt
 import numpy as np
-from mpl_toolkits.mplot3d import Axes3D
-from qutip import (destroy, expect, ket2dm, plot_wigner, ptrace, qeye, tensor,
-                   wigner)
+from IPython.display import HTML
+from matplotlib import animation
+from qutip import (about, destroy, expect, ket2dm, plot_wigner, ptrace, qeye,
+                   tensor)
+
+%matplotlib inline
 ```
 
 Define the operators for the atom-cavity system. The first system is the cavity and the second the atom (in the tensor product). Here you can also choose to activate the rotating-wave approach. We will later store the expecation values for $\langle n \rangle$ in the lists we define at the end of the cell.
@@ -111,17 +113,12 @@ plot_wigner(rho_cavity, projection="3d");
 To display the evolution of the cavity ground state with the coupling strenght we can add an animation using `plot_wigner`. The following code creates this animation. We can see how the ground state shifts from having one maximum to having two maxima.
 
 ```python
-from base64 import b64encode
-
-from IPython.display import HTML
-from matplotlib import animation
-
-
 # Function to display animation
 def display_embedded_video(filename):
     video = open(filename, "rb").read()
     video_encoded = b64encode(video).decode("ascii")
-    video_tag = '<video controls alt="test" src="data:video/x-m4v;base64,{0}">'.format(
+    video_tag = '<video controls alt="test" \
+        src="data:video/x-m4v;base64,{0}">'.format(
         video_encoded
     )
     return HTML(video_tag)
@@ -149,7 +146,5 @@ display_embedded_video("animation-ground-state-ultrastrong.mp4")
 ## Software version:
 
 ```python
-from qutip import about
-
 about()
 ```
