@@ -92,7 +92,7 @@ so it's not interfering with the user experience. Please, define the tests
 using `assert`, so that the cell execution fails if a wrong output is generated.
 
 ```python
-assert np.allclose(result.expect[0][0], 0), \ 
+assert np.allclose(result.expect[0][0], 0), \
     "Expectation value does not start at 0"
 assert 1 == 1
 ```
