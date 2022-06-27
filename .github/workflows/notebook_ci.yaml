@@ -78,6 +78,11 @@ jobs:
         find . -name '*.md' -exec jupytext --to notebook {} +
         find . -name '*.md' -exec rm {} +
 
+    - name: Check PEP8 formatting
+      run: |
+        pip install nbqa flake8
+        find . -name '*.ipynb' -exec nbqa flake8 {} +
+
     - name: Run tests
       run: |
         jupyter kernel &
