@@ -76,7 +76,7 @@ jobs:
         cp -r tutorials-v${{ matrix.qutip-version }}/* notebooks
         cd notebooks
         find . -name '*.md' -exec jupytext --to notebook {} +
-        find . -name '*.md' -exec rm {} +
+        find . -name '*.md' -delete
 
     - name: Run tests
       run: |
