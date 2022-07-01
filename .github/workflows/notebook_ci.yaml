@@ -66,24 +66,32 @@ jobs:
         cd qutip-qip
         pip install -e .
 
+    - name: Install ffmpeg
+      run: sudo apt install ffmpeg
+
     - name: Convert Notebooks
       run: | 
         rm -rf notebooks
         mkdir notebooks
-        jupytext --to notebook ${{ matrix.path_md }}
-        mv ${{ matrix.path_ipynb}} notebooks
+        cp -r tutorials-v${{ matrix.qutip-version }}/* notebooks
+        cd notebooks
+        find . -name '*.md' -exec jupytext --to notebook {} +
+        find . -name '*.md' -delete
 
     - name: Run tests
       run: |
         jupyter kernel &
-        pytest --nbmake notebooks/*.ipynb --overwrite --nbmake-timeout=500
-        rm notebooks/template.ipynb
+        cd notebooks
+        find . -name '*.ipynb' -exec pytest --nbmake --overwrite --nbmake-timeout=500 {} +
+        rm template.ipynb
 
     - name: Create Notebook Artifact
       uses: actions/upload-artifact@v3
       with:
         name: executed-notebooks-v${{ matrix.qutip-version }}
-        path: notebooks/*.ipynb
+        path: |
+          notebooks/*.ipynb
+          notebooks/**/*.ipynb
   publish:
     needs: pytests
     runs-on: ubuntu-latest
