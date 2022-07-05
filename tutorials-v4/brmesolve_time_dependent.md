@@ -7,14 +7,14 @@ jupyter:
       format_version: '1.3'
       jupytext_version: 1.13.8
   kernelspec:
-    display_name: Python 3
+    display_name: Python 3 (ipykernel)
     language: python
     name: python3
 ---
 
 # QuTiP example: Phonon-assisted initialization using the time-dependent Bloch-Redfield master equation solver
 
-K.A. Fischer, Stanford University
+Author: K.A. Fischer, Stanford University
 
 This Jupyter notebook demonstrates how to use the time-dependent Bloch-Redfield master equation solver to simulate the phonon-assited initialization of a quantum dot, using QuTiP: The Quantum Toolbox in Python. The purpose is to show how environmentally-driven dissipative interactions can be leveraged to initialize a quantum dot into its excited state. This notebook closely follows the work, <a href="https://arxiv.org/abs/1409.6014">Dissipative preparation of the exciton and biexciton in self-assembled quantum
 dots on picosecond time scales</a>, Phys. Rev. B 90, 241404(R) (2014).
@@ -22,19 +22,13 @@ dots on picosecond time scales</a>, Phys. Rev. B 90, 241404(R) (2014).
 For more information about QuTiP see the project web page: http://qutip.org/ 
 
 ```python
-%matplotlib inline
-%config InlineBackend.figure_format = 'retina'
-```
-
-```python
 import matplotlib.pyplot as plt
 import numpy as np
 import itertools
-```
+from qutip import about, fock, sigmam, brmesolve, Options, parfor
 
-```python
-from qutip import *
-from numpy import *
+%matplotlib inline
+%config InlineBackend.figure_format = 'retina'
 ```
 
 ## Introduction
@@ -61,17 +55,20 @@ Instead, the Bloch-Redfield master equation allows for a direct connection betwe
 Note, we use units where $\hbar=1$.
 
 ```python
-n_Pi = 13                                     # 8 pi pulse area
+# pulse area
+n_Pi = 13                                     
 
-Om_list = np.linspace(0.001, n_Pi, 80)        # driving strengths
-wd_list_e = np.array([-1, 0, 1])            # laser offsets in meV
-wd_list = wd_list_e*1.5                       # in angular frequency
-tlist = np.linspace(0, 50, 40)                # tmax ~ 2x FWHM
+# driving strengths
+Om_list = np.linspace(0.001, n_Pi, 80)  
+# laser offsets in meV
+wd_list_e = np.array([-1, 0, 1])
+# laser offsets in angular frequency
+wd_list = wd_list_e*1.5    
+# simulation time with tmax ~ 2x FWHM
+tlist = np.linspace(0, 50, 40)                
 
 # normalized Gaussian pulse shape, ~10ps long in energy
 t0 = 17 / (2 * np.sqrt(2 * np.log(2)))
-#pulse_shape = np.exp(-(tlist - 24) ** 2 / (2 * t0 ** 2))
-
 pulse_shape = '0.0867 * exp(-(t - 24) ** 2 / (2 * {0} ** 2))'.format(t0)
 ```
 
@@ -107,7 +104,7 @@ a_op = sm.dag()*sm
 # models coupling to LA phonons. The electron and hole
 # interactions contribute constructively.
 
-"""
+
 # fitting parameters ae/ah
 ah = 1.9e-9            # m
 ae = 3.5e-9            # m
@@ -116,35 +113,40 @@ De = 7
 Dh = -3.5
 v = 5110               # m/s
 rho_m = 5370           # kg/m^3
+# Other Constants
 hbar = 1.05457173e-34  # Js
-T = 4.2                # Kelvin, temperature
+T = 4.2      # Kelvin, temperature
 
-# results in ~3THz angular frequency width, w in THz
-# zero T spectrum, for w>0
-J = 1.6*1e-13*w**3/(4*numpy.pi**2*rho_m*hbar*v**5) * \
-    (De*numpy.exp(-(w*1e12*ae/(2*v))**2) -
-     Dh*numpy.exp(-(w*1e12*ah/(2*v))**2))**2
+# constants for temperature dependence
+t1 = 0.6582119
+t2 = 0.086173
 
-# for temperature dependence, the 'negative' frequency 
-# components correspond to absorption vs emission
+# General J factor
+J = '(1.6 * 1e-13 * w**3) / (4 * np.pi**2 * rho_m * hbar * v**5) * ' + \
+    '(De * np.exp(-(w * 1e12 * ae * 0.5 / v)**2) - ' + \
+    'Dh * np.exp(-(w * 1e12 * ah * 0.5 / v)**2))**2'
 
-# w > 0:
-JT_p = J*(1 + numpy.exp(-w*0.6582119/(T*0.086173)) / \
-          (1-numpy.exp(-w*0.6582119/(T*0.086173))))
-# w < 0:
-JT_m = -J*numpy.exp(w*0.6582119/(T*0.086173)) / \
-        (1-numpy.exp(w*0.6582119/(T*0.086173)))
-"""
+# Term for positive frequencies
+JT_p = J + '* (1 + np.exp(-w*t1/(T*t2)) / \
+          (1-np.exp(-w*t1/(T*t2))))'
 
-# the Bloch-Redfield solver requires the spectra to be 
-# formatted as a string
-spectra_cb =' 1.6*1e-13*w**3/(4*pi**2*5370*1.05457173e-34*5110**5) * ' + \
-    '(7*exp(-(w*1e12*3.5e-9/(2*5110))**2) +' + \
-    '3.5*exp(-(w*1e12*1.9e-9 /(2*5110))**2))**2 *' + \
-    '((1 + exp(-w*0.6582119/(4.2*0.086173)) /' + \
-    '(1+1e-9-exp(-w*0.6582119/(4.2*0.086173))))*(w>=0)' + \
-    '-exp(w*0.6582119/(4.2*0.086173)) /' + \
-    '(1+1e-9-exp(w*0.6582119/(4.2*0.086173)))*(w<0))'
+# Term for negative frequencies
+JT_m = '-1.0* ' + J + '* np.exp(w*t1/(T*t2)) / \
+            (1-np.exp(w*t1/(T*t2)))'
+
+
+# define spectra with variable names
+spectra_cb = '(w > 0) * ' + JT_p + '+ (w < 0) * ' + JT_m
+
+# add a check for min size of w to avoid numerical problems
+spectra_cb = '0 if (np.abs(w) < 1e-4) else ' + spectra_cb
+
+# define string with numerical values expect for w
+constants = ['ah','ae','De','Dh','v','rho_m','hbar','T','t1','t2']
+spectra_cb_numerical = spectra_cb
+for c in constants:
+    # replace constants with numerical value
+    spectra_cb_numerical = spectra_cb_numerical.replace(c, str(eval(c)))
 ```
 
 ## Visualize the dot-phonon interaction spectrum
@@ -152,8 +154,10 @@ spectra_cb =' 1.6*1e-13*w**3/(4*pi**2*5370*1.05457173e-34*5110**5) * ' + \
 $J(\omega)$ has two components that give rise to its shape: a rising component due to the increasing acoustic phonon density of states and a roll-off that occurs due to the physical size of the quantum dot.
 
 ```python
+# frequency list
 spec_list = np.linspace(-5, 10, 200)
 
+# plot the spectrum J(w)
 plt.figure(figsize=(8, 5))
 plt.plot(spec_list, [eval(spectra_cb.replace('w', str(_))) for _ in spec_list])
 plt.xlim(-5, 10)
@@ -178,7 +182,7 @@ def brme_step(args):
     
     # calculate the population after the pulse interaction has
     # finished using the Bloch-Redfield time-dependent solver
-    return qutip.brmesolve(H, psi0, tlist, [[a_op, spectra_cb]],
+    return brmesolve(H, psi0, tlist, [[a_op, spectra_cb_numerical]],
                            e_ops,options=Options(rhs_reuse=True)).expect[0][-1]
 
 # use QuTiP's builtin parallelized for loop, parfor
@@ -214,7 +218,17 @@ plt.title('Effects of phonon dephasing for different pulse detunings');
 ## Versions
 
 ```python
-from qutip.ipynbtools import version_table
+about()
+```
 
-version_table()
+### Testing
+
+```python
+# monotone increasing of population expectation for +1meV detune
+assert np.all(np.diff(inv_mat_X[2]) > 0)
+
+# assert for +1meV detuning steadystate close to excited state
+assert inv_mat_X[2][-1] > 0.9
+# for -1meV detuning steadystate close to ground state
+assert inv_mat_X[0][-1] < 0.1
 ```
