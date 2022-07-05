@@ -30,10 +30,13 @@ In this notebook we will introduce the basic usage of `qutip.brmesolve()` and co
 <!-- #endregion -->
 
 ```python
-%matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import sigmax, sigmaz, basis, sigmam, sigmay, mesolve, brmesolve, plot_expectation_values, tensor, destroy, identity, ket2dm, plot_energy_levels, expect, bloch_redfield_tensor, steadystate, liouvillian, hinton
+from qutip import (about, basis, bloch_redfield_tensor, brmesolve, expect,
+                   hinton, liouvillian, mesolve, plot_expectation_values,
+                   sigmam, sigmax, sigmay, sigmaz, steadystate)
+
+%matplotlib inline
 ```
 
 
@@ -57,7 +60,7 @@ Setup the Hamiltonian, initial state and collapse operators for the `qutip.mesol
 
 ```python
 # Setup Hamiltonian and initial state
-H = epsilon/2 * sigmaz()
+H = epsilon / 2 * sigmaz()
 psi0 = (2 * basis(2, 0) + basis(2, 1)).unit()
 
 # Setup the master equation solver
@@ -83,8 +86,9 @@ result_brme = brmesolve(H, psi0, times, [a_ops], e_ops)
 We can now compare the expectation values for every operator we passed to the solvers in `e_ops`. As expected both solvers, `mesolve` and `brmesolve`, produce similar results.
 
 ```python
-plot_expectation_values([result_me, result_brme],
-                        ylabels=['<X>', '<Y>', '<Z>'], show_legend=True);
+plot_expectation_values(
+    [result_me, result_brme], ylabels=["<X>", "<Y>", "<Z>"], show_legend=True
+);
 ```
 
 ## Storing States instead of expectation values
@@ -100,46 +104,43 @@ x_me = expect(sigmax(), me_s.states)
 x_brme = expect(sigmax(), brme_s.states)
 
 # plot the expectation values
-plt.plot(times, x_me, label='ME')
-plt.plot(times, x_brme, label='BRME')
-plt.legend(), plt.xlabel('time'), plt.ylabel('<X>');
+plt.plot(times, x_me, label="ME")
+plt.plot(times, x_brme, label="BRME")
+plt.legend(), plt.xlabel("time"), plt.ylabel("<X>");
 ```
 
 ## Bloch-Redfield Tensor
 
-We described the dynmamics of the system by the Bloch-Redfield master equation, which is constructed from the Bloch-Redfield tensor $R_{abcd}$ (see [documentation of Bloch-Redfield master equation](https://qutip.org/docs/latest/guide/dynamics/dynamics-bloch-redfield.html)). Hence the dynamics are determined by this tensor. We can calculate the tensor in QuTiP using the `qutip.bloch_redfield_tensor()` function. We have to pass the Hamiltonian of the system and the dissipation description in `a_ops` to construct $R_{abcd}$. Furthermore, the function gives us the eigenstates of the system, as they are calculated along the way.
+We described the dynmamics of the system by the Bloch-Redfield master equation, which is constructed from the Bloch-Redfield tensor $R_{abcd}$ (see [documentation of Bloch-Redfield master equation](https://qutip.org/docs/latest/guide/dynamics/dynamics-bloch-redfield.html)). Hence the dynamics are determined by this tensor. We can calculate the tensor in QuTiP using the `qutip.bloch_redfield_tensor()` function. We have to pass the Hamiltonian of the system and the dissipation description in `a_ops` to construct $R_{abcd}$. Furthermore, the function gives us the **eigenstates of the Hamiltonian**, as they are calculated along the way.
 
-**TODO: THERE IS SOMETHING WRONG WITH THE EKETS RETURNED FROM `bloch_redfield_tensor`**
 
 ```python
-R, ekets_wrong = bloch_redfield_tensor(H, [a_ops])
-_, ekets = R.eigenstates()
-R_rhoss = R.transform(ekets, True)
+R, H_ekets = bloch_redfield_tensor(H, [a_ops])
 
 # calculate lindblad liouvillian from H
 L = liouvillian(H, c_ops)
 ```
 
-```python
-# TODO: REMOVE THIS once sorted out
-print(ekets_wrong)
-print('+'*20 + ' Other Ekets ' + 20*'+')
-print(ekets)
-```
-
 We can now use the Bloch-Redfield Tensor and the Lindblad Liouvillain to calculate the steadystate for both approaches. As we saw above the dynamics were the same for using the different solvers, hence we expect the steadystate to be equal too. We use the `qutip.hinton()` function to plot the steadystate density matrix for both approaches and can see that they are the same.
 
+We have to transform the steadystate density matrix we obtain from the Bloch-Redfield tensor using the eigenstates of the Hamiltonian, as `R` is expressed in the eigenbasis of `H`.
+
 ```python
-rhoss_br = steadystate(R_rhoss)
+# Obtain steadystate from Bloch-Redfield Tensor
+rhoss_br_eigenbasis = steadystate(R)
+rhoss_br = rhoss_br_eigenbasis.transform(H_ekets, True)
+
+# Steadystate from Lindblad liouvillian
 rhoss_me = steadystate(L)
-hinton(rhoss_br, title='Bloch-Redfield steadystate');
-hinton(rhoss_me, title='Lindblad-ME steadystate');
+
+# Plot the density matrices using a hinton plot
+hinton(rhoss_br, title="Bloch-Redfield steadystate")
+hinton(rhoss_me, title="Lindblad-ME steadystate");
 ```
 
 ## About
 
 ```python
-from qutip import about
 about()
 ```
 
@@ -151,6 +152,7 @@ assert np.allclose(result_me.expect[0], result_brme.expect[0])
 assert np.allclose(result_me.expect[1], result_brme.expect[1])
 assert np.allclose(result_me.expect[2], result_brme.expect[2])
 assert np.allclose(x_me, x_brme)
+
 # assume steadystate is the same
 assert np.allclose(rhoss_br, rhoss_me)
 ```
