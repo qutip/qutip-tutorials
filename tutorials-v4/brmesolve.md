@@ -182,7 +182,3 @@ assert np.allclose([s.tr() for s in me_states.states],
 assert np.allclose([s.tr() for s in brme_states.states],
                    np.ones(times.shape[0]))
 ```
-
-```python
-
-```
