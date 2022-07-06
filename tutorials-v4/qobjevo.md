@@ -25,7 +25,7 @@ t = 1.0
 a = qutip.destroy(size)
 ad = qutip.create(size)
 n = qutip.num(size)
-iden = qutip.qeye(size)
+Id = qutip.qeye(size)
 ```
 
 ## Contents
@@ -190,7 +190,7 @@ def coeff_with_args(t, args):
     return t + args["delta"]
 
 
-td_args = qutip.QobjEvo([iden, coeff_with_args], args={"delta": 1.0})
+td_args = qutip.QobjEvo([Id, coeff_with_args], args={"delta": 1.0})
 td_args(2)
 ```
 
@@ -207,7 +207,7 @@ td_args(2)
 ### String form
 
 ```python
-td_args_str = qutip.QobjEvo([iden, "t + delta"], args={"delta": 1.0})
+td_args_str = qutip.QobjEvo([Id, "t + delta"], args={"delta": 1.0})
 td_args_str(2)
 ```
 
@@ -220,7 +220,7 @@ td_args_str(2, args={"delta": 10})
 The argument value need not just be a number.  Even Cython-compiled strings can accept functions which Cython can call natively, such as the core `numpy` functions.
 
 ```python
-td_args_str = qutip.QobjEvo([iden, "f(t)"], args={"f": np.cos})
+td_args_str = qutip.QobjEvo([Id, "f(t)"], args={"f": np.cos})
 td_args_str.compile()
 td_args_str(0.0)
 ```
@@ -251,7 +251,7 @@ def print_args(t, args):
     return t
 
 
-td_args = qutip.QobjEvo([iden, print_args], args=args)
+td_args = qutip.QobjEvo([Id, print_args], args=args)
 td_args(0)
 ```
 
