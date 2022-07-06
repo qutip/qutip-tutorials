@@ -21,11 +21,12 @@ This lecture series was developed by J.R. Johannson. The original lecture notebo
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
-%matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import (destroy, entropy_vn, expect, hinton, jmat, ptrace, qeye,
-                   steadystate, tensor, wigner)
+from qutip import (about, destroy, entropy_vn, expect, hinton, jmat, ptrace,
+                   qeye, steadystate, tensor, wigner)
+
+%matplotlib inline
 ```
 
 ## Introduction
@@ -145,7 +146,8 @@ for idx, psi_gnd in enumerate(psi_gnd_sublist):
 
     # plot its fock-state distribution
     ax = plt.subplot2grid(fig_grid, (1, idx))
-    ax.bar(np.arange(0, M), np.real(rho_gnd_cavity.diag()), color="blue", alpha=0.6)
+    ax.bar(np.arange(0, M), np.real(rho_gnd_cavity.diag()),
+           color="blue", alpha=0.6)
     ax.set_ylim(0, 1)
     ax.set_xlim(0, M)
 
@@ -181,7 +183,8 @@ for idx, psi_gnd in enumerate(psi_gnd_list):
 ```python
 fig, axes = plt.subplots(1, 1, figsize=(12, 6))
 axes.plot(
-    g_vec, entropy_tot, "k", g_vec, entropy_cavity, "b", g_vec, entropy_spin, "r--"
+    g_vec, entropy_tot, "k", g_vec, entropy_cavity, "b", g_vec,
+    entropy_spin, "r--"
 )
 
 axes.set_ylim(0, 1.5)
@@ -312,7 +315,8 @@ for idx, rho_ss in enumerate(rho_ss_sublist):
 
     # plot its fock-state distribution
     ax = plt.subplot2grid(fig_grid, (1, idx))
-    ax.bar(np.arange(0, M), np.real(rho_ss_cavity.diag()), color="blue", alpha=0.6)
+    ax.bar(np.arange(0, M), np.real(rho_ss_cavity.diag()), color="blue",
+           alpha=0.6)
     ax.set_ylim(0, 1)
 
 # plot the cavity occupation probability in the ground state
@@ -361,8 +365,6 @@ fig.tight_layout()
 ### Software versions
 
 ```python
-from qutip import about
-
 about()
 ```
 

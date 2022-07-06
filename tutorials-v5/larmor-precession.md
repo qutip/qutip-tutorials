@@ -29,11 +29,12 @@ You can also find more on time evolutions with QuTiP [here](https://qutip.org/do
 
 First thing is to import the required functions, classes and modules.
 ```python
-%matplotlib inline
-from qutip import Qobj, sesolve, basis, Bloch, sigmaz, sigmay, QobjEvo
-import qutip
 import matplotlib.pyplot as plt
 import numpy as np
+import qutip
+from qutip import Bloch, QobjEvo, basis, sesolve, sigmay, sigmaz
+
+%matplotlib inline
 ```
 
 We setup a arbitrary qubit state, which is in a superposition of the two qubit states. We use the `qutip.Bloch` class to visualize the state on the Bloch sphere.
@@ -69,7 +70,7 @@ Above we passed `sigmay()` as the only expectation operator and therefore we can
 
 ```python
 plt.plot(times, result.expect[0])
-plt.xlabel('Time'), plt.ylabel('<sigma_y>')
+plt.xlabel("Time"), plt.ylabel("<sigma_y>")
 plt.show()
 ```
 
@@ -92,10 +93,12 @@ We start by defining two functions for the field strength of the magnetic field.
 
 ```python
 def linear(t, args):
-    return 0.3*t
+    return 0.3 * t
+
 
 def periodic(t, args):
-    return np.cos(0.5*t)
+    return np.cos(0.5 * t)
+
 
 # Define QobjEvos
 H_lin = QobjEvo([[sigmaz(), linear]], tlist=times)
@@ -111,7 +114,7 @@ result_per = sesolve(H_per, psi, times, [sigmay()])
 
 # Plot <sigma_y> for linear increasing field strength
 plt.plot(times, result_lin.expect[0])
-plt.xlabel('Time'), plt.ylabel('<sigma_y>')
+plt.xlabel("Time"), plt.ylabel("<sigma_y>")
 plt.show()
 ```
 
@@ -119,7 +122,7 @@ We can see that the frequency of the Larmor precession increases with the time. 
 
 ```python
 plt.plot(times, result_per.expect[0])
-plt.xlabel('Time'), plt.ylabel('<sigma_y>')
+plt.xlabel("Time"), plt.ylabel("<sigma_y>")
 plt.show()
 ```
 
@@ -130,8 +133,6 @@ limited to constant Hamiltonians, but we can also make use of time-dependent Ham
 ### About
 
 ```python
-import qutip
-
 qutip.about()
 ```
 

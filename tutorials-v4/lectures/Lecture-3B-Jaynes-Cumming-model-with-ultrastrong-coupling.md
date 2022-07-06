@@ -22,13 +22,13 @@ This lecture series was developed by J.R. Johannson. The original lecture notebo
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
-# setup the matplotlib graphics library and configure it to show figures inline in the notebook
-%matplotlib inline
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import (basis, destroy, entropy_vn, expect, mesolve, ptrace, qeye,
-                   tensor, wigner)
+from qutip import (about, basis, destroy, entropy_vn, expect, mesolve, ptrace,
+                   qeye, tensor, wigner)
+
+%matplotlib inline
 ```
 
 <!-- #region -->
@@ -135,7 +135,8 @@ fig.tight_layout()
 # Plot the wigner functions of the cavity as a function of coupling strength
 
 ```python
-g_idx = np.where([g_vec == 2 * np.pi * g for g in [0.0, 0.5, 1.0, 1.5, 2.0]])[1]
+g_idx = np.where([g_vec == 2 * np.pi * g for
+                  g in [0.0, 0.5, 1.0, 1.5, 2.0]])[1]
 psi_sublist = []
 for idx in g_idx:
     psi_sublist.append(psi_list[idx])
@@ -157,7 +158,8 @@ for idx, psi in enumerate(psi_sublist):
         norm=mpl.colors.Normalize(-0.125, 0.125),
         cmap=plt.get_cmap("RdBu"),
     )
-    ax.set_title(r"$g = %.1f$" % (g_vec[g_idx][idx] / (2 * np.pi)), fontsize=16)
+    ax.set_title(r"$g = %.1f$" % (g_vec[g_idx][idx] / (2 * np.pi)),
+                 fontsize=16)
 
 # plot the cavity occupation probability in the ground state
 ax = plt.subplot2grid(fig_grid, (1, 1), colspan=(fig_grid[1] - 2))
@@ -185,7 +187,8 @@ for idx, psi in enumerate(psi_list):
 
 ```python
 fig, axes = plt.subplots(1, 1, figsize=(12, 6))
-axes.plot(g_vec / (2 * np.pi), entropy_cavity, "b", label="cavity", linewidth=2)
+axes.plot(g_vec / (2 * np.pi), entropy_cavity, "b", label="cavity",
+          linewidth=2)
 axes.plot(g_vec / (2 * np.pi), entropy_atom, "r--", label="atom", linewidth=2)
 axes.set_ylim(0, 1)
 axes.set_ylabel("entropy", fontsize=16)
@@ -228,7 +231,8 @@ rho_ss_sublist = output.states  # [::4]
 
 xvec = np.linspace(-5, 5, 200)
 
-fig, axes = plt.subplots(2, len(rho_ss_sublist), figsize=(2 * len(rho_ss_sublist), 4))
+fig, axes = plt.subplots(2, len(rho_ss_sublist),
+                         figsize=(2 * len(rho_ss_sublist), 4))
 
 for idx, rho_ss in enumerate(rho_ss_sublist):
 
@@ -264,7 +268,8 @@ kappa = 0.25
 
 ```python
 tlist = np.linspace(0, 20, 1000)
-output = mesolve(H, psi0, tlist, [np.sqrt(kappa) * a], [a.dag() * a, sm.dag() * sm])
+output = mesolve(H, psi0, tlist, [np.sqrt(kappa) * a],
+                 [a.dag() * a, sm.dag() * sm])
 ```
 
 ```python
@@ -282,7 +287,8 @@ output = mesolve(H, psi0, tlist, [np.sqrt(kappa) * a], [])
 ```python
 xvec = np.linspace(-5, 5, 200)
 
-fig, axes = plt.subplots(2, len(output.states), figsize=(2 * len(output.states), 4))
+fig, axes = plt.subplots(2, len(output.states),
+                         figsize=(2 * len(output.states), 4))
 
 for idx, rho_ss in enumerate(output.states):
 
@@ -350,8 +356,6 @@ axes.legend(loc=0);
 ### Software versions
 
 ```python
-from qutip import about
-
 about()
 ```
 

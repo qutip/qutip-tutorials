@@ -22,11 +22,13 @@ This lecture series was developed by J.R. Johannson. The original lecture notebo
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
-%matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import (basis, correlation_2op_1t, mesolve, n_thermal, num, sigmam,
-                   sigmap, sigmax, sigmay, sigmaz, spectrum_correlation_fft)
+from qutip import (about, basis, correlation_2op_1t, mesolve, n_thermal, num,
+                   sigmam, sigmap, sigmax, sigmay, sigmaz,
+                   spectrum_correlation_fft)
+
+%matplotlib inline
 ```
 
 <!-- #region -->
@@ -54,7 +56,8 @@ N = n_thermal(Omega, w_th)
 ```python
 def system_spec(Omega, gamma0, N):
     HL = -0.5 * Omega * (sigmap() + sigmam())
-    c_ops = [np.sqrt(gamma0 * (N + 1)) * sigmam(), np.sqrt(gamma0 * N) * sigmap()]
+    c_ops = [np.sqrt(gamma0 * (N + 1)) * sigmam(),
+             np.sqrt(gamma0 * N) * sigmap()]
     return HL, c_ops
 ```
 
@@ -78,9 +81,12 @@ result = mesolve(HL, psi0, tlist, c_ops, e_ops)
 ```python
 fig, axes = plt.subplots(2, 1, figsize=(12, 6), sharex=True)
 
-axes[0].plot(result.times, result.expect[0], "r", label=r"$\langle\sigma_x\rangle$")
-axes[0].plot(result.times, result.expect[1], "g", label=r"$\langle\sigma_y\rangle$")
-axes[0].plot(result.times, result.expect[2], "b", label=r"$\langle\sigma_z\rangle$")
+axes[0].plot(result.times, result.expect[0], "r",
+             label=r"$\langle\sigma_x\rangle$")
+axes[0].plot(result.times, result.expect[1], "g",
+             label=r"$\langle\sigma_y\rangle$")
+axes[0].plot(result.times, result.expect[2], "b",
+             label=r"$\langle\sigma_z\rangle$")
 axes[0].legend()
 axes[0].set_ylim(-1, 1)
 
@@ -102,7 +108,8 @@ for idx, gamma0 in enumerate([0.1 * Omega, 0.5 * Omega, 1.0 * Omega]):
     HL, c_ops = system_spec(Omega, gamma0, N)
     result = mesolve(HL, psi0, tlist, c_ops, e_ops)
 
-    ax.plot(result.times, result.expect[5], "b", label=r"$\langle\sigma_z\rangle$")
+    ax.plot(result.times, result.expect[5], "b",
+            label=r"$\langle\sigma_z\rangle$")
 
 ax.set_ylim(0, 1);
 ```
@@ -117,7 +124,8 @@ for idx, gamma0 in enumerate([0.1 * Omega, 0.5 * Omega, 1.0 * Omega]):
     result = mesolve(HL, psi0, tlist, c_ops, e_ops)
 
     ax.plot(
-        result.times, np.imag(result.expect[4]), label=r"im $\langle\sigma_+\rangle$"
+        result.times, np.imag(result.expect[4]),
+        label=r"im $\langle\sigma_+\rangle$"
     )
 
 ax.set_ylim(-0.5, 0.5);
@@ -145,7 +153,5 @@ axes[1].set_xlim(-5, 5);
 ### Software versions
 
 ```python
-from qutip import about
-
 about()
 ```

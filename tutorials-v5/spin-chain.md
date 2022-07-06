@@ -27,10 +27,12 @@ The one dimensional Heisenberg model, which we consider here, can be solved exac
 ### Imports
 
 ```python
-%matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import sigmax, sigmay, sigmaz, qeye, expect, basis, tensor, mesolve
+from qutip import (about, basis, expect, mesolve, qeye, sigmax, sigmay, sigmaz,
+                   tensor)
+
+%matplotlib inline
 ```
 
 ### Setup System
@@ -47,7 +49,7 @@ Below we define the size, initial state and the interaction coefficients for the
 N = 5
 
 # initial state
-state_list = [basis(2,1)] + [basis(2,0)]*(N-1)
+state_list = [basis(2, 1)] + [basis(2, 0)] * (N - 1)
 psi0 = tensor(state_list)
 
 # Energy splitting term
@@ -63,33 +65,33 @@ For each qubit we setup an operator $\sigma_i$, which is the tensor product of i
 
 ```python
 # Setup operators for individual qubits
-sx_list, sy_list, sz_list = [],[],[]
+sx_list, sy_list, sz_list = [], [], []
 for i in range(N):
-    op_list = [qeye(2)]*N
+    op_list = [qeye(2)] * N
     op_list[i] = sigmax()
     sx_list.append(tensor(op_list))
     op_list[i] = sigmay()
     sy_list.append(tensor(op_list))
     op_list[i] = sigmaz()
     sz_list.append(tensor(op_list))
-    
+
 # Hamiltonian - Energy splitting terms
 H = 0
 for i in range(N):
-  H -= 0.5 * h[i] * sz_list[i]  
+    H -= 0.5 * h[i] * sz_list[i]
 
 # Interaction terms
-for n in range(N-1):
-    H += - 0.5 * Jx[n] * sx_list[n] * sx_list[n+1]
-    H += - 0.5 * Jy[n] * sy_list[n] * sy_list[n+1]
-    H += - 0.5 * Jz[n] * sz_list[n] * sz_list[n+1]
+for n in range(N - 1):
+    H += -0.5 * Jx[n] * sx_list[n] * sx_list[n + 1]
+    H += -0.5 * Jy[n] * sy_list[n] * sy_list[n + 1]
+    H += -0.5 * Jz[n] * sz_list[n] * sz_list[n + 1]
 ```
 
 ### Time evolution
 We can simulate the system using the `qutip.mesolve` function. Here, we don't pass any collapse or expectation operators. This results in the function returning the states at each given time step. We convert these states into the density matrices for simple usage in the following.
 
 ```python
-times = np.linspace(0,100,200)
+times = np.linspace(0, 100, 200)
 result = mesolve(H, psi0, times, [], [])
 # Convert states to density matrices
 states = [s * s.dag() for s in result.states]
@@ -102,11 +104,11 @@ To visualize the dynamics of the spin chain we calculate the expectation value o
 exp_sz = np.array(expect(states, sz_list))
 
 # Plot the expecation value
-plt.plot(times, exp_sz[:,0], label=r'$\langle \sigma_z^{0} \rangle$')
-plt.plot(times, exp_sz[:,-1], label=r'$\langle \sigma_z^{-1} \rangle$')
-plt.legend(loc='lower right')
-plt.xlabel('Time'), plt.ylabel(r'$\langle \sigma_z \rangle$')
-plt.title('Dynamics of spin chain');
+plt.plot(times, exp_sz[:, 0], label=r"$\langle \sigma_z^{0} \rangle$")
+plt.plot(times, exp_sz[:, -1], label=r"$\langle \sigma_z^{-1} \rangle$")
+plt.legend(loc="lower right")
+plt.xlabel("Time"), plt.ylabel(r"$\langle \sigma_z \rangle$")
+plt.title("Dynamics of spin chain");
 ```
 
 ### Dephasing
@@ -128,25 +130,24 @@ c_ops = [np.sqrt(gamma[i]) * sz_list[i] for i in range(N)]
 result = result = mesolve(H, psi0, times, c_ops, [])
 
 # Expectation value
-exp_sz_dephase = np.array(expect(result.states, sz_list))
+exp_sz_dephase = expect(sz_list, result.states)
 
 # Plot the expecation value
-plt.plot(times, exp_sz_dephase[:,0], label=r'$\langle \sigma_z^{0} \rangle$')
-plt.plot(times, exp_sz_dephase[:,-1], label=r'$\langle \sigma_z^{-1} \rangle$')
+plt.plot(times, exp_sz_dephase[0], label=r"$\langle \sigma_z^{0} \rangle$")
+plt.plot(times, exp_sz_dephase[-1], label=r"$\langle \sigma_z^{-1} \rangle$")
 plt.legend()
-plt.xlabel('Time'), plt.ylabel(r'$\langle \sigma_z \rangle$')
-plt.title('Dynamics of spin chain with qubit dephasing');
+plt.xlabel("Time"), plt.ylabel(r"$\langle \sigma_z \rangle$")
+plt.title("Dynamics of spin chain with qubit dephasing");
 ```
 
 ### About
 
 ```python
-from qutip import about
 about()
 ```
 
 ### Testing
 
 ```python
-assert np.allclose(exp_sz_dephase[-1,:],0.6, atol=0.01)
+assert np.allclose(np.array(exp_sz_dephase)[:, -1], 0.6, atol=0.01)
 ```

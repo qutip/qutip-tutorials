@@ -21,13 +21,16 @@ This lecture series was developed by J.R. Johannson. The original lecture notebo
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
-%matplotlib inline
+from base64 import b64encode
+
 import matplotlib.pyplot as plt
 import numpy as np
 from IPython.display import HTML
 from matplotlib import animation
-from qutip import (basis, coherent, destroy, displace, expect, mesolve, num,
-                   plot_wigner_fock_distribution, squeeze, variance)
+from qutip import (about, basis, coherent, destroy, displace, expect, mesolve,
+                   num, plot_wigner_fock_distribution, squeeze, variance)
+
+%matplotlib inline
 ```
 
 ## Introduction
@@ -98,8 +101,8 @@ def plot_expect_with_variance(N, op_list, op_title, states):
         v_op = variance(op, states)
 
         axes[idx].fill_between(
-            tlist, e_op - np.sqrt(v_op), e_op + np.sqrt(v_op), color="green", alpha=0.5
-        )
+            tlist, e_op - np.sqrt(v_op), e_op + np.sqrt(v_op), color="green",
+            alpha=0.5)
         axes[idx].plot(tlist, e_op, label="expectation")
         axes[idx].set_xlabel("Time")
         axes[idx].set_title(op_title[idx])
@@ -108,13 +111,11 @@ def plot_expect_with_variance(N, op_list, op_title, states):
 ```
 
 ```python
-from base64 import b64encode
-
-
 def display_embedded_video(filename):
     video = open(filename, "rb").read()
     video_encoded = b64encode(video).decode("ascii")
-    video_tag = '<video controls alt="test" src="data:video/x-m4v;base64,{0}">'.format(
+    video_tag = '<video controls alt="test" \
+                src="data:video/x-m4v;base64,{0}">'.format(
         video_encoded
     )
     return HTML(video_tag)
@@ -133,7 +134,8 @@ result = mesolve(H, psi0, tlist, c_ops, [])
 ```
 
 ```python
-plot_expect_with_variance(N, [n, x, p], [r"$n$", r"$x$", r"$p$"], result.states);
+plot_expect_with_variance(N, [n, x, p], [r"$n$", r"$x$", r"$p$"],
+                          result.states);
 ```
 
 ```python
@@ -146,7 +148,8 @@ def update(n):
     return axes[0].artists + axes[1].artists
 
 
-anim = animation.FuncAnimation(fig, update, frames=len(result.states), blit=True)
+anim = animation.FuncAnimation(fig, update, frames=len(result.states),
+                               blit=True)
 
 anim.save("/tmp/animation-coherent-state.mp4", fps=10, writer="ffmpeg")
 
@@ -168,7 +171,8 @@ result = mesolve(H, psi0, tlist, c_ops, [])
 ```
 
 ```python
-plot_expect_with_variance(N, [n, x, p], [r"$n$", r"$x$", r"$p$"], result.states);
+plot_expect_with_variance(N, [n, x, p], [r"$n$", r"$x$", r"$p$"],
+                          result.states);
 ```
 
 ```python
@@ -181,7 +185,8 @@ def update(n):
     return axes[0].artists + axes[1].artists
 
 
-anim = animation.FuncAnimation(fig, update, frames=len(result.states), blit=True)
+anim = animation.FuncAnimation(fig, update, frames=len(result.states),
+                               blit=True)
 
 anim.save("/tmp/animation-squeezed-vacuum.mp4", fps=10, writer="ffmpeg")
 
@@ -205,7 +210,8 @@ result = mesolve(H, psi0, tlist, c_ops, [])
 ```
 
 ```python
-plot_expect_with_variance(N, [n, x, p], [r"$n$", r"$x$", r"$p$"], result.states);
+plot_expect_with_variance(N, [n, x, p], [r"$n$", r"$x$", r"$p$"],
+                          result.states);
 ```
 
 ```python
@@ -218,9 +224,11 @@ def update(n):
     return axes[0].artists + axes[1].artists
 
 
-anim = animation.FuncAnimation(fig, update, frames=len(result.states), blit=True)
+anim = animation.FuncAnimation(fig, update, frames=len(result.states),
+                               blit=True)
 
-anim.save("/tmp/animation-squeezed-coherent-state.mp4", fps=10, writer="ffmpeg")
+anim.save("/tmp/animation-squeezed-coherent-state.mp4", fps=10,
+          writer="ffmpeg")
 
 plt.close(fig)
 ```
@@ -232,7 +240,5 @@ display_embedded_video("/tmp/animation-squeezed-coherent-state.mp4")
 ### Software versions
 
 ```python
-from qutip import about
-
 about()
 ```

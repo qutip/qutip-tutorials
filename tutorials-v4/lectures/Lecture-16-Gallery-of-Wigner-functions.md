@@ -22,11 +22,13 @@ This lecture series was developed by J.R. Johannson. The original lecture notebo
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 ```python
-%matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import (basis, coherent, coherent_dm, displace, fock, ket2dm,
+from IPython.display import display
+from qutip import (about, basis, coherent, coherent_dm, displace, fock, ket2dm,
                    plot_wigner, squeeze, thermal_dm)
+
+%matplotlib inline
 ```
 
 ## Introduction
@@ -40,7 +42,6 @@ N = 20
 
 ```python
 def plot_wigner_2d_3d(psi):
-    # fig, axes = plt.subplots(1, 2, subplot_kw={'projection': '3d'}, figsize=(12, 6))
     fig = plt.figure(figsize=(17, 8))
 
     ax = fig.add_subplot(1, 2, 1)
@@ -92,22 +93,26 @@ plot_wigner_2d_3d(psi)
 ```
 
 ```python
-psi = (coherent(N, -2.0) + coherent(N, -2j) + coherent(N, 2j) + coherent(N, 2.0)).unit()
+psi = (coherent(N, -2.0) + coherent(N, -2j) + coherent(N, 2j)
+       + coherent(N, 2.0)).unit()
 plot_wigner_2d_3d(psi)
 ```
 
 ```python
-psi = (coherent(N, -2.0) + coherent(N, -1j) + coherent(N, 1j) + coherent(N, 2.0)).unit()
+psi = (coherent(N, -2.0) + coherent(N, -1j) + coherent(N, 1j)
+       + coherent(N, 2.0)).unit()
 plot_wigner_2d_3d(psi)
 ```
 
 ```python
 NN = 8
 
-fig, axes = plt.subplots(NN, 1, figsize=(5, 5 * NN), sharex=True, sharey=True)
+fig, axes = plt.subplots(NN, 1, figsize=(5, 5 * NN),
+                         sharex=True, sharey=True)
 for n in range(NN):
     psi = sum(
-        [coherent(N, 2 * np.exp(2j * np.pi * m / (n + 2))) for m in range(n + 2)]
+        [coherent(N, 2 * np.exp(2j * np.pi * m / (n + 2)))
+         for m in range(n + 2)]
     ).unit()
     plot_wigner(psi, fig=fig, ax=axes[n])
 
@@ -125,7 +130,7 @@ plot_wigner_2d_3d(psi)
 ## Fock states: $\left|n\right>$
 
 ```python
-from IPython.display import display
+
 ```
 
 ```python
@@ -139,12 +144,12 @@ for n in range(6):
 ```python
 NN = MM = 5
 
-fig, axes = plt.subplots(NN, MM, figsize=(18, 18), sharex=True, sharey=True)
+fig, axes = plt.subplots(NN, MM, figsize=(18, 18),
+                         sharex=True, sharey=True)
 for n in range(NN):
     for m in range(MM):
         psi = (fock(N, n) + fock(N, m)).unit()
         plot_wigner(psi, fig=fig, ax=axes[n, m])
-        # axes[n, m].set_title(r"$(\left|%d\right> + \left|%d\right>)/\sqrt{2}$" % (n, m))
         if n < NN - 1:
             axes[n, m].set_xlabel("")
         if m > 0:
@@ -167,7 +172,8 @@ display(plot_wigner_2d_3d(psi))
 ### Superposition of squeezed vacuum
 
 ```python
-psi = (squeeze(N, 0.75j) * basis(N, 0) - squeeze(N, -0.75j) * basis(N, 0)).unit()
+psi = (squeeze(N, 0.75j) * basis(N, 0) - squeeze(N, -0.75j)
+       * basis(N, 0)).unit()
 display(plot_wigner_2d_3d(psi))
 ```
 
@@ -175,7 +181,8 @@ display(plot_wigner_2d_3d(psi))
 
 ```python
 psi = (
-    ket2dm(squeeze(N, 0.75j) * basis(N, 0)) + ket2dm(squeeze(N, -0.75j) * basis(N, 0))
+    ket2dm(squeeze(N, 0.75j) * basis(N, 0)) +
+    ket2dm(squeeze(N, -0.75j) * basis(N, 0))
 ).unit()
 display(plot_wigner_2d_3d(psi))
 ```
@@ -200,7 +207,5 @@ display(plot_wigner_2d_3d(psi))
 ## Versions
 
 ```python
-from qutip import about
-
 about()
 ```
