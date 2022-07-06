@@ -22,10 +22,11 @@ dots on picosecond time scales</a>, Phys. Rev. B 90, 241404(R) (2014).
 For more information about QuTiP see the project web page: http://qutip.org/ 
 
 ```python
+import itertools
+
 import matplotlib.pyplot as plt
 import numpy as np
-import itertools
-from qutip import about, fock, sigmam, brmesolve, Options, parfor
+from qutip import Options, about, brmesolve, fock, parfor, sigmam
 
 %matplotlib inline
 %config InlineBackend.figure_format = 'retina'
@@ -56,33 +57,33 @@ Note, we use units where $\hbar=1$.
 
 ```python
 # pulse area
-n_Pi = 13                                     
+n_Pi = 13
 
 # driving strengths
-Om_list = np.linspace(0.001, n_Pi, 80)  
+Om_list = np.linspace(0.001, n_Pi, 80)
 # laser offsets in meV
 wd_list_e = np.array([-1, 0, 1])
 # laser offsets in angular frequency
-wd_list = wd_list_e*1.5    
+wd_list = wd_list_e * 1.5
 # simulation time with tmax ~ 2x FWHM
-tlist = np.linspace(0, 50, 40)                
+tlist = np.linspace(0, 50, 40)
 
 # normalized Gaussian pulse shape, ~10ps long in energy
 t0 = 17 / (2 * np.sqrt(2 * np.log(2)))
-pulse_shape = '0.0867 * exp(-(t - 24) ** 2 / (2 * {0} ** 2))'.format(t0)
+pulse_shape = "0.0867 * exp(-(t - 24) ** 2 / (2 * {0} ** 2))".format(t0)
 ```
 
 ### Setup the operators, Hamiltonian, and initial state
 
 ```python
 # initial state
-psi0 = fock(2, 1)      # ground state
+psi0 = fock(2, 1)  # ground state
 
 # system's atomic lowering operator
 sm = sigmam()
 
 # Hamiltonian components
-H_S = -sm.dag() * sm   # self-energy, varies with drive frequency
+H_S = -sm.dag() * sm  # self-energy, varies with drive frequency
 H_I = sm + sm.dag()
 
 # we ignore spontaneous emission since the pulse is much faster than
@@ -98,51 +99,60 @@ where $J(\omega)$ is the spectra density of the coupling.
 
 ```python
 # operator that couples the quantum dot to acoustic phonons
-a_op = sm.dag()*sm
-    
+a_op = sm.dag() * sm
+
 # This spectrum is a displaced gaussian multiplied by w^3, which
 # models coupling to LA phonons. The electron and hole
 # interactions contribute constructively.
 
 
 # fitting parameters ae/ah
-ah = 1.9e-9            # m
-ae = 3.5e-9            # m
+ah = 1.9e-9  # m
+ae = 3.5e-9  # m
 # GaAs material parameters
 De = 7
 Dh = -3.5
-v = 5110               # m/s
-rho_m = 5370           # kg/m^3
+v = 5110  # m/s
+rho_m = 5370  # kg/m^3
 # Other Constants
 hbar = 1.05457173e-34  # Js
-T = 4.2      # Kelvin, temperature
+T = 4.2  # Kelvin, temperature
 
 # constants for temperature dependence
 t1 = 0.6582119
 t2 = 0.086173
 
 # General J factor
-J = '(1.6 * 1e-13 * w**3) / (4 * np.pi**2 * rho_m * hbar * v**5) * ' + \
-    '(De * np.exp(-(w * 1e12 * ae * 0.5 / v)**2) - ' + \
-    'Dh * np.exp(-(w * 1e12 * ah * 0.5 / v)**2))**2'
+J = (
+    "(1.6 * 1e-13 * w**3) / (4 * np.pi**2 * rho_m * hbar * v**5) * "
+    + "(De * np.exp(-(w * 1e12 * ae * 0.5 / v)**2) - "
+    + "Dh * np.exp(-(w * 1e12 * ah * 0.5 / v)**2))**2"
+)
 
 # Term for positive frequencies
-JT_p = J + '* (1 + np.exp(-w*t1/(T*t2)) / \
-          (1-np.exp(-w*t1/(T*t2))))'
+JT_p = (
+    J
+    + "* (1 + np.exp(-w*t1/(T*t2)) / \
+          (1-np.exp(-w*t1/(T*t2))))"
+)
 
 # Term for negative frequencies
-JT_m = '-1.0* ' + J + '* np.exp(w*t1/(T*t2)) / \
-            (1-np.exp(w*t1/(T*t2)))'
+JT_m = (
+    "-1.0* "
+    + J
+    + "* np.exp(w*t1/(T*t2)) / \
+            (1-np.exp(w*t1/(T*t2)))"
+)
 
 
 # define spectra with variable names
-spectra_cb = '(w > 0) * ' + JT_p + '+ (w < 0) * ' + JT_m
+spectra_cb = "(w > 0) * " + JT_p + "+ (w < 0) * " + JT_m
 
 # add a check for min size of w to avoid numerical problems
-spectra_cb = '0 if (np.abs(w) < 1e-4) else ' + spectra_cb
+spectra_cb = "0 if (np.abs(w) < 1e-4) else " + spectra_cb
 
 # define string with numerical values expect for w
-constants = ['ah','ae','De','Dh','v','rho_m','hbar','T','t1','t2']
+constants = ["ah", "ae", "De", "Dh", "v", "rho_m", "hbar", "T", "t1", "t2"]
 spectra_cb_numerical = spectra_cb
 for c in constants:
     # replace constants with numerical value
@@ -159,11 +169,11 @@ spec_list = np.linspace(-5, 10, 200)
 
 # plot the spectrum J(w)
 plt.figure(figsize=(8, 5))
-plt.plot(spec_list, [eval(spectra_cb.replace('w', str(_))) for _ in spec_list])
+plt.plot(spec_list, [eval(spectra_cb.replace("w", str(_))) for _ in spec_list])
 plt.xlim(-5, 10)
-plt.xlabel('$\omega$ [THz]')
-plt.ylabel('$J(\omega)$ [THz]')
-plt.title('Quantum-dot-phonon interaction spectrum');
+plt.xlabel("$\\omega$ [THz]")
+plt.ylabel("$J(\\omega)$ [THz]")
+plt.title("Quantum-dot-phonon interaction spectrum");
 ```
 
 ## Calculate the pulse-system interaction dynamics
@@ -172,18 +182,26 @@ The Bloch-Redfield master equation solver takes the Hamiltonian time-dependence 
 
 ```python
 # we will calculate the dot population expectation value
-e_ops = [sm.dag()*sm]
+e_ops = [sm.dag() * sm]
+
 
 # define callback for parallelization
 def brme_step(args):
     wd = args[0]
     Om = args[1]
     H = [wd * H_S, [Om * H_I, pulse_shape]]
-    
+
     # calculate the population after the pulse interaction has
     # finished using the Bloch-Redfield time-dependent solver
-    return brmesolve(H, psi0, tlist, [[a_op, spectra_cb_numerical]],
-                           e_ops,options=Options(rhs_reuse=True)).expect[0][-1]
+    return brmesolve(
+        H,
+        psi0,
+        tlist,
+        [[a_op, spectra_cb_numerical]],
+        e_ops,
+        options=Options(rhs_reuse=True),
+    ).expect[0][-1]
+
 
 # use QuTiP's builtin parallelized for loop, parfor
 results = parfor(brme_step, itertools.product(wd_list, Om_list))
@@ -205,14 +223,13 @@ plt.plot(Om_list, inv_mat_X[0])
 plt.plot(Om_list, inv_mat_X[1])
 plt.plot(Om_list, inv_mat_X[2])
 
-plt.legend(['laser detuning, -1 meV', 
-            'laser detuning, 0 meV', 
-            'laser detuning, +1 meV'], loc=4)
+plt.legend(["laser detuning, -1 meV", "laser detuning, 0 meV",
+            "laser detuning, +1 meV"], loc=4)
 
 plt.xlim(0, 13)
-plt.xlabel('Pulse area [$\pi$]')
-plt.ylabel('Excited state population')
-plt.title('Effects of phonon dephasing for different pulse detunings');
+plt.xlabel("Pulse area [$\\pi$]")
+plt.ylabel("Excited state population")
+plt.title("Effects of phonon dephasing for different pulse detunings");
 ```
 
 ## Versions
