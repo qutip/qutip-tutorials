@@ -253,7 +253,3 @@ assert inv_mat_X[2][-1] > 0.9
 # for -1meV detuning steadystate close to ground state
 assert inv_mat_X[0][-1] < 0.1
 ```
-
-```python
-
-```
