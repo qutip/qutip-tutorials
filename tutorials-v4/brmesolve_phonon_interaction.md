@@ -124,24 +124,24 @@ t2 = 0.086173
 
 # General J factor
 J = (
-    "(1.6 * 1e-13 * w**3) / (4 * np.pi**2 * rho_m * hbar * v**5) * "
-    + "(De * np.exp(-(w * 1e12 * ae * 0.5 / v)**2) - "
-    + "Dh * np.exp(-(w * 1e12 * ah * 0.5 / v)**2))**2"
+    "(1.6 * 1e-13 * w**3) / (4 * pi**2 * rho_m * hbar * v**5) * "
+    + "(De * exp(-(w * 1e12 * ae * 0.5 / v)**2) - "
+    + "Dh * exp(-(w * 1e12 * ah * 0.5 / v)**2))**2"
 )
 
 # Term for positive frequencies
 JT_p = (
     J
-    + "* (1 + np.exp(-w*t1/(T*t2)) / \
-          (1-np.exp(-w*t1/(T*t2))))"
+    + "* (1 + exp(-w*t1/(T*t2)) / \
+          (1-exp(-w*t1/(T*t2))))"
 )
 
 # Term for negative frequencies
 JT_m = (
     "-1.0* "
     + J
-    + "* np.exp(w*t1/(T*t2)) / \
-            (1-np.exp(w*t1/(T*t2)))"
+    + "* exp(w*t1/(T*t2)) / \
+            (1-exp(w*t1/(T*t2)))"
 )
 
 
@@ -149,7 +149,7 @@ JT_m = (
 spectra_cb = "(w > 0) * " + JT_p + "+ (w < 0) * " + JT_m
 
 # add a check for min size of w to avoid numerical problems
-spectra_cb = "0 if (np.abs(w) < 1e-4) else " + spectra_cb
+spectra_cb = "0 if (w > -1e-4 and w < 1e-4) else " + spectra_cb
 
 # define string with numerical values expect for w
 constants = ["ah", "ae", "De", "Dh", "v", "rho_m", "hbar", "T", "t1", "t2"]
@@ -166,6 +166,10 @@ $J(\omega)$ has two components that give rise to its shape: a rising component d
 ```python
 # frequency list
 spec_list = np.linspace(-5, 10, 200)
+
+# define shortcuts to evaluate string
+pi = np.pi
+exp = np.exp
 
 # plot the spectrum J(w)
 plt.figure(figsize=(8, 5))
@@ -248,4 +252,8 @@ assert np.all(np.diff(inv_mat_X[2]) > 0)
 assert inv_mat_X[2][-1] > 0.9
 # for -1meV detuning steadystate close to ground state
 assert inv_mat_X[0][-1] < 0.1
+```
+
+```python
+
 ```
