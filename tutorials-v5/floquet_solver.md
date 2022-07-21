@@ -141,7 +141,7 @@ fme_result_nodis = fmmesolve(
 ```
 
 ```python
-assert np.allclose(result.expect[0], fme_result_nodis.expect[0], atol=0.05)
+assert np.allclose(result.expect[0], fme_result_nodis.expect[0], atol=0.1)
 assert not np.allclose(fme_result.expect[0],
-                       fme_result_nodis.expect[0], atol=0.05)
+                       fme_result_nodis.expect[0], atol=0.1)
 ```
