@@ -87,7 +87,7 @@ where $\gamma$ is the dissipation rate. The system-bath interaction is described
 
 ```python
 # Noise Spectral Density
-gamma = 0.0
+gamma = 0.1
 
 
 def noise_spectrum(omega):
