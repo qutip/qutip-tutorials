@@ -79,7 +79,7 @@ for A_tmp in A_list:
         [A_tmp / 2 * sigmax(), "sin({w}*t)".format(w=omega)],
     ]
     # floquet modes and quasienergies
-    _, (e1, e2) = floquet_modes(H_tmp, T, sort=True)
+    _, (e1, e2) = floquet_modes(H_tmp, T)
     quasienergies1.append(e1), quasienergies2.append(e2)
 ```
 
