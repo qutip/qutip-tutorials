@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.13.8
+      jupytext_version: 1.14.0
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -188,6 +188,10 @@ The Bloch-Redfield master equation solver takes the Hamiltonian time-dependence 
 # we will calculate the dot population expectation value
 e_ops = [sm.dag() * sm]
 
+# sample brmesolve call to initialize coefficients
+H = [wd_list[0] * H_S, [Om_list[0] * H_I, pulse_shape]]
+brmesolve(H, psi0, tlist, [[a_op, spectra_cb_numerical]],
+          e_ops).expect[0][-1]
 
 # define callback for parallelization
 def brme_step(args):
