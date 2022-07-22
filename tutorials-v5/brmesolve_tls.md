@@ -74,8 +74,7 @@ For the `qutip.brmesolve` function we have to give the interaction of the system
 The usage of hermitian operators simplifies the internal numerical implementation and leads to vanishing cross-correlations between different environment operators (if multiple are given).
 
 ```python
-coeff = coefficient('{gamma} * (w>=0)'.format(gamma=gamma), args={'w': 0})
-a_ops = [sigmax(), coeff]
+a_ops = [sigmax(), lambda w: gamma * (w > 0.0)]
 ```
 
 Instead of the `c_ops` we now pass the `a_ops` to the Bloch-Redfield solver.
