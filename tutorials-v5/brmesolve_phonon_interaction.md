@@ -95,7 +95,7 @@ Below, we define the terms specific to the Bloch-Redfield solver's system-enviro
 
 $$ H_\textrm{phonon}=\hbar J(\omega)\sigma^\dagger \sigma,$$
 
-where $J(\omega)$ is the spectra density of the coupling.
+where $J(\omega)$ is the spectral density of the coupling.
 
 ```python
 # operator that couples the quantum dot to acoustic phonons
@@ -251,4 +251,8 @@ assert np.all(np.diff(inv_mat_X[2]) > 0)
 assert inv_mat_X[2][-1] > 0.9
 # for -1meV detuning steadystate close to ground state
 assert inv_mat_X[0][-1] < 0.1
+```
+
+```python
+
 ```

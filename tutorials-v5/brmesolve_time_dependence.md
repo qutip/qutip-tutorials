@@ -32,7 +32,7 @@ from qutip import about, basis, brmesolve, destroy, plot_expectation_values
 %matplotlib inline
 ```
 
-For our small example, we setup a system with `N` modes and the number operator as Hamiltonian. We can observe that for the constant Hamiltonian and no given `a_ops` the expectation value $\langle n \rangle $ is a constant.
+For our small example, we setup a system with `N` states and the number operator as Hamiltonian. We can observe that for the constant Hamiltonian and no given `a_ops` the expectation value $\langle n \rangle $ is a constant.
 
 ```python
 # num modes
@@ -71,7 +71,7 @@ Again, we can solve the dynamics using `brmesolve()`.
 
 ```python
 H_t = [H, [a + a.dag(), time_dependence]]
-result_brme = brmesolve(H_t, psi0, times, e_ops=[a * a.dag()])
+result_brme = brmesolve(H_t, psi0, times, e_ops=[a.dag() * a])
 plot_expectation_values(result_brme, ylabels=["<n>"]);
 ```
 
@@ -98,7 +98,7 @@ The coupling to the bath is sometimes described by operators of the form
 
 $$ A = f(t)a + f(t)^* a^\dagger $$
 
-To add such a coupling to `brmesolve` we can pass tuple in the `a_ops` argument. For example if we have $f(t) = e^{i * t}$ we can define the coupling of operator $A$ with strength $\kappa$ by the following `a_ops`.
+To add such a coupling to `brmesolve` we can pass tuple in the `a_ops` argument. For example if we have $f(t) = e^{i * t}$ we can define the coupling of operator $A$ with strength $\kappa$ by the following `a_ops`. Note that the second function needs to be the complex conjugate of the first function and the second operator the hermitian conjugate of the first operator.
 
 ```python
 a_ops = [([[a, 'exp(1j*t)'], [a.dag(), 'exp(-1j*t)']],

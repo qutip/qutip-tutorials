@@ -25,7 +25,7 @@ This notebook does not introduce the usage of the Bloch-Redfield solver `qutip.b
 
 The Lindblad master equation solver, implemented in `qutip.mesolve()`, deals with dissipation using collapse operators which can act on subsystems of the general system. For example, we can define dissipation for the atom-cavity system for the cavity and the atom separately, by the corresponding annihilation operator. In this example, we will see the limitations of this approach when it comes to strong coupling between atom and cavity.
 
-For this example we will use the following Jaynes-Cumming Hamiltonian: 
+For this example we will use the following Rabi Hamiltonian: 
 
 $$H =  \omega_0 a^\dagger a + \omega_0 \sigma_+ \sigma_- + g(a^\dagger + a)(\sigma_- + \sigma_+)$$
 
