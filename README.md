@@ -72,6 +72,35 @@ ipynb` format please convert it to markdown using JupyText by executing:
 jupytext --to md my_notebook.ipynb
 ```
 
+### Formatting a notebook
+
+We aim to create notebooks consistent with the PEP8 style guide. Therefore, we 
+use `flake8` to check the formatting of every notebook. To format a notebook 
+before adding it to this repository you can use 
+[`black`](https://github.com/psf/black) and 
+[`isort`](https://pycqa.github.io/isort/) to do so.
+You can apply these two tools to notebook by using the tool 
+[`nbQA`](https://github.com/nbQA-dev/nbQA).
+
+To format any notebook `notebook.ipynb` (in the Jupyter format) run:
+
+```shell
+nbqa black notebook.ipynb
+nbqa isort notebook.ipynb
+```
+
+To test whether the notebook conforms with the PEP8 style guide run:
+
+```shell
+nbqa flake8 notebook.ipynb
+```
+
+If the notebook is already in the MarkDown format, you can use `JupyText` to convert it back to `.ipynb`:
+
+```shell
+jupytext --to notebook notebook.md
+```
+
 ## LaTeX and ImageMagick installation
 
 Some functions of the notebooks (e.g. plotting QCircuits) require a working
