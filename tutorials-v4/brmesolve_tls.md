@@ -74,13 +74,13 @@ For the `qutip.brmesolve` function we have to give the interaction of the system
 The usage of hermitian operators simplifies the internal numerical implementation and leads to vanishing cross-correlations between different environment operators (if multiple are given).
 
 ```python
-a_ops = [sigmax(), lambda w: gamma * (w > 0.0)]
+a_op = [sigmax(), lambda w: gamma * (w > 0.0)]
 ```
 
 Instead of the `c_ops` we now pass the `a_ops` to the Bloch-Redfield solver.
 
 ```python
-result_brme = brmesolve(H, psi0, times, [a_ops], e_ops)
+result_brme = brmesolve(H, psi0, times, [a_op], e_ops)
 ```
 
 We can now compare the expectation values for every operator we passed to the solvers in `e_ops`. As expected both solvers, `mesolve` and `brmesolve`, produce similar results.
@@ -97,7 +97,7 @@ As for the other solvers provided in QuTiP, we can obtain the density matrices a
 ```python
 # run solvers without e_ops
 me_s = mesolve(H, psi0, times, c_ops, e_ops=[])
-brme_s = brmesolve(H, psi0, times, [a_ops], e_ops=[])
+brme_s = brmesolve(H, psi0, times, [a_op], e_ops=[])
 
 # calculate expecation values
 x_me = expect(sigmax(), me_s.states)
@@ -115,7 +115,7 @@ We described the dynmamics of the system by the Bloch-Redfield master equation, 
 
 
 ```python
-R, H_ekets = bloch_redfield_tensor(H, [a_ops])
+R, H_ekets = bloch_redfield_tensor(H, [a_op])
 
 # calculate lindblad liouvillian from H
 L = liouvillian(H, c_ops)
