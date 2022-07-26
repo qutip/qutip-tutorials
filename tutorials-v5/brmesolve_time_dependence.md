@@ -21,7 +21,7 @@ following the instructions in the [Bloch-Redfield documentation](https://qutip.o
 ### Introduction
 This notebook introduces the usage of time-dependent operators in the Bloch-Redfield solver, which is also described in the [corresponding documentation](https://qutip.org/docs/latest/guide/dynamics/dynamics-bloch-redfield.html?#time-dependent-bloch-redfield-dynamics).
 
-We will discuss time-dependent Hamiltonians and time-dependent dissipations. The Bloch-Redfield solver is especially efficient since it uses Cython internally. For correct functioning we have to pass the time dependence in a string-based format. 
+We will discuss time-dependent Hamiltonians and time-dependent dissipations.
 
 ### Imports
 
