@@ -92,7 +92,7 @@ plot_expectation_values(
 ```
 
 ## Storing States instead of expectation values
-As for the other solvers provided in QuTiP, we can obtain the density matrices at each defined time step instead of some expectation values. To do so, we pass an empty list as `e_ops` argument. 
+As for the other solvers provided in QuTiP, we can obtain the density matrices at each defined time step instead of some expectation values. To do so, we pass an empty list as `e_ops` argument. If you want to calculate expectation values (i.e. non-empty `e_ops`) and obtain the states at the same time you can also pass `options={"store_states": True}` to the solver functions.
 
 ```python
 # run solvers without e_ops
