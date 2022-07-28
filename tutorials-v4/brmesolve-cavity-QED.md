@@ -144,6 +144,8 @@ The Lindbladian Master Equation approach guarantees that the density matrix foll
 
 A down-side of the Bloch-Redfield solver is that it does not guarantee this physical evolution. Hence the trace of the resulting density matrix can vary. Below we plot the trace of the density matrices for the evolution of the weakly coupled system. The trace of the Bloch-Redfield density matrices slightly deviates from the expected trace $1$ (here: in the range of $10^{-12}$ ). This small deviation was not a problem for the simulation above, but can become a problem for other systems.  
 
+Note that the scale of the y-axis is automatically shifted by $+1$ and scaled by $10^{-12}$, which results in the expected trace plotted at $y = 0.0$.
+
 ```python
 # calculate states for weak coupling
 me_states = mesolve(H_weak, psi0, times, c_ops, e_ops=[])

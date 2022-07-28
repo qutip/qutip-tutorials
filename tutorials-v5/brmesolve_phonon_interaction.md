@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.14.0
+      jupytext_version: 1.13.8
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -26,7 +26,7 @@ import itertools
 
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import about, brmesolve, fock, parfor, sigmam
+from qutip import about, brmesolve, fock, parfor, sigmam, QobjEvo
 
 %matplotlib inline
 %config InlineBackend.figure_format = 'retina'
@@ -184,6 +184,8 @@ plt.title("Quantum-dot-phonon interaction spectrum");
 
 The Bloch-Redfield master equation solver takes the Hamiltonian time-dependence in list-string format. We calculate the final population at the end of the interaction of the pulse with the system, which represents the population initialized into the excited state.
 
+Before executing `brmesolve` for all chosen driving strenghts and laser offsets, we need to run `brmesolve` to initialize all coefficients, which are compiled using Cython. We have to do this, as we use the parallel functionality provided by `parfor`.
+
 ```python
 # we will calculate the dot population expectation value
 e_ops = [sm.dag() * sm]
@@ -256,8 +258,4 @@ assert np.all(np.diff(inv_mat_X[2]) > 0)
 assert inv_mat_X[2][-1] > 0.9
 # for -1meV detuning steadystate close to ground state
 assert inv_mat_X[0][-1] < 0.1
-```
-
-```python
-
 ```
