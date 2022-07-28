@@ -26,7 +26,7 @@ import itertools
 
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import about, brmesolve, fock, parfor, sigmam, QobjEvo
+from qutip import about, brmesolve, fock, parfor, sigmam
 
 %matplotlib inline
 %config InlineBackend.figure_format = 'retina'
