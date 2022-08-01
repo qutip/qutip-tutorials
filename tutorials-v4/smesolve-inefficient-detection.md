@@ -18,17 +18,14 @@ jupyter:
 Copyright (C) 2011 and later, Paul D. Nation & Robert J. Johansson
 
 ```python
-%matplotlib inline
+from matplotlib import rcParams
 import matplotlib.pyplot as plt
 import numpy as np
 from qutip import (about, coherent, destroy, fock, general_stochastic, ket2dm,
                    liouvillian, mesolve, parallel_map, photocurrent_mesolve,
                    plot_expectation_values, smesolve, spost, spre)
 from qutip.expect import expect_rho_vec
-```
-
-```python
-from matplotlib import rcParams
+%matplotlib inline
 
 rcParams["font.family"] = "STIXGeneral"
 rcParams["mathtext.fontset"] = "stix"
@@ -80,21 +77,13 @@ w0 = 0.5 * 2 * np.pi
 times = np.linspace(0, 15, 150)
 dt = times[1] - times[0]
 gamma = 0.1
-```
 
-```python
 a = destroy(N)
-```
 
-```python
 H = w0 * a.dag() * a
-```
 
-```python
 rho0 = fock(N, 5)
-```
 
-```python
 e_ops = [a.dag() * a, a + a.dag()]
 ```
 
@@ -141,12 +130,14 @@ result2 = photocurrent_mesolve(
 ```python
 fig, axes = plt.subplots(2, 2, figsize=(12, 8), sharex=True)
 
-axes[0, 0].plot(times, result1.expect[0], label=r"Stochastic ME (ntraj = 1)", lw=2)
+axes[0, 0].plot(times, result1.expect[0],
+                label=r"Stochastic ME (ntraj = 1)", lw=2)
 axes[0, 0].plot(times, result_ref.expect[0], label=r"Lindblad ME", lw=2)
 axes[0, 0].set_title("Cavity photon number (ntraj = 1)")
 axes[0, 0].legend()
 
-axes[0, 1].plot(times, result2.expect[0], label=r"Stochatic ME (ntraj = 10)", lw=2)
+axes[0, 1].plot(times, result2.expect[0],
+                label=r"Stochatic ME (ntraj = 10)", lw=2)
 axes[0, 1].plot(times, result_ref.expect[0], label=r"Lindblad ME", lw=2)
 axes[0, 1].set_title("Cavity photon number (ntraj = 10)")
 axes[0, 1].legend()
@@ -154,7 +145,9 @@ axes[0, 1].legend()
 axes[1, 0].step(times, dt * np.cumsum(result1.measurement[0].real), lw=2)
 axes[1, 0].set_title("Cummulative photon detections (ntraj = 1)")
 axes[1, 1].step(
-    times, dt * np.cumsum(np.array(result2.measurement).sum(axis=0).real) / 10, lw=2
+    times,
+    dt * np.cumsum(np.array(result2.measurement).sum(axis=0).real) / 10,
+    lw=2
 )
 axes[1, 1].set_title("Cummulative avg. photon detections (ntraj = 10)")
 
@@ -204,12 +197,14 @@ result2 = photocurrent_mesolve(
 ```python
 fig, axes = plt.subplots(2, 2, figsize=(12, 8), sharex=True)
 
-axes[0, 0].plot(times, result1.expect[0], label=r"Stochastic ME (ntraj = 1)", lw=2)
+axes[0, 0].plot(times, result1.expect[0],
+                label=r"Stochastic ME (ntraj = 1)", lw=2)
 axes[0, 0].plot(times, result_ref.expect[0], label=r"Lindblad ME", lw=2)
 axes[0, 0].set_title("Cavity photon number (ntraj = 1)")
 axes[0, 0].legend()
 
-axes[0, 1].plot(times, result2.expect[0], label=r"Stochatic ME (ntraj = 10)", lw=2)
+axes[0, 1].plot(times, result2.expect[0],
+                label=r"Stochatic ME (ntraj = 10)", lw=2)
 axes[0, 1].plot(times, result_ref.expect[0], label=r"Lindblad ME", lw=2)
 axes[0, 1].set_title("Cavity photon number (ntraj = 10)")
 axes[0, 1].legend()
@@ -217,7 +212,9 @@ axes[0, 1].legend()
 axes[1, 0].step(times, dt * np.cumsum(result1.measurement[0].real), lw=2)
 axes[1, 0].set_title("Cummulative photon detections (ntraj = 1)")
 axes[1, 1].step(
-    times, dt * np.cumsum(np.array(result2.measurement).sum(axis=0).real) / 10, lw=2
+    times,
+    dt * np.cumsum(np.array(result2.measurement).sum(axis=0).real) / 10,
+    lw=2
 )
 axes[1, 1].set_title("Cummulative avg. photon detections (ntraj = 10)")
 
@@ -296,7 +293,8 @@ ax.plot(times, result_ref.expect[1], "k", lw=2)
 ax.set_ylim(-25, 25)
 ax.set_xlim(0, times.max())
 ax.set_xlabel("time", fontsize=12)
-ax.plot(times, np.array(result.measurement).mean(axis=0)[:, 0].real / M, "b", lw=2);
+ax.plot(times,
+        np.array(result.measurement).mean(axis=0)[:, 0].real / M, "b", lw=2);
 ```
 
 ### Form 2: Combined homodyne with deterministic dissipation for missed detection events
