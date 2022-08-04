@@ -18,7 +18,6 @@ jupyter:
 Copyright (C) 2011 and later, Paul D. Nation & Robert J. Johansson
 
 ```python
-%matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy as sp
@@ -27,6 +26,8 @@ from qutip import (Options, about, coherent, destroy, general_stochastic,
                    parallel_map, plot_expectation_values, smesolve, spost,
                    spre, stochastic_solvers)
 from qutip.expect import expect_rho_vec
+
+%matplotlib inline
 ```
 
 ## Introduction
