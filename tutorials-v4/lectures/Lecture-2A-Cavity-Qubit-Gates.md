@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# QuTiP lecture: simulation of a two-qubit gate using a resonator as coupler
+# Lecture 2A: simulation of a two-qubit gate using a resonator as coupler
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 

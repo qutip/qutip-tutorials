@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# QuTiP lecture: Superconducting Josephson charge qubits
+# Lecture 11: Superconducting Josephson charge qubits
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 

@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# QuTiP lecture: Jaynes-Cummings-like model in the ultrastrong coupling regime
+# Lecture 3B: Jaynes-Cummings-like model in the ultrastrong coupling regime
 
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/

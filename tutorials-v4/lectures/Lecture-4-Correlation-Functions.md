@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# QuTiP lecture: Correlation functions 
+# Lecture 4: Correlation functions 
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 

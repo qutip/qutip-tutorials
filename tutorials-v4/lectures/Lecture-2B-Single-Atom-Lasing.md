@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# QuTiP lecture: Single-Atom-Lasing
+# Lecture 2B: Single-Atom-Lasing
 
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/

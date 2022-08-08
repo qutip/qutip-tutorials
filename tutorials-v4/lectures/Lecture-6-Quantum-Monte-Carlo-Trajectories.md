@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# QuTiP lecture: Quantum Monte-Carlo Trajectories
+# Lecture 6: Quantum Monte-Carlo Trajectories
 
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
