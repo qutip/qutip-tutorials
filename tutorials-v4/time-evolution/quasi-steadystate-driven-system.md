@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# QuTiP example: Calculate the quasi-steadystate of a time-dependent (period) quantum system
+# Steady-State: Time-dependent (periodic) quantum system
 
 
 J.R. Johansson and P.D. Nation

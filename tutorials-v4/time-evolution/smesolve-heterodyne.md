@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# Two implementations of heterodyne detection: direct heterodyne and as two homodyne measurements
+# Stochastic Solver: Heterodyne detection
 
 
 Copyright (C) 2011 and later, Paul D. Nation & Robert J. Johansson

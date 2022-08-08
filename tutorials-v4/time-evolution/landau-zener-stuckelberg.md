@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# QuTiP example: Landau-Zener-Stuckelberg inteferometry
+# Time-dependent Master Equation: Landau-Zener-Stuckelberg inteferometry
 
 
 J.R. Johansson and P.D. Nation

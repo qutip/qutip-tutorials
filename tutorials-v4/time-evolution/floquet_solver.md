@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# Floquet Master Equation Solver
+# Floquet Solvers
 
 Author: C. Staufenbiel, 2022
 

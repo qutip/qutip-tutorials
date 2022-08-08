@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# QuTiP example: Homodyned Jaynes-Cummings emission
+# Steady-State: Homodyned Jaynes-Cummings emission
 
 
 K.A. Fischer, Stanford University
