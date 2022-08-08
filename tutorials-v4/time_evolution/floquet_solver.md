@@ -22,7 +22,7 @@ The *Floquet formalism* deals with periodic time-dependent systems. It is more e
 
 In this notebook, we will discuss the solver functionality of the Floquet formalism implemented in QuTiP using an example quantum system. A more detailed introduction into the Floquet formalism can be found in the [documentation](https://qutip.org/docs/latest/guide/dynamics/dynamics-floquet.html).
 
-A more in depth introduction into the internal functions of the Floquet formalism, used also by the solvers `fsesolve` and `fmmesolve`, is given in the [*floquet formalism notebook*](./floquet_formalism.md).
+A more in depth introduction into the internal functions of the Floquet formalism, used also by the solvers `fsesolve` and `fmmesolve`, is given in the [*floquet formalism notebook*](floquet_formalism.md).
 
 ### Imports
 
