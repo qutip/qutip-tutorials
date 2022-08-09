@@ -21,7 +21,7 @@ inspirations taken from the [floquet notebook](https://github.com/qutip/qutip-no
 and the [qutip documentation](https://qutip.org/docs/latest/guide/dynamics/dynamics-floquet.html).
 
 ### Introduction
-In the [floquet_solver notebook](floquet_solver.md) we introduced the two functions to solve the Schrödinger and Master equation using the Floquet formalism. In this notebook, we will focus on the internal functions of these solvers, that implement the Floquet formalism in QuTiP. Here, we will focus on the `floquet modes` and the `quasienergies`.
+In the [floquet_solver notebook](011_floquet_solver.md) we introduced the two functions to solve the Schrödinger and Master equation using the Floquet formalism. In this notebook, we will focus on the internal functions of these solvers, that implement the Floquet formalism in QuTiP. Here, we will focus on the `floquet modes` and the `quasienergies`.
 
 More information on the implementation of the Floquet Formalism in QuTiP can be found in the [documentation](https://qutip.org/docs/latest/guide/dynamics/dynamics-floquet.html).
 
@@ -174,7 +174,7 @@ plt.xlabel("Time"), plt.ylabel("Occupation prob.");
 
 ### Floquet Markov formalism
 
-We can also solve a master equation using the Floquet formalism. A detailed derivation of the Floquet-Markov formalism used here is given in [Grifoni et al., Physics Reports 304, 299 (1998)](https://www.sciencedirect.com/science/article/abs/pii/S0370157398000222) and in the [QuTiP docs](https://qutip.org/docs/latest/guide/dynamics/dynamics-floquet.html). Note that the functionality described here is summarised in the function `fmmesolve` described in the [floquet solver notebook](floquet_solver.md).
+We can also solve a master equation using the Floquet formalism. A detailed derivation of the Floquet-Markov formalism used here is given in [Grifoni et al., Physics Reports 304, 299 (1998)](https://www.sciencedirect.com/science/article/abs/pii/S0370157398000222) and in the [QuTiP docs](https://qutip.org/docs/latest/guide/dynamics/dynamics-floquet.html). Note that the functionality described here is summarised in the function `fmmesolve` described in the [floquet solver notebook](011_floquet_solver.md).
 
 The interaction with the bath is described by a noise spectrum, which does not include the temperature dependency. Hence, the definition is slightly different to the one in the Bloch-Redfield formalism.  For details see the derivation of the formalism.
 
@@ -236,7 +236,7 @@ res_fme_manual = floquet_markov_mesolve(
 )
 ```
 
-The functionality explained above is summarised in the `fmmesolve` function, which was introduced in the [other floquet notebook](floquet_solver.md). Here, we also use this function to compare to our manual computation.
+The functionality explained above is summarised in the `fmmesolve` function, which was introduced in the [other floquet notebook](011_floquet_solver.md). Here, we also use this function to compare to our manual computation.
 
 ```python
 # Solve using Fmmesolve
