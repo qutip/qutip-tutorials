@@ -16,7 +16,7 @@ class notebook:
         self.path = path
         self.title = title
         # set url and update from markdown to ipynb
-        self.url = prefix + path.replace(".md", ".ipynb")
+        self.url = url_prefix + path.replace(".md", ".ipynb")
 
 
 def get_title(filename):
@@ -61,36 +61,14 @@ def get_notebooks(path):
     return notebooks
 
 
-# url prefix for the links
-prefix = "https://nbviewer.org/urls/qutip.org/qutip-tutorials/"
-# tutorial directories
-tutorial_directories = ['time-evolution', 'lectures']
-# directories for different versions
-versions = ['4', '5']
-# output file names
-output_filenames = {
-    '4': "index.html",
-    '5': "index-v5.html"
-}
-
-for version in versions:
-    version_directory = 'tutorials-v' + version + '/'
+def generate_index_html(version_directory, tutorial_directories, title,
+                        version_note):
+    """ Generates the index html file from the given data"""
+    # get tutorials from the different directories
     tutorials = {}
-    # get tutorials for different directories
     for dir in tutorial_directories:
         tutorials[dir] = get_notebooks(version_directory + dir + '/')
 
-    # set the title
-    title = 'Tutorials for QuTiP Version ' + version
-    version_note = ""
-    if version == '4':
-        version_note = 'This are the tutorials for QuTiP Version 4. You can \
-         find the tutorials for QuTiP Version 5 \
-          <a href="./' + output_filenames['5'] +  '">here</a>.'
-    if version == '5':
-        version_note = 'This are the tutorials for QuTiP Version 5. You can \
-         find the tutorials for QuTiP Version 4 \
-          <a href="./' + output_filenames['4'] + '">here</a>.'
     # Load environment for Jinja and template
     env = Environment(
         loader=FileSystemLoader("./"),
@@ -98,8 +76,35 @@ for version in versions:
     )
     template = env.get_template("index.html.jinja")
 
-    # render template and store
+    # render template and return
     html = template.render(tutorials=tutorials, title=title,
                            version_note=version_note)
-    with open(output_filenames[version], 'w+') as f:
-        f.write(html)
+    return html
+
+
+# url prefix for the links
+url_prefix = "https://nbviewer.org/urls/qutip.org/qutip-tutorials/"
+# tutorial directories
+tutorial_directories = ['time-evolution', 'lectures']
+
+# +++ VERSION 4 INDEX FILE +++
+title = 'Tutorials for QuTiP Version 4'
+version_note = 'This are the tutorials for QuTiP Version 4. You can \
+         find the tutorials for QuTiP Version 5 \
+          <a href="./index-v5.html">here</a>.'
+
+html = generate_index_html('tutorials-v4/', tutorial_directories, title,
+                           version_note)
+with open('index.html') as f:
+    f.write(html)
+
+# +++ VERSION 5 INDEX FILE +++
+title = 'Tutorials for QuTiP Version 5'
+version_note = 'This are the tutorials for QuTiP Version 5. You can \
+         find the tutorials for QuTiP Version 4 \
+          <a href="./index.html">here</a>.'
+
+html = generate_index_html('tutorials-v5/', tutorial_directories, title,
+                           version_note)
+with open('index-v5.html') as f:
+    f.write(html)
