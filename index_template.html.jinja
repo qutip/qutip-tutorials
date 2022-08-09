@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html class=" rskk idc0_341" lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="google-site-verification" content="_8nZ7KJx54y7NEnE3tvEmjGutx6mtTMsanWXgnXxjaE">
+    <meta charset="utf-8">
+    <title>QuTiP - Quantum Toolbox in Python</title>
+    <link rel="shortcut icon" href="https://qutip.org/images/favicon.ico" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="P.D. Nation &amp; J.R. Johansson">
+
+    <link href="index_template_files/bootstrap.css" rel="stylesheet">
+    <style> body { padding-top: 0px; } .footer { padding-top: 50px; } </style>
+    <link href="index_template_files/css.css" rel="stylesheet" type="text/css">
+    <link href="index_template_files/site.css" rel="stylesheet">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="index_template_files/google-analytics_analytics.js"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-7GD9QRNR6E');
+    </script>
+</head>
+
+<body>
+
+<div class="container" style="max-width: 1024px;">
+
+<div class="img-responsive">
+
+<div class="row" style="background: #e6e6e6; margin-left: 0px; margin-right: 0px;">
+<a href="https://github.com/qutip"><img style="float: right; position: relative; top: 0; right: 0; border: 0;" src="index_template_files/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875.png" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
+
+<div class="row" style="margin: 20px;">
+<div class="col-md-4">
+<img src="index_template_files/logo.png" height="125px">
+</div>
+
+<div class="col-md-6">
+<h1 style="font-size:48px;"><b>QuTiP</b></h1>
+<h2>Quantum Toolbox in Python</h2>
+</div>
+
+</div>
+</div>
+
+<!-- Static navbar -->
+<div class="navbar navbar-default">
+<div class="navbar-header">
+  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+  </button>
+  <a class="navbar-brand" href="https://qutip.org/index.html">QuTiP</a>
+</div>
+<div class="navbar-collapse collapse">
+  <ul class="nav navbar-nav">
+    <li><a href="https://qutip.org/news.html">News</a></li>
+    <li><a href="https://qutip.org/features.html">Features</a></li>
+    <li><a href="https://qutip.org/download.html">Download</a></li>
+    <li><a href="https://qutip.org/citing.html">Citing</a></li>
+    <li class="dropdown">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation<b class="caret"></b></a>
+      <ul class="dropdown-menu">
+        <li><a href="https://qutip.org/documentation.html">Users Guide</a></li>
+        <li><a href="https://qutip.org/tutorials.html">Tutorials</a></li>
+      </ul>
+    </li>
+    <li class="dropdown">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown">Users<b class="caret"></b></a>
+      <ul class="dropdown-menu">
+        <li><a href="https://qutip.org/users.html">Papers Using QuTiP</a></li>
+        <li><a href="https://qutip.org/jobs.html">Job Announcements</a></li>
+      </ul>
+    </li>
+    <li><a href="https://qutip.org/devs.html">Devs</a></li>
+    <li><a href="https://groups.google.com/group/qutip">Help Group</a></li>
+    <li><a href="https://www.github.com/qutip">Github</a></li>
+  </ul>
+</div>
+</div>
+
+
+
+<div class="row">
+<div class="col-md-12">
+<h1>Tutorials</h1><br>
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-12">
+<p>This page contains our collection of <a href="https://jupyter.org/">Jupyter</a> (formerly <a href="https://ipython.org/notebook.html">IPython</a>) notebooks
+for introducing and demonstrating features of QuTiP.
+Going through these notebooks should be a good way to get familiarized with the software.
+If you are new to scientific computing with Python, you might also find it
+useful to have a look at these IPython notebook
+<a href="https://jrjohansson.github.io/">Lectures on scientific computing with Python</a>.
+</p>
+<p>The following are the contents of this page:</p>
+<ul>
+<li><a href="#example-notebooks">Example notebooks</a>
+	<ul>
+	<li><a href="#python-introduction">Python Introduction</a></li>
+	<li><a href="#basics">Basics</a></li>
+	<li><a href="#visualizations">Visualization</a></li>
+	<li><a href="#quantum-information-processing">Quantum information processing</a></li>
+	<ul>
+	<li><a href="#quantum-circuits">Quantum circuits and algoritms</a></li>
+	<li><a href="#nisq">Noisy quantum devices</a></li>
+	</ul>
+	<li><a href="#time-evolution">Time evolution</a></li>
+	<li><a href="#optimal-control">Optimal control</a></li>
+	<li><a href="#piqs">Permutational invariant Lindblad dynamics</a></li>
+	</ul>
+</li>
+<li><a href="#lectures">Quantum mechanics lectures with QuTiP</a></li>
+<li><a href="#development-nbs">Development notebooks</a></li>
+</ul>
+</div>
+</div>
+
+
+<div class="row">
+<div class="col-md-12">
+<h3 id="example-notebooks">Example notebooks</h3>
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-12">
+<p>These notebooks demonstrate and introduce specific functionality in QuTiP.
+</p>
+
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-6">
+<h4 id="python-introduction">Python Introduction</h4>
+<ul>
+<li><a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/python/Beginning_Python.ipynb">Quick introduction to Python</a></li>
+<li><a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/python/NumPy_Array_Basics.ipynb">Overview of NumPy Arrays</a></li>
+<li><a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/python/Matplotlib_Plotting.ipynb">Brief introduction to Matplotlib</a></li>
+</ul>
+<p>For a more in depth discussion see: <a href="https://github.com/jrjohansson/scientific-python-lectures">Lectures on scientific computing with Python</a>.</p>
+
+<h4 id="basics">Basics</h4>
+<ul>
+<li> <a href="https://nbviewer.ipython.org/urls/raw.github.com/jrjohansson/qutip-lectures/master/Lecture-0-Introduction-to-QuTiP.ipynb">Introduction to QuTiP</a> </li>
+<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/eseries.ipynb">Exponential series</a> </li>
+<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/ultrastrong-coupling-groundstate.ipynb">Groundstates: Jaynes-Cummings model in the ultrastrong coupling regime</a> </li>
+<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/superop-contract.ipynb">Superoperators, Pauli basis and channel contraction</a> </li>
+</ul>
+
+<h4 id="visualizations">Visualization</h4>
+<ul>
+<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/visualization-exposition.ipynb">Visualization demos</a> </li>
+<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/energy-levels.ipynb">Energy-level diagrams</a> </li>
+<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/bloch-sphere-animation.ipynb">Bloch-sphere animation</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/bloch_sphere_with_colorbar.ipynb">Bloch sphere with colorbar</a> </li>
+<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/JC-model-wigner-function.ipynb">Wigner functions</a> </li>
+<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/pseudo-probability-functions.ipynb">Pseudo-probability functions</a> </li>
+<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/quantum-process-tomography.ipynb">Process tomography</a> </li>
+<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/qubism-and-schmidt-plots.ipynb">Qubism visualizations</a> </li>
+</ul>
+
+<h4 id="quantum-information-processing">Quantum information processing</h4>
+<p>This section requires an additional package <a href="https://github.com/qutip/qutip-qip">qutip-qip</a>.</p>
+<h5 id="quantum-circuits">Quantum circuits</h5>
+<ul>
+<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/quantum-gates.ipynb">Quantum gates and circuits</a> </li>
+<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/qip-toffoli-cnot.ipynb">Toffoli gate to CNOT</a> </li>
+<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/qasm.ipynb">Importing and exporting QASM circuits</a> </li>
+<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/teleportation.ipynb">Quantum teleportation</a> </li>
+</ul>
+
+<h5 id="nisq">Pulse-level circuit simulation</h5>
+<ul>
+<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/qip-processor-DJ-algorithm.ipynb">Simulating the Deutsch–Jozsa algorithm with noise</a> </li>
+<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/qip-customize-device.ipynb">Customizing the pulse-level simulation</a> </li>
+<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/qip-scheduler.ipynb">The pulse scheduler</a> </li>
+<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/qip-relaxation-measurement-with-the-idling-gate.ipynb">Measuring the relaxation time</a> </li>
+<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/qip-10-qubit-QFT-algorithm.ipynb">Simulating a 10-qubit QFT algorithm</a> </li>
+<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/qip-randomized-benchmarking.ipynb">Simulating randomized benchmarking</a> </li>
+<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/qip-optpulseprocessor.ipynb">Optimal pulse processor</a> </li>
+</ul>
+
+<h4 id="piqs">Permutational invariant Lindblad dynamics</h4>
+<ul>
+<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/piqs-overview.ipynb">Overview</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/piqs-superradiant-light-emission.ipynb">Superradiant light emission</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/piqs-steadystate-superradiance.ipynb">Steady state superradiance</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/piqs-open-dicke-model.ipynb">Open Dicke model</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/piqs-spin-squeezing-noise.ipynb">Spin squeezing with noise</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/piqs-boundary-time-crystals.ipynb">Boundary time crystals</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/piqs-multiple-spin-ensembles.ipynb">Multiple spin ensembles</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/piqs-entropy_purity.ipynb">Von Neumann entropy and purity</a> </li>
+</ul>
+
+</div>
+
+<div class="col-md-6">
+
+<h4 id="time-evolution">Time evolution</h4>
+<ul>
+{% for item in tutorials['time-evolution'] %}
+    <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+{% endfor %}
+</ul>
+
+
+<h4 id="optimal-control">Optimal control</h4>
+<ul>
+<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/optimal-control-overview.ipynb">Overview</a> </li>
+<li> <a href="https://nbviewer.ipython.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-pulseoptim-Hadamard.ipynb">Hadamard</a> </li>
+<li> <a href="https://nbviewer.ipython.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-pulseoptim-QFT.ipynb">QFT</a> </li>
+<li> <a href="https://nbviewer.ipython.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-pulseoptim-Lindbladian.ipynb">Lindbladian</a> </li>
+<li> <a href="https://nbviewer.ipython.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-pulseoptim-symplectic.ipynb">Symplectic</a> </li>
+<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/control-pulseoptim-CRAB-QFT.ipynb">QFT (CRAB)</a> </li>
+<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/control-pulseoptim-CRAB-2qubitInerac.ipynb">State to state (CRAB)</a> </li>
+<li> <a href="https://nbviewer.ipython.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-grape-cnot.ipynb">CNOT</a> </li>
+<li> <a href="https://nbviewer.ipython.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-grape-iswap.ipynb">iSWAP</a> </li>
+<li> <a href="https://nbviewer.ipython.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-grape-single-qubit-rotation.ipynb">Single-qubit rotation</a> </li>
+<li> <a href="https://nbviewer.ipython.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-grape-toffoli.ipynb">Toffoli gate</a> </li>
+</ul>
+
+<h4 id="tomography">Tomography</h4>
+<ul>
+<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/tomography-iMLE-photon-counting.ipynb">Density matrix estimation with iterative maximum likelihood estimation</a> </li>
+</ul>
+
+<h4 id="heom">Hierarchical Equations of Motion</h4>
+<ul>
+<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/heom/heom-index.ipynb">Examples for solving the dynamics of systems coupled to bosonic and fermoinic baths using the Hierarchical Equations of Motion</a> </li>
+</ul>
+
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-12">
+<h3 id="lectures">Quantum mechanics lectures with QuTiP</h3>
+
+<p>These lecture-style notebooks focus on particular quantum mechanics
+topics and analyze them numerically using QuTiP (some more detailed than others).</p>
+
+<ul>
+{% for item in tutorials['lectures'] %}
+    <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+{% endfor %}
+</ul>
+
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-12">
+<h3 id="development-nbs">Development notebooks</h3>
+<p>A collection of more technical development notebooks, which often focus on
+testing and benchmarking various features of QuTiP, is available
+<a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/tree/master/development/">here</a>.
+</p>
+
+</div>
+</div>
+
+<div class="footer">
+<p>© 2013 and later. <a href="https://researcher.watson.ibm.com/researcher/view.php?person=ibm-Paul.Nation">P.D. Nation</a> &amp; <a href="https://jrjohansson.github.io/research.html">J.R. Johansson</a>.  This page was created with <a href="https://twitter.github.io/bootstrap/">bootstrap</a>.</p>
+</div>
+
+</div> <!-- container -->
+
+<script src="index_template_files/jquery.js"></script>
+<script src="index_template_files/bootstrap.min.js"></script>
+<script src="index_template_files/d3.v3.min.js"></script>
+<script src="index_template_files/topojson.v1.min.js"></script>
+<script src="index_template_files/datamaps.world.min.js"></script>
+<script src="index_template_files/map.js"></script>
+
+
+
+</div></body></html>
