@@ -1,32 +1,6 @@
 import os
 import re
-import argparse
-import sys
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-
-# url prefix for the links
-prefix = "https://nbviewer.org/urls/qutip.org/qutip-tutorials/"
-
-# tutorial directories
-tutorial_directories = ['time-evolution', 'lectures']
-
-# Create an argument to the script that contains the tutorials
-parser = argparse.ArgumentParser(
-    description='Generate Index file for QuTiP Tutorials')
-parser.add_argument('directory', type=str,
-                    help='Directory containing the tutorial folders '
-                         '(e.g. tutorials-v4)')
-args = parser.parse_args()
-
-# read the directory from the arguments
-directory = args.directory
-if not directory[-1] == '/':
-    directory = directory + '/'
-# Check if directory exists
-if not os.path.exists(directory):
-    print(
-        'Given directory does not exists, please specify an existing directory')
-    sys.exit(1)
 
 
 def atoi(text):
@@ -87,19 +61,45 @@ def get_notebooks(path):
     return notebooks
 
 
-tutorials = {}
-# get tutorials for different directories
-for dir in tutorial_directories:
-    tutorials[dir] = get_notebooks(directory + dir + '/')
+# url prefix for the links
+prefix = "https://nbviewer.org/urls/qutip.org/qutip-tutorials/"
+# tutorial directories
+tutorial_directories = ['time-evolution', 'lectures']
+# directories for different versions
+versions = ['4', '5']
+# output file names
+output_filenames = {
+    '4': "index.html",
+    '5': "index-v5.html"
+}
 
-# Load environment for Jinja and template
-env = Environment(
-    loader=FileSystemLoader("./"),
-    autoescape=select_autoescape()
-)
-template = env.get_template("index_template.html.jinja")
+for version in versions:
+    version_directory = 'tutorials-v' + version + '/'
+    tutorials = {}
+    # get tutorials for different directories
+    for dir in tutorial_directories:
+        tutorials[dir] = get_notebooks(version_directory + dir + '/')
 
-# render template and store
-html = template.render(tutorials=tutorials)
-with open('index.html', 'w+') as f:
-    f.write(html)
+    # set the title
+    title = 'Tutorials for QuTiP Version ' + version
+    version_note = ""
+    if version == '4':
+        version_note = 'This are the tutorials for QuTiP Version 4. You can \
+         find the tutorials for QuTiP Version 5 \
+          <a href="./' + output_filenames['5'] +  '">here</a>.'
+    if version == '5':
+        version_note = 'This are the tutorials for QuTiP Version 5. You can \
+         find the tutorials for QuTiP Version 4 \
+          <a href="./' + output_filenames['4'] + '">here</a>.'
+    # Load environment for Jinja and template
+    env = Environment(
+        loader=FileSystemLoader("./"),
+        autoescape=select_autoescape()
+    )
+    template = env.get_template("index.html.jinja")
+
+    # render template and store
+    html = template.render(tutorials=tutorials, title=title,
+                           version_note=version_note)
+    with open(output_filenames[version], 'w+') as f:
+        f.write(html)
