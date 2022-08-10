@@ -127,7 +127,10 @@ c_ops = [cc, cm, cp]
 ### Run Steady State Solvers
 
 ```python
-solvers = ["direct", "eigen", "power", "iterative-gmres", "iterative-bicgstab"]
+# all possible solvers
+possible_solvers = ["direct", "eigen", "power", "iterative-gmres", "iterative-bicgstab"]
+# solvers used here
+solvers = ["direct", "iterative-gmres"]
 mech_dms = []
 
 for ss in solvers:
@@ -166,13 +169,19 @@ for kk in range(len(mech_dms)):
 ## Plot the Mechanical Oscillator Wigner Function
 
 
-It is known that the density matrix for the mechanical oscillator is diagoinal in the Fock basis due to phase diffusion.  However some small off-diagonal terms show up during the factorization process
+It is known that the density matrix for the mechanical oscillator is diagonal in the Fock basis due to phase diffusion. If we look at the `hinton()` plot of the density matrix, we can see the magnitude of the diagonal elements is higher, such that the non-diagonal have a vanishing importance.
 
 ```python
 hinton(rho_mech, xlabels=[""] * Nm, ylabels=[""] * Nm);
 ```
 
-Therefore, to remove this error, let use explicitly take the diagonal elements are form a new operator out of them
+However some small off-diagonal terms show up during the factorization process, which we can display by the using `plt.spy()`.
+
+```python
+plt.spy(rho_mech.data, ms=1)
+```
+
+Therefore, to remove this error, let use explicitly take the diagonal elements and form a new operator out of them.
 
 ```python
 diag = rho_mech.diag()
