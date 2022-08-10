@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# QuTiP example: Groundstate of an ultra-strong coupled atom-cavity system
+# Groundstates: Jaynes-Cummings model in the ultrastrong coupling regime
 
 
 Authors: J.R. Johansson and P.D. Nation
