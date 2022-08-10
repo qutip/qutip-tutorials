@@ -37,20 +37,21 @@ First we import the relevant functionalities:
 <!-- #endregion -->
 
 ```python
-%matplotlib inline
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import destroy, basis, mcsolve, mesolve
+from qutip import about, basis, destroy, mcsolve, mesolve
+
+%matplotlib inline
 ```
 
 ## System Setup
 In this example, we consider a simple oscillator Hamiltonian $H = a^\dagger a$ and one initial photon in the cavity.
 
 ```python
-N=5             # number of modes in the
-a=destroy(N)    # Destroy operator
-H=a.dag()*a     # oscillator Hamiltonian
-psi0=basis(N,1) # Initial Fock state with one photon
+N = 5  # number of modes in the
+a = destroy(N)  # Destroy operator
+H = a.dag() * a  # oscillator Hamiltonian
+psi0 = basis(N, 1)  # Initial Fock state with one photon
 ```
 
 The coupling to the external heat bath is described by a coupling constant $\kappa$ and the temperature of the heat bath is defined via the average photon number $\langle n \rangle$. In QuTiP the interaction between the system and heat bath is defined via the collapse operators. For this example, there are two collapse operators. One for photon annihilation ($C_1$) and one for photon creation ($C_2$): 
@@ -62,8 +63,8 @@ $C_2 = \sqrt{\kappa * \langle n \rangle} \; a^\dagger$
 We give some numerical values to the coupling constant $\kappa$ and the average photon number of the heat bath $\langle n \rangle$.
 
 ```python
-kappa=1.0/0.129 # Coupling rate to heat bath
-nth= 0.063      # Temperature with <n>=0.063
+kappa = 1.0 / 0.129  # Coupling rate to heat bath
+nth = 0.063  # Temperature with <n>=0.063
 
 # collapse operators for the thermal bath
 c_ops = []
@@ -79,12 +80,12 @@ We can also pass a list to `ntraj`. `qutip.mcsolve()` will calculate the results
 Here we are interested in the time evolution of $a^\dagger a$ for different numbers of `ntraj`. We will compare the results to the predictions by `qutip.mesolve().
 
 ```python
-ntraj = [1,5,15,904] # number of MC trajectories
-tlist = np.linspace(0,0.8,100) 
+ntraj = [1, 5, 15, 904]  # number of MC trajectories
+tlist = np.linspace(0, 0.8, 100)
 
-# Solve using MCSolve for different ntraj 
-mc = mcsolve(H,psi0,tlist,c_ops,[a.dag()*a],ntraj)
-me = mesolve(H,psi0,tlist,c_ops, [a.dag()*a])
+# Solve using MCSolve for different ntraj
+mc = mcsolve(H, psi0, tlist, c_ops, [a.dag() * a], ntraj)
+me = mesolve(H, psi0, tlist, c_ops, [a.dag() * a])
 ```
 
 ## Reproduce plot from article
@@ -95,28 +96,31 @@ fig = plt.figure(figsize=(8, 8), frameon=False)
 plt.subplots_adjust(hspace=0.0)
 
 for i in range(4):
-    ax = plt.subplot(4,1,i+1)
-    ax.plot(tlist, mc.expect[i][0], 'b', lw=2, label='#trajectories={}'.format(ntraj[i]))
-    ax.plot(tlist, me.expect[0], 'r--', lw=2)
-    ax.set_yticks([0,0.5,1])
-    ax.set_ylim([-0.1,1.1])
-    ax.set_ylabel(r'$\langle P_{1}(t)\rangle$')
+    ax = plt.subplot(4, 1, i + 1)
+    ax.plot(
+        tlist, mc.expect[i][0], "b", lw=2,
+        label="#trajectories={}".format(ntraj[i])
+    )
+    ax.plot(tlist, me.expect[0], "r--", lw=2)
+    ax.set_yticks([0, 0.5, 1])
+    ax.set_ylim([-0.1, 1.1])
+    ax.set_ylabel(r"$\langle P_{1}(t)\rangle$")
     ax.legend()
 
-ax.set_xlabel(r'Time (s)');
+ax.set_xlabel(r"Time (s)");
 ```
 
 ## About
 
 ```python
-from qutip import about
 about()
 ```
 
 ## Testing
 
 ```python
-assert np.allclose(me.expect[0], mc.expect[3][0],atol=10**-1)
+assert np.allclose(me.expect[0], mc.expect[3][0], atol=10**-1)
 assert np.all(np.diff(me.expect[0]) <= 0)
-assert np.all((np.isclose(mc.expect[0][0],0.0)) | (np.isclose(mc.expect[0][0], 1.0)))
+assert np.all((np.isclose(mc.expect[0][0], 0.0)) |
+              (np.isclose(mc.expect[0][0], 1.0)))
 ```
