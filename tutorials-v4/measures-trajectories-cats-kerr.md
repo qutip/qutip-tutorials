@@ -123,7 +123,7 @@ plt.plot(range(0, 20), [abs(i) ** 2 for i in state_zero[0:20]],
 plt.plot(range(0, 20), [abs(i) ** 2 for i in state_one[0:20]],
          "bo", label="Second state")
 plt.legend()
-plt.xlabel("Eigenvalue", fontsize=label_size)
+plt.xlabel("Fock state", fontsize=label_size)
 plt.ylabel("Probability", fontsize=label_size)
 plt.show()
 ```
