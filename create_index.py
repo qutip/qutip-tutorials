@@ -85,7 +85,7 @@ def generate_index_html(version_directory, tutorial_directories, title,
 # url prefix for the links
 url_prefix = "https://nbviewer.org/urls/qutip.org/qutip-tutorials/"
 # tutorial directories
-tutorial_directories = ['time-evolution', 'lectures']
+tutorial_directories = ['time-evolution', 'lectures', 'basics']
 
 # +++ VERSION 4 INDEX FILE +++
 title = 'Tutorials for QuTiP Version 4'
