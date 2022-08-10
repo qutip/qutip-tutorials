@@ -66,7 +66,7 @@ where $\mathcal{L}$ is typically given in Lindblad form
 
 where $\Gamma_{m}$ is the coulping strength of the mechanical oscillator to its thermal environment with average occupation number $n_{th}$.  As is customary, here we assume that the cavity mode is coupled to the vacuum.
 
-Although, the steady state solution is nothing but an eigenvalue equation, the numerical solution to this equation is anything but trivial due to the non-Hermitian structure of $\mathcal{L}$ and its worsening condition number has the dimensionality of the truncated Hilbert space increases.
+Although, the steady state solution is nothing but an eigenvalue equation, the numerical solution to this equation is anything but trivial due to the non-Hermitian structure of $\mathcal{L}$ and its worsening condition number as the dimensionality of the truncated Hilbert space increases.
 
 
 ## Steady State Solvers in QuTiP v3.0+
