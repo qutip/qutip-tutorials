@@ -123,8 +123,8 @@ about()
 ## Testing
 
 ```python
-assert np.allclose(me.expect[0], mc.expect[3][0], atol=10**-1)
+np.testing.assert_allclose(me.expect[0], mc.expect[3][0], atol=10**-1)
 assert np.all(np.diff(me.expect[0]) <= 0)
-assert np.all((np.isclose(mc.expect[0][0], 0.0)) |
-              (np.isclose(mc.expect[0][0], 1.0)))
+np.testing.assert_array_equal(np.round(mc.expect[0][0],4),
+                              mc.expect[0][0].astype(bool))
 ```
