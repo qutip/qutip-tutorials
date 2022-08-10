@@ -89,7 +89,7 @@ The corresponding density matrix $\hat{\rho}_{\rm ss}$ is well approximated by t
 p^+\,\ket{\CC^+_\alpha}\!\bra{\CC^+_\alpha}
 +p^-\,\ket{\CC^-_\alpha}\!\bra{\CC^-_\alpha},
 \end{equation}
-where $\ket{\CC^\pm_\alpha}\propto\ket{\alpha}\pm\ket{-\alpha}$ are photonic Schr\"odinger cat states whose complex amplitude $\alpha$ is determined by the system parameters [2-4].
+where $\ket{\CC^\pm_\alpha}\propto\ket{\alpha}\pm\ket{-\alpha}$ are photonic Schrödinger cat states whose complex amplitude $\alpha$ is determined by the system parameters [2-4].
 We recall that the coherent state $\ket{\alpha}$ is the eigenstate of the destruction operator: $\hat{a} \ket{\alpha}=\alpha \ket{\alpha}$.
 The state $\ket{\CC^+_\alpha}$ is called the even cat, since it can be written as a superposition of solely even Fock states, while $\ket{\CC^-_\alpha}$ is the odd cat. 
 In the previous equation, the coefficients $p^\pm$ can be interpreted as the probabilities of the system of being found in the corresponding cat state.
