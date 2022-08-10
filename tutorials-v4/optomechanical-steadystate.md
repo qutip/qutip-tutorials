@@ -128,7 +128,8 @@ c_ops = [cc, cm, cp]
 
 ```python
 # all possible solvers
-possible_solvers = ["direct", "eigen", "power", "iterative-gmres", "iterative-bicgstab"]
+possible_solvers = ["direct", "eigen", "power", "iterative-gmres",
+                    "iterative-bicgstab"]
 # solvers used here
 solvers = ["direct", "iterative-gmres"]
 mech_dms = []
