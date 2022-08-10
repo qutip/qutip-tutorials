@@ -32,7 +32,7 @@ from qutip import (about, destroy, hinton, ptrace, qdiags, qeye, steadystate,
 ## Optomechanical Hamiltonian
 
 
-The optomechanical Hamiltonian arrises from the radiation pressure interaction of light in an optical cavity where one of the cavity mirrors is mechanically compliant.
+The optomechanical Hamiltonian arises from the radiation pressure interaction of light in an optical cavity where one of the cavity mirrors is mechanically compliant.
 
 ```python
 Image(filename="../images/optomechanical_setup.png", width=500, embed=True)
