@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# Floquet formalism
+# Floquet Formalism
 
 Author: C. Staufenbiel, 2022
 
