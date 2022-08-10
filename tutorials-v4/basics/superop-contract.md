@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# QuTiP Example: Superoperators, Pauli Basis and Channel Contraction
+# Superoperators, Pauli Basis and Channel Contraction
 
 
 [Christopher Granade](http://www.cgranade.com/) <br>
