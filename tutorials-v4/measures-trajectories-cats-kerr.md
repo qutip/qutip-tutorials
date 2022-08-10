@@ -340,7 +340,7 @@ switches in photon-counting trajectories. This is a consequence of the metastabl
 coherent states $\ket{\pm\alpha}$ [1-4].
 
 
-# Conciling the two points of view
+# Reconciling the two points of view
 
 Summing up, we have shown that the behaviour of the system along a single quantum trajectory dramatically depends on the measurement protocol adopted.
 For photon-counting measurements on the environment, the system switches between the parity-defined cat states, while under homodyne detection, the states explored along a single quantum trajectory are the coherent ones.
