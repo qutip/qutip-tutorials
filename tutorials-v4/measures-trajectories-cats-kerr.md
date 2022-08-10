@@ -374,7 +374,7 @@ sol_hom_mean = ssesolve(
 ```python
 plt.figure(figsize=(18, 8))
 plt.subplot(311)
-plt.plot(tlist, sol_mc_mean.expect[0], "r", label="Conunting")
+plt.plot(tlist, sol_mc_mean.expect[0], "r", label="Counting")
 plt.plot(tlist, sol_hom_mean.expect[0], "b", label="Homodyne")
 plt.ylabel(r"$\langle \hat{a}^\dagger \hat{a} \rangle$", fontsize=label_size)
 plt.xlim([0, 3])
