@@ -284,7 +284,7 @@ This whole process can be seen as the action of a nonlinear beam splitter which 
 Therefore, the homodyne two-photon jump operator takes the form $\hat{K}_2=\hat{J}_2 +\beta_2 \hat{1}$.
 Without loss of generality, in the following, we assume the amplitudes $\beta_{1,2}$ to be real [6].
 
-In the ideal limit $\beta_{1,2}\to\infty$, the system evolves diffusively according to a homodyne stochastic Schr\"odinger equation.
+In the ideal limit $\beta_{1,2}\to\infty$, the system evolves diffusively according to a homodyne stochastic Schrödinger equation.
 Using the ssesolve function with option "method='homodyne'", one can simulate the trajectory.
 
 ```python
