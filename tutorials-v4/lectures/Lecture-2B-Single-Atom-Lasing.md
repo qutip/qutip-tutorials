@@ -39,7 +39,7 @@ from qutip import (Options, about, basis, destroy, expect, mesolve, ptrace,
 Consider a single atom coupled to a single cavity mode, as illustrated in the figure below. If there atom excitation rate $\Gamma$ exceeds the relaxation rate, a population inversion can occur in the atom, and if coupled to the cavity the atom can then act as a photon pump on the cavity.
 
 ```python
-Image(filename="images/schematic-lasing-model.png")
+Image(filename="../../images/schematic-lasing-model.png")
 ```
 
 The coherent dynamics in this model is described by the Hamiltonian
