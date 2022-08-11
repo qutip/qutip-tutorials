@@ -208,7 +208,7 @@ plt.savefig(
 )  # Save the figure in PNG format in same directory as script
 ```
 
-```savefig``` saves the figure with the name and extension that is given in the string.  The name can be whatever you like, but the extension. ```.png``` in this case, must be a format that Matplotlib recognizes.  In this class we will only use the Portable Network Graphics ```.png``` and PDF ```.pdf``` formats.
+The function ```savefig``` saves the figure with the name and extension that is given in the string.  The name can be whatever you like, but the extension. ```.png``` in this case, must be a format that Matplotlib recognizes.  In this class we will only use the Portable Network Graphics ```.png``` and PDF ```.pdf``` formats.
 
 
 ### Using Shapes for Data Points
