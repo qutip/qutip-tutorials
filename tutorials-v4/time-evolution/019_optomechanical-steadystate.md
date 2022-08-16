@@ -35,7 +35,7 @@ from qutip import (about, destroy, hinton, ptrace, qdiags, qeye, steadystate,
 The optomechanical Hamiltonian arises from the radiation pressure interaction of light in an optical cavity where one of the cavity mirrors is mechanically compliant.
 
 ```python
-Image(filename="../images/optomechanical_setup.png", width=500, embed=True)
+Image(filename="../../images/optomechanical_setup.png", width=500, embed=True)
 ```
 
 Assuming that $a^{+}$, $a$ and $b^{+}$,$b$ are the raising and lowering operators for the cavity and mechanical oscillator, respectively, the Hamiltonian for an optomechanical system driven by a classical monochromatic pump term can be written as 
