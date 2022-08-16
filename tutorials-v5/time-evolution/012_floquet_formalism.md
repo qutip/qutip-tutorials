@@ -79,7 +79,7 @@ for A_tmp in A_list:
         [A_tmp / 2 * sigmax(), "sin({w}*t)".format(w=omega)],
     ]
     # floquet modes and quasienergies
-    _, (e1, e2) = floquet_modes(H_tmp, T)
+    _, (e1, e2) = floquet_modes(H_tmp, T, sort=True)
     quasienergies1.append(e1), quasienergies2.append(e2)
 ```
 
@@ -272,5 +272,5 @@ assert np.std(fme_result.expect[0][0: tlist_period.shape[0]]) > np.std(
 )
 # compute prediction using sesolve
 res_sesolve = sesolve(H, psi0, tlist, [num(2)])
-# assert np.allclose(res_sesolve.expect[0], p_ex, atol=0.1)
+assert np.allclose(res_sesolve.expect[0], p_ex, atol=0.15)
 ```

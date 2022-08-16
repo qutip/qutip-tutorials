@@ -272,5 +272,5 @@ assert np.std(fme_result.expect[0][0: tlist_period.shape[0]]) > np.std(
 )
 # compute prediction using sesolve
 res_sesolve = sesolve(H, psi0, tlist, [num(2)])
-assert np.allclose(res_sesolve.expect[0], p_ex, atol=0.1)
+assert np.allclose(res_sesolve.expect[0], p_ex, atol=0.15)
 ```
