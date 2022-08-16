@@ -96,7 +96,7 @@ Nm = 30  # Number of mech states
 kappa = 0.3  # Cavity damping rate
 E = 0.1  # Driving Amplitude
 g0 = 2.4 * kappa  # Coupling strength
-Qm = 1e4  # Mech quality factor
+Qm = 0.3 * 1e4  # Mech quality factor
 gamma = 1 / Qm  # Mech damping rate
 n_th = 1  # Mech bath temperature
 delta = -0.43  # Detuning
@@ -210,4 +210,8 @@ plt.colorbar(c, ax=ax);
 
 ```python
 about()
+```
+
+```python
+
 ```
