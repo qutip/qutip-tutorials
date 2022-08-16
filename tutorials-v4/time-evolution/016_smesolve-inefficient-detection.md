@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# Inefficient photon detection: Mixing stochastic and deterministic master equations
+# Stochastic Solver: Mixing stochastic and deterministic equations
 
 
 Copyright (C) 2011 and later, Paul D. Nation & Robert J. Johansson

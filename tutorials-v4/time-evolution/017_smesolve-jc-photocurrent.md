@@ -12,10 +12,7 @@ jupyter:
     name: python3
 ---
 
-# Stochastic photo-current detection in a JC model
-
-
-## Mixing stochastic and deterministic master equations
+# Stochastic Solver: Photo-current detection in a JC model
 
 
 Copyright (C) 2011 and later, Paul D. Nation & Robert J. Johansson
