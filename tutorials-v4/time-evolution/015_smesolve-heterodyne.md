@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# Stochastic Solver: Heterodyne detection
+# Stochastic Solver: Heterodyne Detection
 
 
 Copyright (C) 2011 and later, Paul D. Nation & Robert J. Johansson
