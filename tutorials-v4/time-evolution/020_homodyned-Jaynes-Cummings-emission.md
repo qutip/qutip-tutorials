@@ -25,8 +25,8 @@ For more information about QuTiP see the project web page: http://qutip.org/
 ```python
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import (Options, about, destroy, expect, mesolve, parfor, qeye,
-                   steadystate, tensor)
+from qutip import (Options, about, destroy, expect, mesolve, parallel_map,
+                   qeye, steadystate, tensor)
 
 %matplotlib inline
 %config InlineBackend.figure_format = 'retina'
@@ -175,7 +175,7 @@ def calculate_rho_ss(delta_scan):
 
 
 delta_list = np.linspace(-6 * g, 9 * g, 200)
-rho_ss = parfor(calculate_rho_ss, delta_list)
+rho_ss = parallel_map(calculate_rho_ss, delta_list)
 
 # calculate JC emission
 I_jc = expect(a.dag() * a, rho_ss)
@@ -224,7 +224,7 @@ def calculate_rho_ss(Om):
     return steadystate(H, c_op)
 
 
-rho_ss = parfor(calculate_rho_ss, Om_list)
+rho_ss = parallel_map(calculate_rho_ss, Om_list)
 
 # decompose emission again into incoherent and coherent portions
 I_c = expect(a.dag(), rho_ss) * expect(a, rho_ss)
@@ -281,7 +281,7 @@ def calculate_rho_ss_c(Om):
     return steadystate(H_c, c_op_r)
 
 
-rho_ss_c = parfor(calculate_rho_ss_c, Om_list)
+rho_ss_c = parallel_map(calculate_rho_ss_c, Om_list)
 
 # calculate list of interference values for all driving strengths
 alpha_list = -expect(rho_ss_c, a_r)

@@ -26,7 +26,7 @@ import itertools
 
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import about, brmesolve, fock, parfor, sigmam
+from qutip import about, brmesolve, fock, parallel_map, sigmam
 
 %matplotlib inline
 %config InlineBackend.figure_format = 'retina'
@@ -184,7 +184,7 @@ plt.title("Quantum-dot-phonon interaction spectrum");
 
 The Bloch-Redfield master equation solver takes the Hamiltonian time-dependence in list-string format. We calculate the final population at the end of the interaction of the pulse with the system, which represents the population initialized into the excited state.
 
-Before executing `brmesolve` for all chosen driving strenghts and laser offsets, we need to run `brmesolve` to initialize all coefficients, which are compiled using Cython. We have to do this, as we use the parallel functionality provided by `parfor`.
+Before executing `brmesolve` for all chosen driving strenghts and laser offsets, we need to run `brmesolve` to initialize all coefficients, which are compiled using Cython. We have to do this, as we use the parallel functionality provided by `parallel_map`.
 
 ```python
 # we will calculate the dot population expectation value
@@ -213,8 +213,8 @@ def brme_step(args):
     ).expect[0][-1]
 
 
-# use QuTiP's builtin parallelized for loop, parfor
-results = parfor(brme_step, itertools.product(wd_list, Om_list))
+# use QuTiP's builtin parallelized for loop: parallel_map
+results = parallel_map(brme_step, list(itertools.product(wd_list, Om_list)))
 
 # unwrap the results into a 2d array
 inv_mat_X = np.array(results).reshape((len(wd_list), len(Om_list)))
