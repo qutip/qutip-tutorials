@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# QuTiP example: Phonon-assisted initialization using the time-dependent Bloch-Redfield master equation solver
+# Bloch-Redfield Solver: Phonon-assisted initialization
 
 Author: K.A. Fischer, Stanford University
 

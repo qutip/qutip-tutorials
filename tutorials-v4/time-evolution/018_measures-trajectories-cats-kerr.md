@@ -12,7 +12,8 @@ jupyter:
     name: python3
 ---
 
-# Cat vs coherent states in a Kerr resonator, and the role of measurement
+# Stochastic vs. Monte-Carlo Solver: Cat states become coherent
+
 $\newcommand{\ket}[1]{| #1 \rangle}$
 $\newcommand{\bra}[1]{\langle #1 |}$
 $\newcommand{\braket}[1]{\langle #1 \rangle}$

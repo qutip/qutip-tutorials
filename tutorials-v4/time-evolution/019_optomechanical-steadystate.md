@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# QuTiP Example: Steady State for an Optomechanical System in the Single-Photon Strong-Coupling Regime
+# Steady-State: Optomechanical System in the Single-Photon Strong-Coupling Regime
 
 
 P.D. Nation and J.R. Johansson

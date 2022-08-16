@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# `QobjEvo`: time-dependent quantum objects
+# <code>QobjEvo</code>: time-dependent quantum objects
 Made by Eric Giguere, updated by Jake Lishman
 
 ```python

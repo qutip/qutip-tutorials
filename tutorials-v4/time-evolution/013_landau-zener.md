@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# QuTiP example: Landau-Zener transitions
+# Time-dependent Master Equation: Landau-Zener transitions
 
 
 J.R. Johansson and P.D. Nation
