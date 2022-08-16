@@ -26,7 +26,7 @@ Find the steady state of a driven qubit, by finding the eigenstates of the propa
 import matplotlib.pyplot as plt
 import numpy as np
 from qutip import (about, basis, destroy, expect, mesolve, propagator,
-                   propagator_steadystate, sigmax, sigmaz)
+                   propagator_steadystate, sigmax, sigmaz, steadystate_floquet)
 
 %matplotlib inline
 ```
@@ -81,11 +81,15 @@ def sd_qubit_integrate(delta, eps0, A, w, gamma1, gamma2, psi0, tlist):
 
     T = 2 * np.pi / w
 
+    # Calculate steadystate using the propagator
     U = propagator(hamiltonian_t, T, c_op_list, H_args)
-
     rho_ss = propagator_steadystate(U)
 
-    return output.expect[0], expect(sm.dag() * sm, rho_ss)
+    # Calculate steadystate using floquet formalism
+    rho_ss_f = steadystate_floquet(H0, c_op_list, H1, w)
+
+    return output.expect[0], expect(sm.dag() * sm, rho_ss), \
+        expect(sm.dag() * sm, rho_ss_f)
 ```
 
 ```python
@@ -103,23 +107,37 @@ tlist = np.linspace(0, 50, 500)
 ```
 
 ```python
-p_ex, p_ex_ss = sd_qubit_integrate(delta, eps0, A, w,
-                                   gamma1, gamma2, psi0, tlist)
+p_ex, p_ex_ss, p_ex_ss_f = sd_qubit_integrate(delta,
+                                              eps0,
+                                              A,
+                                              w,
+                                              gamma1,
+                                              gamma2,
+                                              psi0,
+                                              tlist)
 ```
 
 ```python
 fig, ax = plt.subplots(figsize=(12, 6))
 
-ax.plot(tlist, np.real(p_ex))
-ax.plot(tlist, np.real(p_ex_ss) * np.ones(tlist.shape[0]))
+ax.plot(tlist, np.real(p_ex), label='Mesolve')
+ax.plot(tlist, np.real(p_ex_ss) * np.ones(tlist.shape[0]),
+        label='Propagator Steadystate')
+ax.plot(tlist, np.real(p_ex_ss_f) * np.ones(tlist.shape[0]),
+        label='Floquet Steadystate')
 ax.set_xlabel("Time")
 ax.set_ylabel("P_ex")
 ax.set_ylim(0, 1)
-ax.set_title("Excitation probabilty of qubit");
+ax.set_title("Excitation probabilty of qubit")
+ax.legend();
 ```
 
 ## Software version:
 
 ```python
 about()
+```
+
+```python
+
 ```

@@ -32,7 +32,7 @@ from qutip import (about, destroy, hinton, ptrace, qdiags, qeye, steadystate,
 ## Optomechanical Hamiltonian
 
 
-The optomechanical Hamiltonian arrises from the radiation pressure interaction of light in an optical cavity where one of the cavity mirrors is mechanically compliant.
+The optomechanical Hamiltonian arises from the radiation pressure interaction of light in an optical cavity where one of the cavity mirrors is mechanically compliant.
 
 ```python
 Image(filename="../../images/optomechanical_setup.png", width=500, embed=True)
@@ -66,7 +66,7 @@ where $\mathcal{L}$ is typically given in Lindblad form
 
 where $\Gamma_{m}$ is the coulping strength of the mechanical oscillator to its thermal environment with average occupation number $n_{th}$.  As is customary, here we assume that the cavity mode is coupled to the vacuum.
 
-Although, the steady state solution is nothing but an eigenvalue equation, the numerical solution to this equation is anything but trivial due to the non-Hermitian structure of $\mathcal{L}$ and its worsening condition number has the dimensionality of the truncated Hilbert space increases.
+Although, the steady state solution is nothing but an eigenvalue equation, the numerical solution to this equation is anything but trivial due to the non-Hermitian structure of $\mathcal{L}$ and its worsening condition number as the dimensionality of the truncated Hilbert space increases.
 
 
 ## Steady State Solvers in QuTiP v3.0+
@@ -96,7 +96,7 @@ Nm = 30  # Number of mech states
 kappa = 0.3  # Cavity damping rate
 E = 0.1  # Driving Amplitude
 g0 = 2.4 * kappa  # Coupling strength
-Qm = 1e4  # Mech quality factor
+Qm = 0.3 * 1e4  # Mech quality factor
 gamma = 1 / Qm  # Mech damping rate
 n_th = 1  # Mech bath temperature
 delta = -0.43  # Detuning
@@ -127,7 +127,11 @@ c_ops = [cc, cm, cp]
 ### Run Steady State Solvers
 
 ```python
-solvers = ["direct", "eigen", "power", "iterative-gmres", "iterative-bicgstab"]
+# all possible solvers
+possible_solvers = ["direct", "eigen", "power", "iterative-gmres",
+                    "iterative-bicgstab"]
+# solvers used here
+solvers = ["direct", "iterative-gmres"]
 mech_dms = []
 
 for ss in solvers:
@@ -166,13 +170,19 @@ for kk in range(len(mech_dms)):
 ## Plot the Mechanical Oscillator Wigner Function
 
 
-It is known that the density matrix for the mechanical oscillator is diagoinal in the Fock basis due to phase diffusion.  However some small off-diagonal terms show up during the factorization process
+It is known that the density matrix for the mechanical oscillator is diagonal in the Fock basis due to phase diffusion. If we look at the `hinton()` plot of the density matrix, we can see the magnitude of the diagonal elements is higher, such that the non-diagonal have a vanishing importance.
 
 ```python
 hinton(rho_mech, xlabels=[""] * Nm, ylabels=[""] * Nm);
 ```
 
-Therefore, to remove this error, let use explicitly take the diagonal elements are form a new operator out of them
+However some small off-diagonal terms show up during the factorization process, which we can display by the using `plt.spy()`.
+
+```python
+plt.spy(rho_mech.data, ms=1)
+```
+
+Therefore, to remove this error, let use explicitly take the diagonal elements and form a new operator out of them.
 
 ```python
 diag = rho_mech.diag()
@@ -200,4 +210,8 @@ plt.colorbar(c, ax=ax);
 
 ```python
 about()
+```
+
+```python
+
 ```

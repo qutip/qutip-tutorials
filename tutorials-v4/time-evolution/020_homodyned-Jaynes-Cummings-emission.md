@@ -450,8 +450,8 @@ plt.plot(
     "blueviolet",
     label="JC w/ interference",
 )
-plt.xlabel(r"$\\tau$ [$1/\Gamma_\mathrm{eff}$]")
-plt.ylabel(r"$g^{(2)}(\\tau)$")
+plt.xlabel(r"$\tau$ [$1/\Gamma_\mathrm{eff}$]")
+plt.ylabel(r"$g^{(2)}(\tau)$")
 plt.legend(loc=2);
 ```
 

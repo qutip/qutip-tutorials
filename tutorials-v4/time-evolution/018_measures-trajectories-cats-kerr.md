@@ -13,6 +13,7 @@ jupyter:
 ---
 
 # Stochastic vs. Monte-Carlo Solver: Cat states become coherent
+
 $\newcommand{\ket}[1]{| #1 \rangle}$
 $\newcommand{\bra}[1]{\langle #1 |}$
 $\newcommand{\braket}[1]{\langle #1 \rangle}$
@@ -89,7 +90,7 @@ The corresponding density matrix $\hat{\rho}_{\rm ss}$ is well approximated by t
 p^+\,\ket{\CC^+_\alpha}\!\bra{\CC^+_\alpha}
 +p^-\,\ket{\CC^-_\alpha}\!\bra{\CC^-_\alpha},
 \end{equation}
-where $\ket{\CC^\pm_\alpha}\propto\ket{\alpha}\pm\ket{-\alpha}$ are photonic Schr\"odinger cat states whose complex amplitude $\alpha$ is determined by the system parameters [2-4].
+where $\ket{\CC^\pm_\alpha}\propto\ket{\alpha}\pm\ket{-\alpha}$ are photonic Schrödinger cat states whose complex amplitude $\alpha$ is determined by the system parameters [2-4].
 We recall that the coherent state $\ket{\alpha}$ is the eigenstate of the destruction operator: $\hat{a} \ket{\alpha}=\alpha \ket{\alpha}$.
 The state $\ket{\CC^+_\alpha}$ is called the even cat, since it can be written as a superposition of solely even Fock states, while $\ket{\CC^-_\alpha}$ is the odd cat. 
 In the previous equation, the coefficients $p^\pm$ can be interpreted as the probabilities of the system of being found in the corresponding cat state.
@@ -123,7 +124,7 @@ plt.plot(range(0, 20), [abs(i) ** 2 for i in state_zero[0:20]],
 plt.plot(range(0, 20), [abs(i) ** 2 for i in state_one[0:20]],
          "bo", label="Second state")
 plt.legend()
-plt.xlabel("Eigenvalue", fontsize=label_size)
+plt.xlabel("Fock state", fontsize=label_size)
 plt.ylabel("Probability", fontsize=label_size)
 plt.show()
 ```
@@ -284,7 +285,7 @@ This whole process can be seen as the action of a nonlinear beam splitter which 
 Therefore, the homodyne two-photon jump operator takes the form $\hat{K}_2=\hat{J}_2 +\beta_2 \hat{1}$.
 Without loss of generality, in the following, we assume the amplitudes $\beta_{1,2}$ to be real [6].
 
-In the ideal limit $\beta_{1,2}\to\infty$, the system evolves diffusively according to a homodyne stochastic Schr\"odinger equation.
+In the ideal limit $\beta_{1,2}\to\infty$, the system evolves diffusively according to a homodyne stochastic Schrödinger equation.
 Using the ssesolve function with option "method='homodyne'", one can simulate the trajectory.
 
 ```python
@@ -340,7 +341,7 @@ switches in photon-counting trajectories. This is a consequence of the metastabl
 coherent states $\ket{\pm\alpha}$ [1-4].
 
 
-# Conciling the two points of view
+# Reconciling the two points of view
 
 Summing up, we have shown that the behaviour of the system along a single quantum trajectory dramatically depends on the measurement protocol adopted.
 For photon-counting measurements on the environment, the system switches between the parity-defined cat states, while under homodyne detection, the states explored along a single quantum trajectory are the coherent ones.
@@ -374,7 +375,7 @@ sol_hom_mean = ssesolve(
 ```python
 plt.figure(figsize=(18, 8))
 plt.subplot(311)
-plt.plot(tlist, sol_mc_mean.expect[0], "r", label="Conunting")
+plt.plot(tlist, sol_mc_mean.expect[0], "r", label="Counting")
 plt.plot(tlist, sol_hom_mean.expect[0], "b", label="Homodyne")
 plt.ylabel(r"$\langle \hat{a}^\dagger \hat{a} \rangle$", fontsize=label_size)
 plt.xlim([0, 3])
