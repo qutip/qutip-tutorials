@@ -143,9 +143,9 @@ useful to have a look at these IPython notebook
 <div class="col-md-6">
 <h4 id="python-introduction">Python Introduction</h4>
 <ul>
-<li><a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/python/Beginning_Python.ipynb">Quick introduction to Python</a></li>
-<li><a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/python/NumPy_Array_Basics.ipynb">Overview of NumPy Arrays</a></li>
-<li><a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/python/Matplotlib_Plotting.ipynb">Brief introduction to Matplotlib</a></li>
+{% for item in tutorials['python-introduction'] %}
+    <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+{% endfor %}
 </ul>
 <p>For a more in depth discussion see: <a href="https://github.com/jrjohansson/scientific-python-lectures">Lectures on scientific computing with Python</a>.</p>
 
@@ -158,14 +158,9 @@ useful to have a look at these IPython notebook
 
 <h4 id="visualizations">Visualization</h4>
 <ul>
-<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/visualization-exposition.ipynb">Visualization demos</a> </li>
-<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/energy-levels.ipynb">Energy-level diagrams</a> </li>
-<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/bloch-sphere-animation.ipynb">Bloch-sphere animation</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/bloch_sphere_with_colorbar.ipynb">Bloch sphere with colorbar</a> </li>
-<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/JC-model-wigner-function.ipynb">Wigner functions</a> </li>
-<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/pseudo-probability-functions.ipynb">Pseudo-probability functions</a> </li>
-<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/quantum-process-tomography.ipynb">Process tomography</a> </li>
-<li> <a href="https://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/qubism-and-schmidt-plots.ipynb">Qubism visualizations</a> </li>
+{% for item in tutorials['visualization'] %}
+    <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+{% endfor %}
 </ul>
 
 <h4 id="quantum-information-processing">Quantum information processing</h4>
