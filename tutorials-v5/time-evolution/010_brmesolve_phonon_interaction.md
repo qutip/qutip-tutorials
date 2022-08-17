@@ -26,7 +26,8 @@ import itertools
 
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import about, brmesolve, fock, parallel_map, sigmam
+from qutip import (about, fock, parallel_map, sigmam, BRSolver,
+                   QobjEvo, coefficient)
 
 %matplotlib inline
 %config InlineBackend.figure_format = 'retina'
@@ -184,28 +185,29 @@ plt.title("Quantum-dot-phonon interaction spectrum");
 
 The Bloch-Redfield master equation solver takes the Hamiltonian time-dependence in list-string format. We calculate the final population at the end of the interaction of the pulse with the system, which represents the population initialized into the excited state.
 
-Before executing `brmesolve` for all chosen driving strenghts and laser offsets, we need to run `brmesolve` to initialize all coefficients, which are compiled using Cython. We have to do this, as we use the parallel functionality provided by `parallel_map`.
-
 ```python
 # we will calculate the dot population expectation value
 e_ops = [sm.dag() * sm]
 
 
+# initialize BRSolver
+H = QobjEvo([[H_S, 'wd'], [H_I, 'Om * ' + pulse_shape]],
+            args={'wd': 0.0, 'Om': 0.0})
+
+spectrum = coefficient(spectra_cb_numerical, args={'w': 0})
+solver = BRSolver(H, [[a_op, spectrum]])
+
+
 # define callback for parallelization
 def brme_step(args):
-    wd = args[0]
-    Om = args[1]
-    H = [wd * H_S, [Om * H_I, pulse_shape]]
+    # extract coefficients for the Hamiltonian
+    args = {'wd': args[0], 'Om': args[1]}
 
-    # calculate the population after the pulse interaction has
-    # finished using the Bloch-Redfield time-dependent solver
-    return brmesolve(
-        H,
-        psi0,
-        tlist,
-        [[a_op, spectra_cb_numerical]],
-        e_ops
-    ).expect[0][-1]
+    # run the solver
+    res = solver.run(psi0, tlist, e_ops=e_ops, args=args)
+
+    # return population after the pulse interaction
+    return res.expect[0][-1]
 
 
 # use QuTiP's builtin parallelized for loop: parallel_map
@@ -253,4 +255,8 @@ assert np.all(np.diff(inv_mat_X[2]) > 0)
 assert inv_mat_X[2][-1] > 0.9
 # for -1meV detuning steadystate close to ground state
 assert inv_mat_X[0][-1] < 0.1
+```
+
+```python
+
 ```
