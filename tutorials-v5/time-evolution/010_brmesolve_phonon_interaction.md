@@ -190,6 +190,7 @@ Before executing `brmesolve` for all chosen driving strenghts and laser offsets,
 # we will calculate the dot population expectation value
 e_ops = [sm.dag() * sm]
 
+
 # define callback for parallelization
 def brme_step(args):
     wd = args[0]
