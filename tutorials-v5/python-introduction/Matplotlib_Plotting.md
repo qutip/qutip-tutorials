@@ -55,7 +55,7 @@ For more information about QuTiP see [http://qutip.org](http://qutip.org)
 Being able to plot high-quality, informative figures is one of the necessary tools for working in the sciences today.  If your figures don't look good, then you don't look good.  Good visuals not only help to convey scientific information, but also help to draw attention to your work.  Often times good quality figures and plots play an important role in determining the overall scientific impact of your work.  Therefore we will spend some time learning how to create high-quality, publication ready plots in Python using a Python module called [Matplotlib](http://matplotlib.org).
 
 ```python
-Image(filename="../../images/mpl.png", width=700, embed=True)
+Image(filename="images/mpl.png", width=700, embed=True)
 ```
 
 Basic 2D Plotting

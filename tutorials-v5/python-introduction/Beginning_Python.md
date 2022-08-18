@@ -70,7 +70,7 @@ All information stored in a computer must be represented in a binary format cons
 However, given a fixed number of bits, it is impossible to store an arbitrary number exactly.  Therefore, if one is given a random number, unless the number is exactly divisible by a factor of two, the conversion between the random number and the binary bit representation ultimately leads to a loss of precision, and what is known as **roundoff error**.
 
 
-<!-- #region -->
+
 When dealing with numbers inside a computer there are two distinct types of numbers to consider:
 
 
@@ -78,7 +78,6 @@ When dealing with numbers inside a computer there are two distinct types of numb
 
 
 - **Doubles/Floats** - (3.141,0.21,-0.1,..) These are **floating-point numbers** that are the binary equivalent to scientific notation $c=2.99792458\times 10^{8}$.  Doubles (also called double-precision numbers) are floating point numbers that are written using 64-bits and, in general, are only accurate to the 15th or 16th decimal place.  Floats (or single-precision numbers) use 32-bits, and are good to 6-7 decimal places.  **Serious scientific calculations always require a combination of integers and double (64-bit) numbers**.
-<!-- #endregion -->
 
 ```python
 7 + 0.000000000000001
@@ -106,13 +105,9 @@ $$N_{\rm c}=N\pm \epsilon, \ \ \forall~|\epsilon|< \epsilon_{\rm m}.$$
 ## Making Python Smarter Using NumPy
 
 
-Python itself as limited support for mathematics outside of simple arithmetic.  Therefore, we will use the functions in the NumPy module to do more impressive, and faster, calculations.  We have imported NumPy already at the top of this notebook and can use it now by referring to `np`.
+Python itself has limited support for mathematics outside of simple arithmetic.  Therefore, we will use the functions in the NumPy module to do more impressive, and faster, calculations.  We have imported NumPy already at the top of this notebook and can use it now by referring to `np`.
 
-```python
-np
-```
-
-Here we are asking Python to get all of the basic functions (this is what * means) from the NumPy module.  We can now do more impressive calculations:
+We can now do more impressive calculations:
 
 ```python
 np.exp(2.34)
@@ -158,7 +153,7 @@ Python would give us an error that the variable is not defined.  In addition, th
     exec, finally, for, from, global, if, import, in, is, lambda, not, or,
     pass, print, raise, return, try, while, with, yield
     
-Other than the above reserved words, your variables can be anything that starts with a letter or the underscore character "$\_$" preceded by any combination of alphanumeric characters and "$\_$".  Note that using upper or lower case letters will give you two different variables.
+Other than the above reserved words, your variables can be anything that starts with a letter or the underscore character "$\_$" followed by any combination of alphanumeric characters and "$\_$".  Note that using upper or lower case letters will give you two different variables.
 
 ```python
 _freq = 8
@@ -183,17 +178,13 @@ It is also good practice to use variable names that correspond to the physical q
 ## Strings
 
 
-Often times we want to print some text along with our variables, ask the user for input, or actually use the words and letters themselves as variables (e.g. in DNA analysis).  All of these can be accomplished using **strings**.  We have already seen one string already in this class: 
+Often we want to print some text along with our variables, ask the user for input, or actually use the words and letters themselves as variables (e.g. in DNA analysis).  All of these can be accomplished using **strings**.  We have already seen one string already in this class: 
 
 ```python
 "Hello Class"
 ```
 
-We can also use double quotes
-
-```python
-"Hello Class"
-```
+We can also use single quotes, e.g. `'Hello Class'`.
 
 If we want to use the quote symbol in the string itself then we need to mix the two types 
 

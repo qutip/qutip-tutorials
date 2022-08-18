@@ -26,14 +26,14 @@ For more information about QuTiP see [http://qutip.org](http://qutip.org)
 
 ## Introduction
 
-<!-- #region -->
+
 Until now we have been using lists as a way of storing multiple elements together.  However, when doing numerical computations, lists are not very good.  For example, what if I wanted to add one to a list of numbers?  We couldn't write
 
 ```python
-a=[1,2,3]
-a=a+1
-``` 
-<!-- #endregion -->
+a = [1, 2, 3]
+a = a + 1
+```
+
 
 Instead we would have to do
 
@@ -262,13 +262,11 @@ a = np.linspace(-10, 10, 20)
 print(a[a <= -5])
 ```
 
-<!-- #region -->
 We must be careful though. Checking for multiple conditionals is not allowed
 
 ```python
-print(a[-8<a<=-5])
+print(a[-8 < a <= -5])
 ```
-<!-- #endregion -->
 
 The reason for this is the computer does not know how to take an array of many ```True/False``` values and return just a single value.
 
