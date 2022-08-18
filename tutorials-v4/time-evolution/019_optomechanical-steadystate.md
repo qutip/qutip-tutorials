@@ -211,7 +211,3 @@ plt.colorbar(c, ax=ax);
 ```python
 about()
 ```
-
-```python
-
-```
