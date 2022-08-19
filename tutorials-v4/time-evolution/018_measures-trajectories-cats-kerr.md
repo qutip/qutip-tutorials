@@ -41,7 +41,7 @@ In a frame rotating at the pump frequency, the Hamiltonian reads
 \end{equation}
 where $U$ is the Kerr photon-photon interaction strength, $G$ is the two-photon driving amplitude, and $\hat{a}^\dagger$ ($\hat{a}$) is the bosonic creation (annihilation) operator.
 
-![cavity-1.png](../../images/cavity-1.png "The system under consideration is a single Kerr resonator, with parametric drive and one- and two-photon dissipation.")
+![cavity-1.png](images/cavity-1.png "The system under consideration is a single Kerr resonator, with parametric drive and one- and two-photon dissipation.")
 
 The time dynamics  of the density matrix $\hat{\rho}$ of this sytem is given by a Lindblad master equation $i \partial_t \hat{\rho} = \mathcal{L} \hat{\rho}$, where $\mathcal{L}$ is the Liouvillian superoperator.
 The superoperator $\mathcal{L}$ is made of an Hamiltonian part and 
@@ -200,7 +200,7 @@ Interestingly, several different measures can be associated with the same master
 Depending on the chosen measurement, contrasting results and interpretations can emerge.
 Those incompatibilities are, however, harmonized once the mean value over many trajectories is taken.
 
-![measure_type-1.png](../../images/measure_type-1.png "Homodyne measure (left): the optut field is detected after being mixed with that of a local osillator. Photon counting (right): each photon escaping the cavity is detected by a photon counter.")
+![measure_type-1.png](images/measure_type-1.png "Homodyne measure (left): the optut field is detected after being mixed with that of a local osillator. Photon counting (right): each photon escaping the cavity is detected by a photon counter.")
 
 
 $\newcommand{\ket}[1]{| #1 \rangle}$
