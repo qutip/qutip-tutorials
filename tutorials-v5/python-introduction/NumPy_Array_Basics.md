@@ -257,11 +257,7 @@ a = np.linspace(-10, 10, 20)
 print(a[a <= -5])
 ```
 
-We must be careful though. Checking for multiple conditionals is not allowed
-
-```python
-print(a[-8 < a <= -5])
-```
+We must be careful though. Checking for multiple conditionals is not allowed `print(a[-8 < a <= -5])`.
 
 The reason for this is the computer does not know how to take an array of many ```True/False``` values and return just a single value.
 
