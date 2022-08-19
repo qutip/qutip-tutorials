@@ -27,10 +27,10 @@ from qutip_qip.operations.gates import gate_sequence_product
 from qutip_qip.qasm import read_qasm, print_qasm
 ```
 
-The process is quite simple and only requires the user to store the `.qasm` file in an appropriate location and maintain the absolute path of the file. This will reading the file simpler. For this demonstration, we already saved a few qasm circuit examples in the directory qasm_files. You can find more examples at [OpenQASM repository](https://github.com/Qiskit/openqasm) Let's start off by reading one of the examples: 
+The process is quite simple and only requires the user to store the `.qasm` file in an appropriate location and maintain the absolute path of the file. This will reading the file simpler. For this demonstration, we already saved a few qasm circuit examples in the directory qasm_files. You can find more examples at [OpenQASM repository](https://github.com/Qiskit/openqasm) Let's start off by reading one of the examples:
 
 ```python
-path = "../../qasm_files/swap.qasm"
+path = "qasm_files/swap.qasm"
 qasm_file = open(path, "r")
 print(qasm_file.read())
 ```
@@ -72,7 +72,7 @@ QASM also offers the option to define custom gates in terms of already defined g
 In the file `swap_custom.qasm`, we define the `swap` gate in terms of the pre-defined `cx` gates.
 
 ```python
-path = "../../qasm_files/swap_custom.qasm"
+path = "qasm_files/swap_custom.qasm"
 qasm_file = open(path, "r")
 print(qasm_file.read())
 ```
@@ -98,7 +98,7 @@ The QASM format also allows for other circuit features such as measurement and c
 This is also supported by QuTiP. For an example, we can refer to the example of quantum teleportation. A more complete explanation of teleportation can be found in the [notebook](teleportation.ipynb) on quantum teleportation.
 
 ```python
-path = "../../qasm_files/teleportation.qasm"
+path = "qasm_files/teleportation.qasm"
 qasm_file = open(path, "r")
 qasm_str = qasm_file.read()
 print(qasm_str)
