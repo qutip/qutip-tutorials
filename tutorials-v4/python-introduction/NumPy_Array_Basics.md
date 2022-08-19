@@ -27,13 +27,7 @@ For more information about QuTiP see [http://qutip.org](http://qutip.org)
 ## Introduction
 
 
-Until now we have been using lists as a way of storing multiple elements together.  However, when doing numerical computations, lists are not very good.  For example, what if I wanted to add one to a list of numbers?  We couldn't write
-
-```python
-a = [1, 2, 3]
-a = a + 1
-```
-
+Until now we have been using lists as a way of storing multiple elements together.  However, when doing numerical computations, lists are not very good.  For example, what if I wanted to add one to a list of numbers?  For a list `a = [1, 2, 3]` we can not write `a + 1`.
 
 Instead we would have to do
 
