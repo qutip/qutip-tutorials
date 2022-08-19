@@ -100,7 +100,7 @@ jobs:
   publish:
     needs: pytests
     runs-on: ubuntu-latest
-    if: ${{ github.repository == 'qutip/qutip-tutorials' && github.ref == 'refs/heads/main' }}
+    # if: ${{ github.repository == 'qutip/qutip-tutorials' && github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@master
@@ -115,9 +115,9 @@ jobs:
 
       - name: Create index
         run: |
-          sudo apt-get install tree
-          cd publish
-          tree -H '.' --noreport --charset utf-8 -T "QuTiP Tutorial index" -P "*.ipynb" -o index.html
+          python create_index.py
+          mv index.html publish/index.html
+          mv index-v5.html publish/index-v5.html
 
       - name: Publish Notebooks
         run: | 
