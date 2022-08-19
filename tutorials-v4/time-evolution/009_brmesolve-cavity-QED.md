@@ -21,7 +21,7 @@ with inspirations from the [`brmesolve notebook`](https://github.com/qutip/qutip
 
 ### Introduction
 
-This notebook does not introduce the usage of the Bloch-Redfield solver `qutip.brmesolve()` in detail. For a more detailed introduction to this solver see the [*Bloch-Redfield Solver: Two Level System* notebook](./brmesolve_tls.md) and the [documentation of the function](https://qutip.org/docs/latest/guide/dynamics/dynamics-bloch-redfield.html).
+This notebook does not introduce the usage of the Bloch-Redfield solver `qutip.brmesolve()` in detail. For a more detailed introduction to this solver see the [*Bloch-Redfield Solver: Two Level System* notebook](007_brmesolve_tls.md) and the [documentation of the function](https://qutip.org/docs/latest/guide/dynamics/dynamics-bloch-redfield.html).
 
 The Lindblad master equation solver, implemented in `qutip.mesolve()`, deals with dissipation using collapse operators which can act on subsystems of the general system. For example, we can define dissipation for the atom-cavity system for the cavity and the atom separately, by the corresponding annihilation operator. In this example, we will see the limitations of this approach when it comes to strong coupling between atom and cavity.
 
@@ -130,11 +130,11 @@ plot_energy_levels([H_no, H_weak, H_strong],
 ```
 
 ### Non-secular solution
-The `qutip.brmesolve()` function automatically uses the secular approximation, i.e. assumes that all fast-oscillating terms in the Hamiltonian can be neglected. However, this approximation is not necessary for the Bloch-Redfield solver and this option can be deactived by setting `sec_cutoff=-1` in the arguments. This setting can be useful in some simulations. For the above example of strongly coupled atom-cavity system, dropping the approximation does not change the solution by much.
+The `qutip.brmesolve()` function automatically uses the secular approximation, i.e. assumes that all fast-oscillating terms in the Hamiltonian can be neglected. However, this approximation is not necessary for the Bloch-Redfield solver and this option can be deactived by setting `use_secular=False` in the arguments. This setting can be useful in some simulations. For the above example of strongly coupled atom-cavity system, dropping the approximation does not change the solution by much.
 
 ```python
 result_brme_nonsec = brmesolve(H_strong, psi0, times, a_ops,
-                               e_ops, sec_cutoff=-1)
+                               e_ops, use_secular=False)
 plot_expectation_values([result_brme_strong, result_brme_nonsec],
                         ylabels=["<n_cav>", "<n_atom>"], show_legend=True);
 ```
