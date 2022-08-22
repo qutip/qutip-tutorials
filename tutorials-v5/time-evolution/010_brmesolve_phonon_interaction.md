@@ -12,11 +12,11 @@ jupyter:
     name: python3
 ---
 
-# QuTiP example: Phonon-assisted initialization using the time-dependent Bloch-Redfield master equation solver
+# Bloch-Redfield Solver: Phonon-assisted initialization
 
 Author: K.A. Fischer, Stanford University
 
-This Jupyter notebook demonstrates how to use the time-dependent Bloch-Redfield master equation solver to simulate the phonon-assited initialization of a quantum dot, using QuTiP: The Quantum Toolbox in Python. The purpose is to show how environmentally-driven dissipative interactions can be leveraged to initialize a quantum dot into its excited state. This notebook closely follows the work, <a href="https://arxiv.org/abs/1409.6014">Dissipative preparation of the exciton and biexciton in self-assembled quantum
+This Jupyter notebook demonstrates how to use the time-dependent Bloch-Redfield master equation solver to simulate the phonon-assisted initialization of a quantum dot, using QuTiP: The Quantum Toolbox in Python. The purpose is to show how environmentally-driven dissipative interactions can be leveraged to initialize a quantum dot into its excited state. This notebook closely follows the work, <a href="https://arxiv.org/abs/1409.6014">Dissipative preparation of the exciton and biexciton in self-assembled quantum
 dots on picosecond time scales</a>, Phys. Rev. B 90, 241404(R) (2014).
 
 For more information about QuTiP see the project web page: http://qutip.org/ 
@@ -26,7 +26,8 @@ import itertools
 
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import Options, about, brmesolve, fock, parfor, sigmam
+from qutip import (about, fock, parallel_map, sigmam, BRSolver,
+                   QobjEvo, coefficient)
 
 %matplotlib inline
 %config InlineBackend.figure_format = 'retina'
@@ -189,26 +190,28 @@ The Bloch-Redfield master equation solver takes the Hamiltonian time-dependence 
 e_ops = [sm.dag() * sm]
 
 
+# initialize BRSolver
+H = QobjEvo([[H_S, 'wd'], [H_I, 'Om * ' + pulse_shape]],
+            args={'wd': 0.0, 'Om': 0.0})
+
+spectrum = coefficient(spectra_cb_numerical, args={'w': 0})
+solver = BRSolver(H, [[a_op, spectrum]])
+
+
 # define callback for parallelization
 def brme_step(args):
-    wd = args[0]
-    Om = args[1]
-    H = [wd * H_S, [Om * H_I, pulse_shape]]
+    # extract coefficients for the Hamiltonian
+    args = {'wd': args[0], 'Om': args[1]}
 
-    # calculate the population after the pulse interaction has
-    # finished using the Bloch-Redfield time-dependent solver
-    return brmesolve(
-        H,
-        psi0,
-        tlist,
-        [[a_op, spectra_cb_numerical]],
-        e_ops,
-        options=Options(rhs_reuse=True),
-    ).expect[0][-1]
+    # run the solver
+    res = solver.run(psi0, tlist, e_ops=e_ops, args=args)
+
+    # return population after the pulse interaction
+    return res.expect[0][-1]
 
 
-# use QuTiP's builtin parallelized for loop, parfor
-results = parfor(brme_step, itertools.product(wd_list, Om_list))
+# use QuTiP's builtin parallelized for loop: parallel_map
+results = parallel_map(brme_step, list(itertools.product(wd_list, Om_list)))
 
 # unwrap the results into a 2d array
 inv_mat_X = np.array(results).reshape((len(wd_list), len(Om_list)))
