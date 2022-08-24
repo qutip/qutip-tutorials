@@ -67,7 +67,7 @@ At the heart of the QuTiP package is the `Qobj` class, which is used for represe
 The `Qobj` class contains all the information required to describe a quantum system, such as its matrix representation, composite structure and dimensionality.
 
 ```python
-Image(filename="../lectures/images/qobj.png")
+Image(filename="images/qobj.png")
 ```
 
 ### Creating and inspecting quantum objects
