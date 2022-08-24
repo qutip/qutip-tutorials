@@ -71,7 +71,7 @@ def generate_index_html(version_directory, tutorial_directories, title,
 
     # Load environment for Jinja and template
     env = Environment(
-        loader=FileSystemLoader("./"),
+        loader=FileSystemLoader("../"),
         autoescape=select_autoescape()
     )
     template = env.get_template("index.html.jinja")
@@ -96,7 +96,7 @@ version_note = 'This are the tutorials for QuTiP Version 4. You can \
 
 html = generate_index_html('tutorials-v4/', tutorial_directories, title,
                            version_note)
-with open('index.html', 'w+') as f:
+with open('../index.html', 'w+') as f:
     f.write(html)
 
 # +++ VERSION 5 INDEX FILE +++
@@ -107,5 +107,5 @@ version_note = 'This are the tutorials for QuTiP Version 5. You can \
 
 html = generate_index_html('tutorials-v5/', tutorial_directories, title,
                            version_note)
-with open('index-v5.html', 'w+') as f:
+with open('../index-v5.html', 'w+') as f:
     f.write(html)
