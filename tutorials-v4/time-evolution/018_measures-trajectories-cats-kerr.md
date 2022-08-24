@@ -102,8 +102,6 @@ vals, vecs = rho_ss.eigenstates(sort="high")
 print("The mean number of photon is " + str(expect(a.dag() * a, rho_ss)))
 
 plt.figure(figsize=(8, 6))
-plt.rc("text", usetex=True)
-plt.rc("font", family="serif", size=font_size)
 plt.semilogy(range(1, 7), vals[0:6], "rx")
 plt.xlabel("Eigenvalue", fontsize=label_size)
 plt.ylabel("Probability", fontsize=label_size)
@@ -117,8 +115,6 @@ state_one = vecs[1].full()
 
 
 plt.figure(figsize=(8, 6))
-plt.rc("text", usetex=True)
-plt.rc("font", family="serif", size=font_size)
 plt.plot(range(0, 20), [abs(i) ** 2 for i in state_zero[0:20]],
          "rx", label="First state")
 plt.plot(range(0, 20), [abs(i) ** 2 for i in state_one[0:20]],
