@@ -113,11 +113,27 @@ jobs:
           name: executed-notebooks-v5
           path: publish/tutorials-v5
 
-      - name: Create index
+
+      - name: Build website with Jekyll
         run: |
+          sudo gem install bundler jekyll
+          sudo apt-get install wget
+          cd website
+          
+          # Download resources from qutip.github.io repository
+          # TODO: Only partially clone the repository
+          git clone https://github.com/qutip/qutip.github.io.git
+          mv qutip.github.io/_includes _includes
+          mv qutip.github.io/css css
+          mv qutip.github.io/header_source header_source
+          mv qutip.github.io/images images
+          rm -rf qutip.github.io
+          
+          # build the website
           python create_index.py
-          mv index.html publish/index.html
-          mv index-v5.html publish/index-v5.html
+          bundle exec jekyll build
+          mv _site/index.html ../publish/index.html
+          mv _site/index-v5.html ../publish/index-v5.html
 
       - name: Publish Notebooks
         run: | 
