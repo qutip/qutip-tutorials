@@ -154,7 +154,7 @@ We can see that under noisy evolution their is a none zero probability of measur
 
 ## Using the superconducting qubits model
 Below, we simulate the same quantum circuit using one sub-class `LinearSpinChain`. It will find the pulse based on the Hamiltonian available on a quantum computer of the linear spin chain system.
-Please refer to [the notebook of the spin chain model](https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/spin-chain-model.ipynb) for more details.
+Please refer to [the notebook of the spin chain model](../time-evolution/005_spin-chain.md) for more details.
 
 ```python
 processor = SCQubits(num_qubits=3)
@@ -192,10 +192,6 @@ print(np.real((basis00.dag() * ptrace(result.states[-1], [0, 1]) * basis00)))
 
 ```python
 print("qutip-qip version:", qutip_qip.version.version)
-
 version_table()
 ```
 
-```python
-
-```

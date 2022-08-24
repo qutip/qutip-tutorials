@@ -26,7 +26,7 @@ The circuit image visualization requires LaTeX and [ImageMagick](https://imagema
 On Mac and Linux, ImageMagick can be easily installed with the command `conda install imagemagick` if you have conda installed.
 Otherwise, please follow the installation instructions on the ImageMagick documentation.
 
-On windows, you need to download and install ImageMagick installer. In addition, you also need [perl](https://www.perl.org/get.html) (for pdfcrop) and [Ghostscript](https://www.ghostscript.com/download/gsdnld.html) (additional dependency of ImageMagick for png conversion).
+On windows, you need to download and install ImageMagick installer. In addition, you also need [perl](https://www.perl.org/get.html) (for pdfcrop) and [Ghostscript](https://ghostscript.com/releases/index.html) (additional dependency of ImageMagick for png conversion).
 
 To test if the installation is complete, try the following three commands working correctly in Command Prompt: `pdflatex`, `pdfcrop` and `magick anypdf.pdf antpdf.png`, where `anypdf.pdf` is any pdf file you have.
 

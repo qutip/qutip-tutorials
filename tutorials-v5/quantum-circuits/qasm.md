@@ -67,7 +67,7 @@ print_qasm(qc)
 
 ### Custom Gates
 
-QASM also offers the option to define custom gates in terms of already defined gates using the "gate" keyword. In "qiskit" mode, our QASM interpreter can be assumed to already allow for all the gates defined in the file [qelib1.inc](https://github.com/Qiskit/openqasm/blob/master/examples/generic/qelib1.inc) provided by the OpenQASM repository.
+QASM also offers the option to define custom gates in terms of already defined gates using the "gate" keyword. In "qiskit" mode, our QASM interpreter can be assumed to already allow for all the gates defined in the file [stdgates.inc](https://github.com/openqasm/openqasm/blob/main/examples/stdgates.inc) provided by the OpenQASM repository.
 
 In the file `swap_custom.qasm`, we define the `swap` gate in terms of the pre-defined `cx` gates.
 
@@ -95,7 +95,7 @@ As predicted the output is the state after swapping which is `|10⟩`
 ### Measurements and Classical Control
 
 The QASM format also allows for other circuit features such as measurement and control of gates by classical bits. 
-This is also supported by QuTiP. For an example, we can refer to the example of quantum teleportation. A more complete explanation of teleportation can be found in the [notebook](teleportation.ipynb) on quantum teleportation.
+This is also supported by QuTiP. For an example, we can refer to the example of quantum teleportation. A more complete explanation of teleportation can be found in the [notebook](teleportation.md) on quantum teleportation.
 
 ```python
 path = "qasm_files/teleportation.qasm"

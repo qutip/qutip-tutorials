@@ -190,7 +190,7 @@ circuit.add_gate("X", targets=0)
 circuit
 ```
 
-For circuit plotting, see [this notebook](quantum-gates.ipynb).
+For circuit plotting, see [this notebook](../quantum-circuits/quantum-gates.md).
 
 
 To convert a quantum circuit into the Hamiltonian model, we need a compiler. The custom definition of a compiler will be discussed in details in the next section. Because we used the Hamiltonian model of the spin chain, we here simply "borrow" the compiler of the spin chain model.
