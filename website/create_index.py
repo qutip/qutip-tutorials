@@ -74,7 +74,7 @@ def generate_index_html(version_directory, tutorial_directories, title,
         loader=FileSystemLoader("../"),
         autoescape=select_autoescape()
     )
-    template = env.get_template("index.html.jinja")
+    template = env.get_template("website/index.html.jinja")
 
     # render template and return
     html = template.render(tutorials=tutorials, title=title,
@@ -88,6 +88,15 @@ url_prefix = "https://nbviewer.org/urls/qutip.org/qutip-tutorials/"
 tutorial_directories = ['time-evolution', 'lectures', 'basics',
                         'python-introduction', 'visualization']
 
+# +++ READ PREFIX AND SUFFIX +++
+prefix = ""
+suffix = ""
+
+with open('prefix.html', 'r') as f:
+    prefix = f.read()
+with open('suffix.html', 'r') as f:
+    suffix = f.read()
+
 # +++ VERSION 4 INDEX FILE +++
 title = 'Tutorials for QuTiP Version 4'
 version_note = 'This are the tutorials for QuTiP Version 4. You can \
@@ -96,8 +105,10 @@ version_note = 'This are the tutorials for QuTiP Version 4. You can \
 
 html = generate_index_html('tutorials-v4/', tutorial_directories, title,
                            version_note)
-with open('../index.html', 'w+') as f:
+with open('index.html', 'w+') as f:
+    f.write(prefix)
     f.write(html)
+    f.write(suffix)
 
 # +++ VERSION 5 INDEX FILE +++
 title = 'Tutorials for QuTiP Version 5'
@@ -107,5 +118,7 @@ version_note = 'This are the tutorials for QuTiP Version 5. You can \
 
 html = generate_index_html('tutorials-v5/', tutorial_directories, title,
                            version_note)
-with open('../index-v5.html', 'w+') as f:
+with open('index-v5.html', 'w+') as f:
+    f.write(prefix)
     f.write(html)
+    f.write(suffix)
