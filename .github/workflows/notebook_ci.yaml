@@ -121,13 +121,24 @@ jobs:
           cd website
           
           # Download resources from qutip.github.io repository
-          # TODO: Only partially clone the repository
-          git clone https://github.com/qutip/qutip.github.io.git
+          git clone \
+            --depth 1 \
+            --filter=blob:none \
+            --sparse \
+            https://github.com/qutip/qutip.github.io.git \
+          ;
+          cd qutip.github.io
+          git sparse-checkout init --cone
+          git sparse-checkout set _includes
+          git sparse-checkout set css
+          git sparse-checkout set header_source
+          git sparse-checkout set images
+          
+          # move files to parent directory
           mv qutip.github.io/_includes _includes
           mv qutip.github.io/css css
           mv qutip.github.io/header_source header_source
           mv qutip.github.io/images images
-          rm -rf qutip.github.io
           
           # build the website
           python create_index.py
