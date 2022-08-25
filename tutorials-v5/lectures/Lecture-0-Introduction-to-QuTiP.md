@@ -51,15 +51,6 @@ You can install QuTiP directly from `pip` by running:
 For further installation details, refer to the [GitHub repository](https://github.com/qutip/qutip).
 
 
-To use QuTiP in a Python program, first inlude the relevant functionality from the `qutip` module:
-
-```python
-
-```
-
-This will make the functions and classes in QuTiP available in the rest of the program.
-
-
 ## Quantum object class: `qobj`
 
 At the heart of the QuTiP package is the `Qobj` class, which is used for representing quantum object such as states and operator. 

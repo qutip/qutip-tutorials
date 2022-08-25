@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# QuTiP example: Vacuum Rabi oscillations in the Jaynes-Cummings model
+# Master Equation Solver: Vacuum Rabi oscillations
 
 Authors: J.R. Johansson and P.D. Nation
 

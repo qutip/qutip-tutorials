@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# Schrödinger equation solver: Larmor precession
+# Schrödinger Equation Solver: Larmor precession
 
 Author: C. Staufenbiel, 2022
 
