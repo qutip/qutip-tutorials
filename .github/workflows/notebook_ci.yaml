@@ -131,6 +131,7 @@ jobs:
           
           # build the website
           python create_index.py
+          bundle install
           bundle exec jekyll build
           mv _site/index.html ../publish/index.html
           mv _site/index-v5.html ../publish/index-v5.html
