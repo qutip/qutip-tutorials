@@ -12,11 +12,11 @@ jupyter:
     name: python3
 ---
 
-# QuTiP example: Phonon-assisted initialization using the time-dependent Bloch-Redfield master equation solver
+# Bloch-Redfield Solver: Phonon-assisted initialization
 
 Author: K.A. Fischer, Stanford University
 
-This Jupyter notebook demonstrates how to use the time-dependent Bloch-Redfield master equation solver to simulate the phonon-assisted initialization of a quantum dot, using QuTiP: The Quantum Toolbox in Python. The purpose is to show how environmentally-driven dissipative interactions can be leveraged to initialize a quantum dot into its excited state. This notebook closely follows the work, <a href="https://arxiv.org/abs/1409.6014">Dissipative preparation of the exciton and biexciton in self-assembled quantum
+This Jupyter notebook demonstrates how to use the time-dependent Bloch-Redfield master equation solver to simulate the phonon-assited initialization of a quantum dot, using QuTiP: The Quantum Toolbox in Python. The purpose is to show how environmentally-driven dissipative interactions can be leveraged to initialize a quantum dot into its excited state. This notebook closely follows the work, <a href="https://arxiv.org/abs/1409.6014">Dissipative preparation of the exciton and biexciton in self-assembled quantum
 dots on picosecond time scales</a>, Phys. Rev. B 90, 241404(R) (2014).
 
 For more information about QuTiP see the project web page: http://qutip.org/ 
@@ -26,7 +26,7 @@ import itertools
 
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import about, brmesolve, fock, parfor, sigmam
+from qutip import Options, about, brmesolve, fock, parallel_map, sigmam
 
 %matplotlib inline
 %config InlineBackend.figure_format = 'retina'
@@ -184,16 +184,9 @@ plt.title("Quantum-dot-phonon interaction spectrum");
 
 The Bloch-Redfield master equation solver takes the Hamiltonian time-dependence in list-string format. We calculate the final population at the end of the interaction of the pulse with the system, which represents the population initialized into the excited state.
 
-Before executing `brmesolve` for all chosen driving strenghts and laser offsets, we need to run `brmesolve` to initialize all coefficients, which are compiled using Cython. We have to do this, as we use the parallel functionality provided by `parfor`.
-
 ```python
 # we will calculate the dot population expectation value
 e_ops = [sm.dag() * sm]
-
-# sample brmesolve call to initialize coefficients
-H = [wd_list[0] * H_S, [Om_list[0] * H_I, pulse_shape]]
-brmesolve(H, psi0, tlist, [[a_op, spectra_cb_numerical]],
-          e_ops).expect[0][-1]
 
 
 # define callback for parallelization
@@ -209,12 +202,13 @@ def brme_step(args):
         psi0,
         tlist,
         [[a_op, spectra_cb_numerical]],
-        e_ops
+        e_ops,
+        options=Options(rhs_reuse=True),
     ).expect[0][-1]
 
 
-# use QuTiP's builtin parallelized for loop, parfor
-results = parfor(brme_step, itertools.product(wd_list, Om_list))
+# use QuTiP's builtin parallelized for loop: parallel_map
+results = parallel_map(brme_step, list(itertools.product(wd_list, Om_list)))
 
 # unwrap the results into a 2d array
 inv_mat_X = np.array(results).reshape((len(wd_list), len(Om_list)))
