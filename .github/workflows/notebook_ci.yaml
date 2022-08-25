@@ -117,28 +117,14 @@ jobs:
       - name: Build website with Jekyll
         run: |
           sudo gem install bundler jekyll
-          sudo apt-get install wget
+          sudo apt-get install wget subversion
           cd website
           
           # Download resources from qutip.github.io repository
-          git clone \
-            --depth 1 \
-            --filter=blob:none \
-            --sparse \
-            https://github.com/qutip/qutip.github.io.git \
-          ;
-          cd qutip.github.io
-          git sparse-checkout init --cone
-          git sparse-checkout set _includes
-          git sparse-checkout set css
-          git sparse-checkout set header_source
-          git sparse-checkout set images
-          
-          # move files to parent directory
-          mv qutip.github.io/_includes _includes
-          mv qutip.github.io/css css
-          mv qutip.github.io/header_source header_source
-          mv qutip.github.io/images images
+          svn export https://github.com/qutip/qutip.github.io/trunk/css
+          svn export https://github.com/qutip/qutip.github.io/trunk/_includes
+          svn export https://github.com/qutip/qutip.github.io/trunk/header_source
+          svn export https://github.com/qutip/qutip.github.io/trunk/images
           
           # build the website
           python create_index.py
