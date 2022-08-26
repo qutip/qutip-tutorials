@@ -100,7 +100,7 @@ jobs:
   publish:
     needs: pytests
     runs-on: ubuntu-latest
-    # if: ${{ github.repository == 'qutip/qutip-tutorials' && github.ref == 'refs/heads/main' }}
+    if: ${{ github.repository == 'qutip/qutip-tutorials' && github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@master
