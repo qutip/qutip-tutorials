@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# QuTiP lecture: Evolution and quantum statistics of a quantum parameter amplifier
+# Lecture 5 - Evolution and quantum statistics of a quantum parameter amplifier
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 

@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# Brief Python Language Tutorial
+# Introduction to Python
 
 
 P.D. Nation and J.R. Johansson

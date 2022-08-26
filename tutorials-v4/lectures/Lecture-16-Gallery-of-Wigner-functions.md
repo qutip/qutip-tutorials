@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# Lecture 16: Gallery of Wigner functions
+# Lecture 16 - Gallery of Wigner functions
 
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/

@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# QuTiP example: Pseudo-probability functions
+# Pseudo-probability functions
 
 
 J.R. Johansson and P.D. Nation

@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# Development notebook for testing the visualization module in QuTiP
+# Visualization demos
 
 ```python
 import matplotlib.pyplot as plt

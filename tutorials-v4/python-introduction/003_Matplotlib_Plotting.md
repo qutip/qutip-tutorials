@@ -41,7 +41,7 @@ To toggle on/off the raw code, click
 )
 ```
 
-# Plotting in Python Using [Matplotlib](http://matplotlib.org)
+# Plotting in Python Using Matplotlib
 
 
 P.D. Nation and J.R. Johansson

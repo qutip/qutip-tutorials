@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# Lecture 14: Kerr nonlinearities
+# Lecture 14 - Kerr nonlinearities
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 

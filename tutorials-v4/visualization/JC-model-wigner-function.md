@@ -14,7 +14,7 @@ jupyter:
     name: python3
 ---
 
- QuTiP example: Wigner function animation for the dynamics of the Jaynes-Cumming model
+# Wigner functions
 
 
 J.R. Johansson and P.D. Nation

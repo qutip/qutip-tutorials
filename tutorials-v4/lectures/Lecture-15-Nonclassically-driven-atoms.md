@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# Lecture 15: Nonclassically driven atoms (cascaded quantum systems)
+# Lecture 15 - Nonclassically driven atoms (cascaded quantum systems)
 
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/

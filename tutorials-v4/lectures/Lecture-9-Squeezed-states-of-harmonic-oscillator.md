@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# Lecture 9: Squeezed states of a quantum harmonic oscillator
+# Lecture 9 - Squeezed states of a quantum harmonic oscillator
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 

@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# QuTiP lecture: Vacuum Rabi oscillations in the Jaynes-Cummings model
+# Lecture 1 - Vacuum Rabi oscillations in the Jaynes-Cummings model
 
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/

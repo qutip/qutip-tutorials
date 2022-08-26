@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# QuTiP lecture: The Dicke model 
+# Lecture 3A - The Dicke model 
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 

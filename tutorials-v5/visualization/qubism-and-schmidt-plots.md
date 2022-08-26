@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# QuTiP example: Qubism visualizations
+# Qubism visualizations
 
 
 by [Piotr Migdał](http://migdal.wikidot.com/), June 2014
