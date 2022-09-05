@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# Lecture 0 - Introduction to QuTiP - The Quantum Toolbox in Python
+# Lecture 0 - Introduction to QuTiP
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
