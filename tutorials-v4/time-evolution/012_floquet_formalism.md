@@ -16,12 +16,12 @@ jupyter:
 
 Author: C. Staufenbiel, 2022
 
-inspirations taken from the [floquet notebook](https://github.com/qutip/qutip-notebooks/blob/master/examples/floquet-dynamics.ipynb) by P.D. Nation and J.R. Johannson,
+inspirations taken from the [Floquet notebook](https://github.com/qutip/qutip-notebooks/blob/master/examples/floquet-dynamics.ipynb) by P.D. Nation and J.R. Johannson,
 
 and the [qutip documentation](https://qutip.org/docs/latest/guide/dynamics/dynamics-floquet.html).
 
 ### Introduction
-In the [floquet_solver notebook](011_floquet_solver.md) we introduced the two functions to solve the Schrödinger and Master equation using the Floquet formalism. In this notebook, we will focus on the internal functions of these solvers, that implement the Floquet formalism in QuTiP. Here, we will focus on the `floquet modes` and the `quasienergies`.
+In the [floquet_solver notebook](011_floquet_solver.md) we introduced the two functions to solve the Schrödinger and Master equation using the Floquet formalism. In this notebook, we will focus on the internal functions of these solvers, that implement the Floquet formalism in QuTiP. Here, we will focus on the `Floquet modes` and the `quasienergies`.
 
 More information on the implementation of the Floquet Formalism in QuTiP can be found in the [documentation](https://qutip.org/docs/latest/guide/dynamics/dynamics-floquet.html).
 
@@ -60,7 +60,7 @@ H = [
 ```
 
 ### Floquet modes and quasienergies
-For periodic Hamiltonians the solution to the Schrödinger equation can be represented by the Floquet modes $\phi_\alpha(t)$ and the quasienergies $\epsilon_\alpha$. We can obtain these for the initial time $t=0$ by using the function `floquet_modes()`. We can display for example the first floquet mode at $t=0$ using a Wigner distribution.
+For periodic Hamiltonians the solution to the Schrödinger equation can be represented by the Floquet modes $\phi_\alpha(t)$ and the quasienergies $\epsilon_\alpha$. We can obtain these for the initial time $t=0$ by using the function `floquet_modes()`. We can display for example the first Floquet mode at $t=0$ using a Wigner distribution.
 
 ```python
 f_modes0, f_energies = floquet_modes(H, T)
@@ -90,8 +90,8 @@ plt.xlabel("A / w"), plt.ylabel("Quasienergies")
 plt.legend();
 ```
 
-### Time evolution with floquet mode
-To calculate the time evolution of a random initial state $\psi(0)$, we have to decompose the state in the Floquet basis (formed by the floquet modes).
+### Time evolution with Floquet mode
+To calculate the time evolution of a random initial state $\psi(0)$, we have to decompose the state in the Floquet basis (formed by the Floquet modes).
 
 $$ \psi(0) = \sum_\alpha c_\alpha \phi_\alpha(0) $$
 
@@ -103,7 +103,7 @@ psi0 = rand_ket(2)
 f_coeff = floquet_state_decomposition(f_modes0, f_energies, psi0)
 ```
 
-The floquet mode $\phi_\alpha(t)$ for later times $t>0$ can be calculated using the wave function propagator $U(t,0)$ by:
+The Floquet mode $\phi_\alpha(t)$ for later times $t>0$ can be calculated using the wave function propagator $U(t,0)$ by:
 
 $$ \phi_\alpha(t) = exp(-i\epsilon_\alpha t / \hbar) \, U(t,0) \, \phi_\alpha(0) $$
 
@@ -115,20 +115,20 @@ f_modes1 = floquet_modes_t(f_modes0, f_energies, t, H, T)
 f_modes1
 ```
 
-The propagated floquet modes $\phi_\alpha(t)$ can be combined to describe the full system state $\psi(t)$ at the time t. This combination can be done by `floquet_wavefunction`.
+The propagated Floquet modes $\phi_\alpha(t)$ can be combined to describe the full system state $\psi(t)$ at the time t. This combination can be done by `floquet_wavefunction`.
 
 ```python
 psi_t = floquet_wavefunction(f_modes1, f_energies, f_coeff, t)
 ```
 
-Instead of propagating the floquet modes and building them together manually, we can use the floquet coefficients `f_coeff` from the initial state decomposition to calculate the propagated system state $\psi(t)$ by using `floquet_wavefunction_t`. This evolution is similar to the manual evolution above.
+Instead of propagating the Floquet modes and building them together manually, we can use the Floquet coefficients `f_coeff` from the initial state decomposition to calculate the propagated system state $\psi(t)$ by using `floquet_wavefunction_t`. This evolution is similar to the manual evolution above.
 
 ```python
 psi_t_direct = floquet_wavefunction_t(f_modes0, f_energies, f_coeff, t, H, T)
 assert np.allclose(psi_t.full(), psi_t_direct.full())
 ```
 
-### Precomputing and reusing the floquet modes of one period
+### Precomputing and reusing the Floquet modes of one period
 
 The Floquet modes have the same periodicity as the Hamiltonian: 
 
@@ -136,7 +136,7 @@ $$ \phi_\alpha(t + T) = \phi_\alpha(t) $$
 
 Hence it is enough to evaluate the modes at times $t \in [0,T]$. From these modes we can extrapolate the system state $\psi(t)$ for any time $t$. 
 
-The function `floquet_modes_table` allows to calculate the floquet modes for multiple times in the first period. 
+The function `floquet_modes_table` allows to calculate the Floquet modes for multiple times in the first period. 
 
 
 ```python
@@ -155,7 +155,7 @@ plt.plot(tlist_period, p_ex_period)
 plt.ylabel("Occupation prob."), plt.xlabel("Time");
 ```
 
-The pre-computed modes for the first period can be used by the function `floquet_modes_t_lookup` to calculate the floquet modes at any time $t > 0$. Note that if a time $t'$ is not exactly $t' = t + nT$ (where $t$ is a time used in the pre-computation) the closest pre-computed floquet mode is used. This might lead to small discontinuoties in the results from the lookup.
+The pre-computed modes for the first period can be used by the function `floquet_modes_t_lookup` to calculate the Floquet modes at any time $t > 0$. Note that if a time $t'$ is not exactly $t' = t + nT$ (where $t$ is a time used in the pre-computation) the closest pre-computed Floquet mode is used. This might lead to small discontinuoties in the results from the lookup.
 
 ```python
 p_ex = []
@@ -176,7 +176,8 @@ plt.xlabel("Time"), plt.ylabel("Occupation prob.");
 
 We can also solve a master equation using the Floquet formalism. A detailed derivation of the Floquet-Markov formalism used here is given in [Grifoni et al., Physics Reports 304, 299 (1998)](https://www.sciencedirect.com/science/article/abs/pii/S0370157398000222) and in the [QuTiP docs](https://qutip.org/docs/latest/guide/dynamics/dynamics-floquet.html). Note that the functionality described here is summarised in the function `fmmesolve` described in the [floquet solver notebook](011_floquet_solver.md).
 
-The interaction with the bath is described by a noise spectrum, which does not include the temperature dependency. Hence, the definition is slightly different to the one in the Bloch-Redfield formalism.  For details see the derivation of the formalism.
+The interaction with the bath is described by a noise spectrum, which does not include the temperature dependency. The temperature dependency can be passed to `fmmesolve` using the keyword `w_th` in the `args` parameter: `args[w_th]`. Hence, the definition is slightly different to the one in the Bloch-Redfield formalism. For details see the derivation of the formalism.
+
 
 Here we define a simple linear noise spectrum: 
 
@@ -220,7 +221,7 @@ Together with the quasienergies, the tensor for the Floquet master equation can 
 R = floquet_master_equation_tensor(Amat, f_energies)
 ```
 
-We can pass in the tensor, initial state, expectation value and expectation operator into the `floquet_markov_mesolve` function and obtain the time evolution of the system (i.e. expectation operator) using the floquet formalism. 
+We can pass in the tensor, initial state, expectation value and expectation operator into the `floquet_markov_mesolve` function and obtain the time evolution of the system (i.e. expectation operator) using the Floquet formalism. 
 
 ```python
 res_fme_manual = floquet_markov_mesolve(
@@ -236,7 +237,7 @@ res_fme_manual = floquet_markov_mesolve(
 )
 ```
 
-The functionality explained above is summarised in the `fmmesolve` function, which was introduced in the [other floquet notebook](011_floquet_solver.md). Here, we also use this function to compare to our manual computation.
+The functionality explained above is summarised in the `fmmesolve` function, which was introduced in the [other Floquet notebook](011_floquet_solver.md). Here, we also use this function to compare to our manual computation.
 
 ```python
 # Solve using Fmmesolve
