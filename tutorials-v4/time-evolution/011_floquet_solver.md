@@ -18,7 +18,7 @@ Author: C. Staufenbiel, 2022
 
 ### Introduction
 
-The *Floquet formalism* deals with periodic time-dependent systems. It is more efficient to use the Floquet approach to such problems than using the standard master equation solver `qutip.mesolve()`.
+The *Floquet formalism* deals with periodic time-dependent systems. The Floquet approach can be more efficient for such problems than using the standard master equation solver `qutip.mesolve()` and it has a broader range of validity for periodic driving.
 
 In this notebook, we will discuss the solver functionality of the Floquet formalism implemented in QuTiP using an example quantum system. A more detailed introduction into the Floquet formalism can be found in the [documentation](https://qutip.org/docs/latest/guide/dynamics/dynamics-floquet.html).
 
@@ -61,7 +61,7 @@ psi0 = basis(2, 0)
 
 We can now use the `qutip.fsesolve()` function to solve the dynamics of the system using the Floquet formalism for the Schrödinger equation. The arguments are similar to the ones passed to `qutip.sesolve()`. There is an optional parameter `T` which defines the period of the time-dependence. If `T` is not given it is assumed that the passed `tlist` spans one period. Therefore we always pass `T` in this tutorial.
 
-The `Tsteps` argument to `fsesolve()` can be used to set the number of time steps in one period `T` for which the Floquet mods are precalculated. Increasing this number should result in a better numerical accuracy. `Tsteps` should be even! 
+The `Tsteps` argument to `fsesolve()` can be used to set the number of time steps in one period `T` for which the Floquet modes are precalculated. Increasing this number should result in a better numerical accuracy. `Tsteps` should be even! 
 
 ```python
 # period time
@@ -79,7 +79,7 @@ plot_expectation_values([result], ylabels=["<Z>"]);
 
 Similar to `mesolve()` we can also use the Floquet formalism to solve a master equation  for a dissipative quantum system. The corresponding function is `fmmesolve()`. However, the dissipation process is here described as a noise spectral-density function.
 
-For example we can define a a linear noise spectral-density as: 
+For example we can define a linear noise spectral-density as: 
 
 $$ S(\omega) = \frac{\gamma \cdot \omega}{4 \pi} $$
 
