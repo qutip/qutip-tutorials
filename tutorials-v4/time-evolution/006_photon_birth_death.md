@@ -62,7 +62,7 @@ The coupling to the external heat bath is described by a coupling constant $\kap
 
 $C_1 = \sqrt{\kappa (1 + \langle n \rangle)} \; a$
 
-$C_2 = \sqrt{\kappa * \langle n \rangle} \; a^\dagger$
+$C_2 = \sqrt{\kappa \langle n \rangle} \; a^\dagger$
 
 We give some numerical values to the coupling constant $\kappa$ and the average photon number of the heat bath $\langle n \rangle$.
 
