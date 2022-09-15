@@ -13,10 +13,11 @@ def natural_keys(text):
 
 class notebook:
     def __init__(self, path, title):
-        self.path = path
+        # remove ../ from path
+        self.path = path.replace('../', '')
         self.title = title
         # set url and update from markdown to ipynb
-        self.url = url_prefix + path.replace(".md", ".ipynb")
+        self.url = url_prefix + self.path.replace(".md", ".ipynb")
 
 
 def get_title(filename):
