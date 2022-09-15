@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# QuTiP example: Quantum Process Tomography
+# Quantum Process Tomography
 
 
 J.R. Johansson and P.D. Nation

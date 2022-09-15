@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# Lecture 12: Decay into a squeezed vacuum field
+# Lecture 12 - Decay into a squeezed vacuum field
 
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/

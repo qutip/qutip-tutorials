@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# Lecture 13: Resonance flourescence
+# Lecture 13 - Resonance flourescence
 
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/

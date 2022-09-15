@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# QuTiP example: Bloch sphere animation
+# Bloch Sphere animation
 
 
 J.R. Johansson and P.D. Nation

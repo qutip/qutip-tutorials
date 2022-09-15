@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# Adding a colorbar to a Bloch Sphere
+# Bloch Sphere with colorbar
 
 ```python
 import matplotlib as mpl

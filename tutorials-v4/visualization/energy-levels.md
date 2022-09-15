@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# QuTiP example: Energy-levels of a quantum systems as a function of a single parameter
+# Energy-level diagrams
 
 
 J.R. Johansson and P.D. Nation

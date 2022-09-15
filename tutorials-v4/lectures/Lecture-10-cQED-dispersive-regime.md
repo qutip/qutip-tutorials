@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# Lecture 10: Cavity-QED in the dispersive regime
+# Lecture 10 - Cavity-QED in the dispersive regime
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
