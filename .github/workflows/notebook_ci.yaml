@@ -66,8 +66,10 @@ jobs:
         cd qutip-qip
         pip install -e .
 
-    - name: Install ffmpeg
-      run: sudo apt install ffmpeg
+    - name: Install ffmpeg & LaTeX
+      run: |
+        sudo apt install ffmpeg
+        sudo apt install texlive-latex-extra
 
     - name: Convert Notebooks
       run: | 
