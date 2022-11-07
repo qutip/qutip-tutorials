@@ -46,7 +46,7 @@ In quantum mechanics, complex numbers are as natual as real numbers.
 Before going into details of particular plots, we show how `complex_array_to_rgb` maps $z = x + i y$ into colors.
 There are two variants, `theme='light'` and `theme='dark'`. For both, we use hue for phase, with red for positive numbers and aqua for negative.
 
-For a longer comment on coloring complex functions I recommend IPython Notebook [Visualizing complex-valued functions with Matplotlib and Mayavi](http://nbviewer.ipython.org/github/empet/Math/blob/master/DomainColoring.ipynb) by Emilia Petrisor.
+For a longer comment on coloring complex functions I recommend IPython Notebook [Visualizing complex-valued functions with Matplotlib and Mayavi](http://nbviewer.jupyter.org/github/empet/Math/blob/master/DomainColoring.ipynb) by Emilia Petrisor.
 
 ```python
 compl_circ = np.array(
