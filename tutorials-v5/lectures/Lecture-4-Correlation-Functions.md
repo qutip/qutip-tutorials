@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.13.8
+      jupytext_version: 1.14.1
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -65,6 +65,10 @@ n = mesolve(H, rho0, taulist, c_ops, [a.dag() * a]).expect[0]
 
 # calculate the correlation function G1 and normalize with n to obtain g1
 G1 = correlation_2op_2t(H, rho0, None, taulist, c_ops, a.dag(), a)
+# extract taulist results
+if len(G1.shape) == 2:
+    G1 = G1[0]
+
 g1 = G1 / np.sqrt(n[0] * n)
 ```
 
@@ -294,8 +298,4 @@ axes.set_ylabel(r"LG($\tau$)", fontsize=18);
 
 ```python
 about()
-```
-
-```python
-
 ```
