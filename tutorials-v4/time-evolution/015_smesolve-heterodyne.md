@@ -357,7 +357,7 @@ result = smesolve(
 ```
 
 ```python
-result.states[0][100]
+result.states[0][100].full()
 ```
 
 ```python

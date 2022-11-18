@@ -264,7 +264,7 @@ Additional Sources of Information
 
 - [Matplotlib Examples](http://matplotlib.org/examples/index.html) : A long list of examples demonstrating how to use Matplotlib for a variety of plotting.
 
-- [Guide to 2D & 3D Plotting](http://nbviewer.ipython.org/github/jrjohansson/scientific-python-lectures/blob/master/Lecture-4-Matplotlib.ipynb) : A guide for plotting in Matplotlib by Robert Johansson.
+- [Guide to 2D & 3D Plotting](http://nbviewer.jupyter.org/github/jrjohansson/scientific-python-lectures/blob/master/Lecture-4-Matplotlib.ipynb) : A guide for plotting in Matplotlib by Robert Johansson.
 
 
 <h1 align="center">End of Tutorial</h1> 

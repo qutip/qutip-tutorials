@@ -24,7 +24,7 @@ from qutip_qip.operations import Measurement
 
 ## Introduction 
 
-This notebook introduces the basic quantum teleportation circuit (http://www.physics.udel.edu/~msafrono/425-2011/Lecture%2025-1.pdf), complete with measurements and classical control. This notebook also serves as an example on how to add measurement gates and classical controls to a circuit.
+This notebook introduces the basic quantum teleportation circuit (https://en.wikipedia.org/wiki/Quantum_teleportation), complete with measurements and classical control. This notebook also serves as an example on how to add measurement gates and classical controls to a circuit.
 
 We will describe the circuit that enables quantum teleportation. We will use two classical wires and three qubit wires. The first qubit wire represents the quantum state $| q0 ⟩ = | \psi ⟩$ that needs to be transferred from Alice to Bob (so the first qubit is in the possession of Alice). 
 

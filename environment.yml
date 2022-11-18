@@ -8,6 +8,7 @@ dependencies:
 - matplotlib==3.5.2
 - imagemagick==7.1.0_36
 - qutip==4.7.0
+- cython==0.29.32
 - notebook==6.4.11
 - jupytext==1.13.8
 - pip:
