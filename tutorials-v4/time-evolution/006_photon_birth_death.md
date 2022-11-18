@@ -125,5 +125,4 @@ about()
 ```python
 np.testing.assert_allclose(me.expect[0], mc.expect[3][0], atol=10**-1)
 assert np.all(np.diff(me.expect[0]) <= 0)
-np.testing.assert_allclose(mc.expect[0][0], mc.expect[0][0].astype(bool))
 ```
