@@ -1,7 +1,9 @@
 name: CI build
 
 on:
-  [push, pull_request]
+  push:
+  pull_request:
+  workflow_dispatch:
 
 defaults:
   run:
@@ -72,7 +74,7 @@ jobs:
         sudo apt install texlive-latex-extra
 
     - name: Convert Notebooks
-      run: | 
+      run: |
         rm -rf notebooks
         mkdir notebooks
         cp -r tutorials-v${{ matrix.qutip-version }}/* notebooks
@@ -121,22 +123,21 @@ jobs:
           sudo gem install bundler jekyll
           sudo apt-get install wget subversion
           cd website
-          
+
           # Download resources from qutip.github.io repository
           svn export https://github.com/qutip/qutip.github.io/trunk/css
           svn export https://github.com/qutip/qutip.github.io/trunk/_includes
           svn export https://github.com/qutip/qutip.github.io/trunk/header_source
           svn export https://github.com/qutip/qutip.github.io/trunk/images
-          
+
           # build the website
           python create_index.py
           bundle install
           bundle exec jekyll build
           mv _site/* ../publish/
-          
+
 
       - name: Publish Notebooks
-        run: | 
+        run: |
           python -m pip install ghp-import
           ghp-import -m "Automatic push by ghp-import" -f -n -p -o -r origin -b gh-pages publish
-
