@@ -1,9 +1,9 @@
-name: CI build
+name: Nightly build
 
 on:
-  push:
-  pull_request:
   workflow_dispatch:
+  schedule:
+    - cron: '30 4 * * *'
 
 defaults:
   run:
@@ -101,43 +101,3 @@ jobs:
         path: |
           notebooks/*.ipynb
           notebooks/**/*.ipynb
-  publish:
-    needs: pytests
-    runs-on: ubuntu-latest
-    if: ${{ github.repository == 'qutip/qutip-tutorials' && github.ref == 'refs/heads/main' }}
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/download-artifact@master
-        with:
-          name: executed-notebooks-v4
-          path: publish/tutorials-v4
-
-      - uses: actions/download-artifact@master
-        with:
-          name: executed-notebooks-v5
-          path: publish/tutorials-v5
-
-
-      - name: Build website with Jekyll
-        run: |
-          sudo gem install bundler jekyll
-          sudo apt-get install wget subversion
-          cd website
-
-          # Download resources from qutip.github.io repository
-          svn export https://github.com/qutip/qutip.github.io/trunk/css
-          svn export https://github.com/qutip/qutip.github.io/trunk/_includes
-          svn export https://github.com/qutip/qutip.github.io/trunk/header_source
-          svn export https://github.com/qutip/qutip.github.io/trunk/images
-
-          # build the website
-          python create_index.py
-          bundle install
-          bundle exec jekyll build
-          mv _site/* ../publish/
-
-
-      - name: Publish Notebooks
-        run: |
-          python -m pip install ghp-import
-          ghp-import -m "Automatic push by ghp-import" -f -n -p -o -r origin -b gh-pages publish
