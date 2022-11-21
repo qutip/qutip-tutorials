@@ -1,0 +1,103 @@
+name: Nightly build
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 4 * * *'
+
+defaults:
+  run:
+    shell: bash -l {0}
+
+jobs:
+  pytests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - qutip-version: '4'
+            qutip-branch: 'master'
+            path_md: 'tutorials-v4/*.md'
+            path_ipynb: 'tutorials-v4/*.ipynb'
+          - qutip-version: '5'
+            qutip-branch: 'dev.major'
+            path_md: 'tutorials-v5/*.md'
+            path_ipynb: 'tutorials-v5/*.ipynb'
+    steps:
+    - uses: actions/checkout@v3
+    - uses: gaurav-nelson/github-action-markdown-link-check@v1
+      with:
+        use-quiet-mode: 'yes'
+
+    - name: Setup Mambaforge
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        miniforge-variant: Mambaforge
+        miniforge-version: latest
+        activate-environment: test-environment
+        use-mamba: true
+
+    - name: Get Date
+      id: get-date
+      run: echo "::set-output name=today::$(/bin/date -u '+%Y%m%d')"
+      shell: bash
+
+    - name: Cache Conda env
+      uses: actions/cache@v2
+      with:
+        path: ${{ env.CONDA }}/envs
+        key: conda-${{ runner.os }}--${{ runner.arch }}--${{ steps.get-date.outputs.today }}-${{ hashFiles('test_environment.yml') }}-${{ env.CACHE_NUMBER }}-qutip-${{ matrix.qutip-version }}
+      env:
+        # Increase this value to reset cache if etc/example-environment.yml has not changed
+        CACHE_NUMBER: 0
+      id: cache
+
+    - name: Install environment
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: mamba env update -n test-environment -f test_environment.yml
+
+    - name: Install QuTiP
+      run: |
+        pip install --upgrade pip
+        git clone -b ${{ matrix.qutip-branch }} https://github.com/qutip/qutip.git
+        cd qutip
+        pip install -r requirements.txt
+        python setup.py develop
+        cd ..
+        git clone -b master https://github.com/qutip/qutip-qip.git
+        cd qutip-qip
+        pip install -e .
+
+    - name: Install ffmpeg & LaTeX
+      run: |
+        sudo apt install ffmpeg
+        sudo apt install texlive-latex-extra
+
+    - name: Convert Notebooks
+      run: |
+        rm -rf notebooks
+        mkdir notebooks
+        cp -r tutorials-v${{ matrix.qutip-version }}/* notebooks
+        cd notebooks
+        find . -name '*.md' -exec jupytext --to notebook {} +
+        find . -name '*.md' -delete
+
+    - name: Check PEP8 formatting
+      run: |
+        pip install nbqa flake8
+        find . -name '*.ipynb' -exec nbqa flake8 {} +
+
+    - name: Run tests
+      run: |
+        jupyter kernel &
+        cd notebooks
+        find . -name '*.ipynb' -exec pytest --nbmake --overwrite --nbmake-timeout=500 {} +
+        rm template.ipynb
+
+    - name: Create Notebook Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: executed-notebooks-v${{ matrix.qutip-version }}
+        path: |
+          notebooks/*.ipynb
+          notebooks/**/*.ipynb
