@@ -70,6 +70,7 @@ jobs:
 
     - name: Install ffmpeg & LaTeX
       run: |
+        sudo apt update
         sudo apt install ffmpeg
         sudo apt install texlive-latex-extra
 
@@ -120,7 +121,7 @@ jobs:
 
       - name: Build website with Jekyll
         run: |
-          sudo gem install bundler jekyll
+          gem install --user-install bundler jekyll
           sudo apt-get install wget subversion
           cd website
 

@@ -70,6 +70,7 @@ jobs:
 
     - name: Install ffmpeg & LaTeX
       run: |
+        sudo apt update
         sudo apt install ffmpeg
         sudo apt install texlive-latex-extra
 
