@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.13.8
+      jupytext_version: 1.14.4
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -43,6 +43,7 @@ expt_ops = [sm.dag() * sm, sx, sy, sz]
 
 tlist = np.linspace(-10.0, 10.0, 1500)
 expt_list = sesolve(H, psi0, tlist, expt_ops).expect
+expt_list = [np.array(l) for l in expt_list]
 ```
 
 ## Generate a Bloch Sphere with Multi-Colored Points
