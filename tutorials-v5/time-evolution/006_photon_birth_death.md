@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.14.1
+      jupytext_version: 1.14.4
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -81,10 +81,13 @@ Here we are interested in the time evolution of $a^\dagger a$ for different numb
 
 ```python
 ntraj = [1, 5, 15, 904]  # number of MC trajectories
+mc = []  # MC results
 tlist = np.linspace(0, 0.8, 100)
 
 # Solve using MCSolve for different ntraj
-mc = mcsolve(H, psi0, tlist, c_ops, [a.dag() * a], ntraj)
+for n in ntraj:
+    result = mcsolve(H, psi0, tlist, c_ops, [a.dag() * a], ntraj=n)
+    mc.append(result)
 me = mesolve(H, psi0, tlist, c_ops, [a.dag() * a])
 ```
 
@@ -95,10 +98,10 @@ Using the above results we can reproduce Fig. 3 from the article mentioned above
 fig = plt.figure(figsize=(8, 8), frameon=False)
 plt.subplots_adjust(hspace=0.0)
 
-for i in range(4):
+for i in range(len(ntraj)):
     ax = plt.subplot(4, 1, i + 1)
     ax.plot(
-        tlist, mc.expect[i][0], "b", lw=2,
+        tlist, mc[i].expect[0], "b", lw=2,
         label="#trajectories={}".format(ntraj[i])
     )
     ax.plot(tlist, me.expect[0], "r--", lw=2)
@@ -119,6 +122,6 @@ about()
 ## Testing
 
 ```python
-np.testing.assert_allclose(me.expect[0], mc.expect[3][0], atol=10**-1)
+np.testing.assert_allclose(me.expect[0], mc[3].expect[0], atol=10**-1)
 assert np.all(np.diff(me.expect[0]) <= 0)
 ```
