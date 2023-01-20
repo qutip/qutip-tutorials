@@ -43,7 +43,7 @@ expt_ops = [sm.dag() * sm, sx, sy, sz]
 
 tlist = np.linspace(-10.0, 10.0, 1500)
 expt_list = sesolve(H, psi0, tlist, expt_ops).expect
-expt_list = [np.array(l) for l in expt_list]
+expt_list = [np.array(exp) for exp in expt_list]
 ```
 
 ## Generate a Bloch Sphere with Multi-Colored Points
