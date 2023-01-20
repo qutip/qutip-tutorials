@@ -121,7 +121,7 @@ jobs:
 
       - name: Build website with Jekyll
         run: |
-          gem install --user-install bundler jekyll
+          sudo gem install bundler jekyll
           sudo apt-get install wget subversion
           cd website
 
@@ -133,6 +133,7 @@ jobs:
 
           # build the website
           python create_index.py
+          bundle config path .gems
           bundle install
           bundle exec jekyll build
           mv _site/* ../publish/
