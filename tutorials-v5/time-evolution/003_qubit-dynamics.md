@@ -116,7 +116,11 @@ We can visualise the state on the Bloch sphere by using the `qutip.Bloch` class.
 ```python
 # Extract expectation values for pauli matrices
 exp_sx_circ, exp_sy_circ, exp_sz_circ = result.expect
-exp_sx_circ, exp_sy_circ, exp_sz_circ = np.array(exp_sx_circ), np.array(exp_sy_circ), np.array(exp_sz_circ)
+exp_sx_circ, exp_sy_circ, exp_sz_circ = (
+    np.array(exp_sx_circ),
+    np.array(exp_sy_circ),
+    np.array(exp_sz_circ),
+)
 
 # Create Bloch sphere plot
 sphere = Bloch()
@@ -141,7 +145,9 @@ c_ops = [np.sqrt(gamma_phase) * sigmaz()]
 result = mesolve(H, psi0, tlist, c_ops, [sigmax(), sigmay(), sigmaz()])
 exp_sx_dephase, exp_sy_dephase, exp_sz_dephase = result.expect
 exp_sx_dephase, exp_sy_dephase, exp_sz_dephase = (
-    np.array(exp_sx_dephase), np.array(exp_sy_dephase), np.array(exp_sz_dephase)
+    np.array(exp_sx_dephase),
+    np.array(exp_sy_dephase),
+    np.array(exp_sz_dephase),
 )
 
 # Create Bloch sphere plot
