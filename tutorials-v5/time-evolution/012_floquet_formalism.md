@@ -20,7 +20,7 @@ Inspirations taken from the [floquet notebook](https://github.com/qutip/qutip-no
 
 ### Introduction
 
-In the [floquet_solver notebook](011_floquet_solver.md) we introduced the two functions to solve the Schrödinger and Master equation using the Floquet formalism (i.e. `fsesolve` and  `fmmesolv`). In this notebook, we will work with on `FloquetBasis` class which is used by solvers. In particular, we will focus on the Floquet modes and quasi-energies.
+In the [floquet_solver notebook](011_floquet_solver.md) we introduced the two functions to solve the Schrödinger and Master equation using the Floquet formalism (i.e. `fsesolve` and  `fmmesolve`). In this notebook, we will work with on `FloquetBasis` class which is used by solvers. In particular, we will focus on the Floquet modes and quasi-energies.
 
 More information on the implementation of the Floquet Formalism in QuTiP can be found in the [documentation](https://qutip.org/docs/latest/guide/dynamics/dynamics-floquet.html).
 
