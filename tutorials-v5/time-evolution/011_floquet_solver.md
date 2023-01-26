@@ -80,7 +80,9 @@ For example we can define a linear noise spectral-density as:
 
 $$ S(\omega) = \frac{\gamma \cdot \omega}{4 \pi} $$
 
-where $\gamma$ is the dissipation rate. The system-bath interaction is described by coupling operators, e.g. here we use $\sigma_x$ as a coupling operator. Note that `fmmesolve` currently only works with one coupling operator and one noise spectrum.
+where $\gamma$ is the dissipation rate. The system-bath interaction is described by coupling operators, e.g. here we use $\sigma_x$ as a coupling operator.
+
+Each spectral function callable should accept a numpy array of frequencies and return an array of spectral densities. The frequencies passed in correspond to differences in the Floque quasi-energies and may be negative. One can return zero power for negative frequencies by multiplying the spectral density function by `(omega > 0)`, as   we do in the code below.
 
 ```python
 # Noise Spectral Density
@@ -88,11 +90,12 @@ gamma = 0.5
 
 
 def noise_spectrum(omega):
-    return gamma * omega / (4 * np.pi)
+    return (omega > 0) * gamma * omega / (4 * np.pi)
 
 
-# Coupling Operator
+# Coupling operator and noise spectrum
 c_ops = [sigmax()]
+spectra_cb = [noise_spectrum]
 
 # Solve using Fmmesolve
 fme_result = fmmesolve(
@@ -100,7 +103,7 @@ fme_result = fmmesolve(
     psi0,
     tlist,
     c_ops=c_ops,
-    spectra_cb=[noise_spectrum],
+    spectra_cb=spectra_cb,
     e_ops=[sigmaz()],
     T=T,
     args=args,
