@@ -142,7 +142,7 @@ precompute_tlist = np.linspace(0, T, 50)
 fbasis = FloquetBasis(H, T, precompute=precompute_tlist)
 ```
 
-Again, the function `FloquetBasiis.from_floquet_basis(...)` (introduced above) can be used to build the wavefunction $\psi(t)$. Here, we calculate the expectation value for the number operator in the first period:
+Again, the function `FloquetBasis.from_floquet_basis(...)` (introduced above) can be used to build the wavefunction $\psi(t)$. Here, we calculate the expectation value for the number operator in the first period:
 
 ```python
 p_ex_period = []
