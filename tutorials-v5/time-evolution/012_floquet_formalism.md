@@ -135,22 +135,24 @@ $$ \phi_\alpha(t + T) = \phi_\alpha(t) $$
 
 Hence it is enough to evaluate the modes at times $t \in [0,T]$. From these modes we can extrapolate the system state $\psi(t)$ for any time $t$. 
 
-The function `FloquetBasis` allows one to calculate the Floquet mode propagators for multiple times in the first period by specifying a list of times to `precompute`:
+The class `FloquetBasis` allows one to calculate the Floquet mode propagators for multiple times in the first period by specifying a list of times to `precompute`:
 
 ```python
-precompute_tlist = np.linspace(0, T, 50)
-fbasis = FloquetBasis(H, T, precompute=precompute_tlist)
+tlist = np.linspace(0, T, 50)
+fbasis = FloquetBasis(H, T, precompute=tlist)
 ```
 
-Again, the function `FloquetBasis.from_floquet_basis(...)` (introduced above) can be used to build the wavefunction $\psi(t)$. Here, we calculate the expectation value for the number operator in the first period:
+We can now again use `FloquetBasis.from_floquet_basis(...)` to build the wavefunction $\psi(t)$, but now the Floquet modes at each $t$ have been precomputed.
+
+Below, we calculate the expectation value for the number operator in the first period using the precomputed modes:
 
 ```python
 p_ex_period = []
-for t in precompute_tlist:
+for t in tlist:
     psi_t = fbasis.from_floquet_basis(f_coeff, t)
     p_ex_period.append(expect(num(2), psi_t))
 
-plt.plot(precompute_tlist, p_ex_period)
+plt.plot(tlist, p_ex_period)
 plt.ylabel("Occupation prob."), plt.xlabel("Time");
 ```
 
@@ -162,14 +164,14 @@ Below we show how this works in practice over the first ten periods. If the time
 
 ```python
 p_ex = []
-tlist = np.linspace(0, 10 * T, 10 * precompute_tlist.shape[0])
-for t in tlist:
+tlist_10_periods = np.linspace(0, 10 * T, 10 * len(tlist))
+for t in tlist_10_periods:
     psi_t = fbasis.from_floquet_basis(f_coeff, t)
     p_ex.append(expect(num(2), psi_t))
 
 # Plot the occupation Probability
-plt.plot(tlist, p_ex, label="Lookup method")
-plt.plot(precompute_tlist, p_ex_period, label="First period - precomputed")
+plt.plot(tlist_10_periods, p_ex, label="Ten periods - precomputed")
+plt.plot(tlist, p_ex_period, label="First period - precomputed")
 plt.legend(loc="upper right")
 plt.xlabel("Time"), plt.ylabel("Occupation prob.");
 ```
@@ -184,6 +186,6 @@ about()
 
 ```python
 # compute prediction using sesolve
-res_sesolve = sesolve(H, psi0, tlist, [num(2)])
+res_sesolve = sesolve(H, psi0, tlist_10_periods, [num(2)])
 assert np.allclose(res_sesolve.expect[0], p_ex, atol=0.15)
 ```
