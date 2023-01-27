@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.13.8
+      jupytext_version: 1.14.4
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -177,7 +177,7 @@ ax.plot(result1.times, result1.expect[2], "b",
 sz_ss_analytical = -1 / (2 * N + 1)
 ax.plot(
     result1.times,
-    sz_ss_analytical * np.ones(result1.times.shape),
+    sz_ss_analytical * np.ones(len(result1.times)),
     "k--",
     label=r"$\langle\sigma_z\rangle_s$ analytical",
 )
@@ -223,7 +223,7 @@ ax.plot(result2.times, result2.expect[2], "b",
 sz_ss_analytical = -1 / (2 * N + 1)
 ax.plot(
     result2.times,
-    sz_ss_analytical * np.ones(result2.times.shape),
+    sz_ss_analytical * np.ones(len(result2.times)),
     "k--",
     label=r"$\langle\sigma_z\rangle_s$ analytical",
 )
@@ -338,13 +338,13 @@ axes[1].set_ylim(-1, 1)
 
 axes[2].plot(
     result1.times, result1.expect[2], "r",
-    label=r"$\langle\sigma_y\rangle$ - vacuum"
+    label=r"$\langle\sigma_z\rangle$ - vacuum"
 )
 axes[2].plot(
     result2.times,
     result2.expect[2],
     "b",
-    label=r"$\langle\sigma_y\rangle$ - squeezed vacuum",
+    label=r"$\langle\sigma_z\rangle$ - squeezed vacuum",
 )
 axes[2].legend()
 axes[2].set_ylim(-1, 1)

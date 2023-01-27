@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.14.1
+      jupytext_version: 1.14.4
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -62,6 +62,7 @@ rho0 = coherent_dm(N, 2.0)
 
 # first calculate the occupation number as a function of time
 n = mesolve(H, rho0, taulist, c_ops, [a.dag() * a]).expect[0]
+n = np.array(n)
 
 # calculate the correlation function G1 and normalize with n to obtain g1
 G1 = correlation_2op_2t(H, rho0, None, taulist, c_ops, a.dag(), a)
