@@ -16,11 +16,11 @@ jobs:
       matrix:
         include:
           - qutip-version: '4'
-            qutip-branch: 'master'
+            qutip-branch: 'qutip-4.7.X'
             path_md: 'tutorials-v4/*.md'
             path_ipynb: 'tutorials-v4/*.ipynb'
           - qutip-version: '5'
-            qutip-branch: 'dev.major'
+            qutip-branch: 'master'
             path_md: 'tutorials-v5/*.md'
             path_ipynb: 'tutorials-v5/*.ipynb'
     steps:
@@ -70,6 +70,7 @@ jobs:
 
     - name: Install ffmpeg & LaTeX
       run: |
+        sudo apt update
         sudo apt install ffmpeg
         sudo apt install texlive-latex-extra
 
@@ -132,6 +133,7 @@ jobs:
 
           # build the website
           python create_index.py
+          bundle config path .gems
           bundle install
           bundle exec jekyll build
           mv _site/* ../publish/

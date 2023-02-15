@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.13.8
+      jupytext_version: 1.14.4
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -180,7 +180,8 @@ about()
 
 ```python
 # sum of atom and cavity
-assert np.all(np.diff(output.expect[0] + output.expect[1]) <= 0.0)
+atom_and_cavity = np.array(output.expect[0]) + np.array(output.expect[1])
+assert np.all(np.diff(atom_and_cavity) <= 0.0)
 
 # frequency for analytical solution (with RWA)
 output_no_cops = mesolve(H, psi0, tlist, [], [a.dag() * a, sm.dag() * sm])

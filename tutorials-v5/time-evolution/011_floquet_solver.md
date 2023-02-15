@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.13.8
+      jupytext_version: 1.14.4
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -61,16 +61,13 @@ psi0 = basis(2, 0)
 
 We can now use the `qutip.fsesolve()` function to solve the dynamics of the system using the Floquet formalism for the Schrödinger equation. The arguments are similar to the ones passed to `qutip.sesolve()`. There is an optional parameter `T` which defines the period of the time-dependence. If `T` is not given it is assumed that the passed `tlist` spans one period. Therefore we always pass `T` in this tutorial.
 
-The `Tsteps` argument to `fsesolve()` can be used to set the number of time steps in one period `T` for which the Floquet modes are precalculated. Increasing this number should result in a better numerical accuracy. `Tsteps` should be even! 
-
 ```python
 # period time
 T = 2 * np.pi / omega
 # simulation time
 tlist = np.linspace(0, 2.5 * T, 101)
 # simulation
-result = fsesolve(H, psi0, tlist, T=T, e_ops=[sigmaz()],
-                  args=args, Tsteps=1000)
+result = fsesolve(H, psi0, tlist, T=T, e_ops=[sigmaz()], args=args)
 
 plot_expectation_values([result], ylabels=["<Z>"]);
 ```
@@ -83,19 +80,22 @@ For example we can define a linear noise spectral-density as:
 
 $$ S(\omega) = \frac{\gamma \cdot \omega}{4 \pi} $$
 
-where $\gamma$ is the dissipation rate. The system-bath interaction is described by coupling operators, e.g. here we use $\sigma_x$ as a coupling operator. Note that `fmmesolve` currently only works with one coupling operator and one noise spectrum.
+where $\gamma$ is the dissipation rate. The system-bath interaction is described by coupling operators, e.g. here we use $\sigma_x$ as a coupling operator.
+
+Each spectral function callable should accept a numpy array of frequencies and return an array of spectral densities. The frequencies passed in correspond to differences in the Floque quasi-energies and may be negative. One can return zero power for negative frequencies by multiplying the spectral density function by `(omega > 0)`, as   we do in the code below.
 
 ```python
 # Noise Spectral Density
-gamma = 0.1
+gamma = 0.5
 
 
 def noise_spectrum(omega):
-    return gamma * omega / (4 * np.pi)
+    return (omega > 0) * gamma * omega / (4 * np.pi)
 
 
-# Coupling Operator
+# Coupling operator and noise spectrum
 c_ops = [sigmax()]
+spectra_cb = [noise_spectrum]
 
 # Solve using Fmmesolve
 fme_result = fmmesolve(
@@ -103,11 +103,10 @@ fme_result = fmmesolve(
     psi0,
     tlist,
     c_ops=c_ops,
-    spectra_cb=[noise_spectrum],
+    spectra_cb=spectra_cb,
     e_ops=[sigmaz()],
     T=T,
     args=args,
-    floquet_basis=False,
 )
 ```
 
@@ -132,11 +131,10 @@ fme_result_nodis = fmmesolve(
     psi0,
     tlist,
     c_ops=c_ops,
-    spectra_cb=[lambda w: 0.0],
+    spectra_cb=[lambda w: np.zeros_like(w)],
     e_ops=[sigmaz()],
     T=T,
     args=args,
-    floquet_basis=False,
 )
 ```
 

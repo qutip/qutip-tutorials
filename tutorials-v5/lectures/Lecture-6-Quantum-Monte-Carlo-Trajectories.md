@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.13.8
+      jupytext_version: 1.14.4
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -116,8 +116,11 @@ Here we start the Monte-Carlo simulation, and we request expectation values of p
 
 ```python
 ntraj = [1, 5, 15, 904]  # list of number of trajectories to avg. over
+mc = []
 
-mc = mcsolve(H, psi0, tlist, c_op_list, [a.dag() * a], ntraj)
+for n in ntraj:
+    result = mcsolve(H, psi0, tlist, c_op_list, e_ops=[a.dag() * a], ntraj=n)
+    mc.append(result)
 ```
 
 The expectation values of $a^\dagger a$ are now available in array ``mc.expect[idx][0]`` where ``idx`` takes values in ``[0,1,2,3]`` corresponding to the averages of ``1, 5, 15, 904`` Monte Carlo trajectories, as specified above. Below we plot the array ``mc.expect[idx][0]`` vs. ``tlist`` for each index ``idx``.
@@ -129,7 +132,7 @@ For comparison with the averages of single quantum trajectories provided by the 
 
 ```python
 # run master equation to get ensemble average expectation values
-me = mesolve(H, psi0, tlist, c_op_list, [a.dag() * a])
+me = mesolve(H, psi0, tlist, c_op_list, e_ops=[a.dag() * a])
 
 # calulate final state using steadystate solver
 final_state = steadystate(H, c_op_list)  # find steady-state
@@ -148,7 +151,7 @@ fig.subplots_adjust(hspace=0.1)  # reduce space between plots
 
 for idx, n in enumerate(ntraj):
 
-    axes[idx].step(tlist, mc.expect[idx][0], "b", lw=2)
+    axes[idx].step(tlist, mc[idx].expect[0], "b", lw=2)
     axes[idx].plot(tlist, me.expect[0], "r--", lw=1.5)
     axes[idx].axhline(y=fexpt, color="k", lw=1.5)
 
@@ -167,7 +170,6 @@ for idx, n in enumerate(ntraj):
             ("%d trajectories" % n, "master equation", "steady state"),
             prop=leg_prop
         )
-
 
 axes[3].xaxis.set_major_locator(plt.MaxNLocator(4))
 axes[3].set_xlabel("Time (sec)", fontsize=14);
