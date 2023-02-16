@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.14.1
+      jupytext_version: 1.14.4
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -76,9 +76,7 @@ density is given by:
 Note that in the above, and the following, we set $\hbar = k_\mathrm{B} = 1$.
 
 ```python
-%pylab inline
-%load_ext autoreload
-%autoreload 2
+%matplotlib inline
 ```
 
 ```python
@@ -114,6 +112,10 @@ from qutip.nonmarkov.heom import (
 )
 ```
 
+
+## Helper functions
+
+Let's define some helper functions for calculating correlation function expansions, plotting results and timing how long operations take:
 
 ```python
 def cot(x):
@@ -205,6 +207,10 @@ def timer(label):
     print(f"{label}: {end - start}")
 ```
 
+## System and bath definition
+
+And let us set up the system Hamiltonian, bath and system measurement operators:
+
 ```python
 # Defining the system Hamiltonian
 eps = 0.5  # Energy of the 2-level system.
@@ -246,7 +252,7 @@ P12p = basis(2, 0) * basis(2, 1).dag()
 
 ### First of all, it is useful to look at the spectral density
 
-Let's look at its magnitude and width, relative to the system properties:
+Now we are ready to begin. Let's look at the shape of the spectral density given the bath parameters we defined above:
 
 ```python
 def plot_spectral_density():
@@ -301,7 +307,7 @@ plot_result_expectations(
         (resultMats, P11p, "b", "P11 Mats"),
         (resultMats, P12p, "r", "P12 Mats"),
     ]
-)
+);
 ```
 
 In practice, one would not perform this laborious expansion for the
@@ -329,7 +335,7 @@ plot_result_expectations(
         (result_dlbath, P11p, "b", "P11 (DrudeLorentzBath)"),
         (result_dlbath, P12p, "r", "P12 (DrudeLorentzBath)"),
     ]
-)
+);
 ```
 
 We also provide a legacy class, `HSolverDL`, which calculates the
@@ -355,7 +361,7 @@ plot_result_expectations(
         (resultLegacy, P11p, "b", "P11 Legacy"),
         (resultLegacy, P12p, "r", "P12 Legacy"),
     ]
-)
+);
 ```
 
 ## Ishizaki-Tanimura Terminator
@@ -416,7 +422,7 @@ def plot_correlation_expansion_divergence():
     ax1.legend()
 
 
-plot_correlation_expansion_divergence()
+plot_correlation_expansion_divergence();
 ```
 
 Let us evaluate the result including this Ishizaki-Tanimura terminator:
@@ -463,7 +469,7 @@ plot_result_expectations(
         (resultMatsT, P11p, "b", "P11 Mats + Term"),
         (resultMatsT, P12p, "r", "P12 Mats + Term"),
     ]
-)
+);
 ```
 
 Or using the built-in Drude-Lorentz bath we can write simply:
@@ -487,7 +493,7 @@ plot_result_expectations(
         (result_dlbath_T, P11p, "b", "P11 Mats (DrudeLorentzBath + Term)"),
         (result_dlbath_T, P12p, "r", "P12 Mats (DrudeLorentzBath + Term)"),
     ]
-)
+);
 ```
 
 We can compare the solution obtained from the QuTiP Bloch-Redfield solver:
@@ -516,21 +522,7 @@ plot_result_expectations(
         (resultBR, P11p, "g--", "P11 Bloch Redfield"),
         (resultBR, P12p, "g--", "P12 Bloch Redfield"),
     ]
-)
-```
-
-```python
-# XXX: We should probably remove this at some point and make a separate
-# notebook(s) for generating plots for the paper.
-
-fig = plot_result_expectations(
-    [
-        (resultMats, P11p, "b", "P11 Mats"),
-        (resultMats, P12p, "r", "P12 Mats"),
-    ]
-)
-
-fig.savefig("figures/docsfig1.png")
+);
 ```
 
 # Padé decomposition
@@ -687,7 +679,7 @@ ax1.plot(
 
 ax1.set_xlabel("t")
 ax1.set_ylabel(r"Error")
-ax1.legend()
+ax1.legend();
 ```
 
 ```python
@@ -717,7 +709,7 @@ plot_result_expectations(
         (resultPade, P11p, "b--", "P11 Pade"),
         (resultPade, P12p, "r--", "P12 Pade"),
     ]
-)
+);
 ```
 
 The Padé decomposition of the Drude-Lorentz bath is also available via a
@@ -747,7 +739,7 @@ plot_result_expectations(
         (result_dlpbath_T, P11p, "b", "P11 Padé (DrudeLorentzBath + Term)"),
         (result_dlpbath_T, P12p, "r", "P12 Padé (DrudeLorentzBath + Term)"),
     ]
-)
+);
 ```
 
 ### Next we compare the Matsubara and Pade correlation function fits
@@ -770,107 +762,119 @@ corrIana = np.imag(corr_15k_t10k)
 We then fit this sum with standard least-squares approach:
 
 ```python
-def wrapper_fit_func(x, N, *args):
-    a, b = list(args[0][:N]), list(args[0][N:2 * N])
-    return fit_func(x, a, b, N)
+def wrapper_fit_func(x, N, args):
+    """ Fit function wrapper that unpacks its arguments. """
+    x = np.array(x)
+    a = np.array(args[:N])
+    b = np.array(args[N:2 * N])
+    return fit_func(x, a, b)
 
 
-# actual fitting function
-def fit_func(x, a, b, N):
-    tot = 0
-    for i in range(N):
-        tot += a[i] * np.exp(b[i] * x)
-    return tot
+def fit_func(x, a, b):
+    """ Fit function. Calculates the value of the
+        correlation function at each x, given the
+        fit parameters in a and b.
+    """
+    return np.sum(
+        a[:, None] * np.exp(np.multiply.outer(b, x)),
+        axis=0,
+    )
 
 
 def fitter(ans, tlist, k):
-    # the actual computing of fit
-    popt = []
-    pcov = []
-    # tries to fit for k exponents
-    for i in range(k):
-        upper_a = abs(max(ans, key=abs)) * 10
-        # sets initial guess
-        guess = []
-        aguess = [ans[0]] * (i + 1)  # [max(ans)]*(i+1)
-        bguess = [0] * (i + 1)
-        guess.extend(aguess)
-        guess.extend(bguess)
-        # sets bounds
-        b_lower = []
-        alower = [-upper_a] * (i + 1)
-        blower = [-np.inf] * (i + 1)
-        b_lower.extend(alower)
-        b_lower.extend(blower)
-        # sets higher bound
-        b_higher = []
-        ahigher = [upper_a] * (i + 1)
-        bhigher = [0] * (i + 1)
-        b_higher.extend(ahigher)
-        b_higher.extend(bhigher)
-        param_bounds = (b_lower, b_higher)
-        p1, p2 = curve_fit(
-            lambda x, *params_0: wrapper_fit_func(x, i + 1, params_0),
-            tlist,
-            ans,
-            p0=guess,
-            sigma=[0.01 for t in tlist2],
-            bounds=param_bounds,
-            maxfev=1e8,
-        )
-        popt.append(p1)
-        pcov.append(p2)
-    return popt
+    """ Compute fit with k exponents. """
+    upper_a = abs(max(ans, key=abs)) * 10
+    # sets initial guesses:
+    guess = (
+        [ans[0] / k] * k +  # guesses for a
+        [0] * k  # guesses for b
+    )
+    # sets lower bounds:
+    b_lower = (
+        [-upper_a] * k +  # lower bounds for a
+        [-np.inf] * k  # lower bounds for b
+    )
+    # sets higher bounds:
+    b_higher = (
+        [upper_a] * k +  # upper bounds for a
+        [0] * k  # upper bounds for b
+    )
+    param_bounds = (b_lower, b_higher)
+    p1, p2 = curve_fit(
+        lambda x, *params_0: wrapper_fit_func(x, k, params_0),
+        tlist,
+        ans,
+        p0=guess,
+        sigma=[0.01 for t in tlist2],
+        bounds=param_bounds,
+        maxfev=1e8,
+    )
+    a, b = p1[:k], p1[k:]
+    return (a, b)
+```
 
+```python
+kR = 4  # number of exponents to use for real part
+poptR = []
+with timer("Correlation (real) fitting time"):
+    for i in range(kR):
+        poptR.append(fitter(corrRana, tlist2, i + 1))
 
-# function that evaluates values with fitted params at
-# given inputs
-def checker(tlist, vals):
-    y = []
-    for i in tlist:
-        # print(i)
-        y.append(wrapper_fit_func(i, int(len(vals) / 2), vals))
-    return y
-
-
-# number of exponents to use for real part
-k = 4
-popt1 = fitter(corrRana, tlist2, k)
 corrRMats = np.real(dl_corr_approx(tlist2, Nk))
 
-for i in range(k):
-    y = checker(tlist2, popt1[i])
-    plt.plot(tlist2, corrRana, tlist2, y, tlist2, corrRMats)
-    plt.show()
+kI = 1  # number of exponents for imaginary part
+poptI = []
+with timer("Correlation (imaginary) fitting time"):
+    for i in range(kI):
+        poptI.append(fitter(corrIana, tlist2, i + 1))
+```
 
-# number of exponents for imaginary part
-k1 = 1
-popt2 = fitter(corrIana, tlist2, k1)
-for i in range(k1):
-    y = checker(tlist2, popt2[i])
-    plt.plot(tlist2, corrIana, tlist2, y)
-    plt.show()
+And plot the results of the fits:
+
+```python
+plt.plot(tlist2, corrRana, label="Analytic")
+plt.plot(tlist2, corrRMats, label="Matsubara")
+
+for i in range(kR):
+    y = fit_func(tlist2, *poptR[i])
+    plt.plot(tlist2, y, label=f"Fit with {i} terms")
+
+plt.title("Fit to correlations (real part)")
+plt.legend()
+plt.show()
+```
+
+```python
+plt.plot(tlist2, corrIana, label="Analytic")
+
+for i in range(kI):
+    y = fit_func(tlist2, *poptI[i])
+    plt.plot(tlist2, y, label=f"Fit with {i} terms")
+
+plt.title("Fit to correlations (imaginary part)")
+plt.legend()
+plt.show()
 ```
 
 ```python
 # Set the exponential coefficients from the fit parameters
 
-ckAR1 = list(popt1[k - 1])[: len(list(popt1[k - 1])) // 2]
+ckAR1 = poptR[-1][0]
 ckAR = [x + 0j for x in ckAR1]
 
-vkAR1 = list(popt1[k - 1])[len(list(popt1[k - 1])) // 2:]
+vkAR1 = poptR[-1][1]
 vkAR = [-x + 0j for x in vkAR1]
 
-ckAI1 = list(popt2[k1 - 1])[: len(list(popt2[k1 - 1])) // 2]
+ckAI1 = poptI[-1][0]
 ckAI = [x + 0j for x in ckAI1]
 
-vkAI1 = list(popt2[k1 - 1])[len(list(popt2[k1 - 1])) // 2:]
+vkAI1 = poptI[-1][1]
 vkAI = [-x + 0j for x in vkAI1]
 ```
 
 ```python
 # overwrite imaginary fit with analytical value (not much reason to use the
-# ssssfit for this)
+# fit for this)
 
 ckAI = [lam * gamma * (-1.0) + 0.0j]
 vkAI = [gamma + 0.0j]
@@ -878,13 +882,14 @@ vkAI = [gamma + 0.0j]
 
 ```python
 # The BDF ODE solver method here is faster because we have a slightly
-# stiff problem.
-# We set NC = 8 because we are keeping more exponents
+# stiff problem. We set NC=4 to reduce the run time while retaining
+# reasonable convergence.
 
 options = Options(
     nsteps=1500, store_states=True, rtol=1e-12, atol=1e-12, method="bdf"
 )
-NC = 8
+
+NC = 4
 
 with timer("RHS construction time"):
     bath = BosonicBath(Q, ckAR, vkAR, ckAI, vkAI)
@@ -900,13 +905,16 @@ plot_result_expectations(
         (resultFit, P11p, "b", "P11 Fit"),
         (resultFit, P12p, "r", "P12 Fit"),
     ]
-)
+);
 ```
+
+## A reaction coordinate approach
+
 
 Here we construct a reaction coordinate inspired model to capture the
 steady-state behavior, and compare to the HEOM prediction. This result is
-more accurate for narrow spectral densities.  Both the population and
-coherence from this cell are used in the final plot below.
+more accurate for narrow spectral densities.  We will use the population and
+coherence from this cell in our final plot below.
 
 ```python
 dot_energy, dot_state = Hsys.eigenstates()
@@ -940,127 +948,107 @@ for kk, energ in enumerate(energies):
 
 rhoss = rhoss / rhoss.norm()
 
+class ReactionCoordinateResult:
+    def __init__(self, states, times):
+        self.states = states
+        self.times = times
+
+resultRC = ReactionCoordinateResult([rhoss] * len(tlist), tlist)
+
 P12RC = tensor(qeye(NRC), basis(2, 0) * basis(2, 1).dag())
-
-P12RC = expect(rhoss, P12RC)
-
-
 P11RC = tensor(qeye(NRC), basis(2, 0) * basis(2, 0).dag())
+```
 
-P11RC = expect(rhoss, P11RC)
+## Let's plot all our results
+
+Finally, let's plot all of our different results to see how they shape up against each other.
+
+```python
+rcParams = {
+    "axes.titlesize": 25,
+    "axes.labelsize": 30,
+    "xtick.labelsize": 28,
+    "ytick.labelsize": 28,
+    "legend.fontsize": 28,
+    "axes.grid": False,
+    "savefig.bbox": "tight",
+    "lines.markersize": 5,
+    "font.family": "STIXgeneral",
+    "mathtext.fontset": "stix",
+    "font.serif": "STIX",
+    "text.usetex": False,
+}
 ```
 
 ```python
-# XXX: Decide what to do with this cell
-
-matplotlib.rcParams["figure.figsize"] = (7, 5)
-matplotlib.rcParams["axes.titlesize"] = 25
-matplotlib.rcParams["axes.labelsize"] = 30
-matplotlib.rcParams["xtick.labelsize"] = 28
-matplotlib.rcParams["ytick.labelsize"] = 28
-matplotlib.rcParams["legend.fontsize"] = 28
-matplotlib.rcParams["axes.grid"] = False
-matplotlib.rcParams["savefig.bbox"] = "tight"
-matplotlib.rcParams["lines.markersize"] = 5
-matplotlib.rcParams["font.family"] = "STIXgeneral"
-matplotlib.rcParams["mathtext.fontset"] = "stix"
-matplotlib.rcParams["font.serif"] = "STIX"
-matplotlib.rcParams["text.usetex"] = False
-```
-
-```python
-# XXX: Decide what to do with this cell
-
 fig, axes = plt.subplots(2, 1, sharex=False, figsize=(12, 15))
 
-plt.sca(axes[0])
-plt.yticks([np.real(P11RC), 0.6, 1.0], [0.32, 0.6, 1])
+with plt.rc_context(rcParams):
 
-plot_result_expectations(
-    [
-        (resultBR, P11p, "y-.", "Bloch-Redfield"),
-        (resultMats, P11p, "b", "Matsubara $N_k=2$"),
-        (
-            resultMatsT,
-            P11p,
-            "g--",
-            "Matsubara $N_k=2$ & Terminator",
-            {"linewidth": 3},
-        ),
-        (
-            resultFit,
-            P11p,
-            "r",
-            r"Fit $N_f = 4$, $N_k=15\times 10^3$",
-            {"dashes": [3, 2]},
-        ),
-    ],
-    axes=axes[0],
-)
-axes[0].plot(
-    tlist,
-    [np.real(P11RC) for t in tlist],
-    "black",
-    ls="--",
-    linewidth=2,
-    label="Thermal",
-)
+    plt.sca(axes[0])
+    plt.yticks([expect(P11RC, resultRC.states[0]), 0.6, 1.0], [0.32, 0.6, 1])
+    plot_result_expectations(
+        [
+            (resultBR, P11p, "y-.", "Bloch-Redfield"),
+            (resultMats, P11p, "b", "Matsubara $N_k=2$"),
+            (
+                resultMatsT,
+                P11p,
+                "g--",
+                "Matsubara $N_k=2$ & Terminator",
+                {"linewidth": 3},
+            ),
+            (
+                resultFit,
+                P11p,
+                "r",
+                r"Fit $N_f = 4$, $N_k=15\times 10^3$",
+                {"dashes": [3, 2]},
+            ),
+            (resultRC, P11RC, "--", "Thermal", {"linewidth": 2, "color": "black"}),
+        ],
+        axes=axes[0],
+    )
+    axes[0].set_ylabel(r"$\rho_{11}$", fontsize=30)
+    axes[0].legend(loc=0)
+    axes[0].text(5, 0.9, "(a)", fontsize=30)
+    axes[0].set_xlim(0, 50)
 
-axes[0].locator_params(axis="y", nbins=4)
-axes[0].locator_params(axis="x", nbins=4)
-
-axes[0].set_ylabel(r"$\rho_{11}$", fontsize=30)
-axes[0].legend(loc=0)
-
-axes[0].text(5, 0.9, "(a)", fontsize=30)
-axes[0].set_xlim(0, 50)
-
-plt.sca(axes[1])
-plt.yticks([np.real(P12RC), -0.2, 0.0, 0.2], [-0.33, -0.2, 0, 0.2])
-
-plot_result_expectations(
-    [
-        (resultBR, P12p, "y-.", "Bloch-Redfield"),
-        (resultMats, P12p, "b", "Matsubara $N_k=2$"),
-        (
-            resultMatsT,
-            P12p,
-            "g--",
-            "Matsubara $N_k=2$ & Terminator",
-            {"linewidth": 3},
-        ),
-        (
-            resultFit,
-            P12p,
-            "r",
-            r"Fit $N_f = 4$, $N_k=15\times 10^3$",
-            {"dashes": [3, 2]},
-        ),
-    ],
-    axes=axes[1],
-)
-axes[1].plot(
-    tlist,
-    [np.real(P12RC) for t in tlist],
-    "black",
-    ls="--",
-    linewidth=2,
-    label="Thermal",
-)
-
-axes[1].locator_params(axis="y", nbins=4)
-axes[1].locator_params(axis="x", nbins=4)
-
-axes[1].text(5, 0.1, "(b)", fontsize=30)
-
-axes[1].set_xlabel(r"$t \Delta$", fontsize=30)
-axes[1].set_ylabel(r"$\rho_{01}$", fontsize=30)
-
-axes[1].set_xlim(0, 50)
-
-fig.tight_layout()
-# fig.savefig("fig1.pdf")
+    plt.sca(axes[1])
+    plt.yticks(
+        [np.real(expect(P12RC, resultRC.states[0])), -0.2, 0.0, 0.2],
+        [-0.33, -0.2, 0, 0.2],
+    )
+    plot_result_expectations(
+        [
+            (resultBR, P12p, "y-.", "Bloch-Redfield"),
+            (resultMats, P12p, "b", "Matsubara $N_k=2$"),
+            (
+                resultMatsT,
+                P12p,
+                "g--",
+                "Matsubara $N_k=2$ & Terminator",
+                {"linewidth": 3},
+            ),
+            (
+                resultFit,
+                P12p,
+                "r",
+                r"Fit $N_f = 4$, $N_k=15\times 10^3$",
+                {"dashes": [3, 2]},
+            ),
+            (resultRC, P12RC, "--", "Thermal", {"linewidth": 2, "color": "black"}),
+        ],
+        axes=axes[1],
+    )
+    axes[1].text(5, 0.1, "(b)", fontsize=30)
+    axes[1].set_xlabel(r"$t \Delta$", fontsize=30)
+    axes[1].set_ylabel(r"$\rho_{01}$", fontsize=30)
+    axes[1].set_xlim(0, 50)
 ```
+
+And that's the end of a detailed first dive into modeling bosonic environments with the HEOM.
+
 
 ## About
 
