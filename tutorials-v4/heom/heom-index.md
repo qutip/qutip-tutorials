@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.13.5
+    jupytext_version: 1.14.4
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -22,7 +22,9 @@ This collection of examples from the paper illustrates how to use QuTiP's HEOM t
 
 ## Overview of the notebooks
 
-* [Example 1a: Spin-Bath model (basic)](./heom-1a-spin-bath-model-basic.ipynb)
+<!-- markdown-link-check-disable -->
+
+* [Example 1a: Spin-Bath model (introduction)](./heom-1a-spin-bath-model-basic.ipynb)
 
 * [Example 1b: Spin-Bath model (very strong coupling)](./heom-1b-spin-bath-model-very-strong-coupling.ipynb)
 
@@ -42,6 +44,4 @@ This collection of examples from the paper illustrates how to use QuTiP's HEOM t
 
 * [Example 5b: Discrete boson coupled to an impurity + fermionic leads](./heom-5b-fermions-discrete-boson-model.ipynb)
 
-```{code-cell} ipython3
-
-```
+<!-- markdown-link-check-enable -->
