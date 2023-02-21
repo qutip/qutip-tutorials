@@ -12,10 +12,10 @@ jupyter:
     name: python3
 ---
 
-# Example 1a: Spin-Bath model (basic)
+# HEOM 1a: Spin-Bath model (introduction)
 
-### Introduction
 
+## Introduction
 
 The HEOM method solves the dynamics and steady state of a system and its
 environment, the latter of which is encoded in a set of auxiliary density
@@ -75,9 +75,8 @@ density is given by:
 
 Note that in the above, and the following, we set $\hbar = k_\mathrm{B} = 1$.
 
-```python
-%matplotlib inline
-```
+
+## Setup
 
 ```python
 import contextlib
@@ -103,6 +102,7 @@ from qutip import (
     spre,
     tensor,
 )
+
 from qutip.nonmarkov.heom import (
     BosonicBath,
     DrudeLorentzBath,
@@ -110,6 +110,8 @@ from qutip.nonmarkov.heom import (
     HEOMSolver,
     HSolverDL,
 )
+
+%matplotlib inline
 ```
 
 
@@ -1054,4 +1056,18 @@ And that's the end of a detailed first dive into modeling bosonic environments w
 
 ```python
 qutip.about()
+```
+
+## Testing
+
+This section can include some tests to verify that the expected outputs are generated within the notebook. We put this section at the end of the notebook, so it's not interfering with the user experience. Please, define the tests using assert, so that the cell execution fails if a wrong output is generated.
+
+```python
+# Check P11p
+np.testing.assert_allclose(expect(P11p, resultMatsT.states), expect(P11p, resultPade.states), rtol=1e-2)
+np.testing.assert_allclose(expect(P11p, resultMatsT.states), expect(P11p, resultFit.states), rtol=1e-2)
+
+# Check P12p
+np.testing.assert_allclose(expect(P12p, resultMatsT.states), expect(P12p, resultPade.states), rtol=1e-2)
+np.testing.assert_allclose(expect(P12p, resultMatsT.states), expect(P12p, resultFit.states), rtol=1e-1)
 ```
