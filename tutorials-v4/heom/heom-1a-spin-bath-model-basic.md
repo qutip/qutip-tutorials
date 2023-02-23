@@ -83,7 +83,6 @@ import contextlib
 import time
 
 import numpy as np
-import matplotlib
 from matplotlib import pyplot as plt
 from scipy.optimize import curve_fit
 
@@ -807,7 +806,7 @@ def fitter(ans, tlist, k):
         tlist,
         ans,
         p0=guess,
-        sigma=[0.01 for t in tlist2],
+        sigma=[0.01 for t in tlist],
         bounds=param_bounds,
         maxfev=1e8,
     )
@@ -950,10 +949,12 @@ for kk, energ in enumerate(energies):
 
 rhoss = rhoss / rhoss.norm()
 
+
 class ReactionCoordinateResult:
     def __init__(self, states, times):
         self.states = states
         self.times = times
+
 
 resultRC = ReactionCoordinateResult([rhoss] * len(tlist), tlist)
 
@@ -1007,7 +1008,12 @@ with plt.rc_context(rcParams):
                 r"Fit $N_f = 4$, $N_k=15\times 10^3$",
                 {"dashes": [3, 2]},
             ),
-            (resultRC, P11RC, "--", "Thermal", {"linewidth": 2, "color": "black"}),
+            (
+                resultRC,
+                P11RC,
+                "--", "Thermal",
+                {"linewidth": 2, "color": "black"},
+            ),
         ],
         axes=axes[0],
     )
@@ -1039,7 +1045,13 @@ with plt.rc_context(rcParams):
                 r"Fit $N_f = 4$, $N_k=15\times 10^3$",
                 {"dashes": [3, 2]},
             ),
-            (resultRC, P12RC, "--", "Thermal", {"linewidth": 2, "color": "black"}),
+            (
+                resultRC,
+                P12RC,
+                "--",
+                "Thermal",
+                {"linewidth": 2, "color": "black"},
+            ),
         ],
         axes=axes[1],
     )
@@ -1064,10 +1076,26 @@ This section can include some tests to verify that the expected outputs are gene
 
 ```python
 # Check P11p
-np.testing.assert_allclose(expect(P11p, resultMatsT.states), expect(P11p, resultPade.states), rtol=1e-2)
-np.testing.assert_allclose(expect(P11p, resultMatsT.states), expect(P11p, resultFit.states), rtol=1e-2)
+assert np.allclose(
+    expect(P11p, resultMatsT.states),
+    expect(P11p, resultPade.states),
+    rtol=1e-2,
+)
+assert np.allclose(
+    expect(P11p, resultMatsT.states),
+    expect(P11p, resultFit.states),
+    rtol=1e-2,
+)
 
 # Check P12p
-np.testing.assert_allclose(expect(P12p, resultMatsT.states), expect(P12p, resultPade.states), rtol=1e-2)
-np.testing.assert_allclose(expect(P12p, resultMatsT.states), expect(P12p, resultFit.states), rtol=1e-1)
+assert np.allclose(
+    expect(P12p, resultMatsT.states),
+    expect(P12p, resultPade.states),
+    rtol=1e-2,
+)
+assert np.allclose(
+    expect(P12p, resultMatsT.states),
+    expect(P12p, resultFit.states),
+    rtol=1e-1,
+)
 ```
