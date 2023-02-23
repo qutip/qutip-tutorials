@@ -17,12 +17,8 @@ jobs:
         include:
           - qutip-version: '4'
             qutip-branch: 'qutip-4.7.X'
-            path_md: 'tutorials-v4/*.md'
-            path_ipynb: 'tutorials-v4/*.ipynb'
           - qutip-version: '5'
             qutip-branch: 'master'
-            path_md: 'tutorials-v5/*.md'
-            path_ipynb: 'tutorials-v5/*.ipynb'
     steps:
     - uses: actions/checkout@v3
     - uses: gaurav-nelson/github-action-markdown-link-check@v1
