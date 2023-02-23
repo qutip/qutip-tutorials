@@ -24,6 +24,7 @@ jobs:
     - uses: gaurav-nelson/github-action-markdown-link-check@v1
       with:
         use-quiet-mode: 'yes'
+        folder-path: tutorials-v${{ matrix.qutip-version }}
 
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v2
