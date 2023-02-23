@@ -18,11 +18,10 @@ kernelspec:
 
 +++
 
-In this example notebook we outline how to employ the HEOM to 
-solve the FMO photosynthetic complex dynamics. 
+In this example notebook we outline how to employ the HEOM to
+solve the FMO photosynthetic complex dynamics.
 
-
-We aim to replicate the results in reference https://www.pnas.org/content/106/41/17255
+We aim to replicate the results in reference [https://www.pnas.org/content/106/41/17255](https://pubmed.ncbi.nlm.nih.gov/19815512/)
 and compare them to a Bloch-Redfield (perturbative) solution.
 
 This demonstrates how to to employ the solver for multiple baths, as well as showing how a
@@ -57,7 +56,7 @@ def J0(energy):
 
 def dl_corr_approx(t, nk):
     """ Drude-Lorenz correlation function approximation.
-    
+
         Approximates the correlation function at each time t to nk exponents.
     """
     c = lam * gamma * (-1.0j + cot(gamma / (2 * T))) * np.exp(-gamma * t)
@@ -114,7 +113,7 @@ Hsys =  3e10 * 2 * pi *Qobj([[200, -87.7, 5.5, -5.9, 6.7, -13.7, -9.9],
 
 
 #start the excitation at site :1:
-rho0 = basis(7,0)*basis(7,0).dag() 
+rho0 = basis(7,0)*basis(7,0).dag()
 
 optionsODE = Options(nsteps=15000, store_states=True)
 #
@@ -132,7 +131,7 @@ for m in range(7):
             Q,lam=lam, gamma=gamma, T=T, Nk=Nk,
         tag=str(m)))
     _, terminator = baths[-1].terminator()  #Here we set Nk=0 and
-                                            #rely on the terminator 
+                                            #rely on the terminator
                                             # to correct detailed balance
     Ltot += terminator
 ```
@@ -152,7 +151,7 @@ matplotlib.rcParams['legend.fontsize'] = 28
 matplotlib.rcParams['axes.grid'] = False
 matplotlib.rcParams['savefig.bbox'] = 'tight'
 matplotlib.rcParams['lines.markersize'] = 5
-matplotlib.rcParams['font.family'] = 'STIXgeneral' 
+matplotlib.rcParams['font.family'] = 'STIXgeneral'
 matplotlib.rcParams['mathtext.fontset'] =  'stix'
 matplotlib.rcParams["font.serif"] = "STIX"
 matplotlib.rcParams['text.usetex'] = False
@@ -171,7 +170,7 @@ plt.rc('axes',prop_cycle=default_cycler )
 
 for m in range(7):
     Q =  basis(7,m)*basis(7,m).dag()
-    axes.plot(array(tlist)*1e15, expect(outputFMOHEOM.states,Q),label=m+1)    
+    axes.plot(array(tlist)*1e15, expect(outputFMOHEOM.states,Q),label=m+1)
 axes.set_xlabel(r'$t$ (fs)', fontsize=30)
 axes.set_ylabel(r"Population", fontsize=30);
 axes.locator_params(axis='y', nbins=6)
@@ -212,19 +211,19 @@ plt.xticks([0.,500,1000],[0,500,1000])
 ```
 
  # Role of pure dephasing
- 
+
  It is more useful to explicitly construct the various parts of the Bloch-Redfield master equation explicitly, and show that it is the pure-dephasing which suppresses coherence in these oscillations.
 
 ```{code-cell} ipython3
 def n_th(energy):
-   
+
     beta=1./Temperature
-    
+
     return 1./(np.exp(energy*beta) - 1.)
 
 def J0(energy):
     #underdamped brownian oscillator
- 
+
     return 2 * lam * gamma * (energy)/( pi * ((energy**2) + (gamma**2)))
 
 def J02(energy):
@@ -259,7 +258,7 @@ def get_collapse(dephasing = 1):
                     rate = np.absolute(Q.matrix_element(all_state[k].dag(),all_state[j]))**2 * 2 * pi * J0(Deltajk) * (n_th(Deltajk))
                     if rate > 0.0:
                         collapse_list.append((np.sqrt(rate)*all_state[k]*all_state[j].dag())) #absorption
-        
+
         if dephasing:
             for j in range(Nmax):
 
@@ -279,7 +278,7 @@ outputFMO = mesolve(Hsys, rho0, tlist, collapse_list)
 fig, axes = plt.subplots(1,1, figsize=(12,8))
 for m,Q in enumerate(Q_list):
     axes.plot(tlist*1e15, expect(outputFMO.states,Q),label=m+1)
-    
+
 axes.set_xlabel(r'$t$', fontsize=20)
 axes.set_ylabel(r"Population", fontsize=16);
 
@@ -295,7 +294,7 @@ outputFMO = mesolve(Hsys, rho0, tlist, collapse_list)
 fig, axes = plt.subplots(1,1, figsize=(12,8))
 for m,Q in enumerate(Q_list):
     axes.plot(tlist*1e15, expect(outputFMO.states,Q),label=m+1)
-    
+
 axes.set_xlabel(r'$t$', fontsize=20)
 axes.set_ylabel(r"Population", fontsize=16);
 
