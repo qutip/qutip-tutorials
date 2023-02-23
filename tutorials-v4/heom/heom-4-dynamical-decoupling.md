@@ -18,11 +18,10 @@ kernelspec:
 
 ### Introduction
 
-Followings https://journals.aps.org/pra/pdf/10.1103/PhysRevA.58.2733 we consider an example of dynamical decoupling.
+Following [Lorenza Viola and Seth Lloyd](https://arxiv.org/abs/quant-ph/9803057) we consider an example of dynamical decoupling.
 We choose a drive which performs pi rotations, interspersed with short periods where the bath causes dephasing.
 
-We first show the standard example of equally spaced pulses, and then consider the 'optimal' Uhrig spacing (Götz S. Uhrig
-Phys. Rev. Lett. 98, 100504 (2007)).
+We first show the standard example of equally spaced pulses, and then consider the 'optimal' Uhrig spacing ([Götz S. Uhrig Phys. Rev. Lett. 98, 100504 (2007)](https://arxiv.org/abs/quant-ph/0609203)).
 
 ```{code-cell} ipython3
 %pylab inline
@@ -90,7 +89,7 @@ NC = 10
 
 def drive(t):
     V = .5
-    tp = pi/(2.*V)  
+    tp = pi/(2.*V)
 
     delt = 20.
     N = int(ttotal/(tp + delt))
@@ -98,7 +97,7 @@ def drive(t):
     for n in arange(1,N+1):
         if t >= n*delt+(n-1)*tp:
             if t<=n*delt + n*tp:
-                
+
 
                 RF += V
     return RF
@@ -135,7 +134,7 @@ def driveslow(t):
     for n in arange(1,N+1):
         if t >= n*delt+(n-1)*tp:
             if t<=n*delt + n*tp:
-                
+
 
                 RF += V
     return RF
@@ -165,7 +164,7 @@ matplotlib.rcParams['legend.fontsize'] = 28
 matplotlib.rcParams['axes.grid'] = False
 matplotlib.rcParams['savefig.bbox'] = 'tight'
 matplotlib.rcParams['lines.markersize'] = 5
-matplotlib.rcParams['font.family'] = 'STIXgeneral' 
+matplotlib.rcParams['font.family'] = 'STIXgeneral'
 matplotlib.rcParams['mathtext.fontset'] =  'stix'
 matplotlib.rcParams["font.serif"] = "STIX"
 matplotlib.rcParams['text.usetex'] = False
@@ -265,7 +264,7 @@ def gather_data(lam2, NC2):
 
 
 
-        
+
         bath = DrudeLorentzBath(Q, lam=lam2, gamma=gamma, T=T, Nk=Nk, tag="bath1")
         tlist2 = np.linspace(0, Tmax, 10000)
 
@@ -275,7 +274,7 @@ def gather_data(lam2, NC2):
         # other time scales for pulses are Tmax/Npulses
         max_step = 1/(20.) #
         optionsODE = Options(nsteps=1500, store_states=True,rtol=1e-12,atol=1e-12,max_step = max_step)
-     
+
 
 
         def drive(t):  # equidistant pulses
@@ -286,7 +285,7 @@ def gather_data(lam2, NC2):
             RF = 0.
             for n in arange(1,N):
                 #between n and n+1 apply pulse:
-                if t >= n*delt+(n-1)*tp: 
+                if t >= n*delt+(n-1)*tp:
                     if t<=n*delt + n*tp:
                         RF += V
             return RF
@@ -336,23 +335,23 @@ def gather_data(lam2, NC2):
 
 
         DD_opt_t.append(outputDD_opt.states)
-   
+
     end =  timeit.default_timer()
     print(end-start)
     P12_opt_gamma_plot=[]
     for DD in DD_opt_t:
-    
+
         P12_opt_gamma_plot.append(expect(DD[-1],basis(2,1)*basis(2,0).dag()))
- 
-    
+
+
 
     P12_eq_gamma_plot=[]
     for DD in DD_eq_t:
-        
+
 
         P12_eq_gamma_plot.append(expect(DD[-1],basis(2,1)*basis(2,0).dag()))
-    
-    
+
+
 
     return P12_opt_gamma_plot, P12_eq_gamma_plot
 
