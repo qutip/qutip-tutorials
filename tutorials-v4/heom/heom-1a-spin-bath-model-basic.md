@@ -26,9 +26,7 @@ with a single Bosonic environment.  The properties of the system are encoded
 in a Hamiltonian, and a coupling operator which describes how it is coupled
 to the environment.
 
-The Bosonic environment is implicitly assumed to obey a particular
-Hamiltonian (see paper), the parameters of which are encoded in the spectral
-density, and subsequently the free-bath correlation functions.
+The Bosonic environment is implicitly assumed to obey a particular Hamiltonian ([see paper](https://arxiv.org/abs/2010.10806)), the parameters of which are encoded in the spectral density, and subsequently the free-bath correlation functions.
 
 In the example below we show how to model the overdamped Drude-Lorentz
 Spectral Density, commonly used with the HEOM. We show how to do this using
