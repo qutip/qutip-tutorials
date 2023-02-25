@@ -524,7 +524,7 @@ plot_result_expectations(
 );
 ```
 
-# Padé decomposition
+## Padé decomposition
 
 
 The Matsubara decomposition is not the only option.  We can also use the
