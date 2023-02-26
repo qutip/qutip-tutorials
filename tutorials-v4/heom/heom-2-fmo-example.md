@@ -5,18 +5,18 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.13.5
+    jupytext_version: 1.14.4
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
   name: python3
 ---
 
-## Example 2: Dynamics in Fenna-Mathews-Olsen complex (FMO)
-
-### Introduction
+# HEOM 2: Dynamics in Fenna-Mathews-Olsen complex (FMO)
 
 +++
+
+## Introduction
 
 In this example notebook we outline how to employ the HEOM to
 solve the FMO photosynthetic complex dynamics.
@@ -27,33 +27,66 @@ and compare them to a Bloch-Redfield (perturbative) solution.
 This demonstrates how to to employ the solver for multiple baths, as well as showing how a
 quantum environment reduces the effect of pure dephasing.
 
-```{code-cell} ipython3
-%pylab inline
-%load_ext autoreload
-%autoreload 2
-```
++++
+
+## Setup
 
 ```{code-cell} ipython3
 import contextlib
 import time
 
 import numpy as np
+from matplotlib import pyplot as plt
 
-from qutip import *
-from qutip.nonmarkov.heom import HEOMSolver, HSolverDL, BosonicBath, DrudeLorentzBath, DrudeLorentzPadeBath
-from qutip.ipynbtools import HTMLProgressBar
+import qutip
+from qutip import (
+    Options,
+    Qobj,
+    basis,
+    brmesolve,
+    expect,
+    liouvillian,
+    mesolve,
+)
+from qutip.nonmarkov.heom import (
+    HEOMSolver,
+    DrudeLorentzBath,
+)
+
+%matplotlib inline
 ```
+
+## Helper functions
+
+Let's define some helper functions for calculating correlation functions, spectral densities, thermal energy level occupations, and for plotting results and timing how long operations take:
 
 ```{code-cell} ipython3
 def cot(x):
-    return 1./np.tan(x)
+    """ Vectorized cotangent of x. """
+    return 1 / np.tan(x)
+```
 
-
+```{code-cell} ipython3
 def J0(energy):
-    #underdamped brownian oscillator
+    """ Under-damped brownian oscillator spectral density. """
+    return 2 * lam * gamma * energy / (energy**2 + gamma**2)
+```
 
-    return 2 * lam * gamma * (energy)/( ((energy**2) + (gamma**2)))
+```{code-cell} ipython3
+:tags: []
 
+def J0_dephasing():
+    """ Under-damped brownian oscillator dephasing probability. """
+    return 2 * lam * gamma / (np.pi * gamma**2)
+```
+
+```{code-cell} ipython3
+def n_th(energy, T):
+    """ The average occupation of a given energy level at temperature T. """
+    return 1 / (np.exp(energy / T) - 1)
+```
+
+```{code-cell} ipython3
 def dl_corr_approx(t, nk):
     """ Drude-Lorenz correlation function approximation.
 
@@ -62,250 +95,365 @@ def dl_corr_approx(t, nk):
     c = lam * gamma * (-1.0j + cot(gamma / (2 * T))) * np.exp(-gamma * t)
     for k in range(1, nk):
         vk = 2 * np.pi * k * T
-        c += (4 * lam * gamma * T * vk / (vk**2 - gamma**2))  * np.exp(-vk * t)
+        c += (4 * lam * gamma * T * vk / (vk**2 - gamma**2)) * np.exp(-vk * t)
     return c
 ```
 
 ```{code-cell} ipython3
-#A quick plot of the spectral density and environment correlation functions
+:tags: []
 
+@contextlib.contextmanager
+def timer(label):
+    """ Simple utility for timing functions:
 
-wlist = linspace(0, 200*3e10*2*pi,100)
-lam = 35 * 3e10 * 2 * pi
-gamma = (1/(166e-15))
-T = 300 * 0.6949 * 3e10 * 2 * pi
+        with timer("name"):
+            ... code to time ...
+    """
+    start = time.time()
+    yield
+    end = time.time()
+    print(f"{label}: {end - start}")
+```
 
-beta = 1/T
+## System and bath definition
 
+And let us set up the system Hamiltonian and bath parameters:
 
-tlist = linspace(0,1.e-12,1000)
+```{code-cell} ipython3
+:tags: []
 
+# System Hamiltonian:
+#
+# We use the Hamiltonian employed in
+# https://www.pnas.org/content/106/41/17255 and operate
+# in units of Hz:
 
-J = [J0(w)/(3e10*2*pi) for w in wlist]
-
-
-fig, axes = plt.subplots(1, 2, sharex=False, figsize=(10,3))
-
-fig.subplots_adjust(hspace=0.1) # reduce space between plots
-
-axes[0].plot(wlist/(3e10*2*pi), J, color='r',ls='--')
-axes[0].set_xlabel(r'$\omega$ (cm$^{-1}$)', fontsize=20)
-axes[0].set_ylabel(r"$J(\omega)$ (cm$^{-1}$)", fontsize=16);
-axes[1].plot(tlist, [np.real(dl_corr_approx(t,10))for t in tlist], color='r',ls='--',label="c(t) real")
-axes[1].plot(tlist, [np.imag(dl_corr_approx(t,10)) for t in tlist], color='g',ls='--',label="c(t) imaginary")
-axes[1].set_xlabel(r'$t$', fontsize=20)
-axes[1].set_ylabel(r"$C(t)$", fontsize=16);
-
-axes[1].legend(loc=0)
-
-#fig.savefig("figures/drude.pdf")
+Hsys = 3e10 * 2 * np.pi * Qobj([
+    [200, -87.7, 5.5, -5.9, 6.7, -13.7, -9.9],
+    [-87.7, 320, 30.8, 8.2, 0.7, 11.8, 4.3],
+    [5.5, 30.8, 0, -53.5, -2.2, -9.6, 6.0],
+    [-5.9, 8.2, -53.5, 110, -70.7, -17.0, -63.3],
+    [6.7, 0.7, -2.2, -70.7, 270, 81.1, -1.3],
+    [-13.7, 11.8, -9.6, -17.0, 81.1, 420, 39.7],
+    [-9.9, 4.3, 6.0, -63.3, -1.3, 39.7, 230],
+])
 ```
 
 ```{code-cell} ipython3
-#We use the Hamiltonian employed in  https://www.pnas.org/content/106/41/17255 and operate in units of Hz
-Hsys =  3e10 * 2 * pi *Qobj([[200, -87.7, 5.5, -5.9, 6.7, -13.7, -9.9],
-                    [-87.7, 320, 30.8, 8.2, 0.7, 11.8, 4.3],
-                    [5.5, 30.8, 0, -53.5, -2.2, -9.6, 6.0],
-                    [-5.9, 8.2, -53.5, 110, -70.7, -17.0, -63.3],
-                    [6.7, 0.7, -2.2, -70.7, 270, 81.1, -1.3],
-                    [-13.7,11.8, -9.6, -17.0 ,81.1, 420, 39.7],
-                    [-9.9, 4.3, 6.0, -63.3, -1.3, 39.7, 230]])
+:tags: []
 
+# Bath parameters
 
-#start the excitation at site :1:
-rho0 = basis(7,0)*basis(7,0).dag()
+lam = 35 * 3e10 * 2 * np.pi
+gamma = 1 / 166e-15
+T = 300 * 0.6949 * 3e10 * 2 * np.pi
+beta = 1 / T
+```
 
-optionsODE = Options(nsteps=15000, store_states=True)
+## Plotting the environment spectral density and correlation functions
+
+Let's quickly plot the spectral density and environment correlation functions so that we can see what they look like.
+
+```{code-cell} ipython3
+wlist = np.linspace(0, 200 * 3e10 * 2 * np.pi, 100)
+tlist = np.linspace(0, 1e-12, 1000)
+
+J = J0(wlist) / (3e10*2*np.pi)
+
+fig, axes = plt.subplots(1, 2, sharex=False, figsize=(10, 3))
+
+fig.subplots_adjust(hspace=0.1)  # reduce space between plots
+
+# Spectral density plot:
+
+axes[0].plot(wlist / (3e10 * 2 * np.pi), J, color='r', ls='--', label="J(w)")
+axes[0].set_xlabel(r'$\omega$ (cm$^{-1}$)', fontsize=20)
+axes[0].set_ylabel(r"$J(\omega)$ (cm$^{-1}$)", fontsize=16)
+axes[0].legend()
+
+# Correlation plot:
+
+axes[1].plot(
+    tlist, np.real(dl_corr_approx(tlist, 10)),
+    color='r', ls='--', label="C(t) real",
+)
+axes[1].plot(
+    tlist, np.imag(dl_corr_approx(tlist, 10)),
+    color='g', ls='--', label="C(t) imaginary",
+)
+axes[1].set_xlabel(r'$t$', fontsize=20)
+axes[1].set_ylabel(r"$C(t)$", fontsize=16)
+axes[1].legend();
+```
+
+## Solve for the dynamics with the HEOM
+
+Now let us solve for the evolution of this system using the HEOM.
+
+```{code-cell} ipython3
+# We start the excitation at site 1:
+rho0 = basis(7, 0) * basis(7, 0).dag()
+
+# HEOM solver options:
 #
-Nc = 8
-
+# Note: We set Nk=0 (i.e. a single correlation expansion term
+#       per bath) and rely on the terminator to correct detailed
+#       balance.
+options = Options(nsteps=15000, store_states=True)
+NC = 4  # Use NC=8 for more precise results
 Nk = 0
 
 Q_list = []
-baths= []
+baths = []
 Ltot = liouvillian(Hsys)
 for m in range(7):
-    Q=basis(7,m)*basis(7,m).dag()
+    Q = basis(7, m) * basis(7, m).dag()
     Q_list.append(Q)
-    baths.append(DrudeLorentzBath(
-            Q,lam=lam, gamma=gamma, T=T, Nk=Nk,
-        tag=str(m)))
-    _, terminator = baths[-1].terminator()  #Here we set Nk=0 and
-                                            #rely on the terminator
-                                            # to correct detailed balance
+    baths.append(
+        DrudeLorentzBath(
+            Q, lam=lam, gamma=gamma, T=T, Nk=Nk,
+            tag=str(m)
+        )
+    )
+    _, terminator = baths[-1].terminator()
     Ltot += terminator
 ```
 
 ```{code-cell} ipython3
-HEOMMats = HEOMSolver(Hsys, baths, Nc, options=optionsODE)
-outputFMOHEOM=HEOMMats.run(rho0,tlist)
+with timer("RHS construction time"):
+    HEOMMats = HEOMSolver(Hsys, baths, NC, options=options)
+
+with timer("ODE solver time"):
+    outputFMO_HEOM = HEOMMats.run(rho0, tlist)
 ```
 
 ```{code-cell} ipython3
-matplotlib.rcParams['figure.figsize'] = (7, 5)
-matplotlib.rcParams['axes.titlesize'] = 25
-matplotlib.rcParams['axes.labelsize'] = 30
-matplotlib.rcParams['xtick.labelsize'] = 28
-matplotlib.rcParams['ytick.labelsize'] = 28
-matplotlib.rcParams['legend.fontsize'] = 28
-matplotlib.rcParams['axes.grid'] = False
-matplotlib.rcParams['savefig.bbox'] = 'tight'
-matplotlib.rcParams['lines.markersize'] = 5
-matplotlib.rcParams['font.family'] = 'STIXgeneral'
-matplotlib.rcParams['mathtext.fontset'] =  'stix'
-matplotlib.rcParams["font.serif"] = "STIX"
-matplotlib.rcParams['text.usetex'] = False
-```
+fig, axes = plt.subplots(1, 1, figsize=(12, 8))
 
-```{code-cell} ipython3
-from cycler import cycler
-```
-
-```{code-cell} ipython3
-fig, axes = plt.subplots(1,1, figsize=(12,8))
-
-default_cycler = (cycler(color=['r', 'g', 'b', 'y','c','m','k']) +
-                  cycler(linestyle=['-', '--', ':', '-.',(0, (1, 10)), (0, (5, 10)),(0, (3, 10, 1, 10))]))
-plt.rc('axes',prop_cycle=default_cycler )
+colors = ['r', 'g', 'b', 'y', 'c', 'm', 'k']
+linestyles = [
+    '-', '--', ':', '-.',
+    (0, (1, 10)), (0, (5, 10)), (0, (3, 10, 1, 10)),
+]
 
 for m in range(7):
-    Q =  basis(7,m)*basis(7,m).dag()
-    axes.plot(array(tlist)*1e15, expect(outputFMOHEOM.states,Q),label=m+1)
-axes.set_xlabel(r'$t$ (fs)', fontsize=30)
-axes.set_ylabel(r"Population", fontsize=30);
-axes.locator_params(axis='y', nbins=6)
-axes.locator_params(axis='x', nbins=6)
+    Q = basis(7, m) * basis(7, m).dag()
+    axes.plot(
+        np.array(tlist) * 1e15,
+        np.real(expect(outputFMO_HEOM.states, Q)),
+        label=m + 1,
+        color=colors[m % len(colors)],
+        linestyle=linestyles[m % len(linestyles)],
+    )
+    axes.set_xlabel(r'$t$ (fs)', fontsize=30)
+    axes.set_ylabel(r"Population", fontsize=30)
+    axes.locator_params(axis='y', nbins=6)
+    axes.locator_params(axis='x', nbins=6)
 
-axes.set_title('HEOM solution ',fontsize=24)
+axes.set_title('HEOM solution', fontsize=24)
 axes.legend(loc=0)
-axes.set_xlim(0,1000)
-plt.yticks([0.,0.5,1],[0,0.5,1])
-plt.xticks([0.,500,1000],[0,500,1000])
-#fig.savefig("figures/fmoheom.pdf")
+axes.set_xlim(0, 1000)
+plt.yticks([0., 0.5, 1], [0, 0.5, 1])
+plt.xticks([0., 500, 1000], [0, 500, 1000]);
 ```
 
+## Comparison with Bloch-Redfield solver
+
+Now let us solve the same problem using the Bloch-Redfield solver. We will see that the Bloch-Redfield technique fails to model the oscillation of population of the states that we saw in the HEOM.
+
+In the next section, we will examine the role of pure dephasing in the evolution to understand why this happens.
+
 ```{code-cell} ipython3
-DL = " 2*pi* 2.0 * {lam} / (pi * {gamma} * {beta})  if (w==0) else 2*pi*(2.0*{lam}*{gamma} *w /(pi*(w**2+{gamma}**2))) * ((1/(exp((w) * {beta})-1))+1)".format(gamma=gamma, beta = beta, lam = lam)
+DL = (
+    f"2 * pi * 2.0 * {lam} / (pi * {gamma} * {beta}) if (w == 0) else "
+    f"2 * pi * (2.0*{lam}*{gamma} *w /(pi*(w**2+{gamma}**2))) * "
+    f"((1 / (exp((w) * {beta}) - 1)) + 1)"
+)
 
+optionsBR = Options(nsteps=15000, store_states=True, rtol=1e-12, atol=1e-12)
 
-Nmax = 7
-Q_list = [basis(Nmax, n)*basis(Nmax, n).dag() for n in range(Nmax)]
-
-optionsODE = Options(nsteps=15000, store_states=True,rtol=1e-12,atol=1e-12)
-outputBR  =  brmesolve(Hsys, rho0, tlist, a_ops=[[Q,DL] for Q in Q_list], options = optionsODE)
-
-
-fig, axes = plt.subplots(1,1, figsize=(12,8))
-for m,Q in enumerate(Q_list):
-    axes.plot(array(tlist)*1e15, expect(outputBR.states,Q),label=m+1)
-
-axes.set_xlabel(r'$t$ (fs)', fontsize=30)
-axes.set_ylabel(r"Population", fontsize=30);
-
-axes.set_title('Bloch-Redfield solution ',fontsize=24)
-axes.legend(loc=0)
-axes.set_xlim(0,1000)
-plt.yticks([0.,0.5,1],[0,0.5,1])
-plt.xticks([0.,500,1000],[0,500,1000])
-#fig.savefig("figures/fmoBR.pdf")
+with timer("BR ODE solver time"):
+    outputFMO_BR = brmesolve(
+        Hsys, rho0, tlist,
+        a_ops=[[Q, DL] for Q in Q_list],
+        options=optionsBR,
+    )
 ```
 
- # Role of pure dephasing
-
- It is more useful to explicitly construct the various parts of the Bloch-Redfield master equation explicitly, and show that it is the pure-dephasing which suppresses coherence in these oscillations.
+And now let's plot the Bloch-Redfield solver results:
 
 ```{code-cell} ipython3
-def n_th(energy):
+:tags: []
 
-    beta=1./Temperature
+fig, axes = plt.subplots(1, 1, figsize=(12, 8))
 
-    return 1./(np.exp(energy*beta) - 1.)
+for m, Q in enumerate(Q_list):
+    axes.plot(tlist * 1e15, expect(outputFMO_BR.states, Q), label=m + 1)
 
-def J0(energy):
-    #underdamped brownian oscillator
+axes.set_xlabel(r'$t$ (fs)', fontsize=30)
+axes.set_ylabel(r"Population", fontsize=30)
 
-    return 2 * lam * gamma * (energy)/( pi * ((energy**2) + (gamma**2)))
+axes.set_title('Bloch-Redfield solution ', fontsize=24)
+axes.legend()
+axes.set_xlim(0, 1000)
+plt.yticks([0, 0.5, 1], [0, 0.5, 1])
+plt.xticks([0, 500, 1000], [0, 500, 1000]);
+```
 
-def J02(energy):
-    #underdamped brownian oscillator
+Notice how the oscillations are gone and the populations decay much more rapidly.
 
-    return 2 * lam * gamma /(np.pi * ((gamma**2)))
+Next let us try to understand why.
 
++++
 
-def get_collapse(dephasing = 1):
-    all_energy, all_state = Hsys.eigenstates()
+## Role of pure dephasing
 
-    Nmax = 7
+It is useful to construct the various parts of the Bloch-Redfield master equation explicitly and to solve them using the Master equation solver, `mesolve`. We will do so and show that it is the pure-dephasing terms which suppresses coherence in these oscillations.
 
+First we will write a function to return the list of collapse operators for a given system, either with or without the dephasing operators:
 
-    Q_list = [basis(Nmax, n)*basis(Nmax, n).dag() for n in range(Nmax)]
+```{code-cell} ipython3
+def get_collapse(H, T, dephasing=1):
+    """ Calculate collapse operators for a given system H and
+        temperature T.
+    """
+    all_energy, all_state = H.eigenstates(sort="low")
+    Nmax = len(all_energy)
 
-
+    Q_list = [
+        basis(Nmax, n) * basis(Nmax, n).dag()
+        for n in range(Nmax)
+    ]
 
     collapse_list = []
 
     for Q in Q_list:
         for j in range(Nmax):
-
-            for k in range(j+1,Nmax):
+            for k in range(j + 1, Nmax):
                 Deltajk = abs(all_energy[k] - all_energy[j])
-                if abs(Deltajk) > 0 :
-                    rate = np.absolute(Q.matrix_element(all_state[j].dag(),all_state[k]))**2 * 2 * pi * J0(Deltajk) * (n_th(Deltajk)+1)
+                if abs(Deltajk) > 0:
+                    rate = (
+                        np.abs(Q.matrix_element(
+                            all_state[j].dag(), all_state[k]
+                        ))**2 *
+                        2 * np.pi * J0(Deltajk) * (n_th(Deltajk, T) + 1)
+                    )
                     if rate > 0.0:
-                        collapse_list.append((np.sqrt(rate)*all_state[j]*all_state[k].dag()))  #emission
+                        # emission:
+                        collapse_list.append(
+                            np.sqrt(rate) * all_state[j] * all_state[k].dag()
+                        )
 
-
-                    rate = np.absolute(Q.matrix_element(all_state[k].dag(),all_state[j]))**2 * 2 * pi * J0(Deltajk) * (n_th(Deltajk))
+                    rate = (
+                        np.abs(Q.matrix_element(
+                            all_state[k].dag(), all_state[j]
+                        ))**2 *
+                        2 * np.pi * J0(Deltajk) * n_th(Deltajk, T)
+                    )
                     if rate > 0.0:
-                        collapse_list.append((np.sqrt(rate)*all_state[k]*all_state[j].dag())) #absorption
+                        # absorption:
+                        collapse_list.append(
+                            np.sqrt(rate) * all_state[k] * all_state[j].dag()
+                        )
 
         if dephasing:
             for j in range(Nmax):
-
-                rate = np.absolute(Q.matrix_element(all_state[j].dag(),all_state[j]))**2 *  pi * J02(0.) * Temperature
+                rate = (
+                    np.abs(Q.matrix_element(
+                        all_state[j].dag(), all_state[j])
+                    )**2 *
+                    np.pi * J0_dephasing() * T
+                )
                 if rate > 0.0:
-                    collapse_list.append((np.sqrt(rate)*all_state[j]*all_state[j].dag()))  #emission
+                    # emission:
+                    collapse_list.append(
+                        np.sqrt(rate) * all_state[j] * all_state[j].dag()
+                    )
+
     return collapse_list
 ```
 
-We can switch on/off the pure dephasing terms:
+Now we are able to switch the pure dephasing tersms on and off.
+
+Let us starting by including the dephasing operators. We expect to see the same behaviour that we saw when using the Bloch-Redfield solver.
 
 ```{code-cell} ipython3
-#dephasing terms on, we recover the full BR solution
+# dephasing terms on, we recover the full BR solution:
 
-collapse_list = get_collapse(dephasing=True)
-outputFMO = mesolve(Hsys, rho0, tlist, collapse_list)
-fig, axes = plt.subplots(1,1, figsize=(12,8))
-for m,Q in enumerate(Q_list):
-    axes.plot(tlist*1e15, expect(outputFMO.states,Q),label=m+1)
+with timer("Building the collapse operators"):
+    collapse_list = get_collapse(Hsys, T=T, dephasing=True)
 
-axes.set_xlabel(r'$t$', fontsize=20)
-axes.set_ylabel(r"Population", fontsize=16);
-
-axes.set_title('With pure dephasing',fontsize=24)
-axes.legend(loc=0, fontsize=18)
+with timer("ME ODE solver"):
+    outputFMO_ME = mesolve(Hsys, rho0, tlist, collapse_list)
 ```
 
 ```{code-cell} ipython3
-#dephasing terms off
+:tags: []
 
-collapse_list = get_collapse(dephasing=False)
-outputFMO = mesolve(Hsys, rho0, tlist, collapse_list)
-fig, axes = plt.subplots(1,1, figsize=(12,8))
-for m,Q in enumerate(Q_list):
-    axes.plot(tlist*1e15, expect(outputFMO.states,Q),label=m+1)
+fig, axes = plt.subplots(1, 1, figsize=(12, 8))
+
+for m, Q in enumerate(Q_list):
+    axes.plot(tlist * 1e15, expect(outputFMO_ME.states, Q), label=m + 1)
 
 axes.set_xlabel(r'$t$', fontsize=20)
-axes.set_ylabel(r"Population", fontsize=16);
-
-axes.set_title('Without pure dephasing',fontsize=24)
-axes.legend(loc=0, fontsize=18)
+axes.set_ylabel(r"Population", fontsize=16)
+axes.set_xlim(0, 1000)
+axes.set_title('With pure dephasing', fontsize=24)
+plt.yticks([0, 0.5, 1], [0, 0.5, 1])
+plt.xticks([0, 500, 1000], [0, 500, 1000])
+axes.legend(fontsize=18);
 ```
 
-### Software versions
+We see similar results to before.
+
+Now let us examine what happens when we remove the dephasing collapse operators:
 
 ```{code-cell} ipython3
-from qutip.ipynbtools import version_table
+# dephasing terms off
 
-version_table()
+with timer("Building the collapse operators"):
+    collapse_list = get_collapse(Hsys, T, dephasing=False)
+
+with timer("ME ODE solver"):
+    outputFMO_ME_nodephase = mesolve(Hsys, rho0, tlist, collapse_list)
+```
+
+```{code-cell} ipython3
+:tags: []
+
+fig, axes = plt.subplots(1, 1, figsize=(12, 8))
+for m, Q in enumerate(Q_list):
+    axes.plot(
+        tlist * 1e15,
+        expect(outputFMO_ME_nodephase.states, Q),
+        label=m + 1,
+    )
+
+axes.set_xlabel(r'$t$', fontsize=20)
+axes.set_ylabel(r"Population", fontsize=16)
+axes.set_xlim(0, 1000)
+axes.set_title('Without pure dephasing', fontsize=24)
+plt.yticks([0, 0.5, 1], [0, 0.5, 1])
+plt.xticks([0, 500, 1000], [0, 500, 1000])
+axes.legend(fontsize=18);
+```
+
+And now we see that without the dephasing, the oscillations reappear. The full dynamics capture by the HEOM are still not capture by this simpler model, however.
+
++++
+
+## About
+
+```{code-cell} ipython3
+qutip.about()
+```
+
+## Testing
+
+This section can include some tests to verify that the expected outputs are generated within the notebook. We put this section at the end of the notebook, so it's not interfering with the user experience. Please, define the tests using assert, so that the cell execution fails if a wrong output is generated.
+
+```{code-cell} ipython3
+:tags: []
+
+assert 1 == 1
 ```
