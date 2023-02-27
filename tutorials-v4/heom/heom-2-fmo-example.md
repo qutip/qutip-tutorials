@@ -76,8 +76,11 @@ def J0(energy):
 :tags: []
 
 def J0_dephasing():
-    """ Under-damped brownian oscillator dephasing probability. """
-    return 2 * lam * gamma / (np.pi * gamma**2)
+    """ Under-damped brownian oscillator dephasing probability.
+
+        This returns the limit as w -> 0 of J0(w) * n_th(w, T) / T.
+    """
+    return 2 * lam * gamma / gamma**2
 ```
 
 ```{code-cell} ipython3
@@ -336,7 +339,7 @@ def get_collapse(H, T, dephasing=1):
                         np.abs(Q.matrix_element(
                             all_state[j].dag(), all_state[k]
                         ))**2 *
-                        2 * np.pi * J0(Deltajk) * (n_th(Deltajk, T) + 1)
+                        2 * J0(Deltajk) * (n_th(Deltajk, T) + 1)
                     )
                     if rate > 0.0:
                         # emission:
@@ -348,7 +351,7 @@ def get_collapse(H, T, dephasing=1):
                         np.abs(Q.matrix_element(
                             all_state[k].dag(), all_state[j]
                         ))**2 *
-                        2 * np.pi * J0(Deltajk) * n_th(Deltajk, T)
+                        2 * J0(Deltajk) * n_th(Deltajk, T)
                     )
                     if rate > 0.0:
                         # absorption:
@@ -362,7 +365,7 @@ def get_collapse(H, T, dephasing=1):
                     np.abs(Q.matrix_element(
                         all_state[j].dag(), all_state[j])
                     )**2 *
-                    np.pi * J0_dephasing() * T
+                    J0_dephasing() * T
                 )
                 if rate > 0.0:
                     # emission:
@@ -455,5 +458,14 @@ This section can include some tests to verify that the expected outputs are gene
 ```{code-cell} ipython3
 :tags: []
 
-assert 1 == 1
+np.testing.assert_allclose(
+    expect(outputFMO_BR.states, Q_list[0]),
+    expect(outputFMO_ME.states, Q_list[0]),
+    rtol=2e-2,
+)
+np.testing.assert_allclose(
+    expect(outputFMO_BR.states, Q_list[1]),
+    expect(outputFMO_ME.states, Q_list[1]),
+    rtol=2e-2,
+)
 ```
