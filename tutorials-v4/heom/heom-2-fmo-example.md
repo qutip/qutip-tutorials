@@ -458,12 +458,12 @@ This section can include some tests to verify that the expected outputs are gene
 ```{code-cell} ipython3
 :tags: []
 
-np.testing.assert_allclose(
+assert np.allclose(
     expect(outputFMO_BR.states, Q_list[0]),
     expect(outputFMO_ME.states, Q_list[0]),
     rtol=2e-2,
 )
-np.testing.assert_allclose(
+assert np.allclose(
     expect(outputFMO_BR.states, Q_list[1]),
     expect(outputFMO_ME.states, Q_list[1]),
     rtol=2e-2,
