@@ -175,6 +175,10 @@ axes.set_ylabel(r'J', fontsize=28);
 
 Now we are ready to explore dynamic decoupling from the environment.
 
+First we will drive the system with fast, large amplitude pulses. Then we will drive the system with slower, smaller amplitude pulses. The faster pulses decoupling the system more effectively and retain the coherence longer, but the slower pulses help too.
+
+Let's start by simulating the fast pulses:
+
 ```{code-cell} ipython3
 :tags: []
 
@@ -209,6 +213,8 @@ hsolver = HEOMSolver(H_d, bath, NC, options=options)
 outputDD = hsolver.run(rho0, tlist, ado_return=True)
 ```
 
+And now the longer slower pulses:
+
 ```{code-cell} ipython3
 :tags: []
 
@@ -225,6 +231,8 @@ H_d = [H_sys, [H_drive, drive_slow]]
 hsolver = HEOMSolver(H_d, bath, NC, options=options)
 outputDDslow = hsolver.run(rho0, tlist, ado_return=True)
 ```
+
+Now let's plot all of the results and the shapes of the pulses:
 
 ```{code-cell} ipython3
 :tags: []
@@ -306,13 +314,15 @@ plot_dd_results(outputnoDD, outputDD, outputDDslow)
 
 Next we consider non-equally spaced pulses.
 
-Rather than plot as a function of time we just consider the final coherence after time $T$ and 100 pulses.  We change the width of the environment to demonstate that the Uhrig sequence can be sub-optimal when the bath is very broad.
+Rather than plot as a function of time we just consider the final coherence after time $T$ and 100 pulses.  We change the width of the environment to demonstate that the Uhrig sequence (i.e. the evenly spaced pulses) can be sub-optimal when the bath is very broad.
 
 Instead of evenly spaced pulses, we will use pulses where the cummulative delay after $j$ pulses is given by:
 
 $$
     \sin^2(\frac{\pi}{2} \frac{j}{N + 1})
 $$
+
+This is just a convenient way to describe the varying delay. We could have chosen another monotonically increasing function to represent the cummulative delay (although it might not be as effective).
 
 ```{code-cell} ipython3
 :tags: []
