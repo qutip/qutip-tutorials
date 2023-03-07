@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.4
+    jupytext_version: 1.14.5
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -77,14 +77,13 @@ from scipy.optimize import curve_fit
 
 import qutip
 from qutip import (
-    Options,
     basis,
     expect,
     liouvillian,
     sigmax,
     sigmaz,
 )
-from qutip.nonmarkov.heom import (
+from qutip.solver.heom import (
     HEOMSolver,
     BosonicBath,
     DrudeLorentzBath,
@@ -155,6 +154,19 @@ def timer(label):
     print(f"{label}: {end - start}")
 ```
 
+```{code-cell} ipython3
+# Solver options:
+
+options = {
+    "nsteps": 15000,
+    "store_states": True,
+    "rtol": 1e-14,
+    "atol": 1e-14,
+    "method": "vern9",
+    "progress_bar": "enhanced",
+}
+```
+
 ## System and bath definition
 
 And let us set up the system Hamiltonian, bath and system measurement operators:
@@ -211,8 +223,6 @@ rho0 = psi * psi.dag()
 ## Simulation 1: Matsubara decomposition, not using Ishizaki-Tanimura terminator
 
 ```{code-cell} ipython3
-options = Options(nsteps=15000, store_states=True, rtol=1e-14, atol=1e-14)
-
 with timer("RHS construction time"):
     bath = DrudeLorentzBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
     HEOMMats = HEOMSolver(Hsys, bath, NC, options=options)
@@ -222,8 +232,6 @@ with timer("ODE solver time"):
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 # Plot the results so far
 plot_result_expectations([
     (resultMats, P11p, 'b', "P11 Matsubara"),
@@ -234,8 +242,6 @@ plot_result_expectations([
 ## Simulation 2: Matsubara decomposition (including terminator)
 
 ```{code-cell} ipython3
-options = Options(nsteps=15000, store_states=True, rtol=1e-14, atol=1e-14)
-
 with timer("RHS construction time"):
     bath = DrudeLorentzBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
     _, terminator = bath.terminator()
@@ -261,8 +267,6 @@ plot_result_expectations([
 As in example 1a, we can compare to Pade and Fitting approaches.
 
 ```{code-cell} ipython3
-options = Options(nsteps=15000, store_states=True, rtol=1e-14, atol=1e-14)
-
 with timer("RHS construction time"):
     bath = DrudeLorentzPadeBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
     HEOMPade = HEOMSolver(Hsys, bath, NC, options=options)
@@ -284,8 +288,6 @@ plot_result_expectations([
 ## Simulation 4: Fitting approach
 
 ```{code-cell} ipython3
-:tags: []
-
 def c(t, Nk):
     """ Calculates real and imag. parts of the correlation function
         using Nk Matsubara terms.
@@ -335,7 +337,7 @@ def fitter(ans, tlist, i):
     """ Compute the fit. """
     upper_a = abs(max(ans, key=np.abs)) * 10
     # set initial guess:
-    guess = [ans[0]] * i + [0] * i
+    guess = [upper_a] * i + [0] * i
     # set bounds: a's = anything, b's = negative
     # sets lower bound
     b_lower = [-upper_a] * i + [-np.inf] * i
@@ -398,8 +400,6 @@ vkAI = -1 * popt2[-1][1]
 ```
 
 ```{code-cell} ipython3
-options = Options(nsteps=15000, store_states=True, rtol=1e-14, atol=1e-14)
-
 with timer("RHS construction time"):
     bath = BosonicBath(Q, ckAR, vkAR, ckAI, vkAI)
     HEOMFit = HEOMSolver(Hsys, bath, NC, options=options)
