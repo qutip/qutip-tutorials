@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.4
+    jupytext_version: 1.14.5
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -85,7 +85,6 @@ from matplotlib import pyplot as plt
 
 import qutip
 from qutip import (
-    Options,
     basis,
     brmesolve,
     destroy,
@@ -95,7 +94,7 @@ from qutip import (
     sigmaz,
     tensor,
 )
-from qutip.nonmarkov.heom import (
+from qutip.solver.heom import (
     HEOMSolver,
     BosonicBath,
     UnderDampedBath,
@@ -103,6 +102,10 @@ from qutip.nonmarkov.heom import (
 
 %matplotlib inline
 ```
+
+## Helper functions
+
+Let's define some helper functions for calculating correlation function expansions, plotting results and timing how long operations take:
 
 ```{code-cell} ipython3
 def cot(x):
@@ -199,6 +202,23 @@ def timer(label):
     end = time.time()
     print(f"{label}: {end - start}")
 ```
+
+```{code-cell} ipython3
+# Solver options:
+
+options = {
+    "nsteps": 15000,
+    "store_states": True,
+    "rtol": 1e-14,
+    "atol": 1e-14,
+    "method": "vern9",
+    "progress_bar": "enhanced",
+}
+```
+
+## System and bath definition
+
+And let us set up the system Hamiltonian, bath and system measurement operators:
 
 ```{code-cell} ipython3
 # Defining the system Hamiltonian
@@ -346,7 +366,7 @@ def plot_matsubara_correlation_function_contributions():
 plot_matsubara_correlation_function_contributions()
 ```
 
-### Solving for the dynamics as a function of time:
+## Solving for the dynamics as a function of time
 
 +++
 
@@ -367,8 +387,6 @@ The solver constructs the "right hand side" (RHS) determinining how the system a
 Below we create the bath and solver and then solve for the dynamics by calling `.run(rho0, tlist)`.
 
 ```{code-cell} ipython3
-options = Options(nsteps=15000, store_states=True, rtol=1e-14, atol=1e-14)
-
 with timer("RHS construction time"):
     bath = BosonicBath(Q, ckAR, vkAR, ckAI, vkAI)
     HEOMMats = HEOMSolver(Hsys, bath, NC, options=options)
@@ -408,6 +426,10 @@ plot_result_expectations([
 ]);
 ```
 
+## Compare the results
+
++++
+
 ### We can compare these results to those of the Bloch-Redfield solver in QuTiP:
 
 ```{code-cell} ipython3
@@ -417,8 +439,6 @@ UD = (
     f"2 * ({lam}**2 * {gamma} * w / (({w0}**2 - w**2)**2 + {gamma}**2 * w**2))"
     f" * ((1 / (exp(w * {beta}) - 1)) + 1)"
 )
-
-options = Options(nsteps=15000, store_states=True, rtol=1e-12, atol=1e-12)
 
 with timer("ODE solver time"):
     resultBR = brmesolve(
