@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.4
+    jupytext_version: 1.14.5
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -40,7 +40,6 @@ from matplotlib import pyplot as plt
 
 import qutip
 from qutip import (
-    Options,
     Qobj,
     basis,
     brmesolve,
@@ -48,7 +47,7 @@ from qutip import (
     liouvillian,
     mesolve,
 )
-from qutip.nonmarkov.heom import (
+from qutip.solver.heom import (
     HEOMSolver,
     DrudeLorentzBath,
 )
@@ -73,8 +72,6 @@ def J0(energy):
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 def J0_dephasing():
     """ Under-damped brownian oscillator dephasing probability.
 
@@ -103,8 +100,6 @@ def dl_corr_approx(t, nk):
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 @contextlib.contextmanager
 def timer(label):
     """ Simple utility for timing functions:
@@ -118,13 +113,25 @@ def timer(label):
     print(f"{label}: {end - start}")
 ```
 
+```{code-cell} ipython3
+# Solver options:
+
+options = {
+    "nsteps": 15000,
+    "store_states": True,
+    "rtol": 1e-12,
+    "atol": 1e-12,
+    "min_step": 1e-18,
+    "method": "vern9",
+    "progress_bar": "enhanced",
+}
+```
+
 ## System and bath definition
 
 And let us set up the system Hamiltonian and bath parameters:
 
 ```{code-cell} ipython3
-:tags: []
-
 # System Hamiltonian:
 #
 # We use the Hamiltonian employed in
@@ -143,8 +150,6 @@ Hsys = 3e10 * 2 * np.pi * Qobj([
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 # Bath parameters
 
 lam = 35 * 3e10 * 2 * np.pi
@@ -202,7 +207,6 @@ rho0 = basis(7, 0) * basis(7, 0).dag()
 # Note: We set Nk=0 (i.e. a single correlation expansion term
 #       per bath) and rely on the terminator to correct detailed
 #       balance.
-options = Options(nsteps=15000, store_states=True)
 NC = 4  # Use NC=8 for more precise results
 Nk = 0
 
@@ -273,21 +277,17 @@ DL = (
     f"((1 / (exp((w) * {beta}) - 1)) + 1)"
 )
 
-optionsBR = Options(nsteps=15000, store_states=True, rtol=1e-12, atol=1e-12)
-
 with timer("BR ODE solver time"):
     outputFMO_BR = brmesolve(
         Hsys, rho0, tlist,
         a_ops=[[Q, DL] for Q in Q_list],
-        options=optionsBR,
+        options=options,
     )
 ```
 
 And now let's plot the Bloch-Redfield solver results:
 
 ```{code-cell} ipython3
-:tags: []
-
 fig, axes = plt.subplots(1, 1, figsize=(12, 8))
 
 for m, Q in enumerate(Q_list):
@@ -391,8 +391,6 @@ with timer("ME ODE solver"):
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 fig, axes = plt.subplots(1, 1, figsize=(12, 8))
 
 for m, Q in enumerate(Q_list):
@@ -422,8 +420,6 @@ with timer("ME ODE solver"):
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 fig, axes = plt.subplots(1, 1, figsize=(12, 8))
 for m, Q in enumerate(Q_list):
     axes.plot(
@@ -456,8 +452,6 @@ qutip.about()
 This section can include some tests to verify that the expected outputs are generated within the notebook. We put this section at the end of the notebook, so it's not interfering with the user experience. Please, define the tests using assert, so that the cell execution fails if a wrong output is generated.
 
 ```{code-cell} ipython3
-:tags: []
-
 assert np.allclose(
     expect(outputFMO_BR.states, Q_list[0]),
     expect(outputFMO_ME.states, Q_list[0]),
