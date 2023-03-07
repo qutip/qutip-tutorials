@@ -5,14 +5,12 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.4
+    jupytext_version: 1.14.5
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
   name: python3
 ---
-
-+++ {"tags": []}
 
 # HEOM 5a: Fermionic single impurity model
 
@@ -82,12 +80,11 @@ from scipy.integrate import quad
 
 import qutip
 from qutip import (
-    Options,
     basis,
     destroy,
     expect,
 )
-from qutip.nonmarkov.heom import (
+from qutip.solver.heom import (
     HEOMSolver,
     LorentzianBath,
     LorentzianPadeBath,
@@ -102,8 +99,6 @@ from IPython.display import display
 ## Helpers
 
 ```{code-cell} ipython3
-:tags: []
-
 @contextlib.contextmanager
 def timer(label):
     """ Simple utility for timing functions:
@@ -117,15 +112,30 @@ def timer(label):
     print(f"{label}: {end - start}")
 ```
 
-+++ {"tags": []}
+```{code-cell} ipython3
+# Solver options:
+
+# We set store_ados to True so that we can
+# use the auxilliary density operators (ADOs)
+# to calculate the current between the leads
+# and the system.
+
+options = {
+    "nsteps": 1500,
+    "store_states": True,
+    "store_ados": True,
+    "rtol": 1e-12,
+    "atol": 1e-12,
+    "method": "vern9",
+    "progress_bar": "enhanced",
+}
+```
 
 ## System and bath definition
 
 And let us set up the system Hamiltonian, bath and system measurement operators:
 
 ```{code-cell} ipython3
-:tags: []
-
 # Define the system Hamiltonian:
 
 # The system is a single fermion with energy level split e1:
@@ -135,8 +145,6 @@ H = e1 * d1.dag() * d1
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 # Define parameters for left and right fermionic baths.
 # Each bath is a lead (i.e. a wire held at a potential)
 # with temperature T and chemical potential mu.
@@ -190,8 +198,6 @@ bath_R = LorentzianBathParameters(Q=d1, lead="R")
 Let's plot the spectral density.
 
 ```{code-cell} ipython3
-:tags: []
-
 w_list = np.linspace(-2, 2, 100)
 
 fig, ax = plt.subplots(figsize=(12, 7))
@@ -268,8 +274,7 @@ Let's start by solving for the evolution using a Pade expansion of the correlati
 ```{code-cell} ipython3
 # HEOM dynamics using the Pade approximation:
 
-# Solver options, times to solve for and initial system state:
-options = Options(nsteps=15000, store_states=True, rtol=1e-14, atol=1e-14)
+# Times to solve for and initial system state:
 tlist = np.linspace(0, 100, 1000)
 rho0 = basis(2, 0) * basis(2, 0).dag()
 
@@ -288,7 +293,7 @@ with timer("RHS construction time"):
     solver_pade = HEOMSolver(H, [bathL, bathR], max_depth=2, options=options)
 
 with timer("ODE solver time"):
-    result_pade = solver_pade.run(rho0, tlist, ado_return=True)
+    result_pade = solver_pade.run(rho0, tlist)
 
 with timer("Steady state solver time"):
     rho_ss_pade, ado_ss_pade = solver_pade.steady_state()
@@ -333,7 +338,7 @@ with timer("RHS construction time"):
     solver_mats = HEOMSolver(H, [bathL, bathR], max_depth=2, options=options)
 
 with timer("ODE solver time"):
-    result_mats = solver_mats.run(rho0, tlist, ado_return=True)
+    result_mats = solver_mats.run(rho0, tlist)
 
 with timer("Steady state solver time"):
     rho_ss_mats, ado_ss_mats = solver_mats.steady_state()
@@ -342,8 +347,6 @@ with timer("Steady state solver time"):
 We see a marked difference in the Matsubara vs Pade results:
 
 ```{code-cell} ipython3
-:tags: []
-
 # Plot the Pade results
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 8))
 
@@ -442,8 +445,6 @@ def state_current(ado_state, bath_tag):
 Now we can calculate the steady state currents from the Pade and Matsubara HEOM results:
 
 ```{code-cell} ipython3
-:tags: []
-
 curr_ss_pade_L = state_current(ado_ss_pade, "L")
 curr_ss_pade_R = state_current(ado_ss_pade, "R")
 
@@ -452,8 +453,6 @@ print(f"Pade steady state current (R): {curr_ss_pade_R}")
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 curr_ss_mats_L = state_current(ado_ss_mats, "L")
 curr_ss_mats_R = state_current(ado_ss_mats, "R")
 
@@ -574,8 +573,6 @@ ax.legend(fontsize=25);
 ## About
 
 ```{code-cell} ipython3
-:tags: []
-
 qutip.about()
 ```
 
@@ -584,8 +581,6 @@ qutip.about()
 This section can include some tests to verify that the expected outputs are generated within the notebook. We put this section at the end of the notebook, so it's not interfering with the user experience. Please, define the tests using assert, so that the cell execution fails if a wrong output is generated.
 
 ```{code-cell} ipython3
-:tags: []
-
 assert np.allclose(curr_ss_pade_L + curr_ss_pade_R, 0)
 assert np.allclose(curr_ss_mats_L + curr_ss_mats_R, 0)
 assert np.allclose(curr_ss_pade_R, curr_ss_analytic, rtol=1e-4)
