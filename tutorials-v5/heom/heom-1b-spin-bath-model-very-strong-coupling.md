@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.4
+    jupytext_version: 1.14.5
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -97,9 +97,8 @@ from qutip import (
     liouvillian,
     sigmax,
     sigmaz,
-    Options,
 )
-from qutip.nonmarkov.heom import (
+from qutip.solver.heom import (
     HEOMSolver,
     BosonicBath,
     DrudeLorentzBath,
@@ -132,6 +131,19 @@ def timer(label):
     yield
     end = time.time()
     print(f"{label}: {end - start}")
+```
+
+```{code-cell} ipython3
+# Solver options:
+
+options = {
+    "nsteps": 15000,
+    "store_states": True,
+    "rtol": 1e-14,
+    "atol": 1e-14,
+    "method": "vern9",
+    "progress_bar": "enhanced",
+}
 ```
 
 ## System and bath definition
@@ -200,8 +212,6 @@ axes.set_ylabel(r'J', fontsize=28);
 ## Simulation 1: Matsubara decomposition, not using Ishizaki-Tanimura terminator
 
 ```{code-cell} ipython3
-options = Options(nsteps=15000, store_states=True, rtol=1e-14, atol=1e-14)
-
 with timer("RHS construction time"):
     bath = DrudeLorentzBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
     HEOMMats = HEOMSolver(Hsys, bath, NC, options=options)
@@ -213,8 +223,6 @@ with timer("ODE solver time"):
 ## Simulation 2: Matsubara decomposition (including terminator)
 
 ```{code-cell} ipython3
-options = Options(nsteps=15000, store_states=True, rtol=1e-14, atol=1e-14)
-
 with timer("RHS construction time"):
     bath = DrudeLorentzBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
     _, terminator = bath.terminator()
@@ -317,8 +325,6 @@ ax2.legend(loc=0, fontsize=12);
 ```
 
 ```{code-cell} ipython3
-options = Options(nsteps=15000, store_states=True, rtol=1e-14, atol=1e-14)
-
 with timer("RHS construction time"):
     bath = DrudeLorentzPadeBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
     HEOMPade = HEOMSolver(Hsys, bath, NC, options=options)
@@ -377,7 +383,7 @@ def fitter(ans, tlist, k):
     upper_a = abs(max(ans, key=abs)) * 10
     # sets initial guesses:
     guess = (
-        [ans[0] / k] * k +  # guesses for a
+        [upper_a / k] * k +  # guesses for a
         [0] * k  # guesses for b
     )
     # sets lower bounds:
@@ -447,8 +453,6 @@ vkAI = [gamma + 0j]
 ```
 
 ```{code-cell} ipython3
-options = Options(nsteps=1500, store_states=True, rtol=1e-12, atol=1e-12)
-
 with timer("RHS construction time"):
     bath = BosonicBath(Q, ckAR, vkAR, ckAI, vkAI)
     # we reduce NC slightly here because we retain 3 exponents in ckAR
@@ -468,11 +472,11 @@ DL = (
     "* ((1 / (exp(w * {beta}) - 1)) + 1)"
 ).format(gamma=gamma, beta=beta, lam=lam)
 
-options = Options(nsteps=15000, store_states=True, rtol=1e-12, atol=1e-12)
-resultBR = brmesolve(
-    Hsys, rho0, tlist,
-    a_ops=[[sigmaz(), DL]], sec_cutoff=0, options=options,
-)
+with timer("ODE solver time"):
+    resultBR = brmesolve(
+        Hsys, rho0, tlist,
+        a_ops=[[sigmaz(), DL]], sec_cutoff=0, options=options,
+    )
 ```
 
 ## Let's plot all our results
