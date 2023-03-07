@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.4
+    jupytext_version: 1.14.5
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -57,7 +57,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 import qutip as qt
-from qutip.nonmarkov.heom import (
+from qutip.solver.heom import (
     DrudeLorentzPadeBath,
     BathExponent,
     HEOMSolver,
@@ -69,11 +69,25 @@ from IPython.display import display
 %matplotlib inline
 ```
 
+## Helpers
+
+```{code-cell} ipython3
+# Solver options:
+
+options = {
+    "nsteps": 15000,
+    "store_states": True,
+    "rtol": 1e-12,
+    "atol": 1e-12,
+    "min_step": 1e-18,
+    "method": "vern9",
+    "progress_bar": "enhanced",
+}
+```
+
 ## System and bath definition
 
 ```{code-cell} ipython3
-:tags: []
-
 @dataclasses.dataclass
 class SystemParams:
     """ System parameters and Hamiltonian. """
@@ -103,8 +117,6 @@ class SystemParams:
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 @dataclasses.dataclass
 class BathParams:
     """ Bath parameters. """
@@ -255,7 +267,6 @@ For our simulations, we will represent the bath spectral densities using the fir
 ```{code-cell} ipython3
 Nk = 1
 NC = 7
-options = qt.Options(nsteps=1500, store_states=False, atol=1e-12, rtol=1e-12)
 ```
 
 ### Time Evolution
@@ -490,7 +501,5 @@ qt.about()
 This section can include some tests to verify that the expected outputs are generated within the notebook. We put this section at the end of the notebook, so it's not interfering with the user experience. Please, define the tests using assert, so that the cell execution fails if a wrong output is generated.
 
 ```{code-cell} ipython3
-:tags: []
-
 assert 1 == 1
 ```
