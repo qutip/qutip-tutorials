@@ -86,7 +86,6 @@ from scipy.optimize import curve_fit
 
 import qutip
 from qutip import (
-    Options,
     basis,
     brmesolve,
     destroy,
@@ -100,7 +99,7 @@ from qutip import (
     tensor,
 )
 
-from qutip.nonmarkov.heom import (
+from qutip.solver.heom import (
     BosonicBath,
     DrudeLorentzBath,
     DrudeLorentzPadeBath,
@@ -206,6 +205,19 @@ def timer(label):
     print(f"{label}: {end - start}")
 ```
 
+```python
+# Default solver options:
+
+default_options = {
+    "nsteps": 1500,
+    "store_states": True,
+    "rtol": 1e-12,
+    "atol": 1e-12,
+    "method": "vern9",
+    "progress_bar": "enhanced",
+}
+```
+
 ## System and bath definition
 
 And let us set up the system Hamiltonian, bath and system measurement operators:
@@ -290,7 +302,7 @@ Below we create the bath and solver and then solve for the dynamics by
 calling `.run(rho0, tlist)`.
 
 ```python
-options = Options(nsteps=15000, store_states=True, rtol=1e-14, atol=1e-14)
+options = {**default_options}
 
 with timer("RHS construction time"):
     bath = BosonicBath(Q, ckAR, vkAR, ckAI, vkAI)
@@ -452,7 +464,7 @@ L_bnd = -approx_factr * op
 Ltot = -1.0j * (spre(Hsys) - spost(Hsys)) + L_bnd
 Ltot = liouvillian(Hsys) + L_bnd
 
-options = Options(nsteps=15000, store_states=True, rtol=1e-14, atol=1e-14)
+options = {**default_options, "rtol": 1e-14, "atol": 1e-14}
 
 with timer("RHS construction time"):
     bath = BosonicBath(Q, ckAR, vkAR, ckAI, vkAI)
@@ -474,7 +486,7 @@ plot_result_expectations(
 Or using the built-in Drude-Lorentz bath we can write simply:
 
 ```python
-options = Options(nsteps=15000, store_states=True, rtol=1e-14, atol=1e-14)
+options = {**default_options, "rtol": 1e-14, "atol": 1e-14}
 
 with timer("RHS construction time"):
     bath = DrudeLorentzBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
@@ -503,7 +515,7 @@ DL = (
     f"2*pi*(2.0*{lam}*{gamma} *w /(pi*(w**2+{gamma}**2))) "
     f"* ((1/(exp((w) * {beta})-1))+1)"
 )
-options = Options(nsteps=15000, store_states=True, rtol=1e-12, atol=1e-12)
+options = {**default_options}
 
 with timer("ODE solver time"):
     resultBR = brmesolve(
@@ -688,7 +700,7 @@ ckAI = [np.imag(etapLP[0]) + 0j]
 vkAR = [gam + 0j for gam in gampLP]
 vkAI = [gampLP[0] + 0j]
 
-options = Options(nsteps=15000, store_states=True, rtol=1e-14, atol=1e-14)
+options = {**default_options, "rtol": 1e-14, "atol": 1e-14}
 
 with timer("RHS construction time"):
     bath = BosonicBath(Q, ckAR, vkAR, ckAI, vkAI)
@@ -720,7 +732,7 @@ terminator (although the terminator does not provide much improvement here,
 because the Padé expansion already fits the correlation function well):
 
 ```python
-options = Options(nsteps=15000, store_states=True, rtol=1e-14, atol=1e-14)
+options = {**default_options, "rtol": 1e-14, "atol": 1e-14}
 
 with timer("RHS construction time"):
     bath = DrudeLorentzPadeBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
@@ -785,7 +797,7 @@ def fitter(ans, tlist, k):
     upper_a = abs(max(ans, key=abs)) * 10
     # sets initial guesses:
     guess = (
-        [ans[0] / k] * k +  # guesses for a
+        [upper_a / k] * k +  # guesses for a
         [0] * k  # guesses for b
     )
     # sets lower bounds:
@@ -880,13 +892,7 @@ vkAI = [gamma + 0.0j]
 ```
 
 ```python
-# The BDF ODE solver method here is faster because we have a slightly
-# stiff problem. We set NC=4 to reduce the run time while retaining
-# reasonable convergence.
-
-options = Options(
-    nsteps=1500, store_states=True, rtol=1e-12, atol=1e-12, method="bdf"
-)
+options = {**default_options}
 
 NC = 4
 
