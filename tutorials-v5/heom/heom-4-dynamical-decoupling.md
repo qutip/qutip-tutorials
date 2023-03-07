@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.4
+    jupytext_version: 1.14.5
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -33,7 +33,6 @@ import matplotlib.pyplot as plt
 
 import qutip
 from qutip import (
-    Options,
     QobjEvo,
     basis,
     expect,
@@ -41,7 +40,7 @@ from qutip import (
     sigmax,
     sigmaz,
 )
-from qutip.nonmarkov.heom import (
+from qutip.solver.heom import (
     HEOMSolver,
     DrudeLorentzPadeBath,
 )
@@ -57,12 +56,28 @@ from IPython.display import display
 Let's define some helper functions for calculating the spectral density:
 
 ```{code-cell} ipython3
-:tags: []
-
 def dl_spectrum(w, lam, gamma):
     """ Return the Drude-Lorentz spectral density. """
     J = w * 2 * lam * gamma / (gamma**2 + w**2)
     return J
+```
+
+```{code-cell} ipython3
+# Solver options:
+
+# The max_step must be set to a short time than the
+# length of the shortest pulse, otherwise the solver
+# might skip over a pulse.
+
+options = {
+    "nsteps": 1500,
+    "store_states": True,
+    "rtol": 1e-12,
+    "atol": 1e-12,
+    "max_step": 1 / 20.0,
+    "method": "vern9",
+    "progress_bar": "enhanced",
+}
 ```
 
 ## System and bath definition
@@ -70,8 +85,6 @@ def dl_spectrum(w, lam, gamma):
 Now we define the system and bath properties and the HEOM parameters. The system is a single stationary qubit with $H = 0$ and the bath is a bosonic bath with a Drude-Lorentz spectrum.
 
 ```{code-cell} ipython3
-:tags: []
-
 # Define the system Hamlitonian.
 #
 # The system isn't evolving by itself, so the Hamiltonian is 0 (with the
@@ -81,8 +94,6 @@ H_sys = 0 * sigmaz()
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 # Define some operators with which we will measure the system
 # 1,1 element of density matrix - corresonding to groundstate
 P11p = basis(2, 0) * basis(2, 0).dag()
@@ -92,8 +103,6 @@ P12p = basis(2, 0) * basis(2, 1).dag()
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 # Properties for the Drude-Lorentz bath
 
 lam = 0.0005
@@ -110,8 +119,6 @@ bath = DrudeLorentzPadeBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 # HEOM parameters
 
 # number of layers to keep in the hierarchy:
@@ -123,8 +130,6 @@ To perform the dynamic decoupling from the environment, we will drive the system
 Below we define a function that returns the pulse (which is itself a function):
 
 ```{code-cell} ipython3
-:tags: []
-
 def drive(amplitude, delay, integral):
     """ Coefficient of the drive as a function of time.
 
@@ -180,20 +185,7 @@ First we will drive the system with fast, large amplitude pulses. Then we will d
 Let's start by simulating the fast pulses:
 
 ```{code-cell} ipython3
-:tags: []
-
 # Fast driving (quick, large amplitude pulses)
-
-# The max_step must be set to a short time than the
-# length of the shortest pulse, otherwise the solver
-# might skip over a pulse.
-options = Options(
-    nsteps=1500,
-    store_states=True,
-    rtol=1e-12,
-    atol=1e-12,
-    max_step=1 / 20.0,
-)
 
 tlist = np.linspace(0, 400, 1000)
 
@@ -203,40 +195,36 @@ rho0 = ket2dm(rho0)
 
 # without pulses
 hsolver = HEOMSolver(H_sys, bath, NC, options=options)
-outputnoDD = hsolver.run(rho0, tlist, ado_return=True)
+outputnoDD = hsolver.run(rho0, tlist)
 
 # with pulses
 drive_fast = drive(amplitude=0.5, delay=20, integral=np.pi / 2)
 H_d = qutip.QobjEvo([H_sys, [H_drive, drive_fast]])
 
 hsolver = HEOMSolver(H_d, bath, NC, options=options)
-outputDD = hsolver.run(rho0, tlist, ado_return=True)
+outputDD = hsolver.run(rho0, tlist)
 ```
 
 And now the longer slower pulses:
 
 ```{code-cell} ipython3
-:tags: []
-
 # Slow driving (longer, small amplitude pulses)
 
 # without pulses
 hsolver = HEOMSolver(H_sys, bath, NC, options=options)
-outputnoDDslow = hsolver.run(rho0, tlist, ado_return=True)
+outputnoDDslow = hsolver.run(rho0, tlist)
 
 # with pulses
 drive_slow = drive(amplitude=0.01, delay=20, integral=np.pi/2)
-H_d = [H_sys, [H_drive, drive_slow]]
+H_d = QobjEvo([H_sys, [H_drive, drive_slow]])
 
 hsolver = HEOMSolver(H_d, bath, NC, options=options)
-outputDDslow = hsolver.run(rho0, tlist, ado_return=True)
+outputDDslow = hsolver.run(rho0, tlist)
 ```
 
 Now let's plot all of the results and the shapes of the pulses:
 
 ```{code-cell} ipython3
-:tags: []
-
 def plot_dd_results(outputnoDD, outputDD, outputDDslow):
     fig, axes = plt.subplots(2, 1, sharex=False, figsize=(12, 12))
 
@@ -303,8 +291,6 @@ def plot_dd_results(outputnoDD, outputDD, outputDDslow):
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 plot_dd_results(outputnoDD, outputDD, outputDDslow)
 ```
 
@@ -325,8 +311,6 @@ $$
 This is just a convenient way to describe the varying delay. We could have chosen another monotonically increasing function to represent the cummulative delay (although it might not be as effective).
 
 ```{code-cell} ipython3
-:tags: []
-
 def cummulative_delay_fractions(N):
     """ Return an array of N + 1 cummulative delay
         fractions.
@@ -419,8 +403,6 @@ def plot_even_and_optimally_spaced_pulses():
 
 plot_even_and_optimally_spaced_pulses()
 ```
-
-+++ {"tags": []}
 
 Now let's simulate the effectiveness of the two sets of delays by comparing how well they maintain coherence after a hundred pulses.
 
@@ -537,8 +519,6 @@ And now you know about dynamically decoupling a qubit from its environment!
 ## About
 
 ```{code-cell} ipython3
-:tags: []
-
 qutip.about()
 ```
 
@@ -547,7 +527,5 @@ qutip.about()
 This section can include some tests to verify that the expected outputs are generated within the notebook. We put this section at the end of the notebook, so it's not interfering with the user experience. Please, define the tests using assert, so that the cell execution fails if a wrong output is generated.
 
 ```{code-cell} ipython3
-:tags: []
-
 assert 1 == 1
 ```
