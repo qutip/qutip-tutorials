@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.4
+    jupytext_version: 1.14.5
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -60,13 +60,13 @@ $$\gamma_{K,\sigma,0} = W_K - \sigma i\mu_K$$
 
 $$\eta_{K,l\neq 0} = -i\cdot \frac{k_m}{\beta_K} \cdot \frac{\Gamma_K W_K^2}{-\frac{\epsilon^2_m}{\beta_K^2} + W_K^2}$$
 
-$$\gamma_{K,\sigma,l\neq 0}= \frac{\epsilon_m}{\beta_K} - \sigma i \mu_K$$  
+$$\gamma_{K,\sigma,l\neq 0}= \frac{\epsilon_m}{\beta_K} - \sigma i \mu_K$$
 
 +++
 
 ## Differences from Example 5a
 
-+++ {"tags": []}
++++
 
 The system we study here has two big differences from the HEOM 5a example:
 
@@ -105,12 +105,11 @@ import numpy as np
 
 import qutip
 from qutip import (
-    Options,
     destroy,
     qeye,
     tensor,
 )
-from qutip.nonmarkov.heom import (
+from qutip.solver.heom import (
     HEOMSolver,
     LorentzianPadeBath,
 )
@@ -124,8 +123,6 @@ from IPython.display import display
 ## Helpers
 
 ```{code-cell} ipython3
-:tags: []
-
 @contextlib.contextmanager
 def timer(label):
     """ Simple utility for timing functions:
@@ -140,8 +137,6 @@ def timer(label):
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 def state_current(ado_state, bath_tag):
     """ Determine current from the given bath (either "R" or "L") to
         the system in the given ADO state.
@@ -163,13 +158,30 @@ def state_current(ado_state, bath_tag):
     )
 ```
 
+```{code-cell} ipython3
+# Solver options:
+
+# We set store_ados to True so that we can
+# use the auxilliary density operators (ADOs)
+# to calculate the current between the leads
+# and the system.
+
+options = {
+    "nsteps": 1500,
+    "store_states": True,
+    "store_ados": True,
+    "rtol": 1e-12,
+    "atol": 1e-12,
+    "method": "vern9",
+    "progress_bar": "enhanced",
+}
+```
+
 ## System and bath definition
 
 Let us set up the system Hamiltonian and specify the properties of the two reservoirs.
 
 ```{code-cell} ipython3
-:tags: []
-
 # Define the system Hamiltonian:
 
 @dataclasses.dataclass
@@ -197,8 +209,6 @@ sys_p = SystemParameters()
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 # Define parameters for left and right fermionic baths.
 # Each bath is a lead (i.e. a wire held at a potential)
 # with temperature T and chemical potential mu.
@@ -253,8 +263,6 @@ bath_R = LorentzianBathParameters(W=10**4, lead="R")
 Next let's plot the emission and absorption by the leads.
 
 ```{code-cell} ipython3
-:tags: []
-
 w_list = np.linspace(-2, 2, 100)
 
 fig, ax = plt.subplots(figsize=(12, 7))
@@ -305,7 +313,6 @@ One note:  for very large problems, this can be slow.
 ```{code-cell} ipython3
 def steady_state_pade_for_theta(sys_p, bath_L, bath_R, theta, Nk, Nc, Nbos):
     """ Return the steady state current using the Pade approximation. """
-    options = Options(nsteps=15000, store_states=True, rtol=1e-14, atol=1e-14)
 
     sys_p = sys_p.replace(Nbos=Nbos)
     bath_L = bath_L.replace(theta=theta)
@@ -376,8 +383,6 @@ ax.legend(loc=4);
 ## About
 
 ```{code-cell} ipython3
-:tags: []
-
 qutip.about()
 ```
 
@@ -386,7 +391,5 @@ qutip.about()
 This section can include some tests to verify that the expected outputs are generated within the notebook. We put this section at the end of the notebook, so it's not interfering with the user experience. Please, define the tests using assert, so that the cell execution fails if a wrong output is generated.
 
 ```{code-cell} ipython3
-:tags: []
-
 assert 1 == 1
 ```
