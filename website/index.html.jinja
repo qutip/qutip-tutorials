@@ -137,7 +137,9 @@ useful to have a look at these IPython notebook
 
 <h4 id="heom">Hierarchical Equations of Motion</h4>
 <ul>
-<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/heom/heom-index.ipynb">Examples for solving the dynamics of systems coupled to bosonic and fermoinic baths using the Hierarchical Equations of Motion</a> </li>
+{% for item in tutorials['heom'] %}
+    <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+{% endfor %}
 </ul>
 
 </div>
