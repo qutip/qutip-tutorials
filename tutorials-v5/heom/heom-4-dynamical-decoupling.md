@@ -338,7 +338,7 @@ def cummulative_delay_fractions(N):
 
 
 def drive_opt(amplitude, avg_delay, integral, N):
-    """ Return an optimized distant pulse function.
+    """ Return an optimized distance pulse function.
 
         Our previous pulses were evenly spaced. Here we
         instead use a varying delay after the j'th pulse.
