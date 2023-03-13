@@ -420,7 +420,7 @@ def calculate_heat_current(J12, zb, Nk, progress=progress):
     """ Calculate a single heat current and update the progress bar. """
     # Estimate appropriate HEOM max_depth from coupling strength
     NC = 7 + int(max(zb * J12 - 1, 0) * 2)
-    NC = min(NC, 15)
+    NC = min(NC, 20)
     # the four currents are identical in the steady state
     j, _, _, _ = heat_currents(
         sys.replace(J12=J12),
