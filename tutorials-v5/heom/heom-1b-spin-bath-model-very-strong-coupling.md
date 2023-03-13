@@ -455,8 +455,9 @@ vkAI = [gamma + 0j]
 ```{code-cell} ipython3
 with timer("RHS construction time"):
     bath = BosonicBath(Q, ckAR, vkAR, ckAI, vkAI)
-    # we reduce NC slightly here because we retain 3 exponents in ckAR
-    # instead of 1:
+    # We reduce NC slightly here for speed of execution because we retain
+    # 3 exponents in ckAR instead of 1. Please restore full NC for
+    # convergence though:
     HEOMFit = HEOMSolver(Hsys, bath, int(NC * 0.7), options=options)
 
 with timer("ODE solver time"):
