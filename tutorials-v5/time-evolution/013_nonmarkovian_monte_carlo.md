@@ -80,6 +80,7 @@ import numpy as np
 import qutip as qt
 
 from scipy import special, optimize
+from scipy.interpolate import CubicSpline
 ```
 
 ##### Setup system
@@ -161,7 +162,7 @@ Define the time interval. The initial time is shifted to avoid negative values o
 
 ```python
 ti = optimize.root_scalar(Gamma, bracket=(1.4, 1.5)).root
-duration = 15
+duration = 10
 steps = 100
 
 times = np.linspace(ti, ti + duration, steps + 1)
@@ -170,14 +171,29 @@ times = np.linspace(ti, ti + duration, steps + 1)
 We plot the functions $\Gamma(t)$ and $S(t)$ over the time interval, demonstrating that $\Gamma(t)$ becomes negative:
 
 ```python
-Gamma_test = np.array([Gamma(t) for t in times])
-S_test = np.array([S(t) for t in times])
+Gamma_values = np.array([Gamma(t) for t in times])
+S_values = np.array([S(t) for t in times])
 
-plt.plot(times - ti, Gamma_test, label=r"$\Gamma(t)$")
-plt.plot(times - ti, S_test, label=r"$S(t)$")
+plt.plot(times - ti, Gamma_values, label=r"$\Gamma(t)$")
+plt.plot(times - ti, S_values, label=r"$S(t)$")
 plt.xlabel(r"$t$")
 plt.legend()
 plt.show()
+```
+
+To speed up the following calculation by a factor 3-4, we store $\Gamma(t)$ and $S(t)$ as interpolations.
+
+```python
+Gamma_tmp = CubicSpline(times, Gamma_values)
+S_tmp = CubicSpline(times, S_values)
+
+
+def Gamma_int(t):
+    return float(Gamma_tmp(t))
+
+
+def S_int(t):
+    return float(S_tmp(t))
 ```
 
 ##### Monte-Carlo Simulation
@@ -186,10 +202,10 @@ We specify some numerical parameters, i.e., the number of trajectories and wheth
 
 ```python
 options = {"map": "parallel", "progress_bar": "enhanced"}
-ntraj = 10000
+ntraj = 2500
 
 H = 2 * qt.sigmap() * qt.sigmam()
-ops_and_rates = [[qt.sigmam(), Gamma]]
+ops_and_rates = [[qt.sigmam(), Gamma_int]]
 psi0 = qt.basis(2, 0)
 e_ops = [H]
 ```
@@ -199,7 +215,7 @@ Here, we construct a `NonMarkovianMCSolver` in order to explicitly verify that t
 We can see that a second jump operator is added in order to satisfy this relation.
 
 ```python
-solver = qt.NonMarkovianMCSolver(qt.QobjEvo([H, S]),
+solver = qt.NonMarkovianMCSolver(qt.QobjEvo([H, S_int]),
                                  ops_and_rates,
                                  options=options)
 
@@ -228,21 +244,21 @@ MESol = qt.mesolve([H, S], psi0, times, d_ops, e_ops,
                             if key in qt.MESolver.solver_options})
 ```
 
-TODO description of the plot, note that trace equals influence martingale for each trajectory, is one on average but not for each trajectory. We can easily plot the average trace and its standard deviation.
+Using the `e_ops` parameter of both solvers, we have computed the expectation value $\langle H \rangle$ for the exact simulation, and its average over `ntraj` trajectories in the Monte-Carlo simulation. In the following plot, we show both the exact solution and the Monte-Carlo estimate, together with an estimation for the error of the Monte-Carlo simulation which is given by
+$$ \textrm{Error}_{\text{MC}} = \sigma / \sqrt{N} $$
+where $\sigma$ is the standard deviation of the values returned by the individual trajectories (which is automatically computed by QuTiP's solver) and $N$ is the number of trajectories.
 
-TODO would be nice to just reproduce Fig. 2 from Ref. [1]. But I can't get it to work?
+In the influence martingale approach to Monte-Carlo simulations of non-Markovian master equations, the trace of the state is not conserved along each trajectory. In fact, the trace of the state on a trajectory is given by the influence martingale. Due to its martingale property, the expectation value of the trace when averaging over sufficiently many trajectories is one. QuTiP automatically stores the average trace and its standard deviation in the result object. We read it out and display it in the following plot; the deviation of the average trace from $1$ gives an indication of how well the Monte-Carlo simulation has converged.
 
-TODO why are the standard deviations so horribly large?
-
-TODO why is the calculation so slow? Because of complicated $c(t)$?
+Note that `ntraj` has been set to `2500` to keep the evaluation time of this notebook reasonable. Increasing it to `10000` or more improves the convergence.
 
 ```python
 plt.plot(times - ti, MESol.expect[0] / 2, "k-", label="Exact")
 plt.plot(times - ti, MCSol.expect[0] / 2, "kx", label="Monte-Carlo")
 plt.fill_between(
     times - ti,
-    (MCSol.expect[0] - MCSol.std_expect[0] / 100) / 2,
-    (MCSol.expect[0] + MCSol.std_expect[0] / 100) / 2,
+    (MCSol.expect[0] - MCSol.std_expect[0] / np.sqrt(ntraj)) / 2,
+    (MCSol.expect[0] + MCSol.std_expect[0] / np.sqrt(ntraj)) / 2,
     alpha=0.5,
 )
 
@@ -250,8 +266,8 @@ plt.plot(times - ti, np.ones_like(times), "-", color="0.5")
 plt.plot(times - ti, MCSol.trace, "x", color="0.5")
 plt.fill_between(
     times - ti,
-    MCSol.trace - MCSol.std_trace / 100,
-    MCSol.trace + MCSol.std_trace / 100,
+    MCSol.trace - MCSol.std_trace / np.sqrt(ntraj),
+    MCSol.trace + MCSol.std_trace / np.sqrt(ntraj),
     alpha=0.5,
 )
 
@@ -435,17 +451,8 @@ assert np.any(np.array([Gamma(t) for t in times]) < 0)
 np.testing.assert_array_less(MESol.expect[0][1:] / 2, 1)
 np.testing.assert_array_less(0, MESol.expect[0] / 2)
 
-trace_part1 = MCSol.trace[times <= ti + 10]
-mc_part1 = MCSol.expect[0][times <= ti + 10]
-me_part1 = MESol.expect[0][times <= ti + 10]
-np.testing.assert_allclose(trace_part1, 1, atol=0.2, rtol=0)
-np.testing.assert_allclose(mc_part1, me_part1, atol=0.2, rtol=0)
-
-trace_part2 = MCSol.trace[times > ti + 10]
-mc_part2 = MCSol.expect[0][times > ti + 10]
-me_part2 = MESol.expect[0][times > ti + 10]
-np.testing.assert_allclose(trace_part2, 1, atol=0.5, rtol=0)
-np.testing.assert_allclose(mc_part2, me_part2, atol=0.5, rtol=0)
+np.testing.assert_allclose(MCSol.trace, 1, atol=0.2, rtol=0)
+np.testing.assert_allclose(MCSol.expect[0], MESol.expect[0], atol=0.2, rtol=0)
 ```
 
 ```python
