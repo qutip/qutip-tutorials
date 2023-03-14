@@ -957,6 +957,37 @@ def plot_jw_correlation_fit_vs_actual(matsubara_fit, obp, axes):
     axes.text(3, 1.1, "(c)", fontsize=28)
 
 
+def plot_sw_correlation_fit_vs_actual(matsubara_fit, obp, axes):
+    """ Plot S(W) from the correlation fit. """
+    [ckAR, vkAR, ckAI, vkAI] = matsubara_fit
+    [alpha, wc, beta] = [obp.alpha, obp.wc, obp.beta]
+
+    # avoid the pole in the fit around zero:
+    w = np.concatenate([
+        np.linspace(-10, -0.1, 5000),
+        np.linspace(0.1, 10, 5000),
+    ])
+
+    s_orig = ohmic_power_spectrum(w, alpha=alpha, wc=wc, beta=beta)
+    s_fit = corr_spectrum_approx(w, ckAR, vkAR, ckAI, vkAI)
+
+    axes.plot(
+        w, s_orig,
+        "r", linewidth=3, label=r"$S(\omega)$ original",
+    )
+    axes.plot(
+        w, s_fit,
+        "g", dashes=[3, 3], linewidth=2, label=r"$S(\omega)$ Reconstructed",
+    )
+
+    axes.legend()
+    axes.set_ylabel(r'$S(\omega)$', fontsize=28)
+    axes.set_xlabel(r'$\omega/\omega_c$', fontsize=28)
+    axes.locator_params(axis='y', nbins=4)
+    axes.locator_params(axis='x', nbins=4)
+    axes.text(-8., 2.5, "(d)", fontsize=28)
+
+
 def plot_matsubara_correlation_fit_vs_actual(t, C, matsubara_fit, obp):
     fig = plt.figure(figsize=(12, 10))
     grid = plt.GridSpec(2, 2, wspace=0.4, hspace=0.3)
@@ -974,6 +1005,10 @@ def plot_matsubara_correlation_fit_vs_actual(t, C, matsubara_fit, obp):
     plot_jw_correlation_fit_vs_actual(
         matsubara_fit, obp,
         axes=fig.add_subplot(grid[1, 0]),
+    )
+    plot_sw_correlation_fit_vs_actual(
+        matsubara_fit, obp,
+        axes=fig.add_subplot(grid[1, 1]),
     )
 ```
 

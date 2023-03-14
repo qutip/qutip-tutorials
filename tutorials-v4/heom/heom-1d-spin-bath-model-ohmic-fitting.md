@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.4
+    jupytext_version: 1.14.5
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -40,8 +40,6 @@ In each case we will use the fit parameters to determine the correlation functio
 ## Setup
 
 ```{code-cell} ipython3
-:tags: []
-
 import contextlib
 import dataclasses
 import time
@@ -82,16 +80,12 @@ mp.pretty = True
 Let's define some helper functions for plotting results and timing how long operations take:
 
 ```{code-cell} ipython3
-:tags: []
-
 def coth(x):
     """ Vectorized hyperbolic cotangent of x. """
     return 1. / np.tanh(x)
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 def plot_result_expectations(plots, axes=None):
     """ Plot the expectation values of operators as functions of time.
 
@@ -126,8 +120,6 @@ def plot_result_expectations(plots, axes=None):
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 @contextlib.contextmanager
 def timer(label):
     """ Simple utility for timing functions:
@@ -150,8 +142,6 @@ And let us set up the system Hamiltonian, bath and system measurement operators:
 ### System Hamiltonian
 
 ```{code-cell} ipython3
-:tags: []
-
 # Defining the system Hamiltonian
 eps = 0.0    # Energy of the 2-level system.
 Del = 0.2    # Tunnelling term
@@ -159,8 +149,6 @@ Hsys = 0.5 * eps * sigmaz() + 0.5 * Del * sigmax()
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 # Initial state of the system.
 rho0 = basis(2, 0) * basis(2, 0).dag()
 ```
@@ -168,8 +156,6 @@ rho0 = basis(2, 0) * basis(2, 0).dag()
 ### System measurement operators
 
 ```{code-cell} ipython3
-:tags: []
-
 # Define some operators with which we will measure the system
 # 1,1 element of density matrix - corresonding to groundstate
 P11p = basis(2, 0) * basis(2, 0).dag()
@@ -206,8 +192,6 @@ J(\omega) = \omega \alpha e^{- \frac{\omega}{\omega_c}}
 \end{equation}
 
 ```{code-cell} ipython3
-:tags: []
-
 def ohmic_correlation(t, alpha, wc, beta, s=1):
     """ The Ohmic bath correlation function as a function of t
         (and the bath parameters).
@@ -226,8 +210,6 @@ def ohmic_correlation(t, alpha, wc, beta, s=1):
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 def ohmic_spectral_density(w, alpha, wc):
     """ The Ohmic bath spectral density as a function of w
         (and the bath parameters).
@@ -236,8 +218,6 @@ def ohmic_spectral_density(w, alpha, wc):
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 def ohmic_power_spectrum(w, alpha, wc, beta):
     """ The Ohmic bath power spectrum as a function of w
         (and the bath parameters).
@@ -255,8 +235,6 @@ def ohmic_power_spectrum(w, alpha, wc, beta):
 Finally, let's set the bath parameters we will work with and write down some measurement operators:
 
 ```{code-cell} ipython3
-:tags: []
-
 # Bath parameters:
 
 @dataclasses.dataclass
@@ -281,8 +259,6 @@ obp = OhmicBathParameters()
 And set the cut-off for the HEOM hierarchy:
 
 ```{code-cell} ipython3
-:tags: []
-
 # HEOM parameters:
 
 # The max_depth defaults to 5 so that the notebook executes more
@@ -303,8 +279,6 @@ J_{\mathrm approx}(\omega; a, b, c) = \sum_{i=0}^{k-1} \frac{2 a_i b_i w}{((w + 
 where $a, b$ and $c$ are the fit parameters and each is a vector of length $k$.
 
 ```{code-cell} ipython3
-:tags: []
-
 # Helper functions for packing the paramters a, b and c into a single numpy
 # array as required by SciPy's curve_fit:
 
@@ -323,8 +297,6 @@ def unpack(params):
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 # The approximate spectral density and a helper for fitting the approximate
 # spectral density to values calculated from the analytical formula:
 
@@ -366,8 +338,6 @@ def fit_spectral_density(J, w, alpha, wc, N):
 With the spectral density approximation $J_{\mathrm approx}(w; a, b, c)$ implemented above, we can now perform the fit and examine the results.
 
 ```{code-cell} ipython3
-:tags: []
-
 w = np.linspace(0, 25, 20000)
 J = ohmic_spectral_density(w, alpha=obp.alpha, wc=obp.wc)
 
@@ -380,8 +350,6 @@ params_k = [
 Let's plot the fit for each $k$ and examine how it improves with an increasing number of terms:
 
 ```{code-cell} ipython3
-:tags: []
-
 for k, params in enumerate(params_k):
     lam, gamma, w0 = params
     y = spectral_density_approx(w, lam, gamma, w0)
@@ -393,8 +361,6 @@ for k, params in enumerate(params_k):
 The fit with four terms looks good. Let's take a closer look at it by plotting the contribution of each term of the fit:
 
 ```{code-cell} ipython3
-:tags: []
-
 # The parameters for the fit with four terms:
 
 lam, gamma, w0 = params_k[-1]
@@ -403,8 +369,6 @@ print(f"Parameters [k={len(params_k) - 1}]: lam={lam}; gamma={gamma}; w0={w0}")
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 # Plot the components of the fit separately:
 
 def spectral_density_ith_component(w, i, lam, gamma, w0):
@@ -439,8 +403,6 @@ plot_spectral_density_fit_components(J, w, lam, gamma, w0);
 And let's also compare the power spectrum of the fit and the analytical spectral density:
 
 ```{code-cell} ipython3
-:tags: []
-
 def plot_power_spectrum(alpha, wc, beta, lam, gamma, w0, save=True):
     """ Plot the power spectrum of a fit against the actual power spectrum. """
     w = np.linspace(-10, 10, 50000)
@@ -469,8 +431,6 @@ plot_power_spectrum(obp.alpha, obp.wc, obp.beta, lam, gamma, w0, save=False)
 Now that we have a good fit to the spectral density, we can calculate the Matsubara expansion terms for the `BosonicBath` from them. At the same time we will calculate the Matsubara terminator for this expansion.
 
 ```{code-cell} ipython3
-:tags: []
-
 def matsubara_coefficients_from_spectral_fit(lam, gamma, w0, beta, Q, Nk):
     """ Calculate the Matsubara co-efficients for a fit to the spectral
         density.
@@ -540,8 +500,6 @@ def matsubara_coefficients_from_spectral_fit(lam, gamma, w0, beta, Q, Nk):
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 def generate_spectrum_results(obp, params, Nk, max_depth):
     """ Run the HEOM with the given bath parameters and
         and return the results of the evolution.
@@ -576,8 +534,6 @@ def generate_spectrum_results(obp, params, Nk, max_depth):
 Below we generate results for different convergence parameters (number of terms in the fit, number of matsubara terms, and depth of the hierarchy).  For the parameter choices here, we need a relatively large depth of around '11', which can be a little slow.
 
 ```{code-cell} ipython3
-:tags: []
-
 # Generate results for different number of lorentzians in fit:
 
 results_spectral_fit_pk = [
@@ -595,8 +551,6 @@ plot_result_expectations([
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 # generate results for different number of Matsubara terms per Lorentzian
 # for max number of Lorentzians:
 
@@ -636,8 +590,6 @@ plot_result_expectations([
 We now combine the fitting and correlation function data into one large plot.
 
 ```{code-cell} ipython3
-:tags: []
-
 def correlation_approx_matsubara(t, ck, vk):
     """ Calculate the approximate real or imaginary part of the
         correlation function from the matsubara expansion co-efficients.
@@ -648,8 +600,6 @@ def correlation_approx_matsubara(t, ck, vk):
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 def plot_cr_fit_vs_actual(t, ckAR, vkAR, C, axes):
     """ Plot the C_R(t) fit. """
     yR = correlation_approx_matsubara(t, ckAR, vkAR)
@@ -777,8 +727,6 @@ def plot_matsubara_spectrum_fit_vs_actual(
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 t = np.linspace(0, 15, 100)
 C = ohmic_correlation(t, alpha=obp.alpha, wc=obp.wc, beta=obp.beta)
 
@@ -1003,6 +951,37 @@ def plot_jw_correlation_fit_vs_actual(matsubara_fit, obp, axes):
     axes.text(3, 1.1, "(c)", fontsize=28)
 
 
+def plot_sw_correlation_fit_vs_actual(matsubara_fit, obp, axes):
+    """ Plot S(W) from the correlation fit. """
+    [ckAR, vkAR, ckAI, vkAI] = matsubara_fit
+    [alpha, wc, beta] = [obp.alpha, obp.wc, obp.beta]
+
+    # avoid the pole in the fit around zero:
+    w = np.concatenate([
+        np.linspace(-10, -0.1, 5000),
+        np.linspace(0.1, 10, 5000),
+    ])
+
+    s_orig = ohmic_power_spectrum(w, alpha=alpha, wc=wc, beta=beta)
+    s_fit = corr_spectrum_approx(w, ckAR, vkAR, ckAI, vkAI)
+
+    axes.plot(
+        w, s_orig,
+        "r", linewidth=3, label=r"$S(\omega)$ original",
+    )
+    axes.plot(
+        w, s_fit,
+        "g", dashes=[3, 3], linewidth=2, label=r"$S(\omega)$ Reconstructed",
+    )
+
+    axes.legend()
+    axes.set_ylabel(r'$S(\omega)$', fontsize=28)
+    axes.set_xlabel(r'$\omega/\omega_c$', fontsize=28)
+    axes.locator_params(axis='y', nbins=4)
+    axes.locator_params(axis='x', nbins=4)
+    axes.text(-8., 2.5, "(d)", fontsize=28)
+
+
 def plot_matsubara_correlation_fit_vs_actual(t, C, matsubara_fit, obp):
     fig = plt.figure(figsize=(12, 10))
     grid = plt.GridSpec(2, 2, wspace=0.4, hspace=0.3)
@@ -1021,11 +1000,13 @@ def plot_matsubara_correlation_fit_vs_actual(t, C, matsubara_fit, obp):
         matsubara_fit, obp,
         axes=fig.add_subplot(grid[1, 0]),
     )
+    plot_sw_correlation_fit_vs_actual(
+        matsubara_fit, obp,
+        axes=fig.add_subplot(grid[1, 1]),
+    )
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 t = np.linspace(0, 15, 100)
 C = ohmic_correlation(t, alpha=obp.alpha, wc=obp.wc, beta=obp.beta)
 
@@ -1085,8 +1066,6 @@ plot_result_expectations([
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(12, 7))
 
 plot_result_expectations([
@@ -1120,8 +1099,6 @@ qutip.about()
 This section can include some tests to verify that the expected outputs are generated within the notebook. We put this section at the end of the notebook, so it's not interfering with the user experience. Please, define the tests using assert, so that the cell execution fails if a wrong output is generated.
 
 ```{code-cell} ipython3
-:tags: []
-
 assert np.allclose(
     expect(P11p, results_spectral_fit_pk[2].states),
     expect(P11p, results_spectral_fit_pk[3].states),
