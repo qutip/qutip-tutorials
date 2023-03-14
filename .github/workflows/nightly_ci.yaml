@@ -64,6 +64,11 @@ jobs:
         git clone -b master https://github.com/qutip/qutip-qip.git
         cd qutip-qip
         pip install -e .
+        cd ..
+        git clone -b master https://github.com/qutip/qutip-qtrl.git
+        cd qutip-qtrl
+        # install qutip-qtrl without deps because it requires qutip 5.0.0a1
+        pip install --no-deps -e .
 
     - name: Install ffmpeg & LaTeX
       run: |
