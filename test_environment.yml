@@ -8,6 +8,7 @@ dependencies:
 - scipy==1.8.1
 - matplotlib==3.5.2
 - imagemagick==7.1.0_36
+- mpmath==1.2.1
 - pytest==7.1.2
 - nbmake==1.3.4
 - jupytext==1.13.8

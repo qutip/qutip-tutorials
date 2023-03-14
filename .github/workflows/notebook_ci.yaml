@@ -17,17 +17,14 @@ jobs:
         include:
           - qutip-version: '4'
             qutip-branch: 'qutip-4.7.X'
-            path_md: 'tutorials-v4/*.md'
-            path_ipynb: 'tutorials-v4/*.ipynb'
           - qutip-version: '5'
             qutip-branch: 'master'
-            path_md: 'tutorials-v5/*.md'
-            path_ipynb: 'tutorials-v5/*.ipynb'
     steps:
     - uses: actions/checkout@v3
     - uses: gaurav-nelson/github-action-markdown-link-check@v1
       with:
         use-quiet-mode: 'yes'
+        folder-path: tutorials-v${{ matrix.qutip-version }}
 
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v2
@@ -67,6 +64,11 @@ jobs:
         git clone -b master https://github.com/qutip/qutip-qip.git
         cd qutip-qip
         pip install -e .
+        cd ..
+        git clone -b master https://github.com/qutip/qutip-qtrl.git
+        cd qutip-qtrl
+        # install qutip-qtrl without deps because it requires qutip 5.0.0a1
+        pip install --no-deps -e .
 
     - name: Install ffmpeg & LaTeX
       run: |
