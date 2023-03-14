@@ -973,11 +973,11 @@ def plot_sw_correlation_fit_vs_actual(matsubara_fit, obp, axes):
 
     axes.plot(
         w, s_orig,
-        "r", linewidth=3, label=r"$S(\omega)$ original",
+        "r", linewidth=3, label="Original",
     )
     axes.plot(
         w, s_fit,
-        "g", dashes=[3, 3], linewidth=2, label=r"$S(\omega)$ Reconstructed",
+        "g", dashes=[3, 3], linewidth=2, label="Reconstructed",
     )
 
     axes.legend()
@@ -985,7 +985,7 @@ def plot_sw_correlation_fit_vs_actual(matsubara_fit, obp, axes):
     axes.set_xlabel(r'$\omega/\omega_c$', fontsize=28)
     axes.locator_params(axis='y', nbins=4)
     axes.locator_params(axis='x', nbins=4)
-    axes.text(-8., 2.5, "(d)", fontsize=28)
+    axes.text(0.15, 0.85, "(d)", fontsize=28, transform=axes.transAxes)
 
 
 def plot_matsubara_correlation_fit_vs_actual(t, C, matsubara_fit, obp):
