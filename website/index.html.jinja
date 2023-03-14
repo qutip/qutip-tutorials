@@ -22,8 +22,8 @@ useful to have a look at these IPython notebook
 	<li><a href="#visualizations">Visualization</a></li>
 	<li><a href="#quantum-information-processing">Quantum information processing</a></li>
 	<ul>
-	<li><a href="#quantum-circuits">Quantum circuits and algoritms</a></li>
-	<li><a href="#nisq">Noisy quantum devices</a></li>
+	<li><a href="#qip-circuits">Quantum circuits and algoritms</a></li>
+	<li><a href="#qip-pulse-level">Pulse-level circuit simulation</a></li>
 	</ul>
 	<li><a href="#time-evolution">Time evolution</a></li>
 	<li><a href="#optimal-control">Optimal control</a></li>
@@ -73,23 +73,19 @@ useful to have a look at these IPython notebook
 
 <h4 id="quantum-information-processing">Quantum information processing</h4>
 <p>This section requires an additional package <a href="https://github.com/qutip/qutip-qip">qutip-qip</a>.</p>
-<h5 id="quantum-circuits">Quantum circuits</h5>
+
+<h5 id="qip-circuits">Quantum circuits and algorithms</h5>
 <ul>
-<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/quantum-gates.ipynb">Quantum gates and circuits</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/qip-toffoli-cnot.ipynb">Toffoli gate to CNOT</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/qasm.ipynb">Importing and exporting QASM circuits</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/teleportation.ipynb">Quantum teleportation</a> </li>
+{% for item in tutorials['quantum-circuits'] %}
+    <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+{% endfor %}
 </ul>
 
-<h5 id="nisq">Pulse-level circuit simulation</h5>
+<h5 id="qip-pulse-level">Pulse-level circuit simulation</h5>
 <ul>
-<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/qip-processor-DJ-algorithm.ipynb">Simulating the Deutsch–Jozsa algorithm with noise</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/qip-customize-device.ipynb">Customizing the pulse-level simulation</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/qip-scheduler.ipynb">The pulse scheduler</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/qip-relaxation-measurement-with-the-idling-gate.ipynb">Measuring the relaxation time</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/qip-10-qubit-QFT-algorithm.ipynb">Simulating a 10-qubit QFT algorithm</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/qip-randomized-benchmarking.ipynb">Simulating randomized benchmarking</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/qip-optpulseprocessor.ipynb">Optimal pulse processor</a> </li>
+{% for item in tutorials['pulse-level-circuit-simulation'] %}
+    <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+{% endfor %}
 </ul>
 
 </div>
