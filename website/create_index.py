@@ -86,8 +86,15 @@ def generate_index_html(version_directory, tutorial_directories, title,
 # url prefix for the links
 url_prefix = "https://nbviewer.org/urls/qutip.org/qutip-tutorials/"
 # tutorial directories
-tutorial_directories = ['time-evolution', 'lectures',
-                        'python-introduction', 'visualization']
+tutorial_directories = [
+    'heom',
+    'lectures',
+    'pulse-level-circuit-simulation',
+    'python-introduction',
+    'quantum-circuits',
+    'time-evolution',
+    'visualization',
+]
 
 # +++ READ PREFIX AND SUFFIX +++
 prefix = ""
