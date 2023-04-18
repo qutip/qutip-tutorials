@@ -7,6 +7,7 @@ dependencies:
 - scipy==1.8.1
 - matplotlib==3.5.2
 - imagemagick==7.1.0_36
+- mpmath==1.2.1
 - qutip==4.7.0
 - cython==0.29.32
 - notebook==6.4.11
