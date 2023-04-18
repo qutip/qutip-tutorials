@@ -171,8 +171,8 @@ times = np.linspace(ti, ti + duration, steps + 1)
 We plot the functions $\Gamma(t)$ and $S(t)$ over the time interval, demonstrating that $\Gamma(t)$ becomes negative:
 
 ```python
-Gamma_values = np.array([Gamma(t) for t in times])
-S_values = np.array([S(t) for t in times])
+Gamma_values = Gamma(times)
+S_values = S(times)
 
 plt.plot(times - ti, Gamma_values, label=r"$\Gamma(t)$")
 plt.plot(times - ti, S_values, label=r"$S(t)$")
@@ -184,24 +184,17 @@ plt.show()
 To speed up the following calculation by a factor 3-4, we store $\Gamma(t)$ and $S(t)$ as interpolations.
 
 ```python
-Gamma_tmp = CubicSpline(times, Gamma_values)
-S_tmp = CubicSpline(times, S_values)
-
-
-def Gamma_int(t):
-    return float(Gamma_tmp(t))
-
-
-def S_int(t):
-    return float(S_tmp(t))
+Gamma_int = CubicSpline(times, np.complex128(Gamma_values))
+S_int = CubicSpline(times, np.complex128(S_values))
 ```
 
 ##### Monte-Carlo Simulation
 
-We specify some numerical parameters, i.e., the number of trajectories and whether to use parallel computing. Then we define the Hamiltonian and the jump operator corresponding to the master equation, and the initial state.
+We specify some numerical parameters, i.e., the number of trajectories and whether to use parallel computation. Then we define the Hamiltonian and the jump operator corresponding to the master equation, and the initial state.
 
 ```python
-options = {"map": "parallel", "progress_bar": "enhanced"}
+nmmc_options = {"map": "parallel"}  # options specific to nm_mcsolve
+options = {"progress_bar": "enhanced"}  # options shared by all solvers
 ntraj = 2500
 
 H = 2 * qt.sigmap() * qt.sigmam()
@@ -217,12 +210,12 @@ We can see that a second jump operator is added in order to satisfy this relatio
 ```python
 solver = qt.NonMarkovianMCSolver(qt.QobjEvo([H, S_int]),
                                  ops_and_rates,
-                                 options=options)
+                                 options=(options | nmmc_options))
 
-for L, _ in solver.ops_and_rates:
+for L in solver.ops:
     print(L, "\n")
 
-completeness_check = sum(L.dag() * L for L, _ in solver.ops_and_rates)
+completeness_check = sum(L.dag() * L for L in solver.ops)
 with qt.CoreOptions(atol=1e-5):
     assert completeness_check == qt.qeye(2)
 ```
@@ -239,9 +232,7 @@ We will compare our results to the following exact `mesolve` simulation:
 
 ```python
 d_ops = [[qt.lindblad_dissipator(qt.sigmam(), qt.sigmam()), Gamma]]
-MESol = qt.mesolve([H, S], psi0, times, d_ops, e_ops,
-                   options={key: val for key, val in options.items()
-                            if key in qt.MESolver.solver_options})
+MESol = qt.mesolve([H, S], psi0, times, d_ops, e_ops, options=options)
 ```
 
 Using the `e_ops` parameter of both solvers, we have computed the expectation value $\langle H \rangle$ for the exact simulation, and its average over `ntraj` trajectories in the Monte-Carlo simulation. In the following plot, we show both the exact solution and the Monte-Carlo estimate, together with an estimation for the error of the Monte-Carlo simulation which is given by
@@ -303,7 +294,7 @@ TODO: explain
 The matrix is self adjoint, and therefore it can be diagonalised:
 $$ \operatorname{diag}{B} = U^\dagger\, B\, U = \begin{pmatrix} \lambda_{1}&0\\0&\lambda_{2} \end{pmatrix} $$
 with $\lambda_{i} = \frac{\gamma_1+\gamma_2}{4}+(-1)^{i}\sqrt{\frac{\gamma_1^2+\gamma_2^2+2\,\kappa^2}{8}}$.
-We the define the Lindblad operators
+We define the Lindblad operators
 $$ L_j = \sum_{i=1}^2 \sigma_-^{(i)} U_{ij} $$
 such that equation (1) becomes
 $$ \frac{d}{dt}\rho(t) = -i \sum_{i,j=1}^2 A_{i,j} [\sigma_+^{(j)}\sigma_-^{(i)},\rho(t)] + \sum_{i}^2\lambda_i\left( L_i\rho(t)L_i^\dagger -\frac{1}{2}\{L_i^\dagger L_i,\rho(t)\}\right) . \tag 2 $$
@@ -323,22 +314,15 @@ kappa = 2
 
 lamb1 = (gam1 + gam2) / 4 - ((gam1**2 + gam2**2 + 2 * kappa) / 8) ** (1 / 2)
 lamb2 = (gam1 + gam2) / 4 + ((gam1**2 + gam2**2 + 2 * kappa) / 8) ** (1 / 2)
-
-
-def lam1(t):
-    return lamb1
-
-
-def lam2(t):
-    return lamb2
 ```
 
 We choose the time interval and numerical parameters.
 
 ```python
-times2 = np.linspace(0, 10, 100)
-options = {"map": "parallel", "progress_bar": "enhanced"}
-ntraj = 25000
+times2 = np.linspace(0, 7, 100)
+nmmc_options = {"map": "parallel"}  # options specific to nm_mcsolve
+options = {"progress_bar": "enhanced"}  # options shared by all solvers
+ntraj = 2500
 ```
 
 We will now define our system in the basis where $L_1^\dagger e_0 = e_1$, $L_2^\dagger e_0 = e_2$ and $L_1^\dagger L_2^\dagger e_0 = e_3$. Note that to define the Hamiltonain, it must be rotated to the appropriate basis.
@@ -388,20 +372,19 @@ H = (alpha * sigmap1 * sigmam1
 ##### Monte-Carlo Simulation
 
 ```python
-MCSol2 = qt.nm_mcsolve(H, psi0, times2, ops_and_rates=[[L1, lam1], [L2, lam2]],
-                       e_ops=[L1.dag() * L1, L2.dag() * L2],
-                       ntraj=ntraj, options=options)
+MCSol2 = qt.nm_mcsolve(H, psi0, times2, ntraj=ntraj, options=options,
+                       ops_and_rates=[[L1, lamb1], [L2, lamb2]],
+                       e_ops=[L1.dag() * L1, L2.dag() * L2])
 ```
 
 ##### Benchmark against non-stochastic simulation
 
 ```python
-d_ops = [[qt.lindblad_dissipator(L1, L1), lam1],
-         [qt.lindblad_dissipator(L2, L2), lam2]]
+d_ops = [lamb1 * qt.lindblad_dissipator(L1, L1),
+         lamb2 * qt.lindblad_dissipator(L2, L2)]
 MESol2 = qt.mesolve(H, psi0, times2, d_ops,
                     e_ops=[L1.dag() * L1, L2.dag() * L2],
-                    options={key: val for key, val in options.items()
-                             if key in qt.MESolver.solver_options})
+                    options=options)
 ```
 
 TODO: explain plot and make prettier. Can / should we reproduce Fig. 4 of Ref 1?
@@ -416,7 +399,8 @@ plt.plot(times2, MESol2.expect[1], color='C1',
 plt.plot(times2, MCSol2.expect[1], 'x', color='C1')
 
 plt.plot(times2, 1 - MESol2.expect[1] - MESol2.expect[0], color='C2',
-         label=r"$1 - \langle L_1^\dagger L_1 \rangle - \langle L_2^\dagger L_2 \rangle$")
+         label=r"""$1 - \langle L_1^\dagger L_1 \rangle -
+                    \langle L_2^\dagger L_2 \rangle$""")
 plt.plot(times2, 1 - MCSol2.expect[1] - MCSol2.expect[0], 'x', color='C2')
 
 plt.xlabel(r"$t$")
@@ -458,11 +442,11 @@ np.testing.assert_allclose(MCSol.expect[0], MESol.expect[0], atol=0.2, rtol=0)
 ```python
 # -- second example --
 
-mc_part1 = MCSol2.expect[0][times2 <= 5]
-me_part1 = MESol2.expect[0][times2 <= 5]
+mc_part1 = MCSol2.expect[0][times2 <= 1]
+me_part1 = MESol2.expect[0][times2 <= 1]
 np.testing.assert_allclose(mc_part1, me_part1, atol=0.05, rtol=0)
 
-mc_part2 = MCSol2.expect[0][times2 > 5]
-me_part2 = MESol2.expect[0][times2 > 5]
+mc_part2 = MCSol2.expect[0][times2 > 1]
+me_part2 = MESol2.expect[0][times2 > 1]
 np.testing.assert_allclose(mc_part2, me_part2, atol=0.3, rtol=0)
 ```
