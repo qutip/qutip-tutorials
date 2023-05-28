@@ -1,0 +1,313 @@
+---
+title: QuTiP Tutorials
+---
+{% include header.html %}
+{% include navbar.html %}<div class="row">
+<div class="col-md-12">
+<h1>Tutorials for QuTiP Version 4</h1><br>
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-12">
+<p>This page contains our collection of <a href="https://jupyter.org/">Jupyter</a> (formerly <a href="https://ipython.org/notebook.html">IPython</a>) notebooks
+for introducing and demonstrating features of QuTiP.
+Going through these notebooks should be a good way to get familiarized with the software.
+If you are new to scientific computing with Python, you might also find it
+useful to have a look at these IPython notebook
+<a href="https://jrjohansson.github.io/">Lectures on scientific computing with Python</a>.
+</p>
+<p> This are the tutorials for QuTiP Version 4. You can          find the tutorials for QuTiP Version 5           <a href="./index-v5.html">here</a>. </p>
+<p>The following are the contents of this page:</p>
+<ul>
+<li><a href="#example-notebooks">Example notebooks</a>
+	<ul>
+	<li><a href="#python-introduction">Python Introduction</a></li>
+	<li><a href="#visualizations">Visualization</a></li>
+	<li><a href="#quantum-information-processing">Quantum information processing</a></li>
+	<ul>
+	<li><a href="#qip-circuits">Quantum circuits and algoritms</a></li>
+	<li><a href="#qip-pulse-level">Pulse-level circuit simulation</a></li>
+	</ul>
+	<li><a href="#time-evolution">Time evolution</a></li>
+	<li><a href="#optimal-control">Optimal control</a></li>
+	<li><a href="#tomography">Tomography</a></li>
+	<li><a href="#piqs">Permutational invariant Lindblad dynamics</a></li>
+	<li><a href="#heom">Hierarchical Equations of Motion</a></li>
+	</ul>
+</li>
+<li><a href="#lectures">Quantum mechanics lectures with QuTiP</a></li>
+<li><a href="#contributing">Contributing</a></li>
+</ul>
+</div>
+</div>
+
+
+<div class="row">
+<div class="col-md-12">
+<h3 id="example-notebooks">Example notebooks</h3>
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-12">
+<p>These notebooks demonstrate and introduce specific functionality in QuTiP.
+</p>
+
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-6">
+<h4 id="python-introduction">Python Introduction</h4>
+<ul>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/python-introduction/001_Beginning_Python.ipynb">Introduction to Python</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/python-introduction/002_NumPy_Array_Basics.ipynb">Introduction to NumPy Arrays</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/python-introduction/003_Matplotlib_Plotting.ipynb">Plotting in Python Using Matplotlib</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/python-introduction/004_link_to_lecture_0.ipynb">Lecture 0 - Introduction to QuTiP</a></li>
+
+</ul>
+<p>For a more in depth discussion see: <a href="https://github.com/jrjohansson/scientific-python-lectures">Lectures on scientific computing with Python</a>.</p>
+
+
+<h4 id="visualizations">Visualization</h4>
+<ul>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/visualization/bloch-sphere-animation.ipynb">Bloch Sphere animation</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/visualization/bloch_sphere_with_colorbar.ipynb">Bloch Sphere with colorbar</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/visualization/energy-levels.ipynb">Energy-level diagrams</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/visualization/pseudo-probability-functions.ipynb">Pseudo-probability functions</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/visualization/quantum-process-tomography.ipynb">Quantum Process Tomography</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/visualization/qubism-and-schmidt-plots.ipynb">Qubism visualizations</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/visualization/visualization-exposition.ipynb">Visualization demos</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/visualization/JC-model-wigner-function.ipynb">Wigner functions</a></li>
+
+</ul>
+
+<h4 id="quantum-information-processing">Quantum information processing</h4>
+<p>This section requires an additional package <a href="https://github.com/qutip/qutip-qip">qutip-qip</a>.</p>
+
+<h5 id="qip-circuits">Quantum circuits and algorithms</h5>
+<ul>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/quantum-circuits/qip-toffoli-cnot.ipynb">Decomposition of the Toffoli gate in terms of CNOT and single-qubit rotations</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/quantum-circuits/qasm.ipynb">Imports and Exports QASM circuit</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/quantum-circuits/quantum-gates.ipynb">QuTiP example: Quantum Gates and their usage</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/quantum-circuits/teleportation.ipynb">Quantum Teleportation Circuit</a></li>
+
+</ul>
+
+<h5 id="qip-pulse-level">Pulse-level circuit simulation</h5>
+<ul>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/pulse-level-circuit-simulation/qip-10-qubit-QFT-algorithm.ipynb">Compiling and simulating a 10-qubit Quantum Fourier Transform (QFT) algorithm</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/pulse-level-circuit-simulation/qip-customize-device.ipynb">Custimize the pulse-level simulation</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/pulse-level-circuit-simulation/qip-optpulseprocessor.ipynb">Examples for OptPulseProcessor</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/pulse-level-circuit-simulation/qip-scheduler.ipynb">Scheduler for quantum gates and instructions</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/pulse-level-circuit-simulation/qip-randomized-benchmarking.ipynb">Simulating randomized benchmarking</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/pulse-level-circuit-simulation/qip-processor-DJ-algorithm.ipynb">Simulating the Deutsch–Jozsa algorithm at the pulse level</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/pulse-level-circuit-simulation/qip-relaxation-measurement-with-the-idling-gate.ipynb">measuring the relaxation time with the idling gate</a></li>
+
+</ul>
+
+</div>
+
+<div class="col-md-6">
+
+<h4 id="time-evolution">Time evolution</h4>
+<ul>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/time-evolution/001_qobjevo.ipynb"><code>QobjEvo</code>: time-dependent quantum objects</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/time-evolution/002_larmor-precession.ipynb">Schrödinger Equation Solver: Larmor precession</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/time-evolution/003_qubit-dynamics.ipynb">Master Equation Solver: Single-Qubit Dynamics</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/time-evolution/004_rabi-oscillations.ipynb">Master Equation Solver: Vacuum Rabi oscillations</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/time-evolution/005_spin-chain.ipynb">Master Equation Solver: Dynamics of a Spin Chain</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/time-evolution/006_photon_birth_death.ipynb">Monte Carlo Solver: Birth and Death of Photons in a Cavity</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/time-evolution/007_brmesolve_tls.ipynb">Bloch-Redfield Solver: Two Level System</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/time-evolution/008_brmesolve_time_dependence.ipynb">Bloch-Redfield Solver: Time dependent operators</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/time-evolution/009_brmesolve-cavity-QED.ipynb">Bloch-Redfield Solver: Dissipative Atom-Cavity system</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/time-evolution/010_brmesolve_phonon_interaction.ipynb">Bloch-Redfield Solver: Phonon-assisted initialization</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/time-evolution/011_floquet_solver.ipynb">Floquet Solvers</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/time-evolution/012_floquet_formalism.ipynb">Floquet Formalism</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/time-evolution/013_landau-zener.ipynb">Time-dependent Master Equation: Landau-Zener transitions</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/time-evolution/014_landau-zener-stuckelberg.ipynb">Time-dependent Master Equation: Landau-Zener-Stuckelberg inteferometry</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/time-evolution/015_smesolve-heterodyne.ipynb">Stochastic Solver: Heterodyne Detection</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/time-evolution/016_smesolve-inefficient-detection.ipynb">Stochastic Solver: Mixing stochastic and deterministic equations</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/time-evolution/017_smesolve-jc-photocurrent.ipynb">Stochastic Solver: Photo-current detection in a JC model</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/time-evolution/018_measures-trajectories-cats-kerr.ipynb">Stochastic vs. Monte-Carlo Solver: Cat states become coherent</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/time-evolution/019_optomechanical-steadystate.ipynb">Steady-State: Optomechanical System in the Single-Photon Strong-Coupling Regime</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/time-evolution/020_homodyned-Jaynes-Cummings-emission.ipynb">Steady-State: Homodyned Jaynes-Cummings emission</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/time-evolution/021_quasi-steadystate-driven-system.ipynb">Steady-State: Time-dependent (periodic) quantum system</a></li>
+
+</ul>
+
+
+<h4 id="optimal-control">Optimal control</h4>
+<ul>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/optimal-control-overview.ipynb">Overview</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-pulseoptim-Hadamard.ipynb">Hadamard</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-pulseoptim-QFT.ipynb">QFT</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-pulseoptim-Lindbladian.ipynb">Lindbladian</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-pulseoptim-symplectic.ipynb">Symplectic</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/control-pulseoptim-CRAB-QFT.ipynb">QFT (CRAB)</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/control-pulseoptim-CRAB-2qubitInerac.ipynb">State to state (CRAB)</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-grape-cnot.ipynb">CNOT</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-grape-iswap.ipynb">iSWAP</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-grape-single-qubit-rotation.ipynb">Single-qubit rotation</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-grape-toffoli.ipynb">Toffoli gate</a> </li>
+</ul>
+
+<h4 id="tomography">Tomography</h4>
+<ul>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/tomography-iMLE-photon-counting.ipynb">Density matrix estimation with iterative maximum likelihood estimation</a> </li>
+</ul>
+
+<h4 id="piqs">Permutational invariant Lindblad dynamics</h4>
+<ul>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/piqs-overview.ipynb">Overview</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/piqs-superradiant-light-emission.ipynb">Superradiant light emission</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/piqs-steadystate-superradiance.ipynb">Steady state superradiance</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/piqs-open-dicke-model.ipynb">Open Dicke model</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/piqs-spin-squeezing-noise.ipynb">Spin squeezing with noise</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/piqs-boundary-time-crystals.ipynb">Boundary time crystals</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/piqs-multiple-spin-ensembles.ipynb">Multiple spin ensembles</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/piqs-entropy_purity.ipynb">Von Neumann entropy and purity</a> </li>
+</ul>
+
+<h4 id="heom">Hierarchical Equations of Motion</h4>
+<ul>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/heom/heom-1a-spin-bath-model-basic.ipynb">HEOM 1a: Spin-Bath model (introduction)</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/heom/heom-1b-spin-bath-model-very-strong-coupling.ipynb">HEOM 1b: Spin-Bath model (very strong coupling)</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/heom/heom-1c-spin-bath-model-underdamped-sd.ipynb">HEOM 1c: Spin-Bath model (Underdamped Case)</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/heom/heom-1d-spin-bath-model-ohmic-fitting.ipynb">HEOM 1d: Spin-Bath model, fitting of spectrum and correlation functions</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/heom/heom-1e-spin-bath-model-pure-dephasing.ipynb">HEOM 1e: Spin-Bath model (pure dephasing)</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/heom/heom-2-fmo-example.ipynb">HEOM 2: Dynamics in Fenna-Mathews-Olsen complex (FMO)</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/heom/heom-3-quantum-heat-transport.ipynb">HEOM 3: Quantum Heat Transport</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/heom/heom-4-dynamical-decoupling.ipynb">HEOM 4: Dynamical decoupling of a non-Markovian environment</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/heom/heom-5a-fermions-single-impurity-model.ipynb">HEOM 5a: Fermionic single impurity model</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/heom/heom-5b-fermions-discrete-boson-model.ipynb">HEOM 5b: Discrete boson coupled to an impurity and fermionic leads</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/heom/heom-index.ipynb">Hierarchical Equation of Motion Examples</a></li>
+
+</ul>
+
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-12">
+<h3 id="lectures">Quantum mechanics lectures with QuTiP</h3>
+
+<p>These lecture-style notebooks focus on particular quantum mechanics
+topics and analyze them numerically using QuTiP (some more detailed than others).</p>
+
+<ul>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/lectures/Lecture-0-Introduction-to-QuTiP.ipynb">Lecture 0 - Introduction to QuTiP</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/lectures/Lecture-1-Jaynes-Cumming-model.ipynb">Lecture 1 - Vacuum Rabi oscillations in the Jaynes-Cummings model</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/lectures/Lecture-2A-Cavity-Qubit-Gates.ipynb">Lecture 2A - Simulation of a two-qubit gate using a resonator as coupler</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/lectures/Lecture-2B-Single-Atom-Lasing.ipynb">Lecture 2B - Single-Atom-Lasing</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/lectures/Lecture-3A-Dicke-model.ipynb">Lecture 3A - The Dicke model</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/lectures/Lecture-3B-Jaynes-Cumming-model-with-ultrastrong-coupling.ipynb">Lecture 3B - Jaynes-Cummings-like model in the ultrastrong coupling regime</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/lectures/Lecture-4-Correlation-Functions.ipynb">Lecture 4 - Correlation functions</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/lectures/Lecture-5-Parametric-Amplifier.ipynb">Lecture 5 - Evolution and quantum statistics of a quantum parameter amplifier</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/lectures/Lecture-6-Quantum-Monte-Carlo-Trajectories.ipynb">Lecture 6 - Quantum Monte-Carlo Trajectories</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/lectures/Lecture-7-iSWAP-gate.ipynb">Lecture 7 - Two-qubit iSWAP gate and process tomography</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/lectures/Lecture-8-Adiabatic-quantum-computing.ipynb">Lecture 8 - Adiabatic sweep</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/lectures/Lecture-9-Squeezed-states-of-harmonic-oscillator.ipynb">Lecture 9 - Squeezed states of a quantum harmonic oscillator</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/lectures/Lecture-10-cQED-dispersive-regime.ipynb">Lecture 10 - Cavity-QED in the dispersive regime</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/lectures/Lecture-11-Charge-Qubits.ipynb">Lecture 11 - Superconducting Josephson charge qubits</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/lectures/Lecture-12-Decay-into-a-squeezed-vacuum-field.ipynb">Lecture 12 - Decay into a squeezed vacuum field</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/lectures/Lecture-13-Resonance-flourescence.ipynb">Lecture 13 - Resonance flourescence</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/lectures/Lecture-14-Kerr-nonlinearities.ipynb">Lecture 14 - Kerr nonlinearities</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/lectures/Lecture-15-Nonclassically-driven-atoms.ipynb">Lecture 15 - Nonclassically driven atoms (cascaded quantum systems)</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v4/lectures/Lecture-16-Gallery-of-Wigner-functions.ipynb">Lecture 16 - Gallery of Wigner functions</a></li>
+
+</ul>
+
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-12">
+<h3 id="contributing">Contributing</h3>
+<p>If you would like to contribute a notebook or report a bug, you may open
+an issue or pull request in the
+<a href="https://github.com/qutip/qutip-tutorials">qutip-tutorials</a>
+GitHub repository.
+</p>
+<p>A few of the notebooks are still maintained in the repository
+<a href="https://github.com/qutip/qutip-notebooks">qutip-notebooks</a> and
+a complete archive of older versions of the tutorials is maintained there.
+</p>
+
+</div>
+</div>{% include footer.html %}

@@ -75,7 +75,7 @@ def generate_index_html(version_directory, tutorial_directories, title,
         loader=FileSystemLoader("../"),
         autoescape=select_autoescape()
     )
-    template = env.get_template("website/index.html.jinja")
+    template = env.get_template("website/qutip-qip.html.jinja")
 
     # render template and return
     html = template.render(tutorials=tutorials, title=title,
@@ -86,20 +86,11 @@ def generate_index_html(version_directory, tutorial_directories, title,
 # url prefix for the links
 url_prefix = "https://nbviewer.org/urls/qutip.org/qutip-tutorials/"
 # tutorial directories
-tutorial_directories = [
-    'heom',
-    'lectures',
-    'pulse-level-circuit-simulation',
-    'python-introduction',
-    'quantum-circuits',
-    'time-evolution',
-    'visualization',
-]
+
 qutip_qip_tutorial_directories = [
     'pulse-level-circuit-simulation',
     'quantum-circuits',
 ]
-
 # +++ READ PREFIX AND SUFFIX +++
 prefix = ""
 suffix = ""
@@ -115,27 +106,22 @@ version_note = 'This are the tutorials for QuTiP Version 4. You can \
          find the tutorials for QuTiP Version 5 \
           <a href="./index-v5.html">here</a>.'
 
-html = generate_index_html('../tutorials-v4/', tutorial_directories, title,
-                           version_note)
-
 qutip_qip_html = generate_index_html('../tutorials-v4/', qutip_qip_tutorial_directories, title,
                            version_note)
-with open('index.html', 'w+') as f:
-    f.write(prefix)
-    f.write(html)
-    f.write(suffix)
 with open('qutip-qip.html', 'w+') as f:
+    f.write(prefix)
     f.write(qutip_qip_html)
+    f.write(suffix)
 
 # +++ VERSION 5 INDEX FILE +++
 title = 'Tutorials for QuTiP Version 5'
-version_note = 'This are the tutorials for QuTiP Version 5. You can \
+version_note = 'This are the tutorials for QuTiP-QIP Version 5. You can \
          find the tutorials for QuTiP Version 4 \
           <a href="./index.html">here</a>.'
 
-html = generate_index_html('../tutorials-v5/', tutorial_directories, title,
-                           version_note)
 qutip_qip_html = generate_index_html('../tutorials-v5/', qutip_qip_tutorial_directories, title,
                            version_note)
 with open('qutip-qip-v5.html', 'w+') as f:
+    f.write(prefix)
     f.write(qutip_qip_html)
+    f.write(suffix)
