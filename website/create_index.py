@@ -95,10 +95,6 @@ tutorial_directories = [
     'time-evolution',
     'visualization',
 ]
-qutip_qip_tutorial_directories = [
-    'pulse-level-circuit-simulation',
-    'quantum-circuits',
-]
 
 # +++ READ PREFIX AND SUFFIX +++
 prefix = ""
@@ -118,14 +114,11 @@ version_note = 'This are the tutorials for QuTiP Version 4. You can \
 html = generate_index_html('../tutorials-v4/', tutorial_directories, title,
                            version_note)
 
-qutip_qip_html = generate_index_html('../tutorials-v4/', qutip_qip_tutorial_directories, title,
-                           version_note)
 with open('index.html', 'w+') as f:
     f.write(prefix)
     f.write(html)
     f.write(suffix)
-with open('qutip-qip.html', 'w+') as f:
-    f.write(qutip_qip_html)
+
 
 # +++ VERSION 5 INDEX FILE +++
 title = 'Tutorials for QuTiP Version 5'
@@ -135,7 +128,8 @@ version_note = 'This are the tutorials for QuTiP Version 5. You can \
 
 html = generate_index_html('../tutorials-v5/', tutorial_directories, title,
                            version_note)
-qutip_qip_html = generate_index_html('../tutorials-v5/', qutip_qip_tutorial_directories, title,
-                           version_note)
-with open('qutip-qip-v5.html', 'w+') as f:
-    f.write(qutip_qip_html)
+
+with open('index-v5.html', 'w+') as f:
+    f.write(prefix)
+    f.write(html)
+    f.write(suffix)
