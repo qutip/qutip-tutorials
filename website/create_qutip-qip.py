@@ -101,10 +101,10 @@ with open('suffix.html', 'r') as f:
     suffix = f.read()
 
 # +++ VERSION 4 INDEX FILE +++
-title = 'Tutorials for QuTiP Version 4'
+title = 'Tutorials'
 version_note = 'This are the tutorials for QuTiP Version 4. You can \
          find the tutorials for QuTiP Version 5 \
-          <a href="./index-v5.html">here</a>.'
+          <a href="./qutip-qip.html">here</a>.'
 
 qutip_qip_html = generate_index_html('../tutorials-v4/', qutip_qip_tutorial_directories, title,
                            version_note)
@@ -117,7 +117,7 @@ with open('qutip-qip.html', 'w+') as f:
 title = 'Tutorials for QuTiP Version 5'
 version_note = 'This are the tutorials for QuTiP-QIP Version 5. You can \
          find the tutorials for QuTiP Version 4 \
-          <a href="./index.html">here</a>.'
+          <a href="./qutip-qip.html">here</a>.'
 
 qutip_qip_html = generate_index_html('../tutorials-v5/', qutip_qip_tutorial_directories, title,
                            version_note)
