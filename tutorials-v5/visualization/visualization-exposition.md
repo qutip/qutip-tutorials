@@ -74,7 +74,7 @@ qt.matrix_histogram_complex(rho.full());
 H0 = qt.tensor(sigmaz(), identity(2)) + qt.tensor(identity(2), sigmaz())
 Hint = 0.1 * qt.tensor(sigmax(), sigmax())
 fig = plt.figure(figsize=(8,4))
-qt.plot_energy_levels([H0, Hint], fig=fig);
+qt.plot_energy_levels([H0, Hint], h_labels=['H0', 'H0+Hint'], fig=fig);
 ```
 
 # Plot Fock distribution
