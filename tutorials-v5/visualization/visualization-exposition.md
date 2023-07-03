@@ -49,13 +49,13 @@ qt.sphereplot(theta, phi, qt.orbital(theta, phi, basis(3, 0)).T);
 fig = plt.figure(figsize=(16, 4))
 
 ax = fig.add_subplot(1, 3, 1, projection="3d")
-qt.sphereplot(theta, phi, qt.orbital(theta, phi, basis(3, 0)).T, fig=fig, ax=ax)
+qt.sphereplot(theta, phi, qt.orbital(theta, phi, basis(3, 0)).T, ax=ax)
 
 ax = fig.add_subplot(1, 3, 2, projection="3d")
-qt.sphereplot(theta, phi, qt.orbital(theta, phi, basis(3, 1)).T, fig=fig, ax=ax)
+qt.sphereplot(theta, phi, qt.orbital(theta, phi, basis(3, 1)).T, ax=ax)
 
 ax = fig.add_subplot(1, 3, 3, projection="3d")
-qt.sphereplot(theta, phi, qt.orbital(theta, phi, basis(3, 2)).T, fig=fig, ax=ax);
+qt.sphereplot(theta, phi, qt.orbital(theta, phi, basis(3, 2)).T, ax=ax);
 ```
 
 # Matrix histogram
@@ -73,7 +73,7 @@ qt.matrix_histogram_complex(rho.full());
 ```python
 H0 = qt.tensor(sigmaz(), identity(2)) + qt.tensor(identity(2), sigmaz())
 Hint = 0.1 * qt.tensor(sigmax(), sigmax())
-fig = plt.figure(figsize=(8,4))
+fig = plt.figure(figsize=(8, 4))
 qt.plot_energy_levels([H0, Hint], h_labels=['H0', 'H0+Hint'], fig=fig);
 ```
 
@@ -90,7 +90,7 @@ qt.plot_fock_distribution(rho);
 # Plot Wigner function and Fock distribution
 
 ```python
-fig = plt.figure(figsize=(8,4))
+fig = plt.figure(figsize=(8, 4))
 qt.plot_wigner_fock_distribution(rho, fig=fig);
 ```
 
@@ -165,7 +165,7 @@ ax = fig.add_subplot(1, 2, 1)
 f1, a1 = qt.plot_spin_distribution(Q, THETA, PHI, fig=fig, ax=ax)
 
 ax = fig.add_subplot(1, 2, 2, projection="3d")
-f2, a2 = qt.plot_spin_distribution(Q, THETA, PHI, projection='3d', fig=fig, ax=ax);
+f2, a2 = qt.plot_spin_distribution(Q, THETA, PHI, projection='3d', ax=ax);
 ```
 
 # Plot spin-Wigner functions
@@ -181,7 +181,7 @@ ax = fig.add_subplot(1, 2, 1)
 f1, a1 = qt.plot_spin_distribution(W.real, THETA, PHI, fig=fig, ax=ax)
 
 ax = fig.add_subplot(1, 2, 2, projection="3d")
-f2, a2 = qt.plot_spin_distribution(W.real, THETA, PHI, projection='3d', fig=fig, ax=ax);
+f2, a2 = qt.plot_spin_distribution(W.real, THETA, PHI, projection='3d', ax=ax);
 ```
 
 # Versions
