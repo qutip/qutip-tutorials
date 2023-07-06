@@ -23,7 +23,7 @@ This is a slightly modified version of the lectures, to work with the current re
 ```python
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import Qobj, about, energy_level_diagram, ket2dm, mesolve
+from qutip import Qobj, about, plot_energy_levels, ket2dm, mesolve
 
 %matplotlib inline
 ```

@@ -90,8 +90,9 @@ qt.plot_fock_distribution(rho);
 # Plot Wigner function and Fock distribution
 
 ```python
-fig = plt.figure(figsize=(8, 4))
-qt.plot_wigner_fock_distribution(rho, fig=fig);
+fig, axes = plt.subplots(1, 2, figsize=(8, 4))
+qt.plot_fock_distribution(rho, fig=fig, ax=axes[0])
+qt.plot_wigner(rho, fig=fig, ax=axes[1]);
 ```
 
 # Plot winger function
