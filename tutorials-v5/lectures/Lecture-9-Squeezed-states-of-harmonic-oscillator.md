@@ -28,7 +28,7 @@ import numpy as np
 from IPython.display import HTML
 from matplotlib import animation
 from qutip import (about, basis, coherent, destroy, displace, expect, mesolve,
-                   num, plot_wigner, plot_fock_distribution, squeeze, variance)
+                   num, plot_fock_distribution, plot_wigner, squeeze, variance)
 
 %matplotlib inline
 ```

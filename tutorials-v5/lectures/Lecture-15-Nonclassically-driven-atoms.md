@@ -25,8 +25,8 @@ This is a slightly modified version of the lectures, to work with the current re
 import matplotlib.pyplot as plt
 import numpy as np
 from qutip import (about, correlation_2op_1t, correlation_3op_1t, destroy,
-                   expect, identity, liouvillian,
-                   plot_fock_distribution, plot_wigner, spectrum_correlation_fft,
+                   expect, identity, liouvillian, plot_fock_distribution,
+                   plot_wigner, spectrum_correlation_fft,
                    spost, spre, steadystate, tensor)
 
 %matplotlib inline
