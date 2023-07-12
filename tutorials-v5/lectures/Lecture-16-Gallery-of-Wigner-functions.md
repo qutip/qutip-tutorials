@@ -42,13 +42,16 @@ N = 20
 
 ```python
 def plot_wigner_2d_3d(psi):
+    xvec = np.linspace(-6, 6, 200)
+    yvec = np.linspace(-6, 6, 200)
+
     fig = plt.figure(figsize=(17, 8))
 
     ax = fig.add_subplot(1, 2, 1)
-    plot_wigner(psi, fig=fig, ax=ax, alpha_max=6)
+    plot_wigner(psi, xvec=xvec, yvec=yvec, fig=fig, ax=ax)
 
     ax = fig.add_subplot(1, 2, 2, projection="3d")
-    plot_wigner(psi, fig=fig, ax=ax, projection="3d", alpha_max=6)
+    plot_wigner(psi, xvec=xvec, yvec=yvec, projection="3d", fig=fig, ax=ax)
 
     plt.close(fig)
     return fig
