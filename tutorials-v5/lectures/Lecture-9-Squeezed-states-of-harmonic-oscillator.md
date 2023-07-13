@@ -28,7 +28,7 @@ import numpy as np
 from IPython.display import HTML
 from matplotlib import animation
 from qutip import (about, basis, coherent, destroy, displace, expect, mesolve,
-                   num, plot_wigner_fock_distribution, squeeze, variance)
+                   num, plot_fock_distribution, plot_wigner, squeeze, variance)
 
 %matplotlib inline
 ```
@@ -43,15 +43,15 @@ A state that satisfies
 
 $(\Delta x) (\Delta p) = \hbar/2$
 
-is called a minimum uncertainty state, and a state for which, for example, 
+is called a minimum uncertainty state, and a state for which, for example,
 
-$(\Delta x)^2 < \hbar/2$ 
+$(\Delta x)^2 < \hbar/2$
 
 is called a squeezed state. Note that in this case $(\Delta p)^2$ must be larger than $\hbar/2(\Delta x)^2$ for the Heisenberg relation to hold. Squeezing a quantum state so that the variance of one operator $x$ is reduced below the minimum uncertainty limit therefore necessarily amplify the variance of operators that do not commute with $x$, such as $p$.
 
-For harmonic modes, squeezing of $x$ or $p$ is called quadrature squeezing, and it is probably the most common form of squeezing. 
+For harmonic modes, squeezing of $x$ or $p$ is called quadrature squeezing, and it is probably the most common form of squeezing.
 
-In this QuTiP notebook we look at how expectation values and variances of the quadrature operators $x$ or $p$ of a single harmonic mode evolve in time when initially in different kinds of squeezed states. 
+In this QuTiP notebook we look at how expectation values and variances of the quadrature operators $x$ or $p$ of a single harmonic mode evolve in time when initially in different kinds of squeezed states.
 
 
 ## Parameters
@@ -144,7 +144,8 @@ fig, axes = plt.subplots(1, 2, figsize=(10, 5))
 
 def update(n):
     axes[0].cla()
-    plot_wigner_fock_distribution(result.states[n], fig=fig, axes=axes)
+    plot_fock_distribution(result.states[n], fig=fig, ax=axes[0])
+    plot_wigner(result.states[n], fig=fig, ax=axes[1])
     return axes[0].artists + axes[1].artists
 
 
@@ -181,7 +182,8 @@ fig, axes = plt.subplots(1, 2, figsize=(10, 5))
 
 def update(n):
     axes[0].cla()
-    plot_wigner_fock_distribution(result.states[n], fig=fig, axes=axes)
+    plot_fock_distribution(result.states[n], fig=fig, ax=axes[0])
+    plot_wigner(result.states[n], fig=fig, ax=axes[1])
     return axes[0].artists + axes[1].artists
 
 
@@ -220,7 +222,8 @@ fig, axes = plt.subplots(1, 2, figsize=(10, 5))
 
 def update(n):
     axes[0].cla()
-    plot_wigner_fock_distribution(result.states[n], fig=fig, axes=axes)
+    plot_fock_distribution(result.states[n], fig=fig, ax=axes[0])
+    plot_wigner(result.states[n], fig=fig, ax=axes[1])
     return axes[0].artists + axes[1].artists
 
 

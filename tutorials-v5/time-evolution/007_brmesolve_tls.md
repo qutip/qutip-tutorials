@@ -86,9 +86,11 @@ result_brme = brmesolve(H, psi0, times, [a_op], e_ops)
 We can now compare the expectation values for every operator we passed to the solvers in `e_ops`. As expected both solvers, `mesolve` and `brmesolve`, produce similar results.
 
 ```python
-plot_expectation_values(
-    [result_me, result_brme], ylabels=["<X>", "<Y>", "<Z>"], show_legend=True
-);
+fig, axes = plot_expectation_values(
+    [result_me, result_brme], ylabels=["<X>", "<Y>", "<Z>"]
+)
+for ax in axes:
+    ax.legend(['mesolove', 'brmesolve'], loc='upper right')
 ```
 
 ## Storing States instead of expectation values
@@ -134,8 +136,10 @@ rhoss_br = rhoss_br_eigenbasis.transform(H_ekets, True)
 rhoss_me = steadystate(L)
 
 # Plot the density matrices using a hinton plot
-hinton(rhoss_br, title="Bloch-Redfield steadystate")
-hinton(rhoss_me, title="Lindblad-ME steadystate");
+fig, ax = hinton(rhoss_br)
+ax.set_title("Bloch-Redfield steadystate")
+fig, ax = hinton(rhoss_me)
+ax.set_title("Lindblad-ME steadystate");
 ```
 
 ## About

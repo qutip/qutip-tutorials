@@ -23,7 +23,7 @@ This is a slightly modified version of the lectures, to work with the current re
 ```python
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import Qobj, about, energy_level_diagram, ket2dm, mesolve
+from qutip import Qobj, about, plot_energy_levels, ket2dm, mesolve
 
 %matplotlib inline
 ```
@@ -45,7 +45,7 @@ where $E_C$ is the charge energy, $E_J$ is the Josephson energy, and $\left| n\r
 
 ### Helper functions
 
-Below we will repeatedly need to obtain the charge qubit Hamiltonian for different parameters, and to plot the eigenenergies, so here we define two functions to do these tasks. 
+Below we will repeatedly need to obtain the charge qubit Hamiltonian for different parameters, and to plot the eigenenergies, so here we define two functions to do these tasks.
 
 ```python
 def hamiltonian(Ec, Ej, N, ng):
@@ -284,7 +284,8 @@ qubit_evals - qubit_evals[0]
 ```
 
 ```python
-energy_level_diagram([H0, Hd], figsize=(4, 2));
+fig = plt.figure(figsize=(4, 2))
+plot_energy_levels([H0, Hd], fig=fig);
 ```
 
 Imagine that we also can drive a $\sigma_x$ type of interaction (e.g., external field):
@@ -341,7 +342,8 @@ Hd
 And if we look at the energy level diagram now we see that we only have two states in the system, as desired.
 
 ```python
-energy_level_diagram([H0, Hd], figsize=(4, 2));
+fig = plt.figure(figsize=(4, 2))
+plot_energy_levels([H0, Hd], fig=fig);
 ```
 
 ```python

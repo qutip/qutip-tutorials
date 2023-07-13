@@ -91,11 +91,13 @@ separable = (ket("01") - ket("00")).unit()
 ```
 
 ```python
-plot_schmidt(singlet, figsize=(2, 2));
+fig = plt.figure(figsize=(2, 2))
+plot_schmidt(singlet, fig=fig);
 ```
 
 ```python
-plot_schmidt(separable, figsize=(2, 2));
+fig = plt.figure(figsize=(2, 2))
+plot_schmidt(separable, fig=fig);
 ```
 
 As we see, for separable state the plot is a product of `x` and `y` coordinates, while for the singlet state - is is not.
@@ -106,7 +108,8 @@ Schmidt plot, by default, makes spliting of equal numbers of particles.
 (And just for fun, let's multiply it by the imaginary unit, to get diffeerent colors.)
 
 ```python
-plot_schmidt(1j * tensor([singlet, singlet]), figsize=(2, 2));
+fig = plt.figure(figsize=(2, 2))
+plot_schmidt(1j * tensor([singlet, singlet]), fig=fig);
 ```
 
 As we see, we have a product, as the state is a product state with the respect to the splitting of first 2 vs last 2 particles.
@@ -114,8 +117,9 @@ As we see, we have a product, as the state is a product state with the respect t
 But what if we shift particles, getting $|\psi^-\rangle_{23}|\psi^-\rangle_{41}$?
 
 ```python
+fig = plt.figure(figsize=(2, 2))
 plot_schmidt(1j * tensor([singlet, singlet]).permute([1, 2, 3, 0]),
-             figsize=(2, 2));
+             fig=fig);
 ```
 
 So we see that it is entangled.
@@ -125,11 +129,12 @@ So we see that it is entangled.
 For example:
 
 ```python
+fig = plt.figure(figsize=(4, 2))
 plot_schmidt(
     1j * tensor([singlet, singlet]),
     splitting=1,
     labels_iteration=(1, 3),
-    figsize=(4, 2),
+    fig=fig
 );
 ```
 
@@ -160,19 +165,22 @@ state = (
     - 1j * ket("1101")
     - 0.2 * ket("0110")
 )
-plot_qubism(state, figsize=(4, 4));
+fig = plt.figure(figsize=(4, 4))
+plot_qubism(state, fig=fig);
 ```
 
 Or if we want to make sure how did we map amplitudes to particular regions in the plot:
 
 ```python
-plot_qubism(state, legend_iteration=2, figsize=(4, 4));
+fig = plt.figure(figsize=(4, 4))
+plot_qubism(state, legend_iteration=2, fig=fig);
 ```
 
 Or how about making it dark? (E.g. to fit out slides with black background).
 
 ```python
-plot_qubism(state, legend_iteration=2, theme="dark", figsize=(4, 4));
+fig = plt.figure(figsize=(4, 4))
+plot_qubism(state, legend_iteration=2, theme="dark", fig=fig);
 ```
 
 The most important property of Qubism is the recursive structure. So that we can add more particles seamlessly.
@@ -275,7 +283,8 @@ where $\vec{S}_i$ is [spin operator](http://en.wikipedia.org/wiki/Pauli_matrices
 ```python
 ss = sum([tensor([jmat(1, s)] * 2) for s in ["x", "y", "z"]])
 H = spinchainize([ss, (1.0 / 3.0) * ss**2], n=6, bc="periodic")
-plot_qubism(gs_of(H), figsize=(4, 4));
+fig = plt.figure(figsize=(4, 4))
+plot_qubism(gs_of(H), fig=fig);
 ```
 
 Qubism for qutrits works similarly as for qubits:
@@ -316,7 +325,7 @@ for i in [1, 2]:
 
 The one above emphasis ferromagnetic (put on the left) vs antiferromagnetic (put on the right) states.
 
-Another one `how='before_after'` (inspired by [this](http://commons.wikimedia.org/wiki/File:Ising-tartan.png)) works in a bit different way: it uses typical recursion, but starting from middle particles. For example, the top left quadrant correspons to $|00\rangle_{N/2,N/2+1}$: 
+Another one `how='before_after'` (inspired by [this](http://commons.wikimedia.org/wiki/File:Ising-tartan.png)) works in a bit different way: it uses typical recursion, but starting from middle particles. For example, the top left quadrant correspons to $|00\rangle_{N/2,N/2+1}$:
 
 ```python
 fig = plt.figure(figsize=(8, 4))
@@ -334,7 +343,7 @@ for i in [1, 2]:
 
 It is very similar to the Schmidt plot (for the default splitting), with the only difference being ordering of the `y` axis (particle order is reversed). All entanglement properties are the same.
 
-So how does it work on the same example? 
+So how does it work on the same example?
 Well, let us take spin chain for (Majumdar-Ghosh model for $J=0$), i.e.
 $$H = \sum_{i=1}^N \vec{S}_i \cdot \vec{S}_{i+1}$$
 for qubits.

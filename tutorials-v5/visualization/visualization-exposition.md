@@ -30,7 +30,8 @@ rho = qt.rand_dm(5)
 ```
 
 ```python
-qt.hinton(rho);
+fig, ax = qt.hinton(rho)
+ax.set_title('hinton');
 ```
 
 ## Sphereplot
@@ -48,13 +49,13 @@ qt.sphereplot(theta, phi, qt.orbital(theta, phi, basis(3, 0)).T);
 fig = plt.figure(figsize=(16, 4))
 
 ax = fig.add_subplot(1, 3, 1, projection="3d")
-qt.sphereplot(theta, phi, qt.orbital(theta, phi, basis(3, 0)).T, fig, ax)
+qt.sphereplot(theta, phi, qt.orbital(theta, phi, basis(3, 0)).T, ax=ax)
 
 ax = fig.add_subplot(1, 3, 2, projection="3d")
-qt.sphereplot(theta, phi, qt.orbital(theta, phi, basis(3, 1)).T, fig, ax)
+qt.sphereplot(theta, phi, qt.orbital(theta, phi, basis(3, 1)).T, ax=ax)
 
 ax = fig.add_subplot(1, 3, 3, projection="3d")
-qt.sphereplot(theta, phi, qt.orbital(theta, phi, basis(3, 2)).T, fig, ax);
+qt.sphereplot(theta, phi, qt.orbital(theta, phi, basis(3, 2)).T, ax=ax);
 ```
 
 # Matrix histogram
@@ -72,8 +73,8 @@ qt.matrix_histogram_complex(rho.full());
 ```python
 H0 = qt.tensor(sigmaz(), identity(2)) + qt.tensor(identity(2), sigmaz())
 Hint = 0.1 * qt.tensor(sigmax(), sigmax())
-
-qt.plot_energy_levels([H0, Hint], figsize=(8, 4));
+fig = plt.figure(figsize=(8, 4))
+qt.plot_energy_levels([H0, Hint], h_labels=['H0', 'H0+Hint'], fig=fig);
 ```
 
 # Plot Fock distribution
@@ -89,13 +90,15 @@ qt.plot_fock_distribution(rho);
 # Plot Wigner function and Fock distribution
 
 ```python
-qt.plot_wigner_fock_distribution(rho);
+fig, axes = plt.subplots(1, 2, figsize=(8, 4))
+qt.plot_fock_distribution(rho, fig=fig, ax=axes[0])
+qt.plot_wigner(rho, fig=fig, ax=axes[1]);
 ```
 
 # Plot winger function
 
 ```python
-qt.plot_wigner(rho, figsize=(6, 6));
+qt.plot_wigner(rho);
 ```
 
 # Plot expectation values
@@ -143,15 +146,15 @@ Q, THETA, PHI = qt.spin_q_function(psi, theta, phi)
 ## 2D
 
 ```python
-qt.plot_spin_distribution_2d(Q, THETA, PHI);
+qt.plot_spin_distribution(Q, THETA, PHI);
 ```
 
 ## 3D
 
 ```python
-fig, ax = qt.plot_spin_distribution_3d(Q, THETA, PHI)
+fig, ax = qt.plot_spin_distribution(Q, THETA, PHI, projection='3d')
 
-ax.view_init(15, 30)
+ax.view_init(15, 30);
 ```
 
 ## Combined 2D and 3D
@@ -160,10 +163,10 @@ ax.view_init(15, 30)
 fig = plt.figure(figsize=(14, 6))
 
 ax = fig.add_subplot(1, 2, 1)
-f1, a1 = qt.plot_spin_distribution_2d(Q, THETA, PHI, fig=fig, ax=ax)
+f1, a1 = qt.plot_spin_distribution(Q, THETA, PHI, fig=fig, ax=ax)
 
 ax = fig.add_subplot(1, 2, 2, projection="3d")
-f2, a2 = qt.plot_spin_distribution_3d(Q, THETA, PHI, fig=fig, ax=ax)
+f2, a2 = qt.plot_spin_distribution(Q, THETA, PHI, projection='3d', ax=ax);
 ```
 
 # Plot spin-Wigner functions
@@ -176,10 +179,10 @@ W, THETA, PHI = qt.spin_wigner(psi, theta, phi)
 fig = plt.figure(figsize=(14, 6))
 
 ax = fig.add_subplot(1, 2, 1)
-f1, a1 = qt.plot_spin_distribution_2d(W.real, THETA, PHI, fig=fig, ax=ax)
+f1, a1 = qt.plot_spin_distribution(W.real, THETA, PHI, fig=fig, ax=ax)
 
 ax = fig.add_subplot(1, 2, 2, projection="3d")
-f2, a2 = qt.plot_spin_distribution_3d(W.real, THETA, PHI, fig=fig, ax=ax)
+f2, a2 = qt.plot_spin_distribution(W.real, THETA, PHI, projection='3d', ax=ax);
 ```
 
 # Versions
