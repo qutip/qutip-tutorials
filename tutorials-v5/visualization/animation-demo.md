@@ -56,16 +56,16 @@ fig, ani = qt.plot_wigner(results.states, projection='3d', colorbar=True)
 ```python
 fig = plt.figure()
 ax = fig.add_subplot(1, 1, 1)
-fig, ani= qt.plot_fock_distribution(results.states, fig=fig, ax=ax)
+fig, ani = qt.plot_fock_distribution(results.states, fig=fig, ax=ax)
 ```
 
 
 ```python
-fig, ani = qt.matrix_histogram(results.states, bar_style ='abs')
-#save and show the animation
-#plt.close()
-#html = qt.make_html_video(ani, 'matrix.gif')
-#html
+fig, ani = qt.matrix_histogram(results.states, bar_style='abs')
+# save and show the animation
+# plt.close()
+# html = qt.make_html_video(ani, 'matrix.gif')
+# html
 ```
 
 ## Qubism animation
@@ -108,7 +108,7 @@ ax1.imshow(
     extent=(-1, 1, -1, 1)
 )
 plt.tight_layout()
-fig, ani = qt.plot_schmidt(results.states, fig = fig, ax=ax0)
+fig, ani = qt.plot_schmidt(results.states, fig=fig, ax=ax0)
 ```
 
 
@@ -131,8 +131,8 @@ ax1.imshow(
     extent=(-1, 1, -1, 1)
 )
 plt.tight_layout()
-fig, ani= qt.plot_qubism(results.states, legend_iteration=1,
-                         fig = fig, ax=ax0)
+fig, ani = qt.plot_qubism(results.states, legend_iteration=1,
+                         fig=fig, ax=ax0)
 ax0.set_title('qubism')
 ax1.set_title('color circle')
 ```
