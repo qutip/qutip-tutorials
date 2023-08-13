@@ -132,7 +132,7 @@ ax1.imshow(
 )
 plt.tight_layout()
 fig, ani = qt.plot_qubism(results.states, legend_iteration=1,
-                         fig=fig, ax=ax0)
+                          fig=fig, ax=ax0)
 ax0.set_title('qubism')
 ax1.set_title('color circle')
 ```
