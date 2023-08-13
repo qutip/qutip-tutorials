@@ -1,5 +1,20 @@
+---
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .md
+      format_name: markdown
+      format_version: '1.3'
+      jupytext_version: 1.13.8
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
+---
+
 # Animation demos
 
+For more information about QuTiP see [http://qutip.org](http://qutip.org)
 
 ```python
 from qutip import (ket, basis, sigmaz, tensor, qeye, mesolve,
@@ -24,7 +39,7 @@ import matplotlib.pyplot as plt
 H = qt.rand_dm(5)
 
 # initial state
-psi0 = qt.basis(5, 0)
+psi0 = basis(5, 0)
 
 # list of times for which the solver should store the state vector
 tlist = np.linspace(0, 10, 100)
