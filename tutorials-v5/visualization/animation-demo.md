@@ -3,7 +3,7 @@
 
 ```python
 from qutip import (ket, basis, sigmaz, tensor, qeye, mesolve,
-                   complex_array_to_rgb)
+                   complex_array_to_rgb, about)
 import qutip as qt
 import numpy as np
 import matplotlib.pyplot as plt
