@@ -178,12 +178,18 @@ phi = np.linspace(0, 2 * np.pi, 180)
 
 Ps = list()s
 for i in range(121):
-    vec = np.cos(np.pi/2*i/60)*basis(2, 0)+np.sin(np.pi/2*i/60)*basis(2, 1)
+    c = np.cos(np.pi/2*i/60)
+    s = np.sin(np.pi/2*i/60)
+    vec = c*basis(2, 0) + s*basis(2, 1)
     Q, THETA, PHI = qt.spin_q_function(vec, theta, phi)
     Ps.append(Q)
 
-fig, ani= qt.plot_spin_distribution(Ps, THETA, PHI, projection='3d', colorbar=True)
+fig, ani= qt.plot_spin_distribution(Ps, THETA, PHI,
+                                    projection='3d', colorbar=True)
 ```
+
+
+## Wave function
 
 
 ```python
@@ -191,10 +197,12 @@ theta = np.linspace(0, np.pi, 90)
 phi = np.linspace(0, 2 * np.pi, 90)
 V = list()
 for i in range(61):
-    vec = np.cos(np.pi/2*i/60)*qt.basis(3, 0)+np.sin(np.pi/2*i/60)*qt.basis(3, 2)
+    c = np.cos(np.pi/2*i/60)
+    s = np.sin(np.pi/2*i/60)
+    vec = c*qt.basis(3, 0) + s*qt.basis(3, 2)
     values = qt.orbital(theta, phi, vec).T
     V.append(values)
-fig, ani= qt.sphereplot(theta, phi, V)
+fig, ani = qt.sphereplot(theta, phi, V)
 ```
 
 
