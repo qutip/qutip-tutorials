@@ -31,6 +31,26 @@ import matplotlib.pyplot as plt
 %matplotlib notebook
 ```
 
+## Time evolution of an operator
+
+
+```python
+# Hamiltonian
+H = qt.sigmay().unit()
+
+# initial state
+psi0 = qt.sigmax().unit()
+
+# list of times for which the solver should store the state vector
+tlist = np.linspace(0, 2*np.pi, 50)
+
+results = mesolve(H, psi0, tlist, [], [])
+
+fig, ani = qt.hinton(results.states)
+
+```
+
+
 ## Time evolution of a ket
 
 
@@ -67,6 +87,17 @@ fig, ani = qt.matrix_histogram(results.states, bar_style='abs')
 # html = qt.make_html_video(ani, 'matrix.gif')
 # html
 ```
+
+
+```python
+W = list()
+for state in results.states:
+    wig = qt.wigner_transform(state, 2, False, 50, ["x"])
+    W.append(wig)
+
+fig, ani = qt.plot_wigner_sphere(W[:30], reflections=True)
+```
+
 
 ## Qubism animation
 
@@ -136,6 +167,36 @@ fig, ani = qt.plot_qubism(results.states, legend_iteration=1,
 ax0.set_title('qubism')
 ax1.set_title('color circle')
 ```
+
+
+## Spin distribution
+
+
+```python
+theta = np.linspace(0, np.pi, 180)
+phi = np.linspace(0, 2 * np.pi, 180)
+
+Ps = list()s
+for i in range(121):
+    vec = np.cos(np.pi/2*i/60)*basis(2, 0)+np.sin(np.pi/2*i/60)*basis(2, 1)
+    Q, THETA, PHI = qt.spin_q_function(vec, theta, phi)
+    Ps.append(Q)
+
+fig, ani= qt.plot_spin_distribution(Ps, THETA, PHI, projection='3d', colorbar=True)
+```
+
+
+```python
+theta = np.linspace(0, np.pi, 90)
+phi = np.linspace(0, 2 * np.pi, 90)
+V = list()
+for i in range(61):
+    vec = np.cos(np.pi/2*i/60)*qt.basis(3, 0)+np.sin(np.pi/2*i/60)*qt.basis(3, 2)
+    values = qt.orbital(theta, phi, vec).T
+    V.append(values)
+fig, ani= qt.sphereplot(theta, phi, V)
+```
+
 
 ## Versions
 
