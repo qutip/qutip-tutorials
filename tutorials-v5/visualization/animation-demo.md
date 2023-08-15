@@ -52,7 +52,7 @@ tlist = np.linspace(0, 3*np.pi, 100)
 
 results = mesolve(H, psi0, tlist, [], [])
 
-fig, ani = qutip.plot_schmidt(results.states)
+fig, ani = qutip.anim_schmidt(results.states)
 ```
 
 
@@ -71,25 +71,19 @@ You can make an animation with plots. Note that you cannot have it with other an
 
 
 ```python
-compl_circ = np.array(
-    [
-        [(x + 1j * y) if x ** 2 + y**2 <= 1 else 0j
-            for x in np.arange(-1, 1, 0.005)]
-        for y in np.arange(-1, 1, 0.005)
-    ]
-)
+compl_circ = np.array([[(x + 1j*y) if x**2 + y**2 <= 1 else 0j
+                        for x in np.arange(-1, 1, 0.005)]
+                       for y in np.arange(-1, 1, 0.005)])
 
 fig = plt.figure(figsize=(7, 3))
 ax0 = plt.subplot(1, 2, 1)
 ax1 = plt.subplot(1, 2, 2)
 ax1.set_xlabel("x", fontsize=14)
 ax1.set_ylabel("y", fontsize=14)
-ax1.imshow(
-    complex_array_to_rgb(compl_circ, rmax=1, theme='light'),
-    extent=(-1, 1, -1, 1)
-)
+ax1.imshow(complex_array_to_rgb(compl_circ, rmax=1, theme='light'),
+           extent=(-1, 1, -1, 1))
 plt.tight_layout()
-fig, ani = qutip.plot_schmidt(results.states, fig=fig, ax=ax0)
+fig, ani = qutip.anim_schmidt(results.states, fig=fig, ax=ax0)
 ```
 
 
@@ -98,26 +92,20 @@ You may want to add a title and labels to the animation. You can do it as you do
 
 
 ```python
-compl_circ = np.array(
-    [
-        [(x + 1j * y) if x ** 2 + y**2 <= 1 else 0j
-            for x in np.arange(-1, 1, 0.005)]
-        for y in np.arange(-1, 1, 0.005)
-    ]
-)
+compl_circ = np.array([[(x + 1j*y) if x**2 + y**2 <= 1 else 0j
+                        for x in np.arange(-1, 1, 0.005)]
+                       for y in np.arange(-1, 1, 0.005)])
 
 fig = plt.figure(figsize=(7, 3))
 ax0 = plt.subplot(1, 2, 1)
 ax1 = plt.subplot(1, 2, 2)
 ax1.set_xlabel("x", fontsize=14)
 ax1.set_ylabel("y", fontsize=14)
-ax1.imshow(
-    complex_array_to_rgb(compl_circ, rmax=1, theme='light'),
-    extent=(-1, 1, -1, 1)
-)
+ax1.imshow(complex_array_to_rgb(compl_circ, rmax=1, theme='light'),
+           extent=(-1, 1, -1, 1))
 plt.tight_layout()
-fig, ani = qutip.plot_qubism(results.states, legend_iteration=1,
-                          fig=fig, ax=ax0)
+fig, ani = qutip.anim_schmidt(results.states, legend_iteration=1,
+                              fig=fig, ax=ax0)
 # add title
 ax0.set_title('qubism')
 ax1.set_title('color circle')
