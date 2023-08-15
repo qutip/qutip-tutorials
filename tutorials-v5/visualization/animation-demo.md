@@ -13,94 +13,29 @@ jupyter:
 ---
 
 # Animation demos
-
 For more information about QuTiP see [http://qutip.org](http://qutip.org)
+
+
+## Overview
+QuTiP has animation functions to visualize the time evolution of quantum dynamics.
+
 
 ```python
 from qutip import (ket, basis, sigmaz, tensor, qeye, mesolve,
                    complex_array_to_rgb, about)
-import qutip as qt
+import qutip
 import numpy as np
 import matplotlib.pyplot as plt
 ```
 
 
 ```python
-# if this does not work on your environment, use qt.make_html_video
-# to see animations.
+# a magic code enabling you to see animations in your jupyter notebook
 %matplotlib notebook
 ```
 
-## Time evolution of an operator
 
-
-```python
-# Hamiltonian
-H = qt.sigmay().unit()
-
-# initial state
-psi0 = qt.sigmax().unit()
-
-# list of times for which the solver should store the state vector
-tlist = np.linspace(0, 2*np.pi, 50)
-
-results = mesolve(H, psi0, tlist, [], [])
-
-fig, ani = qt.hinton(results.states)
-
-```
-
-
-## Time evolution of a ket
-
-
-```python
-# Hamiltonian
-H = qt.rand_dm(5)
-
-# initial state
-psi0 = basis(5, 0)
-
-# list of times for which the solver should store the state vector
-tlist = np.linspace(0, 10, 100)
-
-results = mesolve(H, psi0, tlist, [], [])
-```
-
-
-```python
-fig, ani = qt.plot_wigner(results.states, projection='3d', colorbar=True)
-```
-
-
-```python
-fig = plt.figure()
-ax = fig.add_subplot(1, 1, 1)
-fig, ani = qt.plot_fock_distribution(results.states, fig=fig, ax=ax)
-```
-
-
-```python
-fig, ani = qt.matrix_histogram(results.states, bar_style='abs')
-# save and show the animation
-# plt.close()
-# html = qt.make_html_video(ani, 'matrix.gif')
-# html
-```
-
-
-```python
-W = list()
-for state in results.states:
-    wig = qt.wigner_transform(state, 2, False, 50, ["x"])
-    W.append(wig)
-
-fig, ani = qt.plot_wigner_sphere(W[:30], reflections=True)
-```
-
-
-## Qubism animation
-
+# Quick Use
 Consider a system composed of two qubits. Its hamiltonian is $\sigma_z \otimes \mathbf{1}$ and the initial state is an entangled state ($\left|10\right>$+$\left|01\right>$)/$\sqrt2$.
 This operator acts on the first qubit and leaves the second qubit unaffected.
 
@@ -109,7 +44,6 @@ This operator acts on the first qubit and leaves the second qubit unaffected.
 # Hamiltonian
 H = tensor(sigmaz(), qeye(2))
 
-
 # initial state
 psi0 = (ket('10')+ket('01')).unit()
 
@@ -117,7 +51,23 @@ psi0 = (ket('10')+ket('01')).unit()
 tlist = np.linspace(0, 3*np.pi, 100)
 
 results = mesolve(H, psi0, tlist, [], [])
+
+fig, ani = qutip.plot_schmidt(results.states)
 ```
+
+
+The magic code may not work in your environments. This is likely to happen if you run jupyter on Linux or use Google Colab. The code below will help you.
+
+
+```python
+# !pip install IPython
+# from IPython.display import HTML
+# HTML(ani.to_jshtml())
+```
+
+
+# Add other plots
+You can make an animation with plots. Note that you cannot have it with other animations.
 
 
 ```python
@@ -139,8 +89,12 @@ ax1.imshow(
     extent=(-1, 1, -1, 1)
 )
 plt.tight_layout()
-fig, ani = qt.plot_schmidt(results.states, fig=fig, ax=ax0)
+fig, ani = qutip.plot_schmidt(results.states, fig=fig, ax=ax0)
 ```
+
+
+# Customize axes objects
+You may want to add a title and labels to the animation. You can do it as you do to the plot.
 
 
 ```python
@@ -162,47 +116,20 @@ ax1.imshow(
     extent=(-1, 1, -1, 1)
 )
 plt.tight_layout()
-fig, ani = qt.plot_qubism(results.states, legend_iteration=1,
+fig, ani = qutip.plot_qubism(results.states, legend_iteration=1,
                           fig=fig, ax=ax0)
+# add title
 ax0.set_title('qubism')
 ax1.set_title('color circle')
 ```
 
 
-## Spin distribution
+## Save
+You can share your animations by saving them to your environment. More details in [the official doc](https://matplotlib.org/stable/api/_as_gen/matplotlib.animation.Animation.html)
 
 
 ```python
-theta = np.linspace(0, np.pi, 180)
-phi = np.linspace(0, 2 * np.pi, 180)
-
-Ps = list()s
-for i in range(121):
-    c = np.cos(np.pi/2*i/60)
-    s = np.sin(np.pi/2*i/60)
-    vec = c*basis(2, 0) + s*basis(2, 1)
-    Q, THETA, PHI = qt.spin_q_function(vec, theta, phi)
-    Ps.append(Q)
-
-fig, ani= qt.plot_spin_distribution(Ps, THETA, PHI,
-                                    projection='3d', colorbar=True)
-```
-
-
-## Wave function
-
-
-```python
-theta = np.linspace(0, np.pi, 90)
-phi = np.linspace(0, 2 * np.pi, 90)
-V = list()
-for i in range(61):
-    c = np.cos(np.pi/2*i/60)
-    s = np.sin(np.pi/2*i/60)
-    vec = c*qt.basis(3, 0) + s*qt.basis(3, 2)
-    values = qt.orbital(theta, phi, vec).T
-    V.append(values)
-fig, ani = qt.sphereplot(theta, phi, V)
+# ani.save("qubism.gif")
 ```
 
 
