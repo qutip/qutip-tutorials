@@ -65,7 +65,8 @@ qt.matrix_histogram(rho.full().real);
 ```
 
 ```python
-qt.matrix_histogram_complex(rho.full());
+qt.matrix_histogram(rho.full(), limits=[0, 1],
+                    bar_style='abs', color_style='phase');
 ```
 
 # Plot energy levels
