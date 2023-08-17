@@ -21,7 +21,7 @@ QuTiP has animation functions to visualize the time evolution of quantum dynamic
 
 
 ```python
-from qutip import (ket, basis, sigmaz, tensor, qeye, mesolve,
+from qutip import (ket, sigmaz, tensor, qeye, mesolve,
                    complex_array_to_rgb, about)
 import qutip
 import numpy as np
@@ -35,7 +35,7 @@ import matplotlib.pyplot as plt
 ```
 
 
-# Quick Use
+# Time evolution of a qubit
 Consider a system composed of two qubits. Its hamiltonian is $\sigma_z \otimes \mathbf{1}$ and the initial state is an entangled state ($\left|10\right>$+$\left|01\right>$)/$\sqrt2$.
 This operator acts on the first qubit and leaves the second qubit unaffected.
 
@@ -66,7 +66,7 @@ The magic code may not work in your environments. This is likely to happen if yo
 ```
 
 
-# Add other plots
+# Animation with plots
 You can make an animation with plots. Note that you cannot have it with other animations.
 
 
