@@ -28,7 +28,8 @@ import numpy as np
 from IPython.display import Image
 from qutip import (Qobj, about, basis, coherent, coherent_dm, create, destroy,
                    expect, fock, fock_dm, mesolve, qeye, sigmax, sigmay,
-                   sigmaz, tensor, thermal_dm)
+                   sigmaz, tensor, thermal_dm, anim_matrix_histogram,
+                   anim_fock_distribution)
 
 %matplotlib inline
 ```
@@ -428,7 +429,7 @@ result.states[-1]  # the finial state
 You can visualize the time evolution of the state.
 
 ```python
-fig, ani = qutip.anim_matrix_histogram(result, limits=[0, 1], bar_style='abs', color_style='phase')
+fig, ani = anim_matrix_histogram(result, limits=[0, 1], bar_style='abs', color_style='phase')
 plt.close()
 ani
 ```
@@ -509,7 +510,8 @@ tlist = np.linspace(0, 50, 100)
 
 # request that the solver return the expectation value
 # of the photon number state operator a.dag() * a
-result = mesolve(H, rho0, tlist, c_ops, [a.dag() * a])
+result = mesolve(H, rho0, tlist, c_ops, [a.dag() * a],
+                 options={"store_states": True})
 ```
 
 ```python
@@ -517,6 +519,14 @@ fig, axes = plt.subplots(1, 1)
 axes.plot(tlist, result.expect[0])
 axes.set_xlabel(r"$t$", fontsize=20)
 axes.set_ylabel(r"Photon number", fontsize=16);
+```
+
+You can visualize the occupation probability of fock states.
+
+```python
+fig, ani = anim_fock_distribution(result)
+plt.close()
+ani
 ```
 
 ### Installation information
