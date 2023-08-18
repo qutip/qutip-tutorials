@@ -22,6 +22,8 @@ This is a slightly modified version of the lectures, to work with the current re
 
 ```python
 import matplotlib.pyplot as plt
+from matplotlib import rc
+rc('animation', html='jshtml')
 import numpy as np
 from IPython.display import Image
 from qutip import (Qobj, about, basis, coherent, coherent_dm, create, destroy,
@@ -33,13 +35,13 @@ from qutip import (Qobj, about, basis, coherent, coherent_dm, create, destroy,
 
 ## Introduction
 
-QuTiP is a python package for calculations and numerical simulations of quantum systems. 
+QuTiP is a python package for calculations and numerical simulations of quantum systems.
 
 It includes facilities for representing and doing calculations with quantum objects such state vectors (wavefunctions), as bras/kets/density matrices, quantum operators of single and composite systems, and superoperators (useful for defining master equations).
 
 It also includes solvers for a time-evolution of quantum systems, according to: Schrodinger equation, von Neuman equation, master equations, Floquet formalism, Monte-Carlo quantum trajectors, experimental implementations of the stochastic Schrodinger/master equations.
 
-For more information see the project web site at [qutip.org](https://qutip.org), and the 
+For more information see the project web site at [qutip.org](https://qutip.org), and the
 [QuTiP documentation](https://qutip.org/docs/latest/index.html).
 
 ### Installation
@@ -53,7 +55,7 @@ For further installation details, refer to the [GitHub repository](https://githu
 
 ## Quantum object class: `qobj`
 
-At the heart of the QuTiP package is the `Qobj` class, which is used for representing quantum object such as states and operator. 
+At the heart of the QuTiP package is the `Qobj` class, which is used for representing quantum object such as states and operator.
 
 The `Qobj` class contains all the information required to describe a quantum system, such as its matrix representation, composite structure and dimensionality.
 
@@ -369,7 +371,7 @@ H = wc * a.dag() * a - 0.5 * wa * sz + g * (a * sm.dag() + a.dag() * sm)
 H
 ```
 
-Note that 
+Note that
 
 $a \sigma_+ = (a \otimes \mathbf{1}) (\mathbf{1} \otimes \sigma_+)$
 
@@ -388,11 +390,11 @@ tensor(destroy(3), create(2))
 
 ## Unitary dynamics
 
-Unitary evolution of a quantum system in QuTiP can be calculated with the `mesolve` function. 
+Unitary evolution of a quantum system in QuTiP can be calculated with the `mesolve` function.
 
 `mesolve` is short for Master-eqaution solve (for dissipative dynamics), but if no collapse operators (which describe the dissipation) are given to the solve it falls back on the unitary evolution of the Schrodinger (for initial states in state vector for) or the von Neuman equation (for initial states in density matrix form).
 
-The evolution solvers in QuTiP returns a class of type `Odedata`, which contains the solution to the problem posed to the evolution solver. 
+The evolution solvers in QuTiP returns a class of type `Odedata`, which contains the solution to the problem posed to the evolution solver.
 
 For example, considor a qubit with Hamiltonian $H = \sigma_x$ and initial state $\left|1\right>$ (in the sigma-z basis): Its evolution can be calculated as follows:
 
@@ -413,7 +415,7 @@ result = mesolve(H, psi0, tlist, [], [])
 result
 ```
 
-The `result` object contains a list of the wavefunctions at the times requested with the `tlist` array. 
+The `result` object contains a list of the wavefunctions at the times requested with the `tlist` array.
 
 ```python
 len(result.states)
@@ -423,9 +425,17 @@ len(result.states)
 result.states[-1]  # the finial state
 ```
 
+You can visualize the time evolution of the state.
+
+```python
+fig, ani = qutip.anim_matrix_histogram(result, limits=[0, 1], bar_style='abs', color_style='phase')
+plt.close()
+ani
+```
+
 ### Expectation values
 
-The expectation values of an operator given a state vector or density matrix (or list thereof) can be calculated using the `expect` function. 
+The expectation values of an operator given a state vector or density matrix (or list thereof) can be calculated using the `expect` function.
 
 ```python
 expect(sigmaz(), result.states[-1])
@@ -469,17 +479,17 @@ axes.legend(loc=2);
 
 To add dissipation to a problem, all we need to do is to define a list of collapse operators to the call to the `mesolve` solver.
 
-A collapse operator is an operator that describes how the system is interacting with its environment. 
+A collapse operator is an operator that describes how the system is interacting with its environment.
 
-For example, consider a quantum harmonic oscillator with Hamiltonian 
+For example, consider a quantum harmonic oscillator with Hamiltonian
 
 $H = \hbar\omega a^\dagger a$
 
-and which loses photons to its environment with a relaxation rate $\kappa$. The collapse operator that describes this process is 
+and which loses photons to its environment with a relaxation rate $\kappa$. The collapse operator that describes this process is
 
 $\sqrt{\kappa} a$
 
-since $a$ is the photon annihilation operator of the oscillator. 
+since $a$ is the photon annihilation operator of the oscillator.
 
 To program this problem in QuTiP:
 
