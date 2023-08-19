@@ -113,7 +113,7 @@ plt.plot(times, x_brme, label="BRME")
 plt.legend(), plt.xlabel("time"), plt.ylabel("<X>");
 ```
 
-You can use the `qutip.anim_hinton()` function to visualize the time evolution. The animation shows the state is converging to the steadystate.
+We can use `qutip.anim_hinton()` function to visualize the time evolution. The animation shows the state is converging to the ground state. Even if you change the initial state, the result is the same.
 
 ```python
 fig, ani = anim_hinton(me_s)

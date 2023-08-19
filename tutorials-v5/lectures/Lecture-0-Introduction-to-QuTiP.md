@@ -426,7 +426,7 @@ len(result.states)
 result.states[-1]  # the finial state
 ```
 
-You can visualize the time evolution of the state.
+You can visualize the time evolution of the state. `anim_matrix_histogram` visualizes the elements of it. The animation below shows that the state changes periodically and that the coefficient of  $\left|1\right>$ is real and that of $\left|0\right>$ is imaginary.
 
 ```python
 fig, ani = anim_matrix_histogram(result, limits=[0, 1], bar_style='abs', color_style='phase')
@@ -521,7 +521,7 @@ axes.set_xlabel(r"$t$", fontsize=20)
 axes.set_ylabel(r"Photon number", fontsize=16);
 ```
 
-You can visualize the occupation probability of fock states.
+`anim_fock_distribution` enables you to visualize the probability distribution at each time.
 
 ```python
 fig, ani = anim_fock_distribution(result)
