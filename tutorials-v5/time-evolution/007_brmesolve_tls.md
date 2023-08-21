@@ -31,6 +31,7 @@ In this notebook we will introduce the basic usage of `qutip.brmesolve()` and co
 
 ```python
 import matplotlib.pyplot as plt
+# set a parameter to see animations in line
 from matplotlib import rc
 rc('animation', html='jshtml')
 import numpy as np
@@ -117,6 +118,7 @@ We can use `qutip.anim_hinton()` function to visualize the time evolution. The a
 
 ```python
 fig, ani = anim_hinton(me_s)
+# close an auto-generated plot and animation
 plt.close()
 ani
 ```

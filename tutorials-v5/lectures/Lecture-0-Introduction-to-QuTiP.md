@@ -22,6 +22,7 @@ This is a slightly modified version of the lectures, to work with the current re
 
 ```python
 import matplotlib.pyplot as plt
+# set a parameter to see animations in line
 from matplotlib import rc
 rc('animation', html='jshtml')
 import numpy as np
@@ -430,6 +431,7 @@ You can visualize the time evolution of the state. `anim_matrix_histogram` visua
 
 ```python
 fig, ani = anim_matrix_histogram(result, limits=[0, 1], bar_style='abs', color_style='phase')
+# close an auto-generated plot and animation
 plt.close()
 ani
 ```
@@ -525,6 +527,7 @@ axes.set_ylabel(r"Photon number", fontsize=16);
 
 ```python
 fig, ani = anim_fock_distribution(result)
+# close an auto-generated plot and animation
 plt.close()
 ani
 ```

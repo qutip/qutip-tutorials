@@ -24,6 +24,7 @@ This is a slightly modified version of the lectures, to work with the current re
 ```python
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+# set a parameter to see animations in line
 from matplotlib import rc
 rc('animation', html='jshtml')
 import numpy as np
@@ -224,6 +225,7 @@ for idx, rho in enumerate(output.states):
 
 fig, ani = anim_wigner(rho_cavity, xvec, xvec, projection='3d',
                        colorbar=True, fig=fig)
+# close an auto-generated plot and animation
 plt.close()
 ani
 ```

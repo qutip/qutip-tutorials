@@ -21,7 +21,7 @@ QuTiP has animation functions to visualize the time evolution of quantum dynamic
 
 
 ```python
-from qutip import (ket, sigmaz, tensor, qeye, mesolve,
+from qutip import (ket, basis, sigmaz, tensor, qeye, mesolve,
                    complex_array_to_rgb, about)
 import qutip
 import numpy as np
@@ -30,7 +30,7 @@ import matplotlib.pyplot as plt
 
 
 ```python
-# a magic code enabling you to see animations in your jupyter notebook
+# a magic command enabling you to see animations in your jupyter notebook
 %matplotlib notebook
 ```
 
@@ -56,7 +56,7 @@ fig, ani = qutip.anim_schmidt(results.states)
 ```
 
 
-The magic code may not work in your environments. This is likely to happen if you run jupyter on Linux or use Google Colab. The code below will help you.
+The magic code may not work in your environments. This may happen if you run jupyter on Linux or use Google Colab. The code below will help you.
 
 
 ```python
@@ -64,7 +64,6 @@ The magic code may not work in your environments. This is likely to happen if yo
 # from IPython.display import HTML
 # HTML(ani.to_jshtml())
 ```
-
 
 # Animation with plots
 You can make an animation with plots. Note that you cannot have it with other animations.
@@ -107,17 +106,36 @@ plt.tight_layout()
 fig, ani = qutip.anim_schmidt(results.states, legend_iteration=1,
                               fig=fig, ax=ax0)
 # add title
-ax0.set_title('qubism')
+ax0.set_title('schmidt')
 ax1.set_title('color circle')
 ```
 
 
 ## Save
-You can share your animations by saving them to your environment. More details in [the official doc](https://matplotlib.org/stable/api/_as_gen/matplotlib.animation.Animation.html)
+You can share your animations by saving them to your environment. Available file extensions (gif, mp4, etc.) dependes on your environment. More details in [the official doc](https://matplotlib.org/stable/api/_as_gen/matplotlib.animation.Animation.html)
 
 
 ```python
-# ani.save("qubism.gif")
+# ani.save("schmidt.gif")
+```
+
+
+## Other animations
+QuTiP has `qutip.Qobj` to store quantum states, but it also uses `np.array` to have them. For example, `qutip.spin_q_function` returns a matrix of values representing the spin Husimi Q function at the values specified by $\theta$ and $\phi$. Some animation functions are useful to visualize them. Here is one simple animation.
+
+
+```python
+theta = np.linspace(0, np.pi, 90)
+phi = np.linspace(0, 2 * np.pi, 90)
+Ps = list()
+for i in range(0, 121, 2):
+    spin = np.cos(np.pi/2*i/60)*basis(2, 0)+np.sin(np.pi/2*i/60)*basis(2, 1)
+    # output np.array matrix
+    Q, THETA, PHI = qutip.spin_q_function(spin, theta, phi)
+    Ps.append(Q)
+
+fig, ani= qutip.anim_spin_distribution(Ps, THETA, PHI, projection='3d',
+                                       colorbar=True)
 ```
 
 
