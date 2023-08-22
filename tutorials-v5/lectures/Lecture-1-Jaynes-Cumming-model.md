@@ -24,11 +24,12 @@ This is a slightly modified version of the lectures, to work with the current re
 ```python
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import numpy as np
+from qutip import (about, basis, destroy, mesolve, ptrace, qeye,
+                   tensor, wigner, anim_wigner)
 # set a parameter to see animations in line
 from matplotlib import rc
 rc('animation', html='jshtml')
-import numpy as np
-from qutip import about, basis, destroy, mesolve, ptrace, qeye, tensor, wigner, anim_wigner
 
 %matplotlib inline
 ```

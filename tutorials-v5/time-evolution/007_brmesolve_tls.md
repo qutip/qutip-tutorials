@@ -31,13 +31,13 @@ In this notebook we will introduce the basic usage of `qutip.brmesolve()` and co
 
 ```python
 import matplotlib.pyplot as plt
-# set a parameter to see animations in line
-from matplotlib import rc
-rc('animation', html='jshtml')
 import numpy as np
 from qutip import (about, basis, bloch_redfield_tensor, brmesolve, expect,
                    hinton, liouvillian, mesolve, plot_expectation_values,
                    sigmam, sigmax, sigmay, sigmaz, steadystate, anim_hinton)
+# set a parameter to see animations in line
+from matplotlib import rc
+rc('animation', html='jshtml')
 
 %matplotlib inline
 ```

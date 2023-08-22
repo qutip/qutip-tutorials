@@ -134,7 +134,7 @@ for i in range(0, 121, 2):
     Q, THETA, PHI = qutip.spin_q_function(spin, theta, phi)
     Ps.append(Q)
 
-fig, ani= qutip.anim_spin_distribution(Ps, THETA, PHI, projection='3d',
+fig, ani = qutip.anim_spin_distribution(Ps, THETA, PHI, projection='3d',
                                        colorbar=True)
 ```
 

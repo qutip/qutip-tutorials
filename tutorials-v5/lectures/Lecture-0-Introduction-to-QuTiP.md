@@ -22,15 +22,15 @@ This is a slightly modified version of the lectures, to work with the current re
 
 ```python
 import matplotlib.pyplot as plt
-# set a parameter to see animations in line
-from matplotlib import rc
-rc('animation', html='jshtml')
 import numpy as np
 from IPython.display import Image
 from qutip import (Qobj, about, basis, coherent, coherent_dm, create, destroy,
                    expect, fock, fock_dm, mesolve, qeye, sigmax, sigmay,
                    sigmaz, tensor, thermal_dm, anim_matrix_histogram,
                    anim_fock_distribution)
+# set a parameter to see animations in line
+from matplotlib import rc
+rc('animation', html='jshtml')
 
 %matplotlib inline
 ```
@@ -430,7 +430,8 @@ result.states[-1]  # the finial state
 You can visualize the time evolution of the state. `anim_matrix_histogram` visualizes the elements of it. The animation below shows that the state changes periodically and that the coefficient of  $\left|1\right>$ is real and that of $\left|0\right>$ is imaginary.
 
 ```python
-fig, ani = anim_matrix_histogram(result, limits=[0, 1], bar_style='abs', color_style='phase')
+fig, ani = anim_matrix_histogram(result, limits=[0, 1],
+                                 bar_style='abs', color_style='phase')
 # close an auto-generated plot and animation
 plt.close()
 ani
