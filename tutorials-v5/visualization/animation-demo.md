@@ -52,7 +52,7 @@ tlist = np.linspace(0, 3*np.pi, 100)
 
 results = mesolve(H, psi0, tlist, [], [])
 
-fig, ani = qutip.anim_schmidt(results.states)
+fig, ani = qutip.anim_schmidt(results)
 ```
 
 
@@ -82,7 +82,7 @@ ax1.set_ylabel("y", fontsize=14)
 ax1.imshow(complex_array_to_rgb(compl_circ, rmax=1, theme='light'),
            extent=(-1, 1, -1, 1))
 plt.tight_layout()
-fig, ani = qutip.anim_schmidt(results.states, fig=fig, ax=ax0)
+fig, ani = qutip.anim_schmidt(results, fig=fig, ax=ax0)
 ```
 
 
@@ -103,8 +103,7 @@ ax1.set_ylabel("y", fontsize=14)
 ax1.imshow(complex_array_to_rgb(compl_circ, rmax=1, theme='light'),
            extent=(-1, 1, -1, 1))
 plt.tight_layout()
-fig, ani = qutip.anim_schmidt(results.states, legend_iteration=1,
-                              fig=fig, ax=ax0)
+fig, ani = qutip.anim_schmidt(results, fig=fig, ax=ax0)
 # add title
 ax0.set_title('schmidt')
 ax1.set_title('color circle')
