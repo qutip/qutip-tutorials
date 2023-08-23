@@ -57,7 +57,7 @@ H = [H0, H1]
 psi0 = basis(2, 0)
 ```
 
-### Floquet Schrödinger Equation 
+### Floquet Schrödinger Equation
 
 We can now use the `qutip.fsesolve()` function to solve the dynamics of the system using the Floquet formalism for the Schrödinger equation. The arguments are similar to the ones passed to `qutip.sesolve()`. There is an optional parameter `T` which defines the period of the time-dependence. If `T` is not given it is assumed that the passed `tlist` spans one period. Therefore we always pass `T` in this tutorial.
 
@@ -76,7 +76,7 @@ plot_expectation_values([result], ylabels=["<Z>"]);
 
 Similar to `mesolve()` we can also use the Floquet formalism to solve a master equation  for a dissipative quantum system. The corresponding function is `fmmesolve()`. However, the dissipation process is here described as a noise spectral-density function.
 
-For example we can define a linear noise spectral-density as: 
+For example we can define a linear noise spectral-density as:
 
 $$ S(\omega) = \frac{\gamma \cdot \omega}{4 \pi} $$
 
@@ -113,8 +113,8 @@ fme_result = fmmesolve(
 We can observe the dissipation dynamics when comparing the results to the expectation values obtained from `fsesolve()`.
 
 ```python
-plot_expectation_values([result, fme_result],
-                        ylabels=["<Z>"], show_legend=True);
+fig, axes = plot_expectation_values([result, fme_result], ylabels=["<Z>"])
+axes[0].legend(['fsesolve', 'fmmesolve'], loc='upper right');
 ```
 
 ### About
