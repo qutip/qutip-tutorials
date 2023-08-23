@@ -48,6 +48,7 @@ qt.sphereplot(qt.orbital(theta, phi, basis(3, 0)).T, theta, phi);
 ```python
 fig = plt.figure(figsize=(16, 4))
 
+
 ax = fig.add_subplot(1, 3, 1, projection="3d")
 qt.sphereplot(qt.orbital(theta, phi, basis(3, 0)).T, theta, phi, ax=ax)
 
