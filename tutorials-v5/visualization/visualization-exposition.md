@@ -42,20 +42,20 @@ phi = np.linspace(0, 2 * np.pi, 60)
 ```
 
 ```python
-qt.sphereplot(theta, phi, qt.orbital(theta, phi, basis(3, 0)).T);
+qt.sphereplot(qt.orbital(theta, phi, basis(3, 0)).T, theta, phi);
 ```
 
 ```python
 fig = plt.figure(figsize=(16, 4))
 
 ax = fig.add_subplot(1, 3, 1, projection="3d")
-qt.sphereplot(theta, phi, qt.orbital(theta, phi, basis(3, 0)).T, ax=ax)
+qt.sphereplot(qt.orbital(theta, phi, basis(3, 0)).T, theta, phi, ax=ax)
 
 ax = fig.add_subplot(1, 3, 2, projection="3d")
-qt.sphereplot(theta, phi, qt.orbital(theta, phi, basis(3, 1)).T, ax=ax)
+qt.sphereplot(qt.orbital(theta, phi, basis(3, 1)).T, theta, phi, ax=ax)
 
 ax = fig.add_subplot(1, 3, 3, projection="3d")
-qt.sphereplot(theta, phi, qt.orbital(theta, phi, basis(3, 2)).T, ax=ax);
+qt.sphereplot(qt.orbital(theta, phi, basis(3, 2)).T, theta, phi, ax=ax);
 ```
 
 # Matrix histogram
