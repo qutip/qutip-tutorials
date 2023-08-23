@@ -216,16 +216,19 @@ Also, `qutip.anim_wigner` is useful to visualize the oscillation. It calculates 
 
 ```python
 fig = plt.figure(figsize=(6, 6))
+ax = fig.add_subplot(111, projection='3d')
+ax.view_init(elev=0)
 
 rho_cavity = list()
 
-xvec = np.linspace(-3, 3, 200)
+xvec = np.linspace(-3, 3, 150)
 
 for idx, rho in enumerate(output.states):
     rho_cavity.append(ptrace(rho, 0))
 
 fig, ani = anim_wigner(rho_cavity, xvec, xvec, projection='3d',
-                       colorbar=True, fig=fig)
+                       colorbar=True, fig=fig, ax=ax)
+
 # close an auto-generated plot and animation
 plt.close()
 ani
