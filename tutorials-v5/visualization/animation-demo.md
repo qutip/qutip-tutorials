@@ -21,12 +21,12 @@ QuTiP has animation functions to visualize the time evolution of quantum dynamic
 
 
 ```python
-from qutip import (ket, basis, sigmaz, tensor, qeye, mesolve,
-                   complex_array_to_rgb, about)
-import qutip
 import numpy as np
 import matplotlib.pyplot as plt
 from IPython.display import HTML
+from qutip import (ket, basis, sigmaz, tensor, qeye, mesolve, anim_schmidt,
+                   complex_array_to_rgb, spin_q_function,
+                   anim_spin_distribution, about)
 ```
 
 
@@ -53,7 +53,7 @@ tlist = np.linspace(0, 3*np.pi, 100)
 
 results = mesolve(H, psi0, tlist, [], [])
 
-fig, ani = qutip.anim_schmidt(results)
+fig, ani = anim_schmidt(results)
 ```
 
 
@@ -81,7 +81,7 @@ ax1.set_ylabel("y", fontsize=14)
 ax1.imshow(complex_array_to_rgb(compl_circ, rmax=1, theme='light'),
            extent=(-1, 1, -1, 1))
 plt.tight_layout()
-fig, ani = qutip.anim_schmidt(results, fig=fig, ax=ax0)
+fig, ani = anim_schmidt(results, fig=fig, ax=ax0)
 ```
 
 
@@ -102,7 +102,7 @@ ax1.set_ylabel("y", fontsize=14)
 ax1.imshow(complex_array_to_rgb(compl_circ, rmax=1, theme='light'),
            extent=(-1, 1, -1, 1))
 plt.tight_layout()
-fig, ani = qutip.anim_schmidt(results, fig=fig, ax=ax0)
+fig, ani = anim_schmidt(results, fig=fig, ax=ax0)
 # add title
 ax0.set_title('schmidt')
 ax1.set_title('color circle')
@@ -129,11 +129,11 @@ Ps = list()
 for i in range(0, 121, 2):
     spin = np.cos(np.pi/2*i/60)*basis(2, 0)+np.sin(np.pi/2*i/60)*basis(2, 1)
     # output np.array matrix
-    Q, THETA, PHI = qutip.spin_q_function(spin, theta, phi)
+    Q, THETA, PHI = spin_q_function(spin, theta, phi)
     Ps.append(Q)
 
-fig, ani = qutip.anim_spin_distribution(Ps, THETA, PHI, projection='3d',
-                                        colorbar=True)
+fig, ani = anim_spin_distribution(Ps, THETA, PHI, projection='3d',
+                                  colorbar=True)
 ```
 
 
