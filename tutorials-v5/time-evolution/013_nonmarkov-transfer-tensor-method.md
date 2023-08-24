@@ -15,7 +15,7 @@ jupyter:
 # QuTiP Example: The Transfer Tensor Method for Non-Markovian Open Quantum Systems
 
 
-[Arne L. Grimsmo](http://arnegrimsmo.weebly.com/) <br>
+Arne L. Grimsmo <br>
 Université de Sherbrooke <br>
 [arne.grimsmo@gmail.com](email:arne.grimsmo@gmail.com)
 $\newcommand{\ket}[1]{\left|#1\right\rangle}$
