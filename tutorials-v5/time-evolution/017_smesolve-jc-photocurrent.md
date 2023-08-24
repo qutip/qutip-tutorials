@@ -21,7 +21,7 @@ Copyright (C) 2011 and later, Paul D. Nation & Robert J. Johansson
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import rcParams
-from qutip import about, destroy, fock, liouvillian, identity, mcsolve, mesolve
+from qutip import about, destroy, fock, identity, liouvillian, mcsolve, mesolve
 
 %matplotlib inline
 rcParams["font.family"] = "STIXGeneral"
@@ -97,9 +97,7 @@ result2 = mcsolve(
 ```python
 fig, axes = plt.subplots(2, 3, figsize=(16, 8), sharex=True)
 
-axes[0, 0].plot(
-    times, result1.expect[0], label=r"Stochastic ME (ntraj = 1)", lw=2
-)
+axes[0, 0].plot(times, result1.expect[0], label=r"Stochastic ME (ntraj = 1)", lw=2)
 axes[0, 0].plot(times, result_ref.expect[0], label=r"Lindblad ME", lw=2)
 axes[0, 0].set_title("Cavity photon number (ntraj = 1)")
 axes[0, 0].legend()
@@ -112,8 +110,7 @@ axes[1, 0].set_title("Cavity photon number (ntraj = 10)")
 axes[1, 0].legend()
 
 
-axes[0, 1].plot(times,
-                result1.expect[2], label=r"Stochastic ME (ntraj = 1)", lw=2)
+axes[0, 1].plot(times, result1.expect[2], label=r"Stochastic ME (ntraj = 1)", lw=2)
 axes[0, 1].plot(times, result_ref.expect[2], label=r"Lindblad ME", lw=2)
 axes[0, 1].set_title("Qubit excition probability (ntraj = 1)")
 axes[0, 1].legend()
