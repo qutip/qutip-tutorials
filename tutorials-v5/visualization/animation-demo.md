@@ -65,7 +65,7 @@ HTML(ani.to_jshtml())
 ```
 
 ## Animation with plots
-You can make an animation with plots. Note that you cannot have it with other animations.
+You can make an animation with accompanying plots. Note that you cannot have it with additional accompanying animations.
 
 
 ```python
@@ -86,7 +86,7 @@ fig, ani = anim_schmidt(results, fig=fig, ax=ax0)
 
 
 ## Customize axes objects
-You may want to add a title and labels to the animation. You can do it as you do to the plot.
+You may want to add a title and labels to the animation. You can do it as you do to a normal plot.
 
 
 ```python
@@ -110,7 +110,7 @@ ax1.set_title('color circle')
 
 
 ## Save
-You can share your animations by saving them to your environment. Available file extensions (gif, mp4, etc.) dependes on your environment. More details in [the official doc](https://matplotlib.org/stable/api/_as_gen/matplotlib.animation.Animation.html)
+You can share your animations by saving them to your environment. Available file extensions (gif, mp4, etc.) depends on your environment. More details in [the official doc](https://matplotlib.org/stable/api/_as_gen/matplotlib.animation.Animation.html)
 
 
 ```python
@@ -119,7 +119,7 @@ You can share your animations by saving them to your environment. Available file
 
 
 ## Other animations
-QuTiP has `qutip.Qobj` to store quantum states, but it also uses `np.array` to have them. For example, `qutip.spin_q_function` returns a matrix of values representing the spin Husimi Q function at the values specified by $\theta$ and $\phi$. Some animation functions are useful to visualize them. Here is one simple animation.
+QuTiP has `qutip.Qobj` to store quantum states, but it also uses `np.array` to store data for some other functions. For example, `qutip.spin_q_function` returns a matrix of values representing the spin Husimi Q function at the values specified by $\theta$ and $\phi$. Some animation functions are useful to visualize them. Here is one simple animation.
 
 
 ```python
