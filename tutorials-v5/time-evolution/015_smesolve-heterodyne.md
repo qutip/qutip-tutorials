@@ -43,7 +43,6 @@ w0 = 1.0 * 2 * np.pi
 A = 0.1 * 2 * np.pi
 times = np.linspace(0, 10, 201)
 gamma = 0.25
-
 ntraj = 50
 
 a = destroy(N)
@@ -221,11 +220,11 @@ result.states[100].full()
 sp.linalg.eigh(result.states[10].full(), eigvals_only=True)
 ```
 
-Using smaller integration steps by lowering the ``dt`` option will lower the numerical errors. 
+Using smaller integration steps by lowering the ``dt`` option will lower the numerical errors.
 The solver algorithm used affect the convergence and numerical error.
 Notable solvers are:  
 - euler: order 0.5 fastest, but lowest order. Only solver that accept non-commuting sc_ops.
-- rouchon: order 1.0?, build to keep the density matrix physical, 
+- rouchon: order 1.0?, build to keep the density matrix physical,
 - taylor1.5: order 1.5, reasonably fast for good convergence.
 
 To list list all available solver, use ``SMESolver.avail_integrators()``
