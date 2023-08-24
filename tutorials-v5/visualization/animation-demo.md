@@ -24,7 +24,7 @@ QuTiP has animation functions to visualize the time evolution of quantum dynamic
 import numpy as np
 import matplotlib.pyplot as plt
 from IPython.display import HTML
-from qutip import (ket, basis, sigmaz, tensor, qeye, mesolve, anim_schmidt,
+from qutip import (ket, basis, tensor, sigmaz, qeye, mesolve, anim_schmidt,
                    complex_array_to_rgb, spin_q_function,
                    anim_spin_distribution, about)
 ```
