@@ -26,6 +26,7 @@ from qutip import (ket, basis, sigmaz, tensor, qeye, mesolve,
 import qutip
 import numpy as np
 import matplotlib.pyplot as plt
+from IPython.display import HTML
 ```
 
 
@@ -35,7 +36,7 @@ import matplotlib.pyplot as plt
 ```
 
 
-# Time evolution of a qubit
+## Time evolution of a qubit
 Consider a system composed of two qubits. Its hamiltonian is $\sigma_z \otimes \mathbf{1}$ and the initial state is an entangled state ($\left|10\right>$+$\left|01\right>$)/$\sqrt2$.
 This operator acts on the first qubit and leaves the second qubit unaffected.
 
@@ -60,12 +61,10 @@ The magic code may not work in your environments. This may happen if you run jup
 
 
 ```python
-# !pip install IPython
-# from IPython.display import HTML
-# HTML(ani.to_jshtml())
+HTML(ani.to_jshtml())
 ```
 
-# Animation with plots
+## Animation with plots
 You can make an animation with plots. Note that you cannot have it with other animations.
 
 
@@ -86,7 +85,7 @@ fig, ani = qutip.anim_schmidt(results, fig=fig, ax=ax0)
 ```
 
 
-# Customize axes objects
+## Customize axes objects
 You may want to add a title and labels to the animation. You can do it as you do to the plot.
 
 
@@ -138,8 +137,7 @@ fig, ani = qutip.anim_spin_distribution(Ps, THETA, PHI, projection='3d',
 ```
 
 
-## Versions
-
+# Versions
 
 ```python
 about()
