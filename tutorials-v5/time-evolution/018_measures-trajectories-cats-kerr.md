@@ -25,8 +25,16 @@ In this notebook we show how the same system can produce extremely different res
 ```python
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import (about, destroy, expect, fock, mcsolve, ssesolve,
-                   steadystate, wigner)
+from qutip import (
+    about,
+    destroy,
+    expect,
+    fock,
+    mcsolve,
+    ssesolve,
+    steadystate,
+    wigner,
+)
 ```
 
 ## The two-photon Kerr Resontator
@@ -116,10 +124,16 @@ state_one = vecs[1].full()
 
 plt.figure(figsize=(8, 6))
 plt.plot(
-    range(0, 20), [abs(i) ** 2 for i in state_zero[0:20]], "rx", label="First state"
+    range(0, 20),
+    [abs(i) ** 2 for i in state_zero[0:20]],
+    "rx",
+    label="First state",
 )
 plt.plot(
-    range(0, 20), [abs(i) ** 2 for i in state_one[0:20]], "bo", label="Second state"
+    range(0, 20),
+    [abs(i) ** 2 for i in state_one[0:20]],
+    "bo",
+    label="Second state",
 )
 plt.legend()
 plt.xlabel("Fock state", fontsize=label_size)

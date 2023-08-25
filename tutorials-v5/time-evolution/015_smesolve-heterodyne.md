@@ -21,8 +21,15 @@ Copyright (C) 2011 and later, Paul D. Nation & Robert J. Johansson
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy as sp
-from qutip import (SMESolver, about, coherent, destroy, mesolve,
-                   plot_expectation_values, smesolve)
+from qutip import (
+    SMESolver,
+    about,
+    coherent,
+    destroy,
+    mesolve,
+    plot_expectation_values,
+    smesolve,
+)
 
 %matplotlib inline
 ```
@@ -183,8 +190,12 @@ ax.plot(times, result_ref.expect[2], "r", lw=2)
 ax.set_xlim(0, times.max())
 ax.set_ylim(-25, 25)
 ax.set_xlabel("time", fontsize=12)
-ax.plot(times[1:], np.array(result.measurement).mean(axis=0)[0, :].real, "k", lw=2)
-ax.plot(times[1:], np.array(result.measurement).mean(axis=0)[1, :].real, "k", lw=2)
+ax.plot(
+    times[1:], np.array(result.measurement).mean(axis=0)[0, :].real, "k", lw=2
+)
+ax.plot(
+    times[1:], np.array(result.measurement).mean(axis=0)[1, :].real, "k", lw=2
+)
 ```
 
 ## Common problem
