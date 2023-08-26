@@ -34,7 +34,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 from qutip import (about, basis, bloch_redfield_tensor, brmesolve, expect,
                    hinton, liouvillian, mesolve, plot_expectation_values,
-                   sigmam, sigmax, sigmay, sigmaz, steadystate)
+                   sigmam, sigmax, sigmay, sigmaz, steadystate, anim_hinton)
+# set a parameter to see animations in line
+from matplotlib import rc
+rc('animation', html='jshtml')
 
 %matplotlib inline
 ```
@@ -109,6 +112,15 @@ x_brme = expect(sigmax(), brme_s.states)
 plt.plot(times, x_me, label="ME")
 plt.plot(times, x_brme, label="BRME")
 plt.legend(), plt.xlabel("time"), plt.ylabel("<X>");
+```
+
+We can use `qutip.anim_hinton()` function to visualize the time evolution. The animation shows the state is converging to the ground state. Even if you change the initial state, the result is the same.
+
+```python
+fig, ani = anim_hinton(me_s)
+# close an auto-generated plot and animation
+plt.close()
+ani
 ```
 
 ## Bloch-Redfield Tensor
