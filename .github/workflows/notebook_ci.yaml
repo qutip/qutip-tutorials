@@ -13,6 +13,7 @@ jobs:
   pytests:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         include:
           - qutip-version: '4'
@@ -33,6 +34,7 @@ jobs:
       with:
         use-quiet-mode: 'yes'
         check-modified-files-only: 'yes'
+        base-branch: 'main'
         folder-path: tutorials-v${{ matrix.qutip-version }}
 
     - name: Setup Mambaforge
