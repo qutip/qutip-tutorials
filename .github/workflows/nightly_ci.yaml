@@ -88,7 +88,7 @@ jobs:
     - name: Check PEP8 formatting
       run: |
         pip install nbqa flake8
-        find . -name '*.ipynb' -exec nbqa flake8 --max-line-length 88 {} +
+        find . -name '*.ipynb' -exec nbqa flake8 --max-line-length=88 {} +
 
     - name: Run tests
       run: |
