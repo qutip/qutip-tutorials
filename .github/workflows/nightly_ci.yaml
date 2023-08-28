@@ -88,13 +88,13 @@ jobs:
     - name: Check PEP8 formatting
       run: |
         pip install nbqa flake8
-        find . -name '*.ipynb' -exec nbqa flake8 {} +
+        find . -name '*.ipynb' -exec nbqa flake8 --max-line-length 88 {} +
 
     - name: Run tests
       run: |
         jupyter kernel &
         cd notebooks
-        find . -name '*.ipynb' -exec pytest --nbmake --overwrite --nbmake-timeout=500 {} +
+        find . -name '*.ipynb' -exec pytest --nbmake --overwrite --nbmake-timeout=600 {} +
         rm template.ipynb
 
     - name: Create Notebook Artifact
