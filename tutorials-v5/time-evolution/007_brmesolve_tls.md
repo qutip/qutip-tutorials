@@ -34,7 +34,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 from qutip import (about, basis, bloch_redfield_tensor, brmesolve, expect,
                    hinton, liouvillian, mesolve, plot_expectation_values,
-                   sigmam, sigmax, sigmay, sigmaz, steadystate)
+                   sigmam, sigmax, sigmay, sigmaz, steadystate, anim_hinton)
+# set a parameter to see animations in line
+from matplotlib import rc
+rc('animation', html='jshtml')
 
 %matplotlib inline
 ```
@@ -86,9 +89,11 @@ result_brme = brmesolve(H, psi0, times, [a_op], e_ops)
 We can now compare the expectation values for every operator we passed to the solvers in `e_ops`. As expected both solvers, `mesolve` and `brmesolve`, produce similar results.
 
 ```python
-plot_expectation_values(
-    [result_me, result_brme], ylabels=["<X>", "<Y>", "<Z>"], show_legend=True
-);
+fig, axes = plot_expectation_values(
+    [result_me, result_brme], ylabels=["<X>", "<Y>", "<Z>"]
+)
+for ax in axes:
+    ax.legend(['mesolove', 'brmesolve'], loc='upper right')
 ```
 
 ## Storing States instead of expectation values
@@ -107,6 +112,15 @@ x_brme = expect(sigmax(), brme_s.states)
 plt.plot(times, x_me, label="ME")
 plt.plot(times, x_brme, label="BRME")
 plt.legend(), plt.xlabel("time"), plt.ylabel("<X>");
+```
+
+We can use `qutip.anim_hinton()` function to visualize the time evolution. The animation shows the state is converging to the ground state. Even if you change the initial state, the result is the same.
+
+```python
+fig, ani = anim_hinton(me_s)
+# close an auto-generated plot and animation
+plt.close()
+ani
 ```
 
 ## Bloch-Redfield Tensor
@@ -134,8 +148,10 @@ rhoss_br = rhoss_br_eigenbasis.transform(H_ekets, True)
 rhoss_me = steadystate(L)
 
 # Plot the density matrices using a hinton plot
-hinton(rhoss_br, title="Bloch-Redfield steadystate")
-hinton(rhoss_me, title="Lindblad-ME steadystate");
+fig, ax = hinton(rhoss_br)
+ax.set_title("Bloch-Redfield steadystate")
+fig, ax = hinton(rhoss_me)
+ax.set_title("Lindblad-ME steadystate");
 ```
 
 ## About
