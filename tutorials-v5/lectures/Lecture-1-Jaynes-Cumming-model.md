@@ -25,7 +25,11 @@ This is a slightly modified version of the lectures, to work with the current re
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import about, basis, destroy, mesolve, ptrace, qeye, tensor, wigner
+from qutip import (about, basis, destroy, mesolve, ptrace, qeye,
+                   tensor, wigner, anim_wigner)
+# set a parameter to see animations in line
+from matplotlib import rc
+rc('animation', html='jshtml')
 
 %matplotlib inline
 ```
@@ -46,7 +50,7 @@ where $\omega_c$ and $\omega_a$ are the frequencies of the cavity and atom, resp
 ### Problem parameters
 
 
-Here we use units where $\hbar = 1$: 
+Here we use units where $\hbar = 1$:
 <!-- #endregion -->
 
 ```python
@@ -130,7 +134,7 @@ axes.set_title("Vacuum Rabi oscillations");
 
 ## Cavity wigner function
 
-In addition to the cavity's and atom's excitation probabilities, we may also be interested in for example the wigner function as a function of time. The Wigner function can give some valuable insight in the nature of the state of the resonators. 
+In addition to the cavity's and atom's excitation probabilities, we may also be interested in for example the wigner function as a function of time. The Wigner function can give some valuable insight in the nature of the state of the resonators.
 
 To calculate the Wigner function in QuTiP, we first recalculte the evolution without specifying any expectation value operators, which will result in that the solver return a list of density matrices for the system for the given time coordinates.
 
@@ -157,7 +161,7 @@ len(output.states)
 output.states[-1]
 ```
 
-Now let's look at the Wigner functions at the point in time when atom is in its ground state: $t = \\{5, 15, 25\\}$ (see the plot above). 
+Now let's look at the Wigner functions at the point in time when atom is in its ground state: $t = \\{5, 15, 25\\}$ (see the plot above).
 
 For each of these points in time we need to:
 
@@ -208,6 +212,27 @@ for idx, rho in enumerate(rho_list):
 
 At $t =0$, the cavity is in it's ground state. At $t = 5, 15, 25$ it reaches it's maxium occupation in this Rabi-vacuum oscillation process. We can note that for $t=5$ and $t=15$ the Wigner function has negative values, indicating a truely quantum mechanical state. At $t=25$, however, the wigner function no longer has negative values and can therefore be considered a classical state.
 
+Also, `qutip.anim_wigner` is useful to visualize the oscillation. It calculates the wigner function inside it so all you need to do is pass the reduced density matrices. You can pass options to it. For example, `projection='3d'` produces a 3d plot. You can see the oscillation easily with the 3d plot.
+
+```python
+fig = plt.figure(figsize=(6, 6))
+ax = fig.add_subplot(111, projection='3d')
+ax.view_init(elev=0)
+
+rho_cavity = list()
+
+xvec = np.linspace(-3, 3, 150)
+
+for idx, rho in enumerate(output.states):
+    rho_cavity.append(ptrace(rho, 0))
+
+fig, ani = anim_wigner(rho_cavity, xvec, xvec, projection='3d',
+                       colorbar=True, fig=fig, ax=ax)
+
+# close an auto-generated plot and animation
+plt.close()
+ani
+```
 
 ### Alternative view of the same thing
 
