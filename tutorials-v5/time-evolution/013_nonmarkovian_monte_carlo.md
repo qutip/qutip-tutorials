@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.15.0
+      jupytext_version: 1.15.2
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -461,7 +461,7 @@ When computing a quantity such as the expectation value of $H$ with `nm_mcsolve`
 
 The plot shows that the number of trajectories contributing to the average declines rapidly, due to two effects. First, jumps with the jump operators $L_1$ or $L_2$ bring the system into the ground state. A trajectory that enters the ground state at any time cannot leave it again. Second, the solver adds a third jump channel with zero jump rate. A jump in this channel sets the martingale of the corresponding trajectory to zero for the remainder of the time. In the plot below, we visualize this effect by making the trajectories stop before the end of the time interval.
 
-If $\langle H \rangle$ went to zero, a declining number of contributing trajectories would not be an issue. However, due to the negative rates, the ensemble average does not converge to the steady state $|0\rangle\langle 0|$. Therefore, the weights of the remaining contributing trajectories must grow rapidly to counteract the non-contributing trajectories, leading to a rapidly growing error.
+If $\langle H \rangle$ went to zero, a declining number of contributing trajectories would not be an issue. However, due to the negative rates, the ensemble average does not converge to $|0\rangle\langle 0|$. Therefore, the weights of the remaining contributing trajectories (as indicated by their shading) must grow rapidly to counteract the non-contributing trajectories, leading to a rapidly growing error because of insufficient sampling of such trajectories.
 
 Note that the trajectories are plotted with a small offset since otherwise, they would overlap.
 
@@ -505,6 +505,9 @@ for i, traj in enumerate(MCSol2.trajectories[0:N]):
 
 ax.plot(times2, omeg1 * MESol2.expect[1] + omeg2 * MESol2.expect[2],
         color='red', label=r"$\langle H \rangle$ (exact)")
+ax.plot(times2,
+        omeg1 * MCSol2.average_expect[1] + omeg2 * MCSol2.average_expect[2],
+        color='blue', label=r"$\langle H \rangle$ (MC)")
 ax.legend()
 
 fig.colorbar(line, ax=ax, label=r"Martingale $\mu$")
