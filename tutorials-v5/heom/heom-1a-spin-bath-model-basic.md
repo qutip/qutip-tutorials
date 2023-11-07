@@ -64,9 +64,9 @@ density is given by:
 
 \begin{equation*}
     c_k = \begin{cases}
-               \lambda \gamma (\cot(\beta \gamma / 2) - i) \
+               \lambda \gamma (\cot(\beta \gamma / 2) -i) \
                & k = 0\\
-               4 \lambda \gamma \nu_k / \{(nu_k^2 - \gamma^2)\beta \} \
+               4 \lambda \gamma \nu_k  \{(\nu_k^2 - \gamma^2)\beta \} \
                & k \geq 1\\
            \end{cases}
 \end{equation*}
