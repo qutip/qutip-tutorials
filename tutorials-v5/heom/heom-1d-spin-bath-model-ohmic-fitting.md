@@ -580,7 +580,7 @@ axes.legend(loc=0, fontsize=20);
 While the two classes above are designed for general fits of either correlation functions or spectral densities, as the ohmic spectrum is popular in the modeling of open quantum systems, it has its own dedicated class, the results above can be reproduced shortly by using the OhmicBath class. By default the method fits using the  spectral density, however it can use the correlation function if method is specified
 
 ```{code-cell} ipython3
-obs=OhmicBath(T,Q,alpha,wc,s,rmse=1e-5,method='spectral')
+obs=OhmicBath(T,Q,alpha,wc,s,rmse=9e-5,method='spectral')
 ```
 
 ```{code-cell} ipython3
@@ -660,8 +660,4 @@ assert np.allclose(
     expect(P11p, results_spectral_fit_pk[3].states),
     rtol=1e-2,
 )
-```
-
-```{code-cell} ipython3
-
 ```
