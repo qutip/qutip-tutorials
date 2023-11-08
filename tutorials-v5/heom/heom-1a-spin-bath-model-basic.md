@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.14.5
+      jupytext_version: 1.15.2
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -505,6 +505,25 @@ plot_result_expectations(
         (result_dlbath_T, P12p, "r", "P12 Mats (DrudeLorentzBath + Term)"),
     ]
 );
+```
+
+The built-in class also allows us to quickly obtain the bath spectrum, correlation function, and spectral density
+
+```python
+w=np.linspace(-10,10,1000)
+w2=np.linspace(0,10,1000)
+fig, axs = plt.subplots(2, 2)
+axs[0, 0].plot(w,bath.power_spectrum(w,T))
+axs[0,0].set(xlabel=r'$\omega$',ylabel=r'$S(\omega)$')
+axs[0, 1].plot(w2,bath._spectral_density(w2))
+axs[0,1].set(xlabel=r'$\omega$',ylabel=r'$J(\omega)$')
+axs[1, 0].plot(w2,bath.CI(w2))
+axs[1,0].set(xlabel=r'$t$',ylabel=r'$C_{I}(t)$')
+axs[1, 1].plot(w2,bath.CR(w2))
+axs[1,1].set(xlabel=r'$t$',ylabel=r'$C_{R}(t)$')
+fig.tight_layout()
+plt.show()
+
 ```
 
 We can compare the solution obtained from the QuTiP Bloch-Redfield solver:
