@@ -318,7 +318,7 @@ def plot_power_spectrum(alpha, wc, beta, lam, gamma, w0, save=True):
     """ Plot the power spectrum of a fit against the actual power spectrum. """
     w = np.linspace(-10, 10, 50000)
     s_orig = ohmic_power_spectrum(w, alpha=alpha, wc=wc, beta=beta)
-    s_fit = fs.spec_spectrum_approx(w)
+    s_fit = fs.power_spectrum(w,T)
     fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 8))
     axes.plot(w, s_orig, 'r', linewidth=2, label="original")
     axes.plot(w, s_fit, 'b', linewidth=2, label="fit")
@@ -504,7 +504,7 @@ fc.summary()
 ```
 
 ```{code-cell} ipython3
-fc.fit_correlation(t,C,final_rmse=1e-4)
+fc.fit_correlation(t,C,final_rmse=5e-5)
 ```
 
 ```{code-cell} ipython3
