@@ -221,7 +221,7 @@ where $a, b$ and $c$ are the fit parameters and each is a vector of length $k$.
 
 +++
 
-With the spectral density approximation $J_{\mathrm approx}(w; a, b, c)$ implemented above, we can now perform the fit and examine the results. This can be done quickly using the FitSpectral bath, which takes the target spectral density as an array and fits it to the series of **k** underdamped harmonic oscillators with the Meier-Tannor form
+This type of fit can be performed quickly using the FitSpectral bath, which takes the target spectral density as an array and fits it with a series of **k** underdamped harmonic oscillators with the Meier-Tannor form.
 
 ```{code-cell} ipython3
 w = np.linspace(0, 15, 20000)
