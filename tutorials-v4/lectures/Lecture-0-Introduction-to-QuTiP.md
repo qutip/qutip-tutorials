@@ -54,7 +54,7 @@ For further installation details, refer to the [GitHub repository](https://githu
 To use QuTiP in a Python program, first inlude the relevant functionality from the `qutip` module:
 
 ```python
-
+import qutip
 ```
 
 This will make the functions and classes in QuTiP available in the rest of the program.
