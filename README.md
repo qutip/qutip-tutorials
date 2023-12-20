@@ -101,6 +101,12 @@ If the notebook is already in the MarkDown format, you can use `JupyText` to con
 jupytext --to notebook notebook.md
 ```
 
+If the notebook is in the MarkDown format saved via Jupytext, you can format it using:
+
+```shell
+nbqa black notebook.md
+```
+
 ## LaTeX and ImageMagick installation
 
 Some functions of the notebooks (e.g. plotting QCircuits) require a working
