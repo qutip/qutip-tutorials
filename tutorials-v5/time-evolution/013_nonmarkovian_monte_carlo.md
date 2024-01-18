@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.15.2
+      jupytext_version: 1.16.1
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -516,6 +516,142 @@ ax.set_xlim(times2[0], times2[-1])
 ax.set_ylabel(r"$\langle H \rangle\, /\, \mu$")
 ax.set_ylim(-0.02, 0.22)
 plt.show()
+```
+
+### Monte Carlo Simulations on Computing Clusters via MPI
+
+To improve the convergence behavior of the example above at long times, many trajectories are needed.
+We use this fact as a motivation to demonstrate QuTiP's MPI capabilities.
+On the QuTiP side, running Monte Carlo simulations on massively parallel infrastructure through MPI is as easy as replacing `'map': 'parallel'` by `'map': 'mpi'` in the provided options.
+QuTiP will then use the `MPIPoolExecutor` provided by the `mpi4py` module to simulate the trajectories in parallel in different processes.
+Such calculations can typically not be started from within a Jupyter notebook.
+The code below is an example for a standalone script that could be submitted to a job scheduler on a supercomputer.
+
+```sh
+echo 'This cell is not intended for execution within the notebook.'
+echo 'It is marked as an executable python cell just to provide syntax highlighting.'
+echo 'Please copy the contents below into a `qutip-mpi-example.py` file and execute it on a parallel computing cluster.'
+exit
+
+# Beginning of `qutip-mpi-example.py` file
+import numpy as np
+import qutip as qt
+
+# --- SETTINGS ---
+# Maximum number of MPI worker processes that can be used
+NUM_WORKER_PROCESSES = 500
+# Create batches averaged over this number of trajectories
+BATCH_SIZE = 1000
+# Create this number of batches
+# (total number of trajectories is BATCH_SIZE * NUM_BATCHES)
+NUM_BATCHES = 500
+
+
+def setup_system():
+    omeg1, omeg2 = 0.25, 0.5
+    gam1, gam2, alpha, kappa = 1, 4, 3, 1
+    lamb1 = (gam1 + gam2) / 4 - np.sqrt((gam1**2 + gam2**2 + 8 * kappa**2) / 8)
+    lamb2 = (gam1 + gam2) / 4 + np.sqrt((gam1**2 + gam2**2 + 8 * kappa**2) / 8)
+
+    L1 = qt.Qobj(np.array([[0, 0, 0, 0], [1, 0, 0, 0], [0, 0, 0, 0], [0, 0, 1, 0]])).dag()
+    L2 = qt.Qobj(np.array([[0, 0, 0, 0], [0, 0, 0, 0], [1, 0, 0, 0], [0, 1, 0, 0]])).dag()
+    norm1 = np.sqrt(1 + (gam2 - gam1 + np.sqrt(2) * np.sqrt(gam1**2 + gam2**2 + 8*kappa**2))**2 / ((gam1 + gam2) ** 2 + 16 * kappa**2))
+    norm2 = np.sqrt(1 + (gam2 - gam1 - np.sqrt(2) * np.sqrt(gam1**2 + gam2**2 + 8*kappa**2))**2 / ((gam1 + gam2) ** 2 + 16 * kappa**2))
+    Udag = qt.Qobj(np.array([
+        [(gam1 - gam2 - np.sqrt(2) * np.sqrt(gam1**2 + gam2**2 + 8*kappa**2)) / (gam1 + gam2 + 4j*kappa) / norm1,
+         (gam1 - gam2 + np.sqrt(2) * np.sqrt(gam1**2 + gam2**2 + 8*kappa**2)) / (gam1 + gam2 + 4j*kappa) / norm2],
+        [1 / norm1,
+         1 / norm2]
+    ])).dag()
+    sigmam1 = Udag[0, 0] * L1 + Udag[1, 0] * L2
+    sigmam2 = Udag[0, 1] * L1 + Udag[1, 1] * L2
+    sigmap1 = sigmam1.dag()
+    sigmap2 = sigmam2.dag()
+
+    H = ((omeg1 + alpha) * sigmap1 * sigmam1
+         + (omeg2 + alpha + kappa) * sigmap2 * sigmam2
+         + (alpha + kappa / 2 - 1j * (gam1 - gam2) / 8) * sigmap2 * sigmam1
+         + (alpha + kappa / 2 - 1j * (gam2 - gam1) / 8) * sigmap1 * sigmam2)
+    psi0 = np.sqrt(0.4) * qt.basis(4, 0) + np.sqrt(0.4) * qt.basis(4, 1) + np.sqrt(0.2) * qt.basis(4, 2)
+    ops_and_rates = [[L1, lamb1], [L2, lamb2]]
+
+    return H, psi0, ops_and_rates
+
+
+def main():
+    times = np.linspace(0, 10, 250)
+    H, psi0, ops_and_rates = setup_system()
+
+    for i in range(NUM_BATCHES):
+        result = qt.nm_mcsolve(H, psi0, times, ops_and_rates, ntraj=BATCH_SIZE,
+                               options={'store_states': True,
+                                        'progress_bar': False,
+                                        'map': 'mpi',
+                                        'num_cpus': NUM_WORKER_PROCESSES,
+                                        'norm_steps': 10}
+                              )
+        qt.qsave(result, f"./result-{i}")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+How to run this script in practice will depend on your concrete infrastructure.
+Some guidance is provided on the [mpi4py.futures users' guide](https://mpi4py.readthedocs.io/en/stable/mpi4py.futures.html).
+The authors of this tutorial used the batch script below to submit this script to SLURM and run it with the MPICH implementation.
+Using 501 CPU cores distributed over 5 nodes on the supercomputer [HOKUSAI](https://www.r-ccs.riken.jp/exhibit_contents/SC20/hokusai.html), the script executed in XXX hours.
+
+<!-- #raw -->
+#!/bin/bash
+#SBATCH --partition=XXXXX
+#SBATCH --account=XXXXX
+
+#SBATCH --nodes=5
+#SBATCH --ntasks=501
+#SBATCH --cpus-per-task=1
+#SBATCH --mem-per-cpu=1G
+
+#SBATCH --time=0-10:00
+
+
+source ~/.bashrc
+
+module purge
+module load mpi/mpich-x86_64
+conda activate qutip-environment
+
+mpirun -np $SLURM_NTASKS python -m mpi4py.futures qutip-mpi-example.py
+<!-- #endraw -->
+
+Submitting this batch script with `sbatch <filename>` generates a number of result files.
+Copy these files into a `results` folder to execute the following code.
+
+We have generated a large number $N$ of trajectories.
+For $k \leq N$, we can do the following analysis.
+Let $I = [0, 10]$ the total considered time interval, and let
+$$ I_k = \{ t \in I : \lVert \rho_{\text{MC},k} - \rho_{\text{exact}} \rVert \leq 0.1 \} . $$
+Here, $\rho_{\text{MC},k}$ is the estimated state using only $k$ trajectories.
+We plot $\mu(I_k)$ as a function of $k$, where $\mu(I_k)$ is the measure of the set $I_k$.
+
+```python
+BATCH_SIZE = 1000
+NUM_BATCHES = 500
+batches = [qt.qload(f'result-{i}') for i in range(NUM_BATCHES)]
+
+times3 = np.linspace(0, 10, 250)
+exact_solution = qt.mesolve(H, psi0, times3, d_ops, options=options)
+
+result = {}
+for k in range(1, NUM_BATCHES):
+    # average of the first k batches
+    average = sum(batches[1:k], start=batches[0])
+    # how many points are close to the exact solution
+    diff = [(mc - exact).norm()
+            for mc, exact in zip(average.states, exact_solution.states)]
+    good_points = np.count_nonzero(
+        np.isclose(diff, np.zeros_like(diff), rtol=0, atol=0.1))
+    result.update({k: good_points / len(times3)})
 ```
 
 ### References
