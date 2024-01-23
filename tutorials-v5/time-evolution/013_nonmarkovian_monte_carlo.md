@@ -12,6 +12,20 @@ jupyter:
     name: python3
 ---
 
+```python
+import matplotlib.pyplot as plt
+from matplotlib.collections import LineCollection
+from matplotlib.colors import LogNorm
+
+import numpy as np
+import qutip as qt
+
+from scipy import special, optimize
+from scipy.interpolate import CubicSpline
+
+import os
+```
+
 <!-- #region -->
 # Non-Markovian Monte Carlo Solver: Two Physical Examples
 
@@ -71,24 +85,10 @@ S(t) &= -2 \operatorname{Im} \frac{\dot{c}(t)}{c(t)} \quad \text{and} \\
 
 
 
-##### Imports
-<!-- #endregion -->
-
-```python
-import matplotlib.pyplot as plt
-from matplotlib.collections import LineCollection
-from matplotlib.colors import LogNorm
-
-import numpy as np
-import qutip as qt
-
-from scipy import special, optimize
-from scipy.interpolate import CubicSpline
-```
-
 ##### Setup system
 
 We choose the model parameters $\delta$ and $\beta$:
+<!-- #endregion -->
 
 ```python
 delta = -1
@@ -274,6 +274,7 @@ plt.legend()
 plt.show()
 ```
 
+<!-- #region -->
 ### Example 2: Two-Qubit Redfield Equation
 
 We consider two qubits that couple collectively to the same bosonic bath but do not interact with each other directly.
@@ -309,9 +310,11 @@ $$ \frac{d}{dt}\rho(t) = -i \sum_{i,j=1}^2 A_{i,j} [\sigma_+^{(j)}\sigma_-^{(i)}
 Now it is clear that when $\kappa>0$, $\lambda_1<0$ and thus Eq. (2) is not in strict Lindblad form.
 
 
+
 ##### Setup system
 
 We choose the model parameters $\alpha$, $\kappa$ and $\gamma_{1,2}$, and calculate the rates $\lambda_1$ and $\lambda_2$.
+<!-- #endregion -->
 
 ```python
 omeg1 = 0.25
@@ -518,21 +521,17 @@ ax.set_ylim(-0.02, 0.22)
 plt.show()
 ```
 
+<!-- #region -->
 ### Monte Carlo Simulations on Computing Clusters via MPI
 
 To improve the convergence behavior of the example above at long times, many trajectories are needed.
 We use this fact as a motivation to demonstrate QuTiP's MPI capabilities.
 On the QuTiP side, running Monte Carlo simulations on massively parallel infrastructure through MPI is as easy as replacing `'map': 'parallel'` by `'map': 'mpi'` in the provided options.
-QuTiP will then use the `MPIPoolExecutor` provided by the `mpi4py` module to simulate the trajectories in parallel in different processes.
+QuTiP will then use the `MPIPoolExecutor` provided by the `mpi4py` module to simulate the trajectories in parallel.
 Such calculations can typically not be started from within a Jupyter notebook.
 The code below is an example for a standalone script that could be submitted to a job scheduler on a supercomputer.
 
-```sh
-echo 'This cell is not intended for execution within the notebook.'
-echo 'It is marked as an executable python cell just to provide syntax highlighting.'
-echo 'Please copy the contents below into a `qutip-mpi-example.py` file and execute it on a parallel computing cluster.'
-exit
-
+```python
 # Beginning of `qutip-mpi-example.py` file
 import numpy as np
 import qutip as qt
@@ -596,24 +595,24 @@ def main():
 if __name__ == "__main__":
     main()
 ```
+<!-- #endregion -->
 
-How to run this script in practice will depend on your concrete infrastructure.
+<!-- #region -->
+How to run this script in practice will depend on your infrastructure.
 Some guidance is provided on the [mpi4py.futures users' guide](https://mpi4py.readthedocs.io/en/stable/mpi4py.futures.html).
-The authors of this tutorial used the batch script below to submit this script to SLURM and run it with the MPICH implementation.
-Using 501 CPU cores distributed over 5 nodes on the supercomputer [HOKUSAI](https://www.r-ccs.riken.jp/exhibit_contents/SC20/hokusai.html), the script executed in XXX hours.
+The authors of this tutorial used the batch script below to submit the task to a SLURM workload manager on the supercomputer [HOKUSAI](https://www.r-ccs.riken.jp/exhibit_contents/SC20/hokusai.html), using the [MPICH](https://www.mpich.org) implementation of the MPI standard.
+Using 501 CPU cores (1 manager and 500 workers) distributed over 5 nodes on this supercomputer, the task executed in approximately 50 minutes, generating 500k trajectories.
 
-<!-- #raw -->
+```bash
 #!/bin/bash
 #SBATCH --partition=XXXXX
 #SBATCH --account=XXXXX
 
 #SBATCH --nodes=5
 #SBATCH --ntasks=501
-#SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=1G
 
 #SBATCH --time=0-10:00
-
 
 source ~/.bashrc
 
@@ -621,37 +620,116 @@ module purge
 module load mpi/mpich-x86_64
 conda activate qutip-environment
 
-mpirun -np $SLURM_NTASKS python -m mpi4py.futures qutip-mpi-example.py
-<!-- #endraw -->
+mpirun -np $SLURM_NTASKS -bind-to core python -m mpi4py.futures qutip-mpi-example.py
+```
 
-Submitting this batch script with `sbatch <filename>` generates a number of result files.
-Copy these files into a `results` folder to execute the following code.
+The code above generates a number of result files.
+Copy these files into an `mpi_results` folder to execute the following code.
+We will first plot the averaged result like above.
+<!-- #endregion -->
 
-We have generated a large number $N$ of trajectories.
-For $k \leq N$, we can do the following analysis.
-Let $I = [0, 10]$ the total considered time interval, and let
+```python
+# copied from script above
+BATCH_SIZE = 1000
+times3 = np.linspace(0, 10, 250)
+
+# load all available result files
+results_folder_exists = os.path.isdir('mpi_results')
+if results_folder_exists:
+    batches = []
+    while True:
+        i = len(batches)
+        filename = f'mpi_results/result-{i}'
+        if not os.path.exists(f'{filename}.qu'):
+            break
+        batches.append(qt.qload(filename))
+    NUM_BATCHES = len(batches)
+
+# combine result files
+if results_folder_exists and NUM_BATCHES > 0:
+    combined_result = sum(batches[1:], start=batches[0])
+    exact_solution = qt.mesolve(H, psi0, times3, d_ops, options=options)
+```
+
+```python
+if results_folder_exists and NUM_BATCHES > 0:
+    plt.plot(times3, qt.expect(exact_solution.states, eops[0]),
+             color='C0', label=r"$\langle e_0 \mid \rho \mid e_0 \rangle$")
+    plt.plot(times3, qt.expect(combined_result.states, eops[0]),
+             'x', color='C0')
+
+    plt.plot(times3,  qt.expect(exact_solution.states, eops[1]),
+             color='C1', label=r"$\langle e_1 \mid \rho \mid e_1 \rangle$")
+    plt.plot(times3, qt.expect(combined_result.states, eops[1]),
+             'x', color='C1')
+
+    plt.plot(times3, qt.expect(exact_solution.states, eops[2]),
+             color='C2', label=r"$\langle e_2 \mid \rho \mid e_2 \rangle$")
+    plt.plot(times3, qt.expect(combined_result.states, eops[2]),
+             'x', color='C2')
+
+    plt.xlabel(r"$t$")
+    plt.xlim((0, 5))
+    plt.ylabel('Expectation values')
+    plt.ylim((-.1, .7))
+    plt.legend()
+
+    plt.show()
+
+else:
+    print('No result files found.')
+```
+
+We can now do the following analysis, adopted from Ref. [\[6\]](#References).
+
+Let $k \leq N$, where $N$ is the total number of trajectories.
+Let $I = [0, 10]$ be the total considered time interval, and let
 $$ I_k = \{ t \in I : \lVert \rho_{\text{MC},k} - \rho_{\text{exact}} \rVert \leq 0.1 \} . $$
 Here, $\rho_{\text{MC},k}$ is the estimated state using only $k$ trajectories.
 We plot $\mu(I_k)$ as a function of $k$, where $\mu(I_k)$ is the measure of the set $I_k$.
 
 ```python
-BATCH_SIZE = 1000
-NUM_BATCHES = 500
-batches = [qt.qload(f'result-{i}') for i in range(NUM_BATCHES)]
+if results_folder_exists and NUM_BATCHES > 0:
+    result = {}
+    progress = qt.ui.TqdmProgressBar(NUM_BATCHES)
 
-times3 = np.linspace(0, 10, 250)
-exact_solution = qt.mesolve(H, psi0, times3, d_ops, options=options)
+    for k, batch in enumerate(batches):
+        # average of the batches up to index k
+        if k == 0:
+            average = batch
+        else:
+            average = average + batch
 
-result = {}
-for k in range(1, NUM_BATCHES):
-    # average of the first k batches
-    average = sum(batches[1:k], start=batches[0])
-    # how many points are close to the exact solution
-    diff = [(mc - exact).norm()
-            for mc, exact in zip(average.states, exact_solution.states)]
-    good_points = np.count_nonzero(
-        np.isclose(diff, np.zeros_like(diff), rtol=0, atol=0.1))
-    result.update({k: good_points / len(times3)})
+        # how many points are close to the exact solution
+        diff = [(mc - exact).norm()
+                for mc, exact in zip(average.states, exact_solution.states)]
+        good_points = np.count_nonzero(  # count 'True' entries
+            np.isclose(diff, np.zeros_like(diff), rtol=0, atol=0.1)
+        )
+
+        num_trajectories = (k + 1) * BATCH_SIZE
+        result.update({num_trajectories: good_points / len(times3)})
+        progress.update()
+
+    progress.finished()
+    xval = np.array(list(result.keys()))
+    yval = np.array(list(result.values()))
+
+    fit = np.polyfit(np.log(xval), yval, 1)
+    print(('Approximate number of trajectories required for convergence until '
+           'time t (according to linear fit):\n'
+           f'N = {np.exp(-fit[1] / fit[0]) :.2f} * '
+           f'exp( {1 / fit[0] / times3[-1] :.2f} * t )\n'))
+
+    plt.semilogx(xval, yval, label='Simulation result')
+    plt.semilogx(xval, fit[0] * np.log(xval) + fit[1], '--', label='Fit')
+    plt.xlabel('Number of trajectories, $k$')
+    plt.ylabel(r'$\mu(I_k)$')
+    plt.legend()
+    plt.show()
+
+else:
+    print('No result files found.')
 ```
 
 ### References
@@ -660,7 +738,8 @@ for k in range(1, NUM_BATCHES):
 \[2\] [Donvil and Muratore-Ginanneschi, arXiv:2209.08958 \[quant-ph\]](https://arxiv.org/abs/2209.08958).  
 \[3\] [John and Quang, Phys. Rev. A (1994)](https://journals.aps.org/pra/abstract/10.1103/PhysRevA.50.1764).  
 \[4\] Breuer and Petruccione, *The Theory of Open Quantum Systems*.  
-\[5\] [Mozgunov and Lidar, Quantum (2020)](https://quantum-journal.org/papers/q-2020-02-06-227/).
+\[5\] [Mozgunov and Lidar, Quantum (2020)](https://quantum-journal.org/papers/q-2020-02-06-227/).  
+\[6\] [Menczel *et al.*, arXiv:2401.11830 \[quant-ph\]](https://arxiv.org/abs/2401.11830).
 
 
 ### About
