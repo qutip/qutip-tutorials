@@ -101,9 +101,11 @@ This apparatus acts as an interferometer, and the final super-positioned states 
 * When the phase is $\phi = 0$, there should be constructive interference, with all of the output coming from the $+45^\circ$ port, while when the phase is $\phi = \pi$, there should be destructive interference, with all of the output coming from the $-45^\circ$ port.
 * Note that this interference is visible because of the last element, the PA$_{45}$, as it projects the two, initially orthogonal (no possibility of displaying interference), polarization states onto the $+45^\circ$ and $-45^\circ$ axes where they do interfere.
 
+
 ```python
 Image(filename="images/single-photon-interference-setup.jpg", width=700, embed=True)
 ```
+
 
 Note that a single photon is sent through these optical elements, making the process quantum mechanical in nature. This requires for an important distinction, when it comes to the splitting of the state into orthogonal components.
 * A classical wave is split into its orthogonal components deterministically, with the wave actually getting divided into two components, each *in proportion* to the coefficient of the corresponding polarization state in the general polarization ($\psi = c_H |H\rangle + c_V |V\rangle$).
@@ -166,11 +168,6 @@ halfwave = Qobj([[cos(2 * θ), sin(2 * θ)], [sin(2 * θ), -cos(2 * θ)]])
 
 halfwave.tidyup() # removes very small elements (numerical artifacts from the finite precision of the computer)
 ```
-
-
-
-
-Quantum object: dims = [[2], [2]], shape = (2, 2), type = oper, isherm = True\begin{equation*}\left(\begin{array}{*{11}c}0.0 & 1.0\\1.0 & 0.0\\\end{array}\right)\end{equation*}
 
 
 
