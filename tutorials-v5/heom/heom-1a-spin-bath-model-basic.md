@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.15.2
+      jupytext_version: 1.16.1
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -64,9 +64,9 @@ density is given by:
 
 \begin{equation*}
     c_k = \begin{cases}
-               \lambda \gamma (\cot(\beta \gamma / 2) -i) \
+               \lambda \gamma (\cot(\beta \gamma / 2) - i) \
                & k = 0\\
-               4 \lambda \gamma \nu_k  \{(\nu_k^2 - \gamma^2)\beta \} \
+               4 \lambda \gamma \nu_k / \{(\nu_k^2 - \gamma^2)\beta \} \
                & k \geq 1\\
            \end{cases}
 \end{equation*}
@@ -128,15 +128,8 @@ def dl_matsubara_params(lam, gamma, T, nk):
     """
     ckAR = [lam * gamma * cot(gamma / (2 * T))]
     ckAR.extend(
-        4
-        * lam
-        * gamma
-        * T
-        * 2
-        * np.pi
-        * k
-        * T
-        / ((2 * np.pi * k * T) ** 2 - gamma**2)
+        (8 * lam * gamma * T * np.pi * k * T /
+         ((2 * np.pi * k * T)**2 - gamma**2))
         for k in range(1, nk + 1)
     )
     vkAR = [gamma]
@@ -146,21 +139,6 @@ def dl_matsubara_params(lam, gamma, T, nk):
     vkAI = [gamma]
 
     return ckAR, vkAR, ckAI, vkAI
-```
-
-```python
-def dl_corr_approx(t, nk):
-    """Drude-Lorenz correlation function approximation.
-
-    Approximates the correlation function at each time t to nk exponents.
-    """
-    c = lam * gamma * (-1.0j + cot(gamma / (2 * T))) * np.exp(-gamma * t)
-    for k in range(1, nk):
-        vk = 2 * np.pi * k * T
-        c += (4 * lam * gamma * T * vk / (vk**2 - gamma**2)) * np.exp(
-            -vk * t
-        )
-    return c
 ```
 
 ```python
@@ -333,8 +311,8 @@ Below we show how to use this built-in functionality:
 # Compare to built-in Drude-Lorentz bath:
 
 with timer("RHS construction time"):
-    bath = DrudeLorentzBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
-    HEOM_dlbath = HEOMSolver(Hsys, bath, NC, options=options)
+    dlbath = DrudeLorentzBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
+    HEOM_dlbath = HEOMSolver(Hsys, dlbath, NC, options=options)
 
 with timer("ODE solver time"):
     result_dlbath = HEOM_dlbath.run(rho0, tlist)  # normal  115
@@ -347,6 +325,30 @@ plot_result_expectations(
         (result_dlbath, P12p, "r", "P12 (DrudeLorentzBath)"),
     ]
 );
+```
+
+The `DrudeLorentzBath` class also allows us to easily evaluate analytical expressions for the power spectrum, correlation function, and spectral density. In the following plots, the solid lines are the exact expressions, and the dashed lines are based on our approximation of the correlation function with a finite number of exponents.
+
+```python
+w = np.linspace(-10, 10, 1000)
+w2 = np.linspace(0, 10, 1000)
+fig, axs = plt.subplots(2, 2)
+
+axs[0, 0].plot(w, dlbath.power_spectrum(w))
+axs[0, 0].plot(w, dlbath.power_spectrum_approx(w), '--')
+axs[0, 0].set(xlabel=r'$\omega$', ylabel=r'$S(\omega)$')
+axs[0, 1].plot(w2, dlbath.spectral_density(w2))
+axs[0, 1].plot(w2, dlbath.spectral_density_approx(w2), '--')
+axs[0, 1].set(xlabel=r'$\omega$', ylabel=r'$J(\omega)$')
+axs[1, 0].plot(w2, np.real(dlbath.correlation_function(w2)))
+axs[1, 0].plot(w2, np.real(dlbath.correlation_function_approx(w2)), '--')
+axs[1, 0].set(xlabel=r'$t$', ylabel=r'$C_{R}(t)$')
+axs[1, 1].plot(w2, np.imag(dlbath.correlation_function(w2)))
+axs[1, 1].plot(w2, np.imag(dlbath.correlation_function_approx(w2)), '--')
+axs[1, 1].set(xlabel=r'$t$', ylabel=r'$C_{I}(t)$')
+
+fig.tight_layout()
+plt.show()
 ```
 
 We also provide a legacy class, `HSolverDL`, which calculates the
@@ -400,7 +402,8 @@ $ C(t)=\sum_{k=0}^{\infty} \frac{c_k}{\nu_k} =  2 \lambda / (\beta \gamma)
 that are kept in the hierarchy, and treat the residual as a Lindblad.
 
 This is clearer if we plot the correlation function with a large number of
-Matsubara terms:
+Matsubara terms. To create the plot, we use the utility function of the
+`DrudeLorentzBath` class mentioned above.
 
 ```python
 def plot_correlation_expansion_divergence():
@@ -410,8 +413,8 @@ def plot_correlation_expansion_divergence():
     t = np.linspace(0, 2, 100)
 
     # correlation coefficients with 15k and 2 terms
-    corr_15k = dl_corr_approx(t, 15_000)
-    corr_2 = dl_corr_approx(t, 2)
+    corr_15k = dlbath.correlation_function(t, Nk=15_000)
+    corr_2 = dlbath.correlation_function(t, Nk=2)
 
     fig, ax1 = plt.subplots(figsize=(12, 7))
 
@@ -432,8 +435,7 @@ def plot_correlation_expansion_divergence():
     ax1.set_ylabel(r"$C$")
     ax1.legend()
 
-
-plot_correlation_expansion_divergence();
+plot_correlation_expansion_divergence()
 ```
 
 Let us evaluate the result including this Ishizaki-Tanimura terminator:
@@ -505,25 +507,6 @@ plot_result_expectations(
         (result_dlbath_T, P12p, "r", "P12 Mats (DrudeLorentzBath + Term)"),
     ]
 );
-```
-
-The built-in class also allows us to quickly obtain the bath spectrum, correlation function, and spectral density
-
-```python
-w=np.linspace(-10,10,1000)
-w2=np.linspace(0,10,1000)
-fig, axs = plt.subplots(2, 2)
-axs[0, 0].plot(w,bath.power_spectrum(w,T))
-axs[0,0].set(xlabel=r'$\omega$',ylabel=r'$S(\omega)$')
-axs[0, 1].plot(w2,bath.spectral_density(w2))
-axs[0,1].set(xlabel=r'$\omega$',ylabel=r'$J(\omega)$')
-axs[1, 0].plot(w2,bath.CI(w2))
-axs[1,0].set(xlabel=r'$t$',ylabel=r'$C_{I}(t)$')
-axs[1, 1].plot(w2,bath.CR(w2))
-axs[1,1].set(xlabel=r'$t$',ylabel=r'$C_{R}(t)$')
-fig.tight_layout()
-plt.show()
-
 ```
 
 We can compare the solution obtained from the QuTiP Bloch-Redfield solver:
@@ -660,8 +643,8 @@ def pade_corr(tlist, lmax):
 
 tlist_corr = np.linspace(0, 2, 100)
 cppLP, etapLP, gampLP = pade_corr(tlist_corr, 2)
-corr_15k = dl_corr_approx(tlist_corr, 15_000)
-corr_2k = dl_corr_approx(tlist_corr, 2)
+corr_15k = dlbath.correlation_function(tlist_corr, Nk=15_000)
+corr_2k = dlbath.correlation_function(tlist_corr, Nk=2)
 
 fig, ax1 = plt.subplots(figsize=(12, 7))
 ax1.plot(
@@ -774,16 +757,18 @@ plot_result_expectations(
 
 ### Next we compare the Matsubara and Pade correlation function fits
 
-This is not efficient for this example, but can be extremely useful in
-situations where large number of exponents are needed (e.g., near zero
-temperature).
+Fitting the correlation function is not efficient for this example, but
+can be extremely useful in situations where large number of exponents
+are needed (e.g., near zero temperature). We will perform the fitting
+manually below, and show in notebook 1d how the `CorrelationFitter`
+class can be used to perform such fits with less effort.
 
 First we collect a large sum of Matsubara terms for many time steps:
 
 ```python
 tlist2 = np.linspace(0, 2, 10000)
 
-corr_15k_t10k = dl_corr_approx(tlist2, 15_000)
+corr_15k_t10k = dlbath.correlation_function(tlist2, Nk=15_000)
 
 corrRana = np.real(corr_15k_t10k)
 corrIana = np.imag(corr_15k_t10k)
@@ -850,7 +835,7 @@ with timer("Correlation (real) fitting time"):
     for i in range(kR):
         poptR.append(fitter(corrRana, tlist2, i + 1))
 
-corrRMats = np.real(dl_corr_approx(tlist2, Nk))
+corrRMats = np.real(dlbath.correlation_function_approx(tlist2))
 
 kI = 1  # number of exponents for imaginary part
 poptI = []
