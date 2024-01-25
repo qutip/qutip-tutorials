@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.15.2
+    jupytext_version: 1.16.1
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -46,17 +46,13 @@ import qutip
 from qutip import (
     basis,
     expect,
-    liouvillian,
     sigmax,
     sigmaz,
-    spost,
-    spre,
 )
 from qutip.solver.heom import (
     HEOMSolver,
-    BosonicBath,
-   FitSpectral,
-    FitCorr,
+    SpectralFitter,
+    CorrelationFitter,
     OhmicBath,
 )
 
@@ -70,10 +66,6 @@ mp.pretty = True
 
 %matplotlib inline
 ```
-
-## Helper functions
-
-Let's define some helper functions for plotting the resutls
 
 ```{code-cell} ipython3
 # Solver options:
@@ -98,13 +90,9 @@ And let us set up the system Hamiltonian, bath and system measurement operators:
 
 ```{code-cell} ipython3
 # Defining the system Hamiltonian
-eps = 0    # Energy of the 2-level system.
-Del = 0.2    # Tunnelling term
+eps = 0  # Energy of the 2-level system.
+Del = 0.2  # Tunnelling term
 Hsys = 0.5 * eps * sigmaz() + 0.5 * Del * sigmax()
-```
-
-```{code-cell} ipython3
-# Initial state of the system.
 rho0 = basis(2, 0) * basis(2, 0).dag()
 ```
 
@@ -148,39 +136,39 @@ J(\omega) = \omega \alpha e^{- \frac{\omega}{\omega_c}}
 
 ```{code-cell} ipython3
 def ohmic_correlation(t, alpha, wc, beta, s=1):
-    """ The Ohmic bath correlation function as a function of t
-        (and the bath parameters).
+    """The Ohmic bath correlation function as a function of t
+    (and the bath parameters).
     """
-    corr = (
-        (1 / np.pi) * alpha * wc**(1 - s) * beta**(-(s + 1)) * mp.gamma(s + 1)
-    )
+    corr = (1 / np.pi) * alpha * wc ** (1 - s)
+    corr *= beta ** (-(s + 1)) * mp.gamma(s + 1)
     z1_u = (1 + beta * wc - 1.0j * wc * t) / (beta * wc)
     z2_u = (1 + 1.0j * wc * t) / (beta * wc)
     # Note: the arguments to zeta should be in as high precision as possible.
     # See http://mpmath.org/doc/current/basics.html#providing-correct-input
-    return np.array([
-        complex(corr * (mp.zeta(s + 1, u1) + mp.zeta(s + 1, u2)))
-        for u1, u2 in zip(z1_u, z2_u)
-    ], dtype=np.complex128)
+    return np.array(
+        [
+            complex(corr * (mp.zeta(s + 1, u1) + mp.zeta(s + 1, u2)))
+            for u1, u2 in zip(z1_u, z2_u)
+        ],
+        dtype=np.complex128,
+    )
 ```
 
 ```{code-cell} ipython3
 def ohmic_spectral_density(w, alpha, wc):
-    """ The Ohmic bath spectral density as a function of w
-        (and the bath parameters).
+    """The Ohmic bath spectral density as a function of w
+    (and the bath parameters).
     """
-    return w * alpha * np.e**(-w / wc)
+    return w * alpha * np.e ** (-w / wc)
 ```
 
 ```{code-cell} ipython3
 def ohmic_power_spectrum(w, alpha, wc, beta):
-    """ The Ohmic bath power spectrum as a function of w
-        (and the bath parameters).
+    """The Ohmic bath power spectrum as a function of w
+    (and the bath parameters).
     """
-    return (
-        w * alpha * np.e**(-abs(w) / wc) *
-        ((1 / (np.e**(w * beta) - 1)) + 1) * 2
-    )
+    bose = (1 / (np.e ** (w * beta) - 1)) + 1
+    return w * alpha * np.e ** (-abs(w) / wc) * bose * 2
 ```
 
 ### Bath and HEOM parameters
@@ -193,8 +181,8 @@ Finally, let's set the bath parameters we will work with and write down some mea
 Q = sigmaz()
 alpha = 3.25
 T = 0.5
-wc= 1.0
-s= 1
+wc = 1.0
+s = 1
 ```
 
 And set the cut-off for the HEOM hierarchy:
@@ -221,7 +209,7 @@ where $a, b$ and $c$ are the fit parameters and each is a vector of length $k$.
 
 +++
 
-This type of fit can be performed quickly using the FitSpectral bath, which takes the target spectral density as an array and fits it with a series of **k** underdamped harmonic oscillators with the Meier-Tannor form.
+With the spectral density approximation $J_{\mathrm approx}(w; a, b, c)$ implemented above, we can now perform the fit and examine the results. This can be done quickly using the FitSpectral bath, which takes the target spectral density as an array and fits it to the series of **k** underdamped harmonic oscillators with the Meier-Tannor form
 
 ```{code-cell} ipython3
 w = np.linspace(0, 15, 20000)
@@ -231,139 +219,177 @@ J = ohmic_spectral_density(w, alpha, wc)
 We first initialize our FitSpectral class
 
 ```{code-cell} ipython3
-fs=FitSpectral(T,Q,Nk=4)
+fs = SpectralFitter(T, Q, w, J)
 ```
 
-To obtain a fit we simply pass our desired spectral density and range, into the get_fit method
+To obtain a fit we simply pass our desired spectral density and range, into the ``get_fit`` method. The number of exponents we'll use in our bath is given by Nk
 
 ```{code-cell} ipython3
-fs.get_fit(J,w)
+bath, fitinfo = fs.get_fit(Nk=1)
 ```
 
-To obtain an overview of the results of the fit we may call the summary method
+To obtain an overview of the results of the fit we may take a look at the summary from the ``fitinfo``
 
 ```{code-cell} ipython3
-fs.summary()
+print(fitinfo["summary"])
 ```
 
-By default the get_fit method, has a threshold normalized root mean squared error (NRMSE) of $5\times 10^{-6}$ and selects the number of oscillators automatically to obtain that value, one may on the other hand specify the Number of oscillators that can be done using the optional argument N, or may want a more accurate NRMSE, which can be specified with the final_rmse optional argument
+We may see how the number of exponents chosen affects the fit since the approximated functions are available:
+
+```{code-cell} ipython3
+plt.plot(w, J, label="Original")
+plt.plot(w, bath.spectral_density(w), "-.", label="Fitted")
+plt.plot(w, bath.spectral_density_approx(w), label="Effective Fitted")
+plt.show()
+```
+
+Here we see that out approximated or effective spectral density is worse than the one we obtained for the fit, this happens because we are not using enough exponentials from each of the underdamped modes to have an appropiate fit. All modes have the same number of exponents, and we set it to 1 which is not enough to model a bath with the temperature considered, let us repeat this with a higher number of exponents.
+
+```{code-cell} ipython3
+bath, fitinfo = fs.get_fit(Nk=5)
+plt.plot(w, J, label="Original")
+plt.plot(w, bath.spectral_density(w), "-.", label="Fitted")
+plt.plot(
+    w,
+    bath.spectral_density_approx(w),
+    label="Effective Fitted",
+    marker="o",
+    color="r",
+    markevery=200,
+    linestyle="None",
+)
+plt.legend()
+plt.show()
+```
+
+Since the number of exponents increases simulation time one should go with the least amount of exponents that correctly describe the bath properties (Power spectrum, Spectral density and the correlation function). When the number of exponents is not specified it defaults to 5
 
 +++
 
-or by requiring a lower NRMSE
+By default the ``get_fit`` method, has a threshold normalized root mean squared error (NRMSE) of $5\times 10^{-6}$ and selects the number of oscillators automatically to obtain that value, one may on the other hand specify the Number of oscillators that can be done using the optional argument N, or may want a more accurate NRMSE, which can be specified with the final_rmse optional argument
 
 ```{code-cell} ipython3
-fs.get_fit(J,w,final_rmse=2e-6)
-```
-
-```{code-cell} ipython3
-fs.summary()
+bath, fitinfo = fs.get_fit(final_rmse=1e-6)
+print(fitinfo["summary"])
 ```
 
 Alternatively one may choose the number of oscillators in the fit instead of a desired NRMSE
 
 ```{code-cell} ipython3
-fs.get_fit(J,w,N=4)
-```
-
-```{code-cell} ipython3
-fs.summary()
+fittedbath, fitinfo = fs.get_fit(N=4)
+print(fitinfo["summary"])
 ```
 
 Let's take a closer look at our last fit by plotting the contribution of each term of the fit:
 
 ```{code-cell} ipython3
 # Plot the components of the fit separately:
-plt.rcParams['font.size'] = 25
-plt.rcParams['figure.figsize'] = (10,5)
-def plot_fit(func,J, w, lam, gamma, w0):
-    """ Plot the individual components of a fit to the spectral density. and how they contribute to the full as an animation """
-    total=0
-    plt.plot(w, J, 'r--', linewidth=2, label="original")
+plt.rcParams["font.size"] = 25
+plt.rcParams["figure.figsize"] = (10, 5)
+
+
+def plot_fit(func, J, w, lam, gamma, w0):
+    """Plot the individual components of a fit to the spectral density.
+    and how they contribute to the full fit one by one"""
+    total = 0
+    plt.plot(w, J, "r--", linewidth=2, label="original")
     for i in range(len(lam)):
-        component=func(w,[lam[i]],[gamma[i]],[w0[i]])
-        total+=component
-        plt.plot(w, J, 'r--', linewidth=2, label="original")
-        plt.plot(w,total,label=rf"$k={i+1}$")
+        component = func(w, [lam[i]], [gamma[i]], [w0[i]])
+        total += component
+        plt.plot(w, J, "r--", linewidth=2, label="original")
+        plt.plot(w, total, label=rf"$k={i+1}$")
         plt.xlabel(r"$\omega$")
         plt.ylabel(r"$J(\omega)$")
         plt.legend()
         plt.pause(1)
         plt.show()
-def plot_fit_components(func,J, w, lam, gamma, w0):
-    """ Plot the individual components of a fit to the spectral density. and how they contribute to the full as an animation """
-    total=0
-    plt.plot(w, J, 'r--', linewidth=2, label="original")
+
+
+def plot_fit_components(func, J, w, lam, gamma, w0):
+    """Plot the individual components of a fit to the spectral density.
+    and how they contribute to the full fit"""
+    plt.plot(w, J, "r--", linewidth=2, label="original")
     for i in range(len(lam)):
-        component=func(w,[lam[i]],[gamma[i]],[w0[i]])
-        plt.plot(w,component,label=rf"$k={i+1}$")
+        component = func(w, [lam[i]], [gamma[i]], [w0[i]])
+        plt.plot(w, component, label=rf"$k={i+1}$")
     plt.xlabel(r"$\omega$")
     plt.ylabel(r"$J(\omega)$")
     plt.legend(bbox_to_anchor=(1.04, 1))
     plt.show()
-lam, gamma, w0 = fs.params_spec
-plot_fit(fs.spectral_density_approx,J, w, lam, gamma, w0)
+
+
+lam, gamma, w0 = fitinfo["params"]
+plot_fit(fs._spectral_density_approx, J, w, lam, gamma, w0)
 ```
 
 ```{code-cell} ipython3
-plot_fit_components(fs.spectral_density_approx,J, w, lam, gamma, w0)
+plot_fit_components(fs._spectral_density_approx, J, w, lam, gamma, w0)
 ```
 
 And let's also compare the power spectrum of the fit and the analytical spectral density:
 
 ```{code-cell} ipython3
-plt.rcParams['figure.figsize'] = (10,5)
+plt.rcParams["figure.figsize"] = (10, 5)
 
-def plot_power_spectrum(alpha, wc, beta, lam, gamma, w0, save=True):
-    """ Plot the power spectrum of a fit against the actual power spectrum. """
+
+def plot_power_spectrum(alpha, wc, beta, save=True):
+    """Plot the power spectrum of a fit against the actual power spectrum."""
     w = np.linspace(-10, 10, 50000)
     s_orig = ohmic_power_spectrum(w, alpha=alpha, wc=wc, beta=beta)
-    s_fit = fs.power_spectrum(w,T)
+    s_fit = fittedbath.power_spectrum_approx(w)
     fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 8))
-    axes.plot(w, s_orig, 'r', linewidth=2, label="original")
-    axes.plot(w, s_fit, 'b', linewidth=2, label="fit")
+    axes.plot(w, s_orig, "r", linewidth=2, label="original")
+    axes.plot(w, np.real(s_fit), "b", linewidth=2, label="fit")
 
-    axes.set_xlabel(r'$\omega$', fontsize=28)
-    axes.set_ylabel(r'$S(\omega)$', fontsize=28)
+    axes.set_xlabel(r"$\omega$", fontsize=28)
+    axes.set_ylabel(r"$S(\omega)$", fontsize=28)
     axes.legend()
 
     if save:
-        fig.savefig('powerspectrum.eps')
+        fig.savefig("powerspectrum.eps")
 
 
-plot_power_spectrum(alpha, wc, 1/T, lam, gamma, w0, save=False)
+plot_power_spectrum(alpha, wc, 1 / T, save=False)
 ```
 
-Now that we have a good fit to the spectral density, Let us obtain its dynamics, by passing our FitSpectral bath specifications into the HEOMSolver
+Now that we have a good fit to the spectral density, Let us obtain its dynamics, by passing our ``FitSpectral`` bath specifications into the ``HEOMSolver``
 
 ```{code-cell} ipython3
 tlist = np.linspace(0, 30 * np.pi / Del, 600)
-options = {'nsteps':15000, 'store_states':True, 'rtol':1e-12, 'atol':1e-12, 'method':"bdf"}
-Ltot = liouvillian(Hsys) + fs.terminator
-HEOM_spectral_fit = HEOMSolver(Ltot, fs.Bath_spec, max_depth=4, options=options,)
-result_spectral=HEOM_spectral_fit.run(rho0,tlist)
+HEOM_spectral_fit = HEOMSolver(
+    Hsys,
+    fittedbath,
+    max_depth=4,
+    options=options,
+)
+result_spectral = HEOM_spectral_fit.run(rho0, tlist)
 ```
 
 Now if we want to see the systems's behaviour as we change the Number of terms in the fit, we may use this auxiliary function
 
 ```{code-cell} ipython3
-def generate_spectrum_results(Q,beta, N, Nk, max_depth):
-    """ Run the HEOM with the given bath parameters and
-        and return the results of the evolution.
+def generate_spectrum_results(Q, N, Nk, max_depth):
+    """Run the HEOM with the given bath parameters and
+    and return the results of the evolution.
     """
-    fs=FitSpectral(T,Q,Nk)
-    fs.get_fit(J,w,N)
-    Ltot = liouvillian(Hsys) + fs.terminator
+    fs = SpectralFitter(T, Q, w, J)
+    bath, _ = fs.get_fit(N, Nk=Nk)
     tlist = np.linspace(0, 30 * np.pi / Del, 600)
 
     # This problem is a little stiff, so we use  the BDF method to solve
     # the ODE ^^^
-    print(f'Starting calculations for N={N} and max_depth={max_depth} ... \n ')
+    print(f"Starting calculations for N={N}, Nk={Nk} 
+          and max_depth={max_depth} ... 
+ ")
     HEOM_spectral_fit = HEOMSolver(
-        Ltot, fs.Bath_spec, max_depth=max_depth, options=options,
+        Hsys,
+        bath,
+        max_depth=max_depth,
+        options=options,
     )
-    results_spectral_fit = (HEOM_spectral_fit.run(rho0, tlist))
-    print('\n')
+    results_spectral_fit = HEOM_spectral_fit.run(rho0, tlist)
+    print("
+")
     return results_spectral_fit
 ```
 
@@ -371,10 +397,10 @@ Below we generate results for different convergence parameters (number of terms 
 
 ```{code-cell} ipython3
 def plot_result_expectations(plots, axes=None):
-    """ Plot the expectation values of operators as functions of time.
+    """Plot the expectation values of operators as functions of time.
 
-        Each plot in plots consists of (solver_result,
-        measurement_operation, color, label).
+    Each plot in plots consists of (solver_result,
+    measurement_operation, color, label).
     """
     if axes is None:
         fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 8))
@@ -388,10 +414,15 @@ def plot_result_expectations(plots, axes=None):
     for result, m_op, color, label, kw in plots:
         exp = np.real(expect(result.states, m_op))
         kw.setdefault("linewidth", 2)
-        if color == 'rand':
+        if color == "rand":
             axes.plot(
-                result.times, exp,
-                c=np.random.rand(3,), label=label, **kw,
+                result.times,
+                exp,
+                c=np.random.rand(
+                    3,
+                ),
+                label=label,
+                **kw,
             )
         else:
             axes.plot(result.times, exp, color, label=label, **kw)
@@ -407,17 +438,20 @@ def plot_result_expectations(plots, axes=None):
 # Generate results for different number of lorentzians in fit:
 
 results_spectral_fit_pk = [
-    generate_spectrum_results(Q,1/T, n, Nk=1, max_depth=max_depth)
-    for n in range(1,5)
+    generate_spectrum_results(Q, n, Nk=1, max_depth=max_depth) for n in range(1, 5)
 ]
 
-plot_result_expectations([
-    (
-        result, P11p, 'rand',
-        f"P11 (spectral fit) $k_J$={pk + 1}",
-    )
-    for pk, result in enumerate(results_spectral_fit_pk)
-]);
+plot_result_expectations(
+    [
+        (
+            result,
+            P11p,
+            "rand",
+            f"P11 (spectral fit) $k_J$={pk + 1}",
+        )
+        for pk, result in enumerate(results_spectral_fit_pk)
+    ]
+);
 ```
 
 ```{code-cell} ipython3
@@ -426,17 +460,20 @@ plot_result_expectations([
 
 Nk_list = range(2, 4)
 results_spectral_fit_nk = [
-    generate_spectrum_results(Q,1/T, 4, Nk=Nk, max_depth=max_depth)
-    for Nk in Nk_list
+    generate_spectrum_results(Q, 4, Nk=Nk, max_depth=max_depth) for Nk in Nk_list
 ]
 
-plot_result_expectations([
-    (
-        result, P11p, 'rand',
-        f"P11 (spectral fit) K={nk}",
-    )
-    for nk, result in zip(Nk_list, results_spectral_fit_nk)
-]);
+plot_result_expectations(
+    [
+        (
+            result,
+            P11p,
+            "rand",
+            f"P11 (spectral fit) K={nk}",
+        )
+        for nk, result in zip(Nk_list, results_spectral_fit_nk)
+    ]
+);
 ```
 
 ```{code-cell} ipython3
@@ -444,32 +481,154 @@ plot_result_expectations([
 
 Nc_list = range(2, max_depth)
 results_spectral_fit_nc = [
-    generate_spectrum_results(Q,1/T, 4, Nk=1, max_depth=Nc)
-    for Nc in Nc_list
+    generate_spectrum_results(Q, 4, Nk=1, max_depth=Nc) for Nc in Nc_list
 ]
 
-plot_result_expectations([
-    (
-        result, P11p, 'rand',
-        f"P11 (spectral fit) $N_C={nc}$",
-    )
-    for nc, result in zip(Nc_list, results_spectral_fit_nc)
-]);
+plot_result_expectations(
+    [
+        (
+            result,
+            P11p,
+            "rand",
+            f"P11 (spectral fit) $N_C={nc}$",
+        )
+        for nc, result in zip(Nc_list, results_spectral_fit_nc)
+    ]
+);
 ```
 
-We now combine the fitting and correlation function data into one large plot.
+#### We now combine the fitting and correlation function data into one large plot. Here we define a function to plot everything together
+
 
 ```{code-cell} ipython3
-t = np.linspace(0, 15, 100)
-C =ohmic_correlation(t, alpha=alpha, wc=wc, beta=1/T)
-w2 = np.concatenate(
-    [np.linspace(-10, -0.1, 5000),
-     np.linspace(0.1, 10, 5000)],
-)
-S=ohmic_power_spectrum(w2,alpha=alpha,beta=1/T,wc=wc)
+def gen_plots(fs, w, J, t, C, w2, S):
+    def plot_cr_fit_vs_actual(t, C, func, axes):
+        """Plot the C_R(t) fit."""
+        yR = func(t)
 
+        axes.plot(
+            t,
+            np.real(C),
+            "r",
+            linewidth=3,
+            label="Original",
+        )
+        axes.plot(
+            t,
+            np.real(yR),
+            "g",
+            dashes=[3, 3],
+            linewidth=2,
+            label="Reconstructed",
+        )
 
-fs.fit_plots(w,J,t, C,w2,S);
+        axes.set_ylabel(r"$C_R(t)$", fontsize=28)
+        axes.set_xlabel(r"$t\;\omega_c$", fontsize=28)
+        axes.locator_params(axis="y", nbins=4)
+        axes.locator_params(axis="x", nbins=4)
+        axes.text(0.15, 0.85, "(a)", fontsize=28, transform=axes.transAxes)
+
+    def plot_ci_fit_vs_actual(t, C, func, axes):
+        """Plot the C_I(t) fit."""
+        yI = func(t)
+
+        axes.plot(
+            t,
+            np.imag(C),
+            "r",
+            linewidth=3,
+        )
+        axes.plot(
+            t,
+            np.real(yI),
+            "g",
+            dashes=[3, 3],
+            linewidth=2,
+        )
+
+        axes.set_ylabel(r"$C_I(t)$", fontsize=28)
+        axes.set_xlabel(r"$t\;\omega_c$", fontsize=28)
+        axes.locator_params(axis="y", nbins=4)
+        axes.locator_params(axis="x", nbins=4)
+        axes.text(0.80, 0.80, "(b)", fontsize=28, transform=axes.transAxes)
+
+    def plot_jw_fit_vs_actual(w, J, axes):
+        """Plot the J(w) fit."""
+        J_fit = fs.spectral_density_approx(w)
+
+        axes.plot(
+            w,
+            J,
+            "r",
+            linewidth=3,
+        )
+        axes.plot(
+            w,
+            J_fit,
+            "g",
+            dashes=[3, 3],
+            linewidth=2,
+        )
+
+        axes.set_ylabel(r"$J(\omega)$", fontsize=28)
+        axes.set_xlabel(r"$\omega/\omega_c$", fontsize=28)
+        axes.locator_params(axis="y", nbins=4)
+        axes.locator_params(axis="x", nbins=4)
+        axes.text(0.15, 0.85, "(c)", fontsize=28, transform=axes.transAxes)
+
+    def plot_sw_fit_vs_actual(axes):
+        """Plot the S(w) fit."""
+
+        # avoid the pole in the fit around zero:
+        s_fit = fs.power_spectrum_approx(w2)
+
+        axes.plot(w2, S, "r", linewidth=3)
+        axes.plot(w2, s_fit, "g", dashes=[3, 3], linewidth=2)
+
+        axes.set_ylabel(r"$S(\omega)$", fontsize=28)
+        axes.set_xlabel(r"$\omega/\omega_c$", fontsize=28)
+        axes.locator_params(axis="y", nbins=4)
+        axes.locator_params(axis="x", nbins=4)
+        axes.text(0.15, 0.85, "(d)", fontsize=28, transform=axes.transAxes)
+
+    def plot_matsubara_spectrum_fit_vs_actual(t, C):
+        """Plot the Matsubara fit of the spectrum ."""
+        fig = plt.figure(figsize=(12, 10))
+        grid = plt.GridSpec(2, 2, wspace=0.4, hspace=0.3)
+
+        plot_cr_fit_vs_actual(
+            t,
+            C,
+            lambda t: fs.correlation_function_approx(t),
+            axes=fig.add_subplot(grid[0, 0]),
+        )
+        plot_ci_fit_vs_actual(
+            t,
+            C,
+            lambda t: np.imag(fs.correlation_function_approx(t)),
+            axes=fig.add_subplot(grid[0, 1]),
+        )
+        plot_jw_fit_vs_actual(
+            w,
+            J,
+            axes=fig.add_subplot(grid[1, 0]),
+        )
+        plot_sw_fit_vs_actual(
+            axes=fig.add_subplot(grid[1, 1]),
+        )
+        fig.legend(loc="upper center", ncol=2, fancybox=True, shadow=True)
+
+    return plot_matsubara_spectrum_fit_vs_actual(t, C)
+```
+
+#### And finally plot everything together
+
+```{code-cell} ipython3
+t = np.linspace(0, 15, 1000)
+C = ohmic_correlation(t, alpha, wc, 1 / T)
+w2 = np.concatenate((-np.linspace(10, 1e-2, 100), np.linspace(1e-2, 10, 100)))
+S = ohmic_power_spectrum(w2, alpha, wc, 1 / T)
+gen_plots(fittedbath, w, J, t, C, w2, S)
 ```
 
 ## Building the HEOM bath by fitting the correlation function
@@ -487,160 +646,159 @@ $$C_I^F(t) = \sum_{i=1}^{k_I} c_I^ie^{-\gamma_I^i t}\sin(\omega_I^i t)$$
 Analogously to the spectral density case, one may use the FitCorr class
 
 ```{code-cell} ipython3
-fc=FitCorr(Q)
+t = np.linspace(0, 15, 1500)
+C = ohmic_correlation(t, alpha=alpha, wc=wc, beta=1 / T)
 ```
 
 ```{code-cell} ipython3
-t = np.linspace(0, 25, 1500)
-C = ohmic_correlation(t, alpha=alpha, wc=wc, beta=1/T)
+fc = CorrelationFitter(Q, T, t, C)
 ```
 
 ```{code-cell} ipython3
-fc.fit_correlation(t,C,Ni=3,Nr=3)
+bath, fitinfo = fc.get_fit(Ni=4, Nr=4)
+print(fitinfo["summary"])
 ```
 
 ```{code-cell} ipython3
-fc.summary()
-```
-
-```{code-cell} ipython3
-fc.fit_correlation(t,C,final_rmse=5e-5)
-```
-
-```{code-cell} ipython3
-fc.summary()
-```
-
-Now we construct the `BosonicBath` co-efficients and frequencies from the fit to the correlation function:
-
-```{code-cell} ipython3
-t = np.linspace(0, 15, 100)
-C = ohmic_correlation(t, alpha=alpha, wc=wc, beta=1/T)
-fc.fit_plots(w, J, t, C, w2, S,beta=1/T)
+gen_plots(bath, w, J, t, C, w2, S)
 ```
 
 ```{code-cell} ipython3
 def generate_corr_results(N, max_depth):
     tlist = np.linspace(0, 30 * np.pi / Del, 600)
-    t = np.linspace(0, 15, 100)
-    C = ohmic_correlation(t, alpha=alpha, wc=wc, beta=1/T)
-    fc.fit_correlation(t,C,Ni=N,Nr=N)
+    bath, _ = fc.get_fit(Ni=N, Nr=N)
     HEOM_corr_fit = HEOMSolver(
-        Hsys, fc.Bath_corr, max_depth=max_depth, options=options,
+        Hsys,
+        bath,
+        max_depth=max_depth,
+        options=options,
     )
 
-    results_corr_fit = (HEOM_corr_fit.run(rho0, tlist))
+    results_corr_fit = HEOM_corr_fit.run(rho0, tlist)
 
     return results_corr_fit
 
 
 # Generate results for different number of lorentzians in fit:
 results_corr_fit_pk = [
-    print(f"{i + 1}") or generate_corr_results(i, max_depth=max_depth,
+    print(f"{i + 1}")
+    or generate_corr_results(
+        i,
+        max_depth=max_depth,
     )
-    for i in range(1,4)
+    for i in range(1, 4)
 ]
 ```
 
 ```{code-cell} ipython3
-plot_result_expectations([
-    (
-        result, P11p, 'rand',
-        f"P11 (correlation fit) k_R=k_I={pk + 1}",
-    )
-    for pk, result in enumerate(results_corr_fit_pk)
-]);
+plot_result_expectations(
+    [
+        (
+            result,
+            P11p,
+            "rand",
+            f"P11 (correlation fit) k_R=k_I={pk + 1}",
+        )
+        for pk, result in enumerate(results_corr_fit_pk)
+    ]
+);
 ```
 
 ```{code-cell} ipython3
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(12, 7))
 
-plot_result_expectations([
-    (
-        results_corr_fit_pk[0], P11p,
-        'y', "Correlation Function Fit $k_R=k_I=1$",
-    ),
-    (
-        results_corr_fit_pk[2], P11p,
-        'y-.', "Correlation Function Fit $k_R=k_I=3$",
-    ),
-    (results_spectral_fit_pk[0], P11p, 'b', "Spectral Density Fit $k_J=1$"),
-    (results_spectral_fit_pk[2], P11p, 'g--', "Spectral Density Fit $k_J=3$"),
-    (results_spectral_fit_pk[3], P11p, 'r-.', "Spectral Density Fit $k_J=4$"),
-], axes=axes)
+plot_result_expectations(
+    [
+        (
+            results_corr_fit_pk[0],
+            P11p,
+            "y",
+            "Correlation Function Fit $k_R=k_I=1$",
+        ),
+        (
+            results_corr_fit_pk[2],
+            P11p,
+            "k",
+            "Correlation Function Fit $k_R=k_I=3$",
+        ),
+        (results_spectral_fit_pk[0], P11p, "b", "Spectral Density Fit $k_J=1$"),
+        (results_spectral_fit_pk[3], P11p, "r-.", "Spectral Density Fit $k_J=4$"),
+    ],
+    axes=axes,
+)
 
 axes.set_yticks([0.6, 0.8, 1])
-axes.set_ylabel(r'$\rho_{11}$', fontsize=30)
-axes.set_xlabel(r'$t\;\omega_c$', fontsize=30)
+axes.set_ylabel(r"$\rho_{11}$", fontsize=30)
+axes.set_xlabel(r"$t\;\omega_c$", fontsize=30)
 axes.legend(loc=0, fontsize=20);
 ```
 
 # Using the Ohmic Bath class
 
-While the two classes above are designed for general fits of either correlation functions or spectral densities, as the ohmic spectrum is popular in the modeling of open quantum systems, it has its own dedicated class, the results above can be reproduced shortly by using the OhmicBath class. By default the method fits using the  spectral density, however it can use the correlation function if method is specified
+ As the ohmic spectrum is popular in the modeling of open quantum systems, it has its own dedicated class, the results above can be reproduced shortly by using the OhmicBath class. This allows for rapid implementation of fitted ohmic baths via the correlation function or spectral density
 
 ```{code-cell} ipython3
-obs=OhmicBath(T,Q,alpha,wc,s,rmse=9e-5,method='spectral')
+obs = OhmicBath(T, Q, alpha, wc, s)
 ```
 
 ```{code-cell} ipython3
-obs.summary()
-```
-
-```{code-cell} ipython3
-obs.fit.fit_plots(w,J,t, C,w2,S);
-```
-
-```{code-cell} ipython3
-obc=OhmicBath(T,Q,alpha,wc,s,rmse=1e-4,method='correlation')
-```
-
-```{code-cell} ipython3
-obc.summary()
-```
-
-```{code-cell} ipython3
-obc.fit.fit_plots(w, J, t, C, w2, S,beta=1/T)
+Obath, fitinfo = obs.make_correlation_fit(t, rmse=2e-4)
+print(fitinfo["summary"])
 ```
 
 ```{code-cell} ipython3
 tlist = np.linspace(0, 30 * np.pi / Del, 600)
-
-HEOM_ohmic_corr_fit = HEOMSolver(Hsys, obc.bath, max_depth=5, options=options,)
-Ltot = liouvillian(Hsys) + fs.terminator
-HEOM_ohmic_spectral_fit = HEOMSolver(Hsys, obs.bath, max_depth=5, options=options,)
-
-#results__ohmic_corr_fit = (HEOM_ohmic_corr_fit.run(rho0, tlist))
-results_ohmic_spectral_fit = (HEOM_ohmic_spectral_fit.run(rho0, tlist))
+HEOM_ohmic_corr_fit = HEOMSolver(
+    Hsys,
+    Obath,
+    max_depth=5,
+    options=options,
+)
+results_ohmic_corr_fit = HEOM_ohmic_corr_fit.run(rho0, tlist)
 ```
 
 ```{code-cell} ipython3
-results_ohmic_corr_fit = (HEOM_ohmic_corr_fit.run(rho0, tlist))
+Obath, fitinfo = obs.make_spectral_fit(w, rmse=2e-4)
+print(fitinfo["summary"])
+```
+
+```{code-cell} ipython3
+HEOM_ohmic_spectral_fit = HEOMSolver(
+    Hsys,
+    Obath,
+    max_depth=5,
+    options=options,
+)
+results_ohmic_spectral_fit = HEOM_ohmic_spectral_fit.run(rho0, tlist)
 ```
 
 ```{code-cell} ipython3
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(12, 7))
 
-plot_result_expectations([
- #   (
- #       results_corr_fit_pk[0], P11p,
- #       'y', "Correlation Function Fit $k_R=k_I=1$",
- #   ),
-    (
-        results_corr_fit_pk[2], P11p,
-        'y-.', "Correlation Function Fit $k_R=k_I=3$",
-    ),
-    (results_spectral_fit_pk[0], P11p, 'b', "Spectral Density Fit $k_J=1$"),
-    (results_spectral_fit_pk[2], P11p, 'g--', "Spectral Density Fit $k_J=3$"),
-    (results_spectral_fit_pk[3], P11p, 'r-.', "Spectral Density Fit $k_J=4$"),
-    (results_ohmic_spectral_fit, P11p, 'g-.', "Spectral Density Fit Ohmic Bath"),
-    (results_ohmic_corr_fit, P11p, 'k-.', "Correlation Fit Ohmic Bath")
-
-], axes=axes)
+plot_result_expectations(
+    [
+        #   (
+        #       results_corr_fit_pk[0], P11p,
+        #       'y', "Correlation Function Fit $k_R=k_I=1$",
+        #   ),
+        (
+            results_corr_fit_pk[2],
+            P11p,
+            "y-.",
+            "Correlation Function Fit $k_R=k_I=3$",
+        ),
+        (results_spectral_fit_pk[0], P11p, "b", "Spectral Density Fit $k_J=1$"),
+        (results_spectral_fit_pk[2], P11p, "g--", "Spectral Density Fit $k_J=3$"),
+        (results_spectral_fit_pk[3], P11p, "r-.", "Spectral Density Fit $k_J=4$"),
+        (results_ohmic_spectral_fit, P11p, "g-.", "Spectral Density Fit Ohmic Bath"),
+        (results_ohmic_corr_fit, P11p, "k-.", "Correlation Fit Ohmic Bath"),
+    ],
+    axes=axes,
+)
 
 axes.set_yticks([0.6, 0.8, 1])
-axes.set_ylabel(r'$\rho_{11}$', fontsize=30)
-axes.set_xlabel(r'$t\;\omega_c$', fontsize=30)
+axes.set_ylabel(r"$\rho_{11}$", fontsize=30)
+axes.set_xlabel(r"$t\;\omega_c$", fontsize=30)
 axes.legend(loc=0, fontsize=20);
 ```
 
