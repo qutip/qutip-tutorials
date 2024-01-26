@@ -209,14 +209,14 @@ where $a, b$ and $c$ are the fit parameters and each is a vector of length $k$.
 
 +++
 
-With the spectral density approximation $J_{\mathrm approx}(w; a, b, c)$ implemented above, we can now perform the fit and examine the results. This can be done quickly using the FitSpectral bath, which takes the target spectral density as an array and fits it to the series of **k** underdamped harmonic oscillators with the Meier-Tannor form
+With the spectral density approximation $J_{\mathrm approx}(w; a, b, c)$ implemented above, we can now perform the fit and examine the results. This can be done quickly using the `SpectralFitter` class, which takes the target spectral density as an array and fits it to the series of **k** underdamped harmonic oscillators with the Meier-Tannor form
 
 ```{code-cell} ipython3
 w = np.linspace(0, 15, 20000)
 J = ohmic_spectral_density(w, alpha, wc)
 ```
 
-We first initialize our FitSpectral class
+We first initialize our SpectralFitter
 
 ```{code-cell} ipython3
 fs = SpectralFitter(T, Q, w, J)
@@ -237,36 +237,49 @@ print(fitinfo["summary"])
 We may see how the number of exponents chosen affects the fit since the approximated functions are available:
 
 ```{code-cell} ipython3
-plt.plot(w, J, label="Original")
-plt.plot(w, bath.spectral_density(w), "-.", label="Fitted")
-plt.plot(w, bath.spectral_density_approx(w), label="Effective Fitted")
+fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(10, 5))
+
+ax1.plot(w, J, label="Original spectral density")
+ax1.plot(w, bath.spectral_density_approx(w), label="Effective fitted SD")
+ax1.set_xlabel(r'$\omega$')
+ax1.set_ylabel(r'$J$')
+ax1.legend()
+
+ax2.plot(w, np.abs(J - bath.spectral_density_approx(w)), label="Error")
+ax2.set_xlabel(r'$\omega$')
+ax2.set_ylabel(r'$J$')
+ax2.legend()
+
 plt.show()
 ```
 
-Here we see that out approximated or effective spectral density is worse than the one we obtained for the fit, this happens because we are not using enough exponentials from each of the underdamped modes to have an appropiate fit. All modes have the same number of exponents, and we set it to 1 which is not enough to model a bath with the temperature considered, let us repeat this with a higher number of exponents.
+Here we see a surprisingly large discrepancy in our approximated or effective spectral density. This happens because we are not using enough exponentials from each of the underdamped modes to have an appropiate fit. All modes have the same number of exponents, and we set it to 1 which is not enough to model a bath with the temperature considered, let us repeat this with a higher number of exponents.
 
 ```{code-cell} ipython3
 bath, fitinfo = fs.get_fit(Nk=5)
-plt.plot(w, J, label="Original")
-plt.plot(w, bath.spectral_density(w), "-.", label="Fitted")
-plt.plot(
-    w,
-    bath.spectral_density_approx(w),
-    label="Effective Fitted",
-    marker="o",
-    color="r",
-    markevery=200,
-    linestyle="None",
-)
-plt.legend()
+print(fitinfo["summary"])
+
+fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(10, 5))
+
+ax1.plot(w, J, label="Original spectral density")
+ax1.plot(w, bath.spectral_density_approx(w), label="Effective fitted SD")
+ax1.set_xlabel(r'$\omega$')
+ax1.set_ylabel(r'$J$')
+ax1.legend()
+
+ax2.plot(w, np.abs(J - bath.spectral_density_approx(w)), label="Error")
+ax2.set_xlabel(r'$\omega$')
+ax2.set_ylabel(r'$J$')
+ax2.legend()
+
 plt.show()
 ```
 
-Since the number of exponents increases simulation time one should go with the least amount of exponents that correctly describe the bath properties (Power spectrum, Spectral density and the correlation function). When the number of exponents is not specified it defaults to 5
+Since the number of exponents increases simulation time one should go with the least amount of exponents that correctly describe the bath properties (Power spectrum, Spectral density and the correlation function). When the number of exponents is not specified it defaults to 5.
 
 +++
 
-By default the ``get_fit`` method, has a threshold normalized root mean squared error (NRMSE) of $5\times 10^{-6}$ and selects the number of oscillators automatically to obtain that value, one may on the other hand specify the Number of oscillators that can be done using the optional argument N, or may want a more accurate NRMSE, which can be specified with the final_rmse optional argument
+By default the ``get_fit`` method, has a threshold normalized root mean squared error (NRMSE) of $5\times 10^{-6}$ and selects the number of oscillators automatically to obtain that value. One may also specify the number of oscillators that is used with the optional argument N, or may want a more accurate NRMSE, which can be specified with the final_rmse optional argument
 
 ```{code-cell} ipython3
 bath, fitinfo = fs.get_fit(final_rmse=1e-6)
@@ -292,7 +305,6 @@ def plot_fit(func, J, w, lam, gamma, w0):
     """Plot the individual components of a fit to the spectral density.
     and how they contribute to the full fit one by one"""
     total = 0
-    plt.plot(w, J, "r--", linewidth=2, label="original")
     for i in range(len(lam)):
         component = func(w, [lam[i]], [gamma[i]], [w0[i]])
         total += component
@@ -319,19 +331,16 @@ def plot_fit_components(func, J, w, lam, gamma, w0):
 
 
 lam, gamma, w0 = fitinfo["params"]
-plot_fit(fs._spectral_density_approx, J, w, lam, gamma, w0)
+plot_fit(SpectralFitter._meier_tannor_SD, J, w, lam, gamma, w0)
 ```
 
 ```{code-cell} ipython3
-plot_fit_components(fs._spectral_density_approx, J, w, lam, gamma, w0)
+plot_fit_components(SpectralFitter._meier_tannor_SD, J, w, lam, gamma, w0)
 ```
 
 And let's also compare the power spectrum of the fit and the analytical spectral density:
 
 ```{code-cell} ipython3
-plt.rcParams["figure.figsize"] = (10, 5)
-
-
 def plot_power_spectrum(alpha, wc, beta, save=True):
     """Plot the power spectrum of a fit against the actual power spectrum."""
     w = np.linspace(-10, 10, 50000)
@@ -378,9 +387,7 @@ def generate_spectrum_results(Q, N, Nk, max_depth):
 
     # This problem is a little stiff, so we use  the BDF method to solve
     # the ODE ^^^
-    print(f"Starting calculations for N={N}, Nk={Nk} 
-          and max_depth={max_depth} ... 
- ")
+    print(f"Starting calculations for N={N}, Nk={Nk} and max_depth={max_depth} ... ")
     HEOM_spectral_fit = HEOMSolver(
         Hsys,
         bath,
@@ -388,8 +395,6 @@ def generate_spectrum_results(Q, N, Nk, max_depth):
         options=options,
     )
     results_spectral_fit = HEOM_spectral_fit.run(rho0, tlist)
-    print("
-")
     return results_spectral_fit
 ```
 
@@ -498,7 +503,6 @@ plot_result_expectations(
 ```
 
 #### We now combine the fitting and correlation function data into one large plot. Here we define a function to plot everything together
-
 
 ```{code-cell} ipython3
 def gen_plots(fs, w, J, t, C, w2, S):
@@ -643,7 +647,7 @@ $$C_R^F(t) = \sum_{i=1}^{k_R} c_R^ie^{-\gamma_R^i t}\cos(\omega_R^i t)$$
 
 $$C_I^F(t) = \sum_{i=1}^{k_I} c_I^ie^{-\gamma_I^i t}\sin(\omega_I^i t)$$
 
-Analogously to the spectral density case, one may use the FitCorr class
+Analogously to the spectral density case, one may use the `CorrelationFitter` class
 
 ```{code-cell} ipython3
 t = np.linspace(0, 15, 1500)
@@ -679,7 +683,7 @@ def generate_corr_results(N, max_depth):
     return results_corr_fit
 
 
-# Generate results for different number of lorentzians in fit:
+# Generate results for different number of exponentials in fit:
 results_corr_fit_pk = [
     print(f"{i + 1}")
     or generate_corr_results(
@@ -735,7 +739,7 @@ axes.legend(loc=0, fontsize=20);
 
 # Using the Ohmic Bath class
 
- As the ohmic spectrum is popular in the modeling of open quantum systems, it has its own dedicated class, the results above can be reproduced shortly by using the OhmicBath class. This allows for rapid implementation of fitted ohmic baths via the correlation function or spectral density
+ As the ohmic spectrum is popular in the modeling of open quantum systems, it has its own dedicated class, the results above can be reproduced quickly by using the OhmicBath class. This allows for rapid implementation of fitted ohmic baths via the correlation function or spectral density
 
 ```{code-cell} ipython3
 obs = OhmicBath(T, Q, alpha, wc, s)
