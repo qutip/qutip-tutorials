@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.16.1
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -71,7 +71,7 @@ As an example, the Matsubara decomposition of the Drude-Lorentz spectral density
 \begin{equation*}
     c_k = \begin{cases}
                \lambda \gamma (\cot(\beta \gamma / 2) - i)             & k = 0\\
-               4 \lambda \gamma \nu_k / {(\nu_k^2 - \gamma^2)\beta \}    & k \geq 1\\
+               4 \lambda \gamma \nu_k / \{(nu_k^2 - \gamma^2)\beta \}    & k \geq 1\\
            \end{cases}
 \end{equation*}
 
@@ -199,8 +199,9 @@ P12p = basis(2, 0) * basis(2, 1).dag()
 Let us briefly inspect the spectral density.
 
 ```{code-cell} ipython3
+bath = DrudeLorentzBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
 w = np.linspace(0, 5, 1000)
-J = w * 2 * lam * gamma / ((gamma**2 + w**2))
+J = bath.spectral_density(w)
 
 # Plot the results
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 8))
@@ -261,48 +262,19 @@ axes.legend(loc=0, fontsize=12);
 matsBath = DrudeLorentzBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
 padeBath = DrudeLorentzPadeBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
 
-# We will compare against a summation of {lmaxmats} Matsubara terms
-lmaxmats = 15000
-exactBath = DrudeLorentzBath(
-    Q, lam=lam, gamma=gamma, T=T, Nk=lmaxmats, combine=False,
-)
-
-
-def CR(bath, t):
-    """ C_R, the real part of the correlation function. """
-    result = 0
-    for exp in bath.exponents:
-        if (
-            exp.type == BathExponent.types['R'] or
-            exp.type == BathExponent.types['RI']
-        ):
-            result += exp.ck * np.exp(-exp.vk * t)
-    return result
-
-
-def CI(bath, t):
-    """ C_I, the imaginary part of the correlation function. """
-    result = 0
-    for exp in bath.exponents:
-        if exp.type == BathExponent.types['I']:
-            result += exp.ck * np.exp(exp.vk * t)
-        if exp.type == BathExponent.types['RI']:
-            result += exp.ck2 * np.exp(exp.vk * t)
-    return result
-
 
 fig, (ax1, ax2) = plt.subplots(ncols=2, sharey=True, figsize=(16, 8))
 
 ax1.plot(
-    tlist, CR(exactBath, tlist),
-    "r", linewidth=2, label=f"Mats (Nk={lmaxmats})",
+    tlist, np.real(matsBath.correlation_function(tlist)),
+    "r", linewidth=2, label=f"Exact",
 )
 ax1.plot(
-    tlist, CR(matsBath, tlist),
+    tlist, np.real(matsBath.correlation_function_approx(tlist)),
     "g--", linewidth=2, label=f"Mats (Nk={Nk})",
 )
 ax1.plot(
-    tlist, CR(padeBath, tlist),
+    tlist, np.real(padeBath.correlation_function_approx(tlist)),
     "b--", linewidth=2, label=f"Pade (Nk={Nk})",
 )
 
@@ -312,11 +284,13 @@ ax1.legend(loc=0, fontsize=12)
 
 tlist2 = tlist[0:50]
 ax2.plot(
-    tlist2, np.abs(CR(matsBath, tlist2) - CR(exactBath, tlist2)),
+    tlist2, np.abs(matsBath.correlation_function_approx(tlist2)
+                   - matsBath.correlation_function(tlist2)),
     "g", linewidth=2, label="Mats Error",
 )
 ax2.plot(
-    tlist2, np.abs(CR(padeBath, tlist2) - CR(exactBath, tlist2)),
+    tlist2, np.abs(padeBath.correlation_function_approx(tlist2)
+                   - padeBath.correlation_function(tlist2)),
     "b--", linewidth=2, label="Pade Error",
 )
 
@@ -357,6 +331,8 @@ axes.legend(loc=0, fontsize=12);
 ```
 
 ## Simulation 4: Fitting approach
+
+We will perform the fitting manually here, and show in notebook 1d how the `CorrelationFitter` class can be used to perform such fits with less effort.
 
 ```{code-cell} ipython3
 def wrapper_fit_func(x, N, args):
@@ -415,7 +391,7 @@ def fitter(ans, tlist, k):
 
 # Correlation function values to fit:
 tlist_fit = np.linspace(0, 6, 10000)
-corrRana = CR(exactBath, tlist_fit)
+corrRana = np.real(matsBath.correlation_function(tlist_fit))
 
 # Perform the fit:
 kR = 3  # number of exponents to use for real part
