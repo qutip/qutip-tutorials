@@ -94,6 +94,7 @@ tutorial_directories = [
     'quantum-circuits',
     'time-evolution',
     'visualization',
+    'miscellaneous'
 ]
 
 # +++ READ PREFIX AND SUFFIX +++

@@ -22,6 +22,7 @@ Authors: Amélie Orban (Editor), Inga Schöyen, Alessandro Delmonte, Alexander R
 ```python
 import matplotlib.pyplot as plt
 import qutip
+from IPython.display import Image
 from numpy import cos, exp, pi, random, sin, sqrt
 from qutip import Qobj, basis
 

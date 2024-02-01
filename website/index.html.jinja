@@ -30,6 +30,7 @@ useful to have a look at these IPython notebook
 	<li><a href="#tomography">Tomography</a></li>
 	<li><a href="#piqs">Permutational invariant Lindblad dynamics</a></li>
 	<li><a href="#heom">Hierarchical Equations of Motion</a></li>
+	<li><a href="#miscellaneous">Miscellaneous tutorials</a></li>
 	</ul>
 </li>
 <li><a href="#lectures">Quantum mechanics lectures with QuTiP</a></li>
@@ -135,6 +136,13 @@ useful to have a look at these IPython notebook
 <h4 id="heom">Hierarchical Equations of Motion</h4>
 <ul>
 {% for item in tutorials['heom'] %}
+    <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+{% endfor %}
+</ul>
+
+<h4 id="miscellaneous">Miscellaneous tutorials</h4>
+<ul>
+{% for item in tutorials['miscellaneous'] %}
     <li><a href="{{ item.url }}">{{ item.title }}</a></li>
 {% endfor %}
 </ul>
