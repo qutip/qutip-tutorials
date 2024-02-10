@@ -12,6 +12,21 @@ jupyter:
     name: python3
 ---
 
+# Non-Markovian Monte Carlo Solver: Two Physical Examples
+
+Authors: B. Donvil and P. Menczel, 2023
+
+### Introduction
+
+In this tutorial, we will discuss two examples where systems are described by time-local non-Markovian master equations, that is, Lindblad-like master equations with "rates" that may become negative.
+We will demonstrate how these master equations arise in physical scenarios and how they can be simulated using QuTiP's Non-Markovian Monte Carlo solver.
+This solver is based on the influence martingale formalism, which is described in Refs. [\[1, 2\]](#References).
+The examples, taken from Ref. [\[1\]](#References), are a two-level atom in a photonic band gap (based on Ref. [\[3\]](#References)) and a Redfield master equation for two non-interacting qubits coupling collectively to a common environment.
+
+An advantage of the quantum Monte Carlo technique is that simulations can be easily parallelized.
+QuTiP is able to interact with the `mpi4py` package, and thus makes it possible to take advantage of the massive parallelization capabilities of high performance computing clusters.
+As part of *Example 2*, we demonstrate [at the end](#Monte-Carlo-Simulations-on-Computing-Clusters-via-MPI) how that example can be run in an MPI environment.
+
 ```python
 import matplotlib.pyplot as plt
 from matplotlib.collections import LineCollection
@@ -27,17 +42,6 @@ import os
 ```
 
 <!-- #region -->
-# Non-Markovian Monte Carlo Solver: Two Physical Examples
-
-Authors: B. Donvil and P. Menczel, 2023
-
-### Introduction
-
-In this tutorial, we will discuss two examples where systems are described by time-local non-Markovian master equations, that is, Lindblad-like master equations with "rates" that may become negative.
-We will demonstrate how these master equations arise in physical scenarios and how they can be simulated using QuTiP's Non-Markovian Monte Carlo solver.
-This solver is based on the influence martingale formalism, which is described in Refs. [\[1, 2\]](#References).
-The examples, taken from Ref. [\[1\]](#References), are a two-level atom in a photonic band gap (based on Ref. [\[3\]](#References)) and a Redfield master equation for two non-interacting qubits coupling collectively to a common environment.
-
 ### Example 1: Two-level Atom in a Photonic Band Gap
 
 We discuss here the master equation for a 2-level atom in a photonic band gap based on Ref. [\[3\]](#References).
