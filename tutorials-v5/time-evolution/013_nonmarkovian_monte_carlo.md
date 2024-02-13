@@ -5,14 +5,13 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.15.2
+      jupytext_version: 1.16.1
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
     name: python3
 ---
 
-<!-- #region -->
 # Non-Markovian Monte Carlo Solver: Two Physical Examples
 
 Authors: B. Donvil and P. Menczel, 2023
@@ -24,6 +23,25 @@ We will demonstrate how these master equations arise in physical scenarios and h
 This solver is based on the influence martingale formalism, which is described in Refs. [\[1, 2\]](#References).
 The examples, taken from Ref. [\[1\]](#References), are a two-level atom in a photonic band gap (based on Ref. [\[3\]](#References)) and a Redfield master equation for two non-interacting qubits coupling collectively to a common environment.
 
+An advantage of the quantum Monte Carlo technique is that simulations can be easily parallelized.
+QuTiP is able to interact with the `mpi4py` package, and thus makes it possible to take advantage of the massive parallelization capabilities of high performance computing clusters.
+As part of *Example 2*, we demonstrate [at the end](#Monte-Carlo-Simulations-on-Computing-Clusters-via-MPI) how that example can be run in an MPI environment.
+
+```python
+import matplotlib.pyplot as plt
+from matplotlib.collections import LineCollection
+from matplotlib.colors import LogNorm
+
+import numpy as np
+import qutip as qt
+
+from scipy import special, optimize
+from scipy.interpolate import CubicSpline
+
+import os
+```
+
+<!-- #region -->
 ### Example 1: Two-level Atom in a Photonic Band Gap
 
 We discuss here the master equation for a 2-level atom in a photonic band gap based on Ref. [\[3\]](#References).
@@ -71,24 +89,10 @@ S(t) &= -2 \operatorname{Im} \frac{\dot{c}(t)}{c(t)} \quad \text{and} \\
 
 
 
-##### Imports
-<!-- #endregion -->
-
-```python
-import matplotlib.pyplot as plt
-from matplotlib.collections import LineCollection
-from matplotlib.colors import LogNorm
-
-import numpy as np
-import qutip as qt
-
-from scipy import special, optimize
-from scipy.interpolate import CubicSpline
-```
-
 ##### Setup system
 
 We choose the model parameters $\delta$ and $\beta$:
+<!-- #endregion -->
 
 ```python
 delta = -1
@@ -274,6 +278,7 @@ plt.legend()
 plt.show()
 ```
 
+<!-- #region -->
 ### Example 2: Two-Qubit Redfield Equation
 
 We consider two qubits that couple collectively to the same bosonic bath but do not interact with each other directly.
@@ -309,9 +314,11 @@ $$ \frac{d}{dt}\rho(t) = -i \sum_{i,j=1}^2 A_{i,j} [\sigma_+^{(j)}\sigma_-^{(i)}
 Now it is clear that when $\kappa>0$, $\lambda_1<0$ and thus Eq. (2) is not in strict Lindblad form.
 
 
+
 ##### Setup system
 
 We choose the model parameters $\alpha$, $\kappa$ and $\gamma_{1,2}$, and calculate the rates $\lambda_1$ and $\lambda_2$.
+<!-- #endregion -->
 
 ```python
 omeg1 = 0.25
@@ -518,13 +525,225 @@ ax.set_ylim(-0.02, 0.22)
 plt.show()
 ```
 
+<!-- #region -->
+### Monte Carlo Simulations on Computing Clusters via MPI
+
+To improve the convergence behavior of the example above at long times, many trajectories are needed.
+We use this fact as a motivation to demonstrate QuTiP's MPI capabilities.
+On the QuTiP side, running Monte Carlo simulations on massively parallel infrastructure through MPI is as easy as replacing `'map': 'parallel'` by `'map': 'mpi'` in the provided options.
+QuTiP will then use the `MPIPoolExecutor` provided by the `mpi4py` module to simulate the trajectories in parallel.
+Such calculations can typically not be started from within a Jupyter notebook.
+The code below is an example for a standalone script that could be submitted to a job scheduler on a supercomputer.
+
+```python
+# Beginning of `qutip-mpi-example.py` file
+import numpy as np
+import qutip as qt
+
+# --- SETTINGS ---
+# Maximum number of MPI worker processes that can be used
+NUM_WORKER_PROCESSES = 500
+# Create batches averaged over this number of trajectories
+BATCH_SIZE = 1000
+# Create this number of batches
+# (total number of trajectories is BATCH_SIZE * NUM_BATCHES)
+NUM_BATCHES = 500
+
+
+def setup_system():
+    omeg1, omeg2 = 0.25, 0.5
+    gam1, gam2, alpha, kappa = 1, 4, 3, 1
+    lamb1 = (gam1 + gam2) / 4 - np.sqrt((gam1**2 + gam2**2 + 8 * kappa**2) / 8)
+    lamb2 = (gam1 + gam2) / 4 + np.sqrt((gam1**2 + gam2**2 + 8 * kappa**2) / 8)
+
+    L1 = qt.Qobj(np.array([[0, 0, 0, 0], [1, 0, 0, 0], [0, 0, 0, 0], [0, 0, 1, 0]])).dag()
+    L2 = qt.Qobj(np.array([[0, 0, 0, 0], [0, 0, 0, 0], [1, 0, 0, 0], [0, 1, 0, 0]])).dag()
+    norm1 = np.sqrt(1 + (gam2 - gam1 + np.sqrt(2) * np.sqrt(gam1**2 + gam2**2 + 8*kappa**2))**2 / ((gam1 + gam2) ** 2 + 16 * kappa**2))
+    norm2 = np.sqrt(1 + (gam2 - gam1 - np.sqrt(2) * np.sqrt(gam1**2 + gam2**2 + 8*kappa**2))**2 / ((gam1 + gam2) ** 2 + 16 * kappa**2))
+    Udag = qt.Qobj(np.array([
+        [(gam1 - gam2 - np.sqrt(2) * np.sqrt(gam1**2 + gam2**2 + 8*kappa**2)) / (gam1 + gam2 + 4j*kappa) / norm1,
+         (gam1 - gam2 + np.sqrt(2) * np.sqrt(gam1**2 + gam2**2 + 8*kappa**2)) / (gam1 + gam2 + 4j*kappa) / norm2],
+        [1 / norm1,
+         1 / norm2]
+    ])).dag()
+    sigmam1 = Udag[0, 0] * L1 + Udag[1, 0] * L2
+    sigmam2 = Udag[0, 1] * L1 + Udag[1, 1] * L2
+    sigmap1 = sigmam1.dag()
+    sigmap2 = sigmam2.dag()
+
+    H = ((omeg1 + alpha) * sigmap1 * sigmam1
+         + (omeg2 + alpha + kappa) * sigmap2 * sigmam2
+         + (alpha + kappa / 2 - 1j * (gam1 - gam2) / 8) * sigmap2 * sigmam1
+         + (alpha + kappa / 2 - 1j * (gam2 - gam1) / 8) * sigmap1 * sigmam2)
+    psi0 = np.sqrt(0.4) * qt.basis(4, 0) + np.sqrt(0.4) * qt.basis(4, 1) + np.sqrt(0.2) * qt.basis(4, 2)
+    ops_and_rates = [[L1, lamb1], [L2, lamb2]]
+
+    return H, psi0, ops_and_rates
+
+
+def main():
+    times = np.linspace(0, 10, 250)
+    H, psi0, ops_and_rates = setup_system()
+
+    for i in range(NUM_BATCHES):
+        result = qt.nm_mcsolve(H, psi0, times, ops_and_rates, ntraj=BATCH_SIZE,
+                               options={'store_states': True,
+                                        'progress_bar': False,
+                                        'map': 'mpi',
+                                        'num_cpus': NUM_WORKER_PROCESSES,
+                                        'norm_steps': 10}
+                              )
+        qt.qsave(result, f"./result-{i}")
+
+
+if __name__ == "__main__":
+    main()
+```
+<!-- #endregion -->
+
+<!-- #region -->
+How to run this script in practice will depend on your infrastructure.
+Some guidance is provided on the [mpi4py.futures users' guide](https://mpi4py.readthedocs.io/en/stable/mpi4py.futures.html).
+The authors of this tutorial used the batch script below to submit the task to a SLURM workload manager on the supercomputer [HOKUSAI](https://www.r-ccs.riken.jp/exhibit_contents/SC20/hokusai.html), using the [MPICH](https://www.mpich.org) implementation of the MPI standard.
+Using 501 CPU cores (1 manager and 500 workers) distributed over 5 nodes on this supercomputer, the task executed in approximately 50 minutes, generating 500k trajectories.
+
+```bash
+#!/bin/bash
+#SBATCH --partition=XXXXX
+#SBATCH --account=XXXXX
+
+#SBATCH --nodes=5
+#SBATCH --ntasks=501
+#SBATCH --mem-per-cpu=1G
+
+#SBATCH --time=0-10:00
+
+source ~/.bashrc
+
+module purge
+module load mpi/mpich-x86_64
+conda activate qutip-environment
+
+mpirun -np $SLURM_NTASKS -bind-to core python -m mpi4py.futures qutip-mpi-example.py
+```
+
+The code above generates a number of result files.
+Copy these files into an `mpi_results` folder to execute the following code.
+We will first plot the averaged result like above.
+<!-- #endregion -->
+
+```python
+# copied from script above
+BATCH_SIZE = 1000
+times3 = np.linspace(0, 10, 250)
+
+# load all available result files
+results_folder_exists = os.path.isdir('mpi_results')
+if results_folder_exists:
+    batches = []
+    while True:
+        i = len(batches)
+        filename = f'mpi_results/result-{i}'
+        if not os.path.exists(f'{filename}.qu'):
+            break
+        batches.append(qt.qload(filename))
+    NUM_BATCHES = len(batches)
+
+# combine result files
+if results_folder_exists and NUM_BATCHES > 0:
+    combined_result = sum(batches[1:], start=batches[0])
+    exact_solution = qt.mesolve(H, psi0, times3, d_ops, options=options)
+```
+
+```python
+if results_folder_exists and NUM_BATCHES > 0:
+    plt.plot(times3, qt.expect(exact_solution.states, eops[0]),
+             color='C0', label=r"$\langle e_0 \mid \rho \mid e_0 \rangle$")
+    plt.plot(times3, qt.expect(combined_result.states, eops[0]),
+             'x', color='C0')
+
+    plt.plot(times3,  qt.expect(exact_solution.states, eops[1]),
+             color='C1', label=r"$\langle e_1 \mid \rho \mid e_1 \rangle$")
+    plt.plot(times3, qt.expect(combined_result.states, eops[1]),
+             'x', color='C1')
+
+    plt.plot(times3, qt.expect(exact_solution.states, eops[2]),
+             color='C2', label=r"$\langle e_2 \mid \rho \mid e_2 \rangle$")
+    plt.plot(times3, qt.expect(combined_result.states, eops[2]),
+             'x', color='C2')
+
+    plt.xlabel(r"$t$")
+    plt.xlim((0, 5))
+    plt.ylabel('Expectation values')
+    plt.ylim((-.1, .7))
+    plt.legend()
+
+    plt.show()
+
+else:
+    print('No result files found.')
+```
+
+We can now do the following analysis, adopted from Ref. [\[6\]](#References).
+
+Let $k \leq N$, where $N$ is the total number of trajectories.
+Let $I = [0, 10]$ be the total considered time interval, and let
+$$ I_k = \{ t \in I : \lVert \rho_{\text{MC},k} - \rho_{\text{exact}} \rVert \leq 0.1 \} . $$
+Here, $\rho_{\text{MC},k}$ is the estimated state using only $k$ trajectories.
+We plot $\mu(I_k)$ as a function of $k$, where $\mu(I_k)$ is the measure of the set $I_k$.
+
+```python
+if results_folder_exists and NUM_BATCHES > 0:
+    result = {}
+    progress = qt.ui.TqdmProgressBar(NUM_BATCHES)
+
+    for k, batch in enumerate(batches):
+        # average of the batches up to index k
+        if k == 0:
+            average = batch
+        else:
+            average = average + batch
+
+        # how many points are close to the exact solution
+        diff = [(mc - exact).norm()
+                for mc, exact in zip(average.states, exact_solution.states)]
+        good_points = np.count_nonzero(  # count 'True' entries
+            np.isclose(diff, np.zeros_like(diff), rtol=0, atol=0.1)
+        )
+
+        num_trajectories = (k + 1) * BATCH_SIZE
+        result.update({num_trajectories: good_points / len(times3)})
+        progress.update()
+
+    progress.finished()
+    xval = np.array(list(result.keys()))
+    yval = np.array(list(result.values()))
+
+    fit = np.polyfit(np.log(xval), yval, 1)
+    print(('Approximate number of trajectories required for convergence until '
+           'time t (according to linear fit):\n'
+           f'N = {np.exp(-fit[1] / fit[0]) :.2f} * '
+           f'exp( {1 / fit[0] / times3[-1] :.2f} * t )\n'))
+
+    plt.semilogx(xval, yval, label='Simulation result')
+    plt.semilogx(xval, fit[0] * np.log(xval) + fit[1], '--', label='Fit')
+    plt.xlabel('Number of trajectories, $k$')
+    plt.ylabel(r'$\mu(I_k)$')
+    plt.legend()
+    plt.show()
+
+else:
+    print('No result files found.')
+```
+
 ### References
 
 \[1\] [Donvil and Muratore-Ginanneschi, Nat Commun (2022)](https://www.nature.com/articles/s41467-022-31533-8).  
 \[2\] [Donvil and Muratore-Ginanneschi, arXiv:2209.08958 \[quant-ph\]](https://arxiv.org/abs/2209.08958).  
 \[3\] [John and Quang, Phys. Rev. A (1994)](https://journals.aps.org/pra/abstract/10.1103/PhysRevA.50.1764).  
 \[4\] Breuer and Petruccione, *The Theory of Open Quantum Systems*.  
-\[5\] [Mozgunov and Lidar, Quantum (2020)](https://quantum-journal.org/papers/q-2020-02-06-227/).
+\[5\] [Mozgunov and Lidar, Quantum (2020)](https://quantum-journal.org/papers/q-2020-02-06-227/).  
+\[6\] [Menczel *et al.*, arXiv:2401.11830 \[quant-ph\]](https://arxiv.org/abs/2401.11830).
 
 
 ### About
