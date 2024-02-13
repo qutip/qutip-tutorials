@@ -63,13 +63,12 @@ and $dN(t)$ is a Poisson distributed increment with $E[dN(t)] = \eta \langle a^\
 
 In QuTiP, the photocurrent stochastic master equation is written in the form:
 
-$\displaystyle d\rho(t) = -i[H, \rho] dt + \mathcal{D}[B] \rho dt 
-- \frac{1}{2}\mathcal{H}[A^\dagger A] \rho(t) dt 
-+ \mathcal{G}[A]\rho(t) d\xi$
+$\displaystyle d\rho(t) = -i[H, \rho] dt + \mathcal{D}[B] \rho dt - \frac{1}{2}\mathcal{H}[A^\dagger A]\rho(t) dt + \mathcal{G}[A]\rho(t) d\xi$
 
 where the first two term gives the deterministic master equation (Lindblad form with collapse operator $B$ (c_ops)) and $A$ the stochastic collapse operator (sc_ops). 
 
-Here $A = \sqrt{\eta\gamma} a$ and $B = \sqrt{(1-\eta)\gamma} $a.
+Here $A = \sqrt{\eta\gamma}a $ and $B = \sqrt{(1-\eta)\gamma} a$
+
 
 ```python
 N = 15
