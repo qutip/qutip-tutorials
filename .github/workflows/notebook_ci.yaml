@@ -27,15 +27,6 @@ jobs:
       with:
         use-quiet-mode: 'yes'
         folder-path: tutorials-v${{ matrix.qutip-version }}
-      continue-on-error: true
-
-    # Only stop tests for broken file in updated file.
-    - uses: gaurav-nelson/github-action-markdown-link-check@v1
-      with:
-        use-quiet-mode: 'yes'
-        check-modified-files-only: 'yes'
-        base-branch: 'main'
-        folder-path: tutorials-v${{ matrix.qutip-version }}
 
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v2
@@ -70,12 +61,10 @@ jobs:
         git clone -b ${{ matrix.qutip-branch }} https://github.com/qutip/qutip.git
         cd qutip
         pip install -r requirements.txt
-        python setup.py develop
+        pip install .
         cd ..
-        git clone -b master https://github.com/qutip/qutip-qip.git
-        cd qutip-qip
-        pip install -e .
-        cd ..
+        python -m pip install git+https://github.com/qutip/qutip-qip
+
         git clone -b master https://github.com/qutip/qutip-qtrl.git
         cd qutip-qtrl
         # install qutip-qtrl without deps because it requires qutip 5.0.0a1
@@ -139,10 +128,23 @@ jobs:
           cd website
 
           # Download resources from qutip.github.io repository
-          svn export https://github.com/qutip/qutip.github.io/trunk/css
-          svn export https://github.com/qutip/qutip.github.io/trunk/_includes
-          svn export https://github.com/qutip/qutip.github.io/trunk/header_source
-          svn export https://github.com/qutip/qutip.github.io/trunk/images
+          mkdir css
+          cd css
+          wget https://raw.githubusercontent.com/qutip/qutip.github.io/master/css/bootstrap.css
+          wget https://raw.githubusercontent.com/qutip/qutip.github.io/master/css/site.css
+          cd ..
+
+          mkdir _includes
+          cd _includes
+          wget https://raw.githubusercontent.com/qutip/qutip.github.io/master/_includes/footer.html
+          wget https://raw.githubusercontent.com/qutip/qutip.github.io/master/_includes/header.html
+          wget https://raw.githubusercontent.com/qutip/qutip.github.io/master/_includes/navbar.html
+          cd ..
+
+          mkdir images
+          cd images
+          wget https://raw.githubusercontent.com/qutip/qutip.github.io/master/images/favicon.ico
+          cd ..
 
           # build the website
           python create_index.py
