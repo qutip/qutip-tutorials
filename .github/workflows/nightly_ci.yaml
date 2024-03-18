@@ -96,7 +96,7 @@ jobs:
         rm template.ipynb
 
     - name: Create Notebook Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: executed-notebooks-v${{ matrix.qutip-version }}
         path: |

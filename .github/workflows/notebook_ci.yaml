@@ -98,7 +98,7 @@ jobs:
         rm template.ipynb
 
     - name: Create Notebook Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: executed-notebooks-v${{ matrix.qutip-version }}
         path: |
@@ -107,15 +107,15 @@ jobs:
   publish:
     needs: pytests
     runs-on: ubuntu-latest
-    if: ${{ github.repository == 'qutip/qutip-tutorials' && github.ref == 'refs/heads/main' }}
+    # if: ${{ github.repository == 'qutip/qutip-tutorials' && github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/download-artifact@master
+      - uses: actions/download-artifact@v4
         with:
           name: executed-notebooks-v4
           path: publish/tutorials-v4
 
-      - uses: actions/download-artifact@master
+      - uses: actions/download-artifact@v4
         with:
           name: executed-notebooks-v5
           path: publish/tutorials-v5
