@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-## QuTiP Lecture: Single-photon Interference
+# QuTiP Lecture: Single-photon Interference
 
 
 Authors: Amélie Orban (Editor), Inga Schöyen, Alessandro Delmonte, Alexander Rihane. 
