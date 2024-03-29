@@ -21,8 +21,17 @@ Copyright (C) 2011 and later, Paul D. Nation & Robert J. Johansson
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import rcParams
-from qutip import (about, coherent, destroy, fock, liouvillian, mcsolve,
-                   mesolve, plot_expectation_values, smesolve)
+from qutip import (
+    about,
+    coherent,
+    destroy,
+    fock,
+    liouvillian,
+    mcsolve,
+    mesolve,
+    plot_expectation_values,
+    smesolve,
+)
 
 %matplotlib inline
 
@@ -129,12 +138,16 @@ np.array(result2.runs_photocurrent).dtype
 ```python
 fig, axes = plt.subplots(2, 2, figsize=(12, 8), sharex=True)
 
-axes[0, 0].plot(times, result1.expect[0], label=r"Stochastic ME (ntraj = 1)", lw=2)
+axes[0, 0].plot(
+    times, result1.expect[0], label=r"Stochastic ME (ntraj = 1)", lw=2
+)
 axes[0, 0].plot(times, result_ref.expect[0], label=r"Lindblad ME", lw=2)
 axes[0, 0].set_title("Cavity photon number (ntraj = 1)")
 axes[0, 0].legend()
 
-axes[0, 1].plot(times, result2.expect[0], label=r"Stochatic ME (ntraj = 10)", lw=2)
+axes[0, 1].plot(
+    times, result2.expect[0], label=r"Stochatic ME (ntraj = 10)", lw=2
+)
 axes[0, 1].plot(times, result_ref.expect[0], label=r"Lindblad ME", lw=2)
 axes[0, 1].set_title("Cavity photon number (ntraj = 10)")
 axes[0, 1].legend()
@@ -184,12 +197,16 @@ result2 = mcsolve(
 ```python
 fig, axes = plt.subplots(2, 2, figsize=(12, 8), sharex=True)
 
-axes[0, 0].plot(times, result1.expect[0], label=r"Stochastic ME (ntraj = 1)", lw=2)
+axes[0, 0].plot(
+    times, result1.expect[0], label=r"Stochastic ME (ntraj = 1)", lw=2
+)
 axes[0, 0].plot(times, result_ref.expect[0], label=r"Lindblad ME", lw=2)
 axes[0, 0].set_title("Cavity photon number (ntraj = 1)")
 axes[0, 0].legend()
 
-axes[0, 1].plot(times, result2.expect[0], label=r"Stochatic ME (ntraj = 10)", lw=2)
+axes[0, 1].plot(
+    times, result2.expect[0], label=r"Stochatic ME (ntraj = 10)", lw=2
+)
 axes[0, 1].plot(times, result_ref.expect[0], label=r"Lindblad ME", lw=2)
 axes[0, 1].set_title("Cavity photon number (ntraj = 10)")
 axes[0, 1].legend()
@@ -245,7 +262,14 @@ options = {
 }
 
 result = smesolve(
-    H, rho0, times, c_ops=c_ops, sc_ops=sc_ops, e_ops=e_ops, ntraj=75, options=options
+    H,
+    rho0,
+    times,
+    c_ops=c_ops,
+    sc_ops=sc_ops,
+    e_ops=e_ops,
+    ntraj=75,
+    options=options,
 )
 ```
 
@@ -266,7 +290,9 @@ ax.plot(times, result_ref.expect[1], "k", lw=2)
 ax.set_ylim(-25, 25)
 ax.set_xlim(0, times.max())
 ax.set_xlabel("time", fontsize=12)
-ax.plot(times[1:], np.mean(result.measurement, axis=0)[0, :].real / M, "b", lw=2)
+ax.plot(
+    times[1:], np.mean(result.measurement, axis=0)[0, :].real / M, "b", lw=2
+)
 ```
 
 ## Versions
