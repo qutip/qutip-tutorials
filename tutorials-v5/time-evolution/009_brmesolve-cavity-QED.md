@@ -25,7 +25,7 @@ This notebook does not introduce the usage of the Bloch-Redfield solver `qutip.b
 
 The Lindblad master equation solver, implemented in `qutip.mesolve()`, deals with dissipation using collapse operators which can act on subsystems of the general system. For example, we can define dissipation for the atom-cavity system for the cavity and the atom separately, by the corresponding annihilation operator. In this example, we will see the limitations of this approach when it comes to strong coupling between atom and cavity.
 
-For this example we will use the following Rabi Hamiltonian: 
+For this example we will use the following Rabi Hamiltonian:
 
 $$H =  \omega_0 a^\dagger a + \omega_0 \sigma_+ \sigma_- + g(a^\dagger + a)(\sigma_- + \sigma_+)$$
 
@@ -95,11 +95,11 @@ times = np.linspace(0, 10 * 2 * np.pi / g_weak, 1000)
 # simulation
 result_me_weak = mesolve(H_weak, psi0, times, c_ops, e_ops)
 result_brme_weak = brmesolve(H_weak, psi0, times, a_ops, e_ops)
-plot_expectation_values(
-    [result_me_weak, result_brme_weak],
-    ylabels=["<n_cav>", "<n_atom>"],
-    show_legend=True,
-);
+fig, axes = plot_expectation_values(
+    [result_me_weak, result_brme_weak], ylabels=["<n_cav>", "<n_atom>"]
+)
+for ax in axes:
+    ax.legend(['mesolove', 'brmesolve'], loc='upper right')
 ```
 
 For the weak coupling strength between atom and cavity we obtain similar results from Lindblad master equation solver `qutip.mesolve` and the Bloch-Redfield solver `qutip.brmesolve`.
@@ -112,11 +112,11 @@ times = np.linspace(0, 10 * 2 * np.pi / g_strong, 1000)
 # simulation
 result_me_strong = mesolve(H_strong, psi0, times, c_ops, e_ops)
 result_brme_strong = brmesolve(H_strong, psi0, times, a_ops, e_ops)
-plot_expectation_values(
-    [result_me_strong, result_brme_strong],
-    ylabels=["<n_cav>", "<n_atom>"],
-    show_legend=True,
-);
+fig, axes = plot_expectation_values(
+    [result_me_strong, result_brme_strong], ylabels=["<n_cav>", "<n_atom>"]
+)
+for ax in axes:
+    ax.legend(['mesolove', 'brmesolve'], loc='upper right')
 ```
 
 In the strong coupling regime there are differences in the solution of the two solvers. This is due to the fact that the eigenstates of the system with strong coupling have contributions from atom and the cavity system, i.e. hybridized eigenstates. The Lindbladian master equation solver assumes that the dissipation of a subsystem, here losses in the cavity, does not affect the state of the other subsystem, here the atom. However, for the strongly coupled Hamiltonian this is not true anymore and the dissipation leads to transitions between eigenstates of the coupled system, i.e. also affects the atomic state. By definition the Bloch-Redfield solver takes this hybridization into account and yields the more accurate result for such systems.
@@ -126,7 +126,7 @@ For weak interaction the energy levels split up by a small constant, but do not 
 
 ```python
 plot_energy_levels([H_no, H_weak, H_strong],
-                   labels=["no coupling", "weak", "strong"]);
+                   h_labels=["no coupling", "weak", "strong"]);
 ```
 
 ### Non-secular solution
@@ -135,14 +135,17 @@ The `qutip.brmesolve()` function automatically uses the secular approximation, i
 ```python
 result_brme_nonsec = brmesolve(H_strong, psi0, times, a_ops,
                                e_ops, sec_cutoff=-1)
-plot_expectation_values([result_brme_strong, result_brme_nonsec],
-                        ylabels=["<n_cav>", "<n_atom>"], show_legend=True);
+fig, axes = plot_expectation_values(
+    [result_brme_strong, result_brme_nonsec], ylabels=["<n_cav>", "<n_atom>"]
+)
+for ax in axes:
+    ax.legend(['brme_strong', 'brme_nonsec'], loc='upper right')
 ```
 
 ### Trace of states
-The Lindbladian Master Equation approach guarantees that the density matrix follows a physical evolution, i.e. the evolution is trace and positivity preserving (up to numerical precision). 
+The Lindbladian Master Equation approach guarantees that the density matrix follows a physical evolution, i.e. the evolution is trace and positivity preserving (up to numerical precision).
 
-A down-side of the Bloch-Redfield solver is that it does not guarantee this physical evolution. Hence the trace of the resulting density matrix can vary. Below we plot the trace of the density matrices for the evolution of the weakly coupled system. The trace of the Bloch-Redfield density matrices slightly deviates from the expected trace $1$ (here: in the range of $10^{-12}$ ). This small deviation was not a problem for the simulation above, but can become a problem for other systems.  
+A down-side of the Bloch-Redfield solver is that it does not guarantee this physical evolution. Hence the trace of the resulting density matrix can vary. Below we plot the trace of the density matrices for the evolution of the weakly coupled system. The trace of the Bloch-Redfield density matrices slightly deviates from the expected trace $1$ (here: in the range of $10^{-12}$ ). This small deviation was not a problem for the simulation above, but can become a problem for other systems.
 
 Note that the scale of the y-axis is automatically shifted by $+1$ and scaled by $10^{-12}$, which results in the expected trace plotted at $y = 0.0$.
 

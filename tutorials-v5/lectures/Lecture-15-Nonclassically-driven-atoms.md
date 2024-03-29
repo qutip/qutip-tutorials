@@ -25,8 +25,8 @@ This is a slightly modified version of the lectures, to work with the current re
 import matplotlib.pyplot as plt
 import numpy as np
 from qutip import (about, correlation_2op_1t, correlation_3op_1t, destroy,
-                   expect, identity, liouvillian,
-                   plot_wigner_fock_distribution, spectrum_correlation_fft,
+                   expect, identity, liouvillian, plot_fock_distribution,
+                   plot_wigner, spectrum_correlation_fft,
                    spost, spre, steadystate, tensor)
 
 %matplotlib inline
@@ -117,9 +117,17 @@ rhoss8, w8, S8 = solve(N, gamma, 8, eta)
 ```
 
 ```python
-plot_wigner_fock_distribution(rhoss2.ptrace(0))
-plot_wigner_fock_distribution(rhoss4.ptrace(0))
-plot_wigner_fock_distribution(rhoss8.ptrace(0));
+fig, axes = plt.subplots(1, 2, figsize=(8, 4))
+plot_fock_distribution(rhoss2.ptrace(0), fig=fig, ax=axes[0])
+plot_wigner(rhoss2.ptrace(0), fig=fig, ax=axes[1])
+
+fig, axes = plt.subplots(1, 2, figsize=(8, 4))
+plot_fock_distribution(rhoss4.ptrace(0), fig=fig, ax=axes[0])
+plot_wigner(rhoss4.ptrace(0), fig=fig, ax=axes[1])
+
+fig, axes = plt.subplots(1, 2, figsize=(8, 4))
+plot_fock_distribution(rhoss8.ptrace(0), fig=fig, ax=axes[0])
+plot_wigner(rhoss8.ptrace(0), fig=fig, ax=axes[1]);
 ```
 
 ```python
@@ -241,11 +249,11 @@ Fig. 12.6 in Quantum Noise.
 When the source atom is irradiated with incoherent light, the master equation becomes (Sec. 12.3.2 in Quantum Noise)
 
 $$
-\dot\rho = 
-\gamma_1\mathcal{D}[\sigma^-_{1}]\rho + 
+\dot\rho =
+\gamma_1\mathcal{D}[\sigma^-_{1}]\rho +
 \gamma_2\mathcal{D}[\sigma^-_{2}]\rho +
-\kappa(\bar{N} + 1)\mathcal{D}[a]\rho + 
-\kappa\bar{N}\mathcal{D}[a^\dagger]\rho 
+\kappa(\bar{N} + 1)\mathcal{D}[a]\rho +
+\kappa\bar{N}\mathcal{D}[a^\dagger]\rho
 -\sqrt{2\kappa\eta_1\gamma_1} ([\sigma_1^+, a\rho] + [\rho a^\dagger, \sigma_1^-])
 -\sqrt{\eta_2\gamma1\gamma_2} ([\sigma_2^+, \sigma_1^-\rho] + [\rho\sigma_1^+, \sigma_2^-])
 $$
@@ -334,7 +342,9 @@ rhoss_t, g2_11_t, g2_12_t, g2_21_t, g2_22_t = solve(
 
 ```python
 # visualize the cavity state
-plot_wigner_fock_distribution(rhoss_t.ptrace(0));
+fig, axes = plt.subplots(1, 2, figsize=(8, 4))
+plot_fock_distribution(rhoss_t.ptrace(0), fig=fig, ax=axes[0])
+plot_wigner(rhoss_t.ptrace(0), fig=fig, ax=axes[1]);
 ```
 
 ```python

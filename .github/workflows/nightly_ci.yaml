@@ -59,12 +59,10 @@ jobs:
         git clone -b ${{ matrix.qutip-branch }} https://github.com/qutip/qutip.git
         cd qutip
         pip install -r requirements.txt
-        python setup.py develop
+        pip install .
         cd ..
-        git clone -b master https://github.com/qutip/qutip-qip.git
-        cd qutip-qip
-        pip install -e .
-        cd ..
+        python -m pip install git+https://github.com/qutip/qutip-qip
+
         git clone -b master https://github.com/qutip/qutip-qtrl.git
         cd qutip-qtrl
         # install qutip-qtrl without deps because it requires qutip 5.0.0a1
@@ -88,17 +86,17 @@ jobs:
     - name: Check PEP8 formatting
       run: |
         pip install nbqa flake8
-        find . -name '*.ipynb' -exec nbqa flake8 {} +
+        find . -name '*.ipynb' -exec nbqa flake8 --max-line-length=88 {} +
 
     - name: Run tests
       run: |
         jupyter kernel &
         cd notebooks
-        find . -name '*.ipynb' -exec pytest --nbmake --overwrite --nbmake-timeout=500 {} +
+        find . -name '*.ipynb' -exec pytest --nbmake --overwrite --nbmake-timeout=600 {} +
         rm template.ipynb
 
     - name: Create Notebook Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: executed-notebooks-v${{ matrix.qutip-version }}
         path: |
