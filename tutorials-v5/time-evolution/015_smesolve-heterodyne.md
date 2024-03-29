@@ -214,17 +214,19 @@ options = {
 result = smesolve(
     H,
     rho0,
-    times,
+    np.linspace(0, 2, 21),
     sc_ops=c_ops,
     heterodyne=True,
     e_ops=e_ops,
     ntraj=ntraj,
     options=options,
 )
+
+result.expect
 ```
 
 ```python
-result.states[100].full()
+result.states[10].full()
 ```
 
 ```python
