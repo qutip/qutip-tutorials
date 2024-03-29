@@ -226,7 +226,7 @@ result.expect
 ```
 
 ```python
-result.states[10].full()
+result.states[-1].full()
 ```
 
 ```python
