@@ -97,7 +97,7 @@ for gate in circuit.gates:
 scheduler.schedule(instructions)
 ```
 
-The scheduled execution time for each gate can no longer be assigned to gate cycles. But we can see this through the [noisy circuit simulator](https://qutip.org/docs/latest/guide/qip/qip-processor.html) of qutip, where the circuit is compiled to control signals: (Notice that the execution time follows the hardware parameter of spin chain and the Y gate is decomposed into a Z-X-Z rotation).
+The scheduled execution time for each gate can no longer be assigned to gate cycles. But we can see this through the [noisy circuit simulator](https://qutip-qip.readthedocs.io/en/stable/qip-processor.html) of qutip, where the circuit is compiled to control signals: (Notice that the execution time follows the hardware parameter of spin chain and the Y gate is decomposed into a Z-X-Z rotation).
 
 ```python
 device = LinearSpinChain(3)

@@ -25,7 +25,7 @@ Jaynes-Cumming model, i.e., the cavity and the atom are coupled to an
 environment.
 
 
-For more information on the theory behind the Master Equation Solver see [the documentation](https://qutip.org/docs/latest/guide/dynamics/dynamics-master.html#non-unitary-evolution).
+For more information on the theory behind the Master Equation Solver see [the documentation](https://qutip.readthedocs.io/en/latest/guide/dynamics/dynamics-master.html#non-unitary-evolution).
 
 
 ### Package import
@@ -50,7 +50,7 @@ $H_{\rm RWA} = \hbar \omega_c a^\dagger a + \frac{1}{2}\hbar\omega_a\sigma_z + \
 
 where $\omega_c$ and $\omega_a$ are the frequencies of the cavity and atom, respectively, and $g$ is the interaction strength.
 
-In this example we also consider the coupling of the Jaynes-Cummings model to an external environment, i.e., we need to solve the system using the Master Equation Solver `qutip.mesolve`. The coupling to the environment is described by the collapse operators (as described in [the docs](https://qutip.org/docs/latest/guide/dynamics/dynamics-master.html#non-unitary-evolution)). Here, we consider two collapse operators for the cavity $C_1, C_2$, describing creation and annihilation of photons, and one collapse operator for the atom $C_3$.
+In this example we also consider the coupling of the Jaynes-Cummings model to an external environment, i.e., we need to solve the system using the Master Equation Solver `qutip.mesolve`. The coupling to the environment is described by the collapse operators (as described in [the docs](https://qutip.readthedocs.io/en/latest/guide/dynamics/dynamics-master.html#non-unitary-evolution)). Here, we consider two collapse operators for the cavity $C_1, C_2$, describing creation and annihilation of photons, and one collapse operator for the atom $C_3$.
 
 $C_1 = \sqrt{\kappa (1+\langle n \rangle)} \; a$
 

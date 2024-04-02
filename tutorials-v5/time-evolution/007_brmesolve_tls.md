@@ -24,7 +24,7 @@ with inspirations from the [`brmesolve notebook`](https://github.com/qutip/qutip
 
 The Bloch-Redfield solver is another method to solve a master equation. In comparison to the Lindblad Master equation solver `qutip.mesolve()` the Bloch-Redfield solver `qutip.brmesolve()` differs in the description of the interaction with the environment. In `qutip.mesolve()` we described the dissipation by collapse operators, which not necessarily have a physical interpretation. The `qutip.brmesolve()` function requires the a dissipation description by the so-called *noise-power-spectrum*, which gives the intensity of the dissipation depending on the frequency $\omega$.
 
-In this notebook we will introduce the basic usage of `qutip.brmesolve()` and compare it to `qutip.mesolve()`. For more information on the Bloch-Redfield solver see the follow-up notebooks and the [QuTiP Documentation of the functionality](https://qutip.org/docs/latest/guide/dynamics/dynamics-bloch-redfield.html).
+In this notebook we will introduce the basic usage of `qutip.brmesolve()` and compare it to `qutip.mesolve()`. For more information on the Bloch-Redfield solver see the follow-up notebooks and the [QuTiP Documentation of the functionality](https://qutip.readthedocs.io/en/latest/guide/dynamics/dynamics-bloch-redfield.html).
 
 ### Imports
 <!-- #endregion -->
@@ -125,7 +125,7 @@ ani
 
 ## Bloch-Redfield Tensor
 
-We described the dynmamics of the system by the Bloch-Redfield master equation, which is constructed from the Bloch-Redfield tensor $R_{abcd}$ (see [documentation of Bloch-Redfield master equation](https://qutip.org/docs/latest/guide/dynamics/dynamics-bloch-redfield.html)). Hence the dynamics are determined by this tensor. We can calculate the tensor in QuTiP using the `qutip.bloch_redfield_tensor()` function. We have to pass the Hamiltonian of the system and the dissipation description in `a_ops` to construct $R_{abcd}$. Furthermore, the function gives us the **eigenstates of the Hamiltonian**, as they are calculated along the way.
+We described the dynmamics of the system by the Bloch-Redfield master equation, which is constructed from the Bloch-Redfield tensor $R_{abcd}$ (see [documentation of Bloch-Redfield master equation](https://qutip.readthedocs.io/en/latest/guide/dynamics/dynamics-bloch-redfield.html)). Hence the dynamics are determined by this tensor. We can calculate the tensor in QuTiP using the `qutip.bloch_redfield_tensor()` function. We have to pass the Hamiltonian of the system and the dissipation description in `a_ops` to construct $R_{abcd}$. Furthermore, the function gives us the **eigenstates of the Hamiltonian**, as they are calculated along the way.
 
 
 ```python
