@@ -18,12 +18,12 @@ Author: C. Staufenbiel, 2022
 
 ### Introduction
 
-This notebook guides you through the process of setting up a Schrödinger 
-equation in QuTiP and using the corresponding solver to obtain the time 
-evolution. We will investigate the example of the Larmor precession to 
-explore the functionality of [`qutip.sesolve()`](https://qutip.org/docs/latest/apidoc/functions.html?highlight=sesolve#module-qutip.sesolve).
+This notebook guides you through the process of setting up a Schrödinger
+equation in QuTiP and using the corresponding solver to obtain the time
+evolution. We will investigate the example of the Larmor precession to
+explore the functionality of [`qutip.sesolve()`](https://qutip.readthedocs.io/en/latest/apidoc/functions.html?highlight=sesolve#module-qutip.sesolve).
 
-You can also find more on time evolutions with QuTiP [here](https://qutip.org/docs/latest/guide/guide-dynamics.html).
+You can also find more on time evolutions with QuTiP [here](https://qutip.readthedocs.io/en/latest/guide/guide-dynamics.html).
 
 ### Setup
 
@@ -49,8 +49,8 @@ b.show()
 ### Simulation with constant magnetic field
 
 Let's define a simple Hamiltonian and use `qutip.sesolve` to solve the
-Schrödinger equation. The Hamiltonian describes a constant magnetic field 
-along the z-axis. We can describe this magnetic field by the corresponding 
+Schrödinger equation. The Hamiltonian describes a constant magnetic field
+along the z-axis. We can describe this magnetic field by the corresponding
 Pauli matrix, which is defined as `qutip.sigmaz()` in QuTiP.
 
 To solve the Schrödinger equation for this particular Hamiltonian, we have to pass the Hamiltonian, the initial state, the times for which we want to simulate the system, and a set of observables that we evaluate at these times.
@@ -64,7 +64,7 @@ times = np.linspace(0, 10, 100)
 result = sesolve(H, psi, times, [sigmay()])
 ```
 
-`result.expect` holds the expecation values for the times that we passed to `sesolve`. `result.expect` is a two dimensional array, where the first dimension refers to the different expectation operators that we passed to `sesolve` before. 
+`result.expect` holds the expecation values for the times that we passed to `sesolve`. `result.expect` is a two dimensional array, where the first dimension refers to the different expectation operators that we passed to `sesolve` before.
 
 Above we passed `sigmay()` as the only expectation operator and therefore we can access its values by `result.expect[0]`. Below we plot the evolution of the expecation value.
 
@@ -85,7 +85,7 @@ b.show()
 
 ## Simulation with varying magnetic field
 
-Above we passed a constant Hamiltonian to `sesolve`. In QuTiP these constant operators are represented by `Qobj`. However, `sesolve` can also take time-dependent operators as an argument, which are represented by [`QobjEvo`](https://qutip.org/docs/latest/apidoc/classes.html?highlight=qobjevo#qutip.QobjEvo) in QuTiP. In this section we define the magnetic field with a linear and a periodic field strength, and observe the changes in the expecation value of $\sigma_y$.
+Above we passed a constant Hamiltonian to `sesolve`. In QuTiP these constant operators are represented by `Qobj`. However, `sesolve` can also take time-dependent operators as an argument, which are represented by [`QobjEvo`](https://qutip.readthedocs.io/en/latest/apidoc/classes.html?highlight=qobjevo#qutip.QobjEvo) in QuTiP. In this section we define the magnetic field with a linear and a periodic field strength, and observe the changes in the expecation value of $\sigma_y$.
 You can find more information on `QobjEvo` in [this notebook](https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/qobjevo.ipynb).
 
 We start by defining two functions for the field strength of the magnetic field. To be passed on to `QobjEvo` the functions need two arguments: the times and optional arguments.
@@ -127,8 +127,8 @@ plt.show()
 ```
 
 ### Conclusion
-We can use `sesolve` to solve unitary time evolutions. This is not only 
-limited to constant Hamiltonians, but we can also make use of time-dependent Hamiltonians using `QobjEvo`. 
+We can use `sesolve` to solve unitary time evolutions. This is not only
+limited to constant Hamiltonians, but we can also make use of time-dependent Hamiltonians using `QobjEvo`.
 
 ### About
 

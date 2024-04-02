@@ -16,13 +16,13 @@ jupyter:
 
 Author: C. Staufenbiel, 2022
 
-Inspirations taken from the [floquet notebook](https://github.com/qutip/qutip-notebooks/blob/master/examples/floquet-dynamics.ipynb) by P.D. Nation and J.R. Johannson, and the [qutip documentation](https://qutip.org/docs/latest/guide/dynamics/dynamics-floquet.html).
+Inspirations taken from the [floquet notebook](https://github.com/qutip/qutip-notebooks/blob/master/examples/floquet-dynamics.ipynb) by P.D. Nation and J.R. Johannson, and the [qutip documentation](https://qutip.readthedocs.io/en/latest/guide/dynamics/dynamics-floquet.html).
 
 ### Introduction
 
 In the [floquet_solver notebook](011_floquet_solver.md) we introduced the two functions to solve the Schrödinger and Master equation using the Floquet formalism (i.e. `fsesolve` and  `fmmesolve`). In this notebook, we will work with on `FloquetBasis` class which is used by solvers. In particular, we will focus on the Floquet modes and quasi-energies.
 
-More information on the implementation of the Floquet Formalism in QuTiP can be found in the [documentation](https://qutip.org/docs/latest/guide/dynamics/dynamics-floquet.html).
+More information on the implementation of the Floquet Formalism in QuTiP can be found in the [documentation](https://qutip.readthedocs.io/en/latest/guide/dynamics/dynamics-floquet.html).
 
 ### Imports 
 
