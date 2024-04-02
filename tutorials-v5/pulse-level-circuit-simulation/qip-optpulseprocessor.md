@@ -27,7 +27,7 @@ from qutip.ipynbtools import version_table
 import qutip_qip
 ```
 
-The `qutip.OptPulseProcessor` is a noisy quantum device simulator integrated with the optimal pulse algorithm from the `qutip.control` module. It is a subclass of `qutip.Processor` and is equipped with a method to find the optimal pulse sequence (hence the name `OptPulseProcessor`) for a `qutip.QubitCircuit` or a list of `qutip.Qobj`. For the user guide of `qutip.Processor`, please refer to [the introductory guide](https://qutip.org/docs/latest/guide/qip/qip-processor.html).
+The `qutip.OptPulseProcessor` is a noisy quantum device simulator integrated with the optimal pulse algorithm from the `qutip.control` module. It is a subclass of `qutip.Processor` and is equipped with a method to find the optimal pulse sequence (hence the name `OptPulseProcessor`) for a `qutip.QubitCircuit` or a list of `qutip.Qobj`. For the user guide of `qutip.Processor`, please refer to [the introductory guide](https://qutip.readthedocs.io/en/latest/guide/qip/qip-processor.html).
 
 ## Single-qubit gate
 Like in the parent class `Processor`, we need to first define the available Hamiltonians in the system. The `OptPulseProcessor` has one more parameter, the drift Hamiltonian, which has no time-dependent coefficients and thus won't be optimized.

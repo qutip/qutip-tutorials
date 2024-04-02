@@ -16,10 +16,10 @@ jupyter:
 
 Authors: C. Staufenbiel, 2022
 
-following the instructions in the [Bloch-Redfield documentation](https://qutip.org/docs/latest/guide/dynamics/dynamics-bloch-redfield.html?#time-dependent-bloch-redfield-dynamics).
+following the instructions in the [Bloch-Redfield documentation](https://qutip.readthedocs.io/en/latest/guide/dynamics/dynamics-bloch-redfield.html?#time-dependent-bloch-redfield-dynamics).
 
 ### Introduction
-This notebook introduces the usage of time-dependent operators in the Bloch-Redfield solver, which is also described in the [corresponding documentation](https://qutip.org/docs/latest/guide/dynamics/dynamics-bloch-redfield.html?#time-dependent-bloch-redfield-dynamics).
+This notebook introduces the usage of time-dependent operators in the Bloch-Redfield solver, which is also described in the [corresponding documentation](https://qutip.readthedocs.io/en/latest/guide/dynamics/dynamics-bloch-redfield.html?#time-dependent-bloch-redfield-dynamics).
 
 We will discuss time-dependent Hamiltonians and time-dependent dissipations.
 
@@ -55,7 +55,7 @@ result_const = brmesolve(H, psi0, times, e_ops=[a.dag() * a])
 plot_expectation_values(result_const, ylabels=["<n>"]);
 ```
 
-Next we define a string, which describes some time-dependence. We can use functions that are supported by the Cython implementation. A list of all supported functions can be found in the  [docs](https://qutip.org/docs/latest/guide/dynamics/dynamics-time.html#time). For example, supported functions are `sin` or `exp`. The time variable is denoted by `t`.
+Next we define a string, which describes some time-dependence. We can use functions that are supported by the Cython implementation. A list of all supported functions can be found in the  [docs](https://qutip.readthedocs.io/en/latest/guide/dynamics/dynamics-time.html#time). For example, supported functions are `sin` or `exp`. The time variable is denoted by `t`.
 
 ```python
 time_dependence = "sin(t)"
@@ -63,7 +63,7 @@ time_dependence = "sin(t)"
 
 ### Time-dependent Hamiltonian
 
-As a first example, we define a time-dependent Hamiltonian (as described [here](https://qutip.org/docs/latest/guide/dynamics/dynamics-time.html)). 
+As a first example, we define a time-dependent Hamiltonian (as described [here](https://qutip.readthedocs.io/en/latest/guide/dynamics/dynamics-time.html)). 
 
 $$ H = \hat{n} + sin(t) \hat{x} $$
 

@@ -403,7 +403,7 @@ plt.show()
 ```
 
 ## Customizing the noise
-Apart from pre-defined noise such as T1, T2 noise and random noise in the control pulse amplitude (see this [guide](https://qutip.org/docs/latest/guide/qip/qip-processor.html), one can also define custom noise. Here we will see two examples of customizing noise, one systematic (pulse-independent) noise and one pulse-dependent noise. 
+Apart from pre-defined noise such as T1, T2 noise and random noise in the control pulse amplitude (see this [guide](https://qutip.readthedocs.io/en/latest/guide/qip/qip-processor.html), one can also define custom noise. Here we will see two examples of customizing noise, one systematic (pulse-independent) noise and one pulse-dependent noise. 
 
 To understand how noise is processed, we briefly introduced the data structure of the simulation framework. The control elements are stored as a list of `Pulse` objects in the Processor. In each Pulse contains the idea pulse, the control noise part and the decoherence part. For systematic noise, it is saved under the `Pulse` representation labelled `"system"`, which represents the intrinsic dynamics of the quantum system. For pulse-dependent noise, we will add them to their corresponding control `Pulse`. 
 
