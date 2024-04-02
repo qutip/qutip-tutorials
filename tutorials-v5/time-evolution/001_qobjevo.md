@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.13.8
+      jupytext_version: 1.16.1
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -69,7 +69,10 @@ where the $f_k(t)$ are time-dependent scalars, and the $A_k$ are constant `Qobj`
 ```
 where all the `Ak` are constant `Qobj`s, and the `fk` are time dependences in one of the available forms.
 
-It is not recommended to mix formats within one `QobjEvo`, as the available optimisations will typically be reduced.
+Alternatively, `QobjEvo` can be created by multiplication of `Qobj` with wrapped time dependences:
+```
+A0 + A1 * qutip.coefficient(f1, ...) + ...
+```
 
 ```python
 constant_form = qutip.QobjEvo([n])
@@ -80,17 +83,17 @@ constant_form = qutip.QobjEvo([n])
 
 This should be a valid Python function with the signature
 ```python
-(t: float, args: dict) -> complex
+(t: float, ...) -> complex
 ```
-where `t` is the time, `args` is a dictionary containing arguments which you can change without needing a new `QobjEvo`, and the return value is the complex value of $f_k$.  We'll look more at `args` later.
+where `t` is the time. Additional arguments that can be changed without needing a new `QobjEvo` can be added. The return value is the complex value of $f_k$.  We'll look more at extra arguments later.
 <!-- #endregion -->
 
 ```python
-def cos_t(t, args):
+def cos_t(t):
     return np.cos(t)
 
 
-function_form = qutip.QobjEvo([n, [a + ad, cos_t]])
+function_form = n + (a + ad) * qutip.coefficient(cos_t)
 ```
 
 If you need something more complex, such as a state with memory or to build a parametrised set of functions where the arguments will not change once set, you can use a class which implements `__call__`.
@@ -132,7 +135,8 @@ The times in `tlist` must be sorted, but they don't need to be evenly distribute
 ```python
 tlist = np.linspace(0, 10, 101)
 values = np.cos(tlist)
-array_form = qutip.QobjEvo([n, [a + ad, values]], tlist=tlist)
+
+array_form = n + (a + ad) * qutip.coefficient(values, tlist=tlist)
 ```
 
 ## Evaluation
@@ -181,13 +185,13 @@ def coeff_with_args(t, args):
     return t + args["delta"]
 
 
-td_args = qutip.QobjEvo([Id, coeff_with_args], args={"delta": 1.0})
+td_args = Id * qutip.coefficient(coeff_with_args, args={"delta": 1.0})
 td_args(2)
 ```
 
 ```python
 # Temporarily overriding the arguments.
-td_args(2, args={"delta": 10})
+td_args(2, delta=10)
 ```
 
 ```python
@@ -203,7 +207,29 @@ td_args_str(2)
 ```
 
 ```python
-td_args_str(2, args={"delta": 10})
+td_args_str(2, {"delta": 10})
+```
+
+### Multiple arguments
+
+Each term in the `QobjEvo` has its own arguments even if they share the variable name:
+
+```python
+def f(t, w):
+    return np.exp(1j * np.pi * w * t)
+
+
+qevo = (
+    n
+    + a * qutip.coefficient(f, args={"w": 0.5})
+    + a.dag() * qutip.coefficient(f, args={"w": -0.5})
+)
+qevo(1)
+```
+
+```python
+# However overwritting the args with change them all:
+qevo(1, w=1)
 ```
 
 ### Using objects
@@ -221,34 +247,30 @@ td_args_str(np.pi)
 
 ### Dynamic arguments
 
-When `QobjEvo` is used in the solvers, certain dynamic arguments will be populated at each iteration, if and only if their names are present in the `args` dictionary used at `QobjEvo` intialisation.  The initial values of all of these dynamic arguments will be a representation of `0` in the corresponding type, for example `"state"` will be `qzero()` of the correct dimensions.
+When `QobjEvo` is used in the solvers, the solver states, derivated values or other internal values can be made available as arguments.
 
-There several of these "magic" variables, mostly revolving around the state currently being evolved:
-  - `"state"` or `"state_qobj"`: a `Qobj` of the current state.
-  - `"state_mat"`: a dense 2D `np.ndarray` of the state as a matrix, similar to `state.full()`
-  - `"state_vec"`: a dense 1D `np.ndarray` of the state as a vector.  This only generally makes sense for kets.
-  - `"expect_op_<n>"`: `complex`, where `<n>` is an index into `e_ops`, the current expectation value of `e_ops[n]` (the `<>` should not appear, e.g. `"expect_op_0"`).
-  - `"collapse"`: a `list` of `(t: float, n: int)` indicating the time `t` a collapse occurred, and which of `c_ops` caused it.  Only present when using `mcsolve`.
+These values are set from method to the solver classes:
 
+Most solver support:
+
+  - `StateFeedback`: state as a `Qobj` or qutip `Data`.
+  - `ExpectFeedback`: Expectation value computed from the state.
+
+Additionnally `mcsolve` has `CollapseFeedback` to get the collaspe list and stochastic solvers have `WienerFeedback` that returns the Wiener function along the trajectory.
+
+They all take a `default` input that specifies the value to be used when the `QobjEvo` is accessed outside of a solver. This value must be a valid input for the `QobjEvo` -- it will be used during solver setup.
 
 ```python
-args = {"state": None}
+args = {"state": qutip.MESolver.StateFeedback(default=qutip.fock_dm(4, 2))}
 
 
-def print_args(t, args):
-    print("\n".join(['"' + key + '":\n' + repr(value) for
-                     key, value in args.items()]))
-    return t
+def print_args(t, state):
+    print(f"'state':\n{state}")
+    return t + state.norm()
 
 
 td_args = qutip.QobjEvo([Id, print_args], args=args)
-td_args(0)
-```
-
-```python
-# The `state` keyword argument is typically unused.
-# Here it just simulates being inside a solver at a particular state.
-td_args(0, state=qutip.basis(4, 2))
+td_args(0.5)
 ```
 
 ## Mathematics
