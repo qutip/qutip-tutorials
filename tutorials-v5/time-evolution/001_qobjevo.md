@@ -212,7 +212,7 @@ td_args_str(2, {"delta": 10})
 
 ### Multiple arguments
 
-Each part of the `QobjEvo` as it's own arguments even if they share the variable name:
+Each term in the `QobjEvo` has its own arguments even if they share the variable name:
 
 ```python
 def f(t, w):
@@ -256,9 +256,9 @@ Most solver support:
   - `StateFeedback`: state as a `Qobj` or qutip `Data`.
   - `ExpectFeedback`: Expectation value computed from the state.
 
-Additionnally `mcsolve` has `CollapseFeedback` to get the collaspe list and stochastic solvers have `WienerFeedback` that return the Wiener function along the trajectory.
+Additionnally `mcsolve` has `CollapseFeedback` to get the collaspe list and stochastic solvers have `WienerFeedback` that returns the Wiener function along the trajectory.
 
-They all take a `default` input that set the value when used outside a solver. This value must be valid as it will be used during setup.
+They all take a `default` input that specifies the value to be used when the `QobjEvo` is accessed outside of a solver. This value must be a valid input for the `QobjEvo` -- it will be used during solver setup.
 
 ```python
 args = {"state": qutip.MESolver.StateFeedback(default=qutip.fock_dm(4, 2))}
