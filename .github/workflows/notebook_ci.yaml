@@ -64,7 +64,8 @@ jobs:
         pip install .
         cd ..
         python -m pip install git+https://github.com/qutip/qutip-qip
-        python -m pip install git+https://github.com/qutip/qutip-jax
+        python -m pip jax jax[cpu] diffrax equinox
+        python -m pip install --no-deps git+https://github.com/qutip/qutip-jax
 
         git clone -b master https://github.com/qutip/qutip-qtrl.git
         cd qutip-qtrl
