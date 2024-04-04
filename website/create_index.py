@@ -62,13 +62,17 @@ def get_notebooks(path):
     return notebooks
 
 
-def generate_index_html(version_directory, tutorial_directories, title,
-                        version_note):
-    """ Generates the index html file from the given data"""
+def get_tutorials(version_directory, tutorial_directories):
+    """ Return a dictionary of all tutorials for a particular version. """
     # get tutorials from the different directories
     tutorials = {}
     for dir in tutorial_directories:
         tutorials[dir] = get_notebooks(version_directory + dir + '/')
+    return tutorials
+
+
+def generate_index_html(title, version_note, tutorials):
+    """ Generates the index html file from the given data"""
 
     # Load environment for Jinja and template
     env = Environment(
@@ -85,6 +89,7 @@ def generate_index_html(version_directory, tutorial_directories, title,
 
 # url prefix for the links
 url_prefix = "https://nbviewer.org/urls/qutip.org/qutip-tutorials/"
+
 # tutorial directories
 tutorial_directories = [
     'heom',
@@ -102,9 +107,9 @@ title = 'Tutorials for QuTiP Version 4'
 version_note = 'These are the tutorials for QuTiP Version 4. You can \
          find the tutorials for QuTiP Version 5 \
           <a href="./index.html">here</a>.'
+tutorials_v4 = get_tutorials('../tutorials-v4/', tutorial_directories)
 
-html = generate_index_html('../tutorials-v4/', tutorial_directories, title,
-                           version_note)
+html = generate_index_html(title, version_note, tutorials_v4)
 with open('index-v4.html', 'w+') as f:
     f.write(html)
 
@@ -113,8 +118,8 @@ title = 'Tutorials for QuTiP Version 5'
 version_note = 'These are the tutorials for QuTiP Version 5. You can \
          find the tutorials for QuTiP Version 4 \
           <a href="./index-v4.html">here</a>.'
+tutorials_v5 = get_tutorials('../tutorials-v5/', tutorial_directories)
 
-html = generate_index_html('../tutorials-v5/', tutorial_directories, title,
-                           version_note)
+html = generate_index_html(title, version_note, tutorials_v5)
 with open('index.html', 'w+') as f:
     f.write(html)
