@@ -75,20 +75,29 @@ def get_tutorials(version_directory, tutorial_directories):
     return tutorials
 
 
-def generate_index_html(title, version_note, tutorials):
-    """ Generates the index html file from the given data"""
-
-    # Load environment for Jinja and template
-    env = Environment(
+def jinja_env():
+    """ Return a Jinja environment for template rendering. """
+    return Environment(
         loader=FileSystemLoader("../"),
-        autoescape=select_autoescape()
+        autoescape=select_autoescape(),
     )
-    template = env.get_template("website/index.html.jinja")
 
-    # render template and return
+
+def generate_index_html(title, version_note, tutorials):
+    """ Generates the index html file from the given data. """
+    env = jinja_env()
+    template = env.get_template("website/index.html.jinja")
     html = template.render(tutorials=tutorials, title=title,
                            version_note=version_note)
     return html
+
+
+def generate_index_notebook(title, tutorials):
+    """ Generate an index Jupyter notebook in Markdown format. """
+    env = jinja_env()
+    template = env.get_template("website/index.md.jinja")
+    md = template.render(tutorials=tutorials, title=title)
+    return md
 
 
 # tutorial directories
@@ -114,6 +123,10 @@ html = generate_index_html(title, version_note, tutorials_v4)
 with open('index-v4.html', 'w+') as f:
     f.write(html)
 
+notebook = generate_index_notebook(title, tutorials_v4)
+with open('index.md', 'w+') as f:
+    f.write(notebook)
+
 # +++ VERSION 5 INDEX FILE +++
 title = 'Tutorials for QuTiP Version 5'
 version_note = 'These are the tutorials for QuTiP Version 5. You can \
@@ -124,3 +137,7 @@ tutorials_v5 = get_tutorials('../tutorials-v5/', tutorial_directories)
 html = generate_index_html(title, version_note, tutorials_v5)
 with open('index.html', 'w+') as f:
     f.write(html)
+
+notebook = generate_index_notebook(title, tutorials_v5)
+with open('index.md', 'w+') as f:
+    f.write(notebook)

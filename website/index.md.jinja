@@ -1,0 +1,89 @@
+---
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .md
+      format_name: markdown
+      format_version: '1.3'
+      jupytext_version: 1.13.8
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
+---
+
+# {{ title }}
+
+
+## Python Introduction
+
+{% for item in tutorials['python-introduction'] %}
+    <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+{% endfor %}
+
+
+## Visualization
+
+{% for item in tutorials['visualization'] %}
+    <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+{% endfor %}
+
+
+## Quantum information processing
+
+This section requires an additional package <a href="https://github.com/qutip/qutip-qip">qutip-qip</a>.
+
+### Quantum circuits and algorithms
+
+{% for item in tutorials['quantum-circuits'] %}
+    <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+{% endfor %}
+
+### Pulse-level circuit simulation
+
+{% for item in tutorials['pulse-level-circuit-simulation'] %}
+    <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+{% endfor %}
+
+
+## Time evolution
+
+{% for item in tutorials['time-evolution'] %}
+    <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+{% endfor %}
+
+
+## Hierarchical Equations of Motion
+
+{% for item in tutorials['heom'] %}
+    <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+{% endfor %}
+
+
+## Miscellaneous tutorials
+
+{% for item in tutorials['miscellaneous'] %}
+    <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+{% endfor %}
+
+
+## Quantum mechanics lectures with QuTiP
+
+These lecture-style notebooks focus on particular quantum mechanics
+topics and analyze them numerically using QuTiP (some more detailed than others).
+
+{% for item in tutorials['lectures'] %}
+    <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+{% endfor %}
+
+
+## Contributing
+
+If you would like to contribute a notebook or report a bug, you may open
+an issue or pull request in the
+<a href="https://github.com/qutip/qutip-tutorials">qutip-tutorials</a>
+GitHub repository.
+
+A few of the notebooks are still maintained in the repository
+<a href="https://github.com/qutip/qutip-notebooks">qutip-notebooks</a> and
+a complete archive of older versions of the tutorials is maintained there.
