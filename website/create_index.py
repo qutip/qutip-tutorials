@@ -108,7 +108,7 @@ with open('suffix.html', 'r') as f:
 
 # +++ VERSION 4 INDEX FILE +++
 title = 'Tutorials for QuTiP Version 4'
-version_note = 'This are the tutorials for QuTiP Version 4. You can \
+version_note = 'These are the tutorials for QuTiP Version 4. You can \
          find the tutorials for QuTiP Version 5 \
           <a href="./index.html">here</a>.'
 
@@ -121,7 +121,7 @@ with open('index-v4.html', 'w+') as f:
 
 # +++ VERSION 5 INDEX FILE +++
 title = 'Tutorials for QuTiP Version 5'
-version_note = 'This are the tutorials for QuTiP Version 5. You can \
+version_note = 'These are the tutorials for QuTiP Version 5. You can \
          find the tutorials for QuTiP Version 4 \
           <a href="./index-v4.html">here</a>.'
 
