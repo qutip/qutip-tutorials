@@ -12,12 +12,16 @@ def natural_keys(text):
 
 
 class notebook:
+
+    # url prefix for the links
+    URL_PREFIX = "https://nbviewer.org/urls/qutip.org/qutip-tutorials/"
+
     def __init__(self, path, title):
         # remove ../ from path
         self.path = path.replace('../', '')
         self.title = title
         # set url and update from markdown to ipynb
-        self.url = url_prefix + self.path.replace(".md", ".ipynb")
+        self.url = self.URL_PREFIX + self.path.replace(".md", ".ipynb")
 
 
 def get_title(filename):
@@ -86,9 +90,6 @@ def generate_index_html(title, version_note, tutorials):
                            version_note=version_note)
     return html
 
-
-# url prefix for the links
-url_prefix = "https://nbviewer.org/urls/qutip.org/qutip-tutorials/"
 
 # tutorial directories
 tutorial_directories = [
