@@ -11,7 +11,7 @@ def natural_keys(text):
     return [atoi(c) for c in re.split('(\d+)', text)]
 
 
-class notebook:
+class Notebook:
 
     # url prefix for the links
     URL_PREFIX = "https://nbviewer.org/urls/qutip.org/qutip-tutorials/"
@@ -62,7 +62,7 @@ def get_notebooks(path):
     # sort the files and titles for display
     files_sorted, titles_sorted = sort_files_titles(files, titles)
     # generate notebook objects from the sorted lists and return
-    notebooks = [notebook(f, t) for f, t in zip(files_sorted, titles_sorted)]
+    notebooks = [Notebook(f, t) for f, t in zip(files_sorted, titles_sorted)]
     return notebooks
 
 
