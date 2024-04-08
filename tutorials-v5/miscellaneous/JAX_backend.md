@@ -14,12 +14,12 @@ jupyter:
 
 # qutip-jax JAX backend for qutip
 
-JAX is a numpy like libraries that can run on the CPU, GPU and TPU and support automatic differentiation.
+JAX is a numpy like library that can run on a CPU, GPU and TPU and supports automatic differentiation.
 qutip-jax allows JAX array to be used to store `Qobj`'s data allowing qutip to run on GPU.
 
-This backend will work with all qutip functions, but some may convert data to other format without warning. For example using scipy ODE will conver the state to a numpy array.
+This backend will work with all qutip functions, but some may convert data to other format without warning. For example using scipy ODE will convert the state to a numpy array.
 
-Support for `jit` and `grad` with qutip's functions is experimental. When using the right options, it is possible to run `mesolve` and `sesolve` on GPU with compilation and auto-differentiation with them. Many `Qobj` operations are also supported.
+Support for `jit` and `grad` with qutip's functions is experimental. When using the right options, it is possible to run `mesolve` and `sesolve` on GPU with both compilation and auto-differentiation working. Many `Qobj` operations are also supported.
 
 ```python
 import jax
@@ -27,10 +27,10 @@ import qutip
 import qutip_jax  # noqa: F401
 ```
 
-The JAX backend is activated by importing the module. 
+The JAX backend is activated by importing the `qutip_jax` module. 
 Then the formats `jax` and `jaxdia` are added to know qutip data types.
-- `"jax"` store the data as a dense Jax Array.
-- `"jaxdia"` represent sparse arrays in DIAgonal format.
+- `"jax"` stores the data as a dense Jax Array.
+- `"jaxdia"` represents sparse arrays in DIAgonal format.
 
 ```python
 # Creating jax Qobj using the dtype argument
@@ -39,7 +39,7 @@ id_jax.data_as("JaxArray")
 ```
 
 ```python
-# Creating jax Qobj using context
+# Creating jax Qobj using a context manager
 with qutip.CoreOptions(default_dtype="jaxdia"):
     id = qutip.qeye(3)
     a = qutip.destroy(3)
@@ -48,13 +48,13 @@ with qutip.CoreOptions(default_dtype="jaxdia"):
 sz = qutip.sigmaz().to("jaxdia")
 sx = qutip.sigmax().to("jaxdia")
 
-# Once created, most operation will conserve the data format
+# Once created, most operations will conserve the data format
 op = (sz & a) + (sx & id)
 op
 ```
 
 ```python
-# Many functions will do operation without converting output to numpy
+# Many functions will do operations without converting its output to numpy
 qutip.expect(op, qutip.rand_dm([2, 3], dtype="jax"))
 ```
 
@@ -75,7 +75,7 @@ print(f(op, state))
 %timeit f(op, state)
 ```
 
-JAX can be used with `mesolve` and `sesovle` in a way that support `jax.jit` and `jax.grad`, but specific options must be used:
+JAX can be used with `mesolve` and `sesolve` in a way that supports `jax.jit` and `jax.grad`, but specific options must be used:
 - The ODE solver from diffrax must be used instead of those provided by scipy.
 - `normalize_output` must be false
 - Coefficient for QobjEvo must be `jitted` function.
@@ -122,12 +122,8 @@ dfinal_expect_dt = jax.jit(
 dfinal_expect_dt(solver, qutip.basis(10, 8, dtype="jax"), 0.1, 1.0)
 ```
 
-If you are interested in contributing to qutip-jax
 
 ```python
 qutip.about()
 ```
 
-```python
-
-```
