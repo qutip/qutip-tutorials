@@ -4,6 +4,7 @@ import argparse
 import os
 import pathlib
 import re
+import urllib.parse
 
 from jinja2 import (
     Environment,
@@ -36,16 +37,25 @@ class Notebook:
     """ Notebook object for use in rendering templates. """
 
     NBVIEWER_URL_PREFIX = "https://nbviewer.org/urls/qutip.org/qutip-tutorials/"
+    TRY_QUTIP_URL_PREFIX = "https://qutip.org/try-qutip/lab/index.html?"
 
-    def __init__(self, path, title):
-        tutorial_folder = path.parent.parent
-        web_folder = tutorial_folder.parent
+    def __init__(self, title, tutorial_folder, path):
+        self.tutorial_folder = tutorial_folder
+        self.web_folder = tutorial_folder.parent
 
-        self.web_md_path = path.relative_to(web_folder)
-        self.web_ipynb_path = self.web_md_path.with_suffix(".ipynb")
         self.title = title
 
-        self.url = self.NBVIEWER_URL_PREFIX + self.web_ipynb_path.as_posix()
+        self.web_md_path = path.relative_to(self.web_folder)
+        self.web_ipynb_path = self.web_md_path.with_suffix(".ipynb")
+
+        self.tutorial_md_path = path.relative_to(self.tutorial_folder)
+        self.tutorial_ipynb_path = self.tutorial_md_path.with_suffix(".ipynb")
+
+        self.nbviewer_url = self.NBVIEWER_URL_PREFIX + self.web_ipynb_path.as_posix()
+        self.try_qutip_url = (
+            self.TRY_QUTIP_URL_PREFIX +
+            urllib.parse.urlencode({"path": "tutorials/" + self.tutorial_ipynb_path.as_posix()})
+        )
 
 
 def get_title(path):
@@ -82,7 +92,10 @@ def get_notebooks(tutorials_folder, subfolder):
     files = list((tutorials_folder / subfolder).glob("*.md"))
     titles = [get_title(f) for f in files]
     files_sorted, titles_sorted = sort_files_titles(files, titles)
-    notebooks = [Notebook(f, t) for f, t in zip(files_sorted, titles_sorted)]
+    notebooks = [
+        Notebook(title, tutorials_folder, path)
+        for title, path in zip(titles_sorted, files_sorted)
+    ]
     return notebooks
 
 
@@ -106,17 +119,27 @@ def render_template(template_path, **kw):
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Generate indexes for tutorial notebooks.",
-    )
-    parser.add_argument(
-        "index_type", choices=["html", "notebook"],
-        metavar="INDEX_TYPE",
-        help="Whether to generate an HTML or Markdown Jupyter notebook index [html, notebook].",
+        description="""
+            Generate indexes for tutorial notebooks.
+
+            This script is used both by this repository to generate the indexes
+            for the QuTiP tutorial website and by https://github.com/qutip/try-qutip/
+            to generate the notebook indexes for the Try QuTiP site.
+        """,
     )
     parser.add_argument(
         "qutip_version", choices=["v4", "v5"],
         metavar="QUTIP_VERSION",
         help="Which QuTiP version to generate the tutorial index for [v4, v5].",
+    )
+    parser.add_argument(
+        "index_type", choices=["html", "try-qutip"],
+        metavar="INDEX_TYPE",
+        help=(
+            "Whether to generate an HTML index for the website or"
+            " a Markdown Jupyter notebook index for the Try QuTiP site"
+            " [html, try-qutip]."
+        ),
     )
     parser.add_argument(
         "output_file",
@@ -160,8 +183,8 @@ def main():
             version_note=version_note,
             tutorials=tutorials,
         )
-    elif args.index_type == "notebook":
-        template = root_folder / "website" / "index.notebook.jinja"
+    elif args.index_type == "try-qutip":
+        template = root_folder / "website" / "index.try-qutip.jinja"
         text = render_template(
             template,
             title=title,
