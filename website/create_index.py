@@ -111,12 +111,12 @@ def parse_args():
     parser.add_argument(
         "index_type", choices=["html", "notebook"],
         metavar="INDEX_TYPE",
-        help="Whether to generate an HTML or Markdown Jupyter notebook index.",
+        help="Whether to generate an HTML or Markdown Jupyter notebook index [html, notebook].",
     )
     parser.add_argument(
         "qutip_version", choices=["v4", "v5"],
         metavar="QUTIP_VERSION",
-        help="Which QuTiP version to generate the tutorial index for.",
+        help="Which QuTiP version to generate the tutorial index for [v4, v5].",
     )
     parser.add_argument(
         "output_file",
@@ -133,7 +133,7 @@ def main():
 
     if args.qutip_version == "v4":
         title = "Tutorials for QuTiP Version 4"
-        tutorials_folder = root_foloder / "tutorials-v4"
+        tutorials_folder = root_folder / "tutorials-v4"
         version_note = """
             These are the tutorials for QuTiP Version 4. You can
             find the tutorials for QuTiP Version 5
@@ -161,7 +161,7 @@ def main():
             tutorials=tutorials,
         )
     elif args.index_type == "notebook":
-        template = root_folder / "website" / "index.md.jinja"
+        template = root_folder / "website" / "index.notebook.jinja"
         text = render_template(
             template,
             title=title,
