@@ -38,6 +38,7 @@ import qutip as qt
 from scipy import special, optimize
 from scipy.interpolate import CubicSpline
 
+from collections import Counter
 import os
 ```
 
@@ -271,6 +272,49 @@ plt.fill_between(
     MCSol.trace + MCSol.std_trace / np.sqrt(ntraj),
     alpha=0.5,
 )
+
+plt.xlabel(r"$t$")
+plt.ylabel(r"$\langle H \rangle\, /\, 2$")
+plt.legend()
+plt.show()
+```
+
+##### Improved Sampling
+To close this tutorial, we will briefly demonstrate the use of the "improved sampling" option with `nm_mcsolve`.
+For clarity, we consider the same example as before, but with a shorter time interval and fewer trajectories:
+
+```python
+times_is = np.linspace(ti, ti + duration / 2, steps + 1)
+ntraj_is = ntraj / 10
+
+MCSol_is = solver.run(psi0, tlist=times_is, ntraj=ntraj_is, e_ops=e_ops)
+MESol_is = qt.mesolve([H, S], psi0, times_is, d_ops, e_ops, options=options)
+```
+
+If we count the number of collapses per trajectory, we see that around 10% of the trajectories had no collapses:
+
+```python
+print(Counter([len(x) for x in MCSol_is.col_times]))
+```
+
+All these trajectories are identical.
+It would therefore be enough to calculate this trajectory only once.
+This can be done by activating the "improved sampling" option:
+
+```python
+solver.options = {'improved_sampling': True}
+MCSol_is_improved = solver.run(psi0, tlist=times_is, ntraj=ntraj_is, e_ops=e_ops)
+print(Counter([len(x) for x in MCSol_is_improved.col_times]))
+```
+
+```python
+plt.plot(times_is - ti, MESol_is.expect[0] / 2, "k-", label="Exact")
+plt.plot(times_is - ti, MCSol_is.expect[0] / 2, "kx", label="MC")
+plt.plot(times_is - ti, MCSol_is_improved.expect[0] / 2, "rx", label="MC (improved)")
+
+plt.plot(times_is - ti, np.ones_like(times_is), "k-", alpha=0.5)
+plt.plot(times_is - ti, MCSol_is.trace, "kx", alpha=0.5)
+plt.plot(times_is - ti, MCSol_is_improved.trace, "rx", alpha=0.5)
 
 plt.xlabel(r"$t$")
 plt.ylabel(r"$\langle H \rangle\, /\, 2$")
