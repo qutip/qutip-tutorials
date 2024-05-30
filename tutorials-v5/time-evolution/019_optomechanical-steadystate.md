@@ -20,8 +20,9 @@ P.D. Nation and J.R. Johansson
 For more information about QuTiP see [http://qutip.org](http://qutip.org)
 
 ```python
-import matplotlib.pyplot as plt
+import time
 import numpy as np
+import matplotlib.pyplot as plt
 from IPython.display import Image
 from qutip import (about, destroy, hinton, ptrace, qdiags, qeye, steadystate,
                    tensor, wigner, wigner_cmap)
@@ -79,18 +80,18 @@ As of QuTiP version 5.0, the following steady state solving methods are availabl
 - **svd**: Solution via SVD decomposition (dense matrices only).
 - **power**: Finds zero eigenvector using inverse-power method.
 
-Among these, when using `direct` and `power` methods one can use the following ``solvers`` for factorization:
+Among these, when using `direct` and `power` methods one can use the following ``solvers`` for the factorization:
 
 - **Dense solvers**: from ``numpy.linalg``.
-    - solve
-    - lstsq
+    - solve - exact solution via LAPACK routine ``_gesv``.
+    - lstsq - best least-squares solution by minimizing the L2-norm.
 - **Sparse solvers**: sparse solvers from ``scipy.sparse.linalg``
-    - spsolve
-    - gmres
-    - lgmres
-    - bicgstab
+    - spsolve - Exact solution via UMFPACK.
+    - gmres - Iterative solution via the GMRES solver.
+    - lgmres - Iterative solution via the LGMRES solver.
+    - bicgstab - Iterative solution via the BICGSTAB solver.
 - **MKL solver**: a sparse solver by ``mkl``
-    - mkl_spsolve 
+    - mkl_spsolve - solution via Intel's MKL Pardiso solver.
 
 
 ## Setup and Solution
@@ -137,31 +138,44 @@ c_ops = [cc, cm, cp]
 ### Run Steady State Solvers
 
 ```python
-# all possible solvers
-possible_solvers = ["direct", "eigen", "power", "iterative-gmres",
-                    "iterative-bicgstab"]
-# solvers used here
-solvers = ["direct", "iterative-gmres"]
-mech_dms = []
+# all possible methods
+possible_methods = ["direct", "eigen", "svd", "power"]
 
+# all possible solvers for direct (and power) method(s)
+possible_solvers = [
+    "solve", "lstsq", "spsolve", "gmres", "lgmres", "bicgstab", "mkl_spsolve"
+]
+
+# method and solvers used here
+method = "direct"
+solvers = ["spsolve", "gmres"]
+
+mech_dms = []
 for ss in solvers:
-    if ss in ["iterative-gmres", "iterative-bicgstab"]:
+    if ss in ["gmres", "bicgstab"]:
+        solver_options = {"use_precond": True, "atol": 1e-5}
         use_rcm = True
     else:
+        solver_options = {}
         use_rcm = False
-    rho_ss, info = steadystate(
+
+    start = time()
+    rho_ss = steadystate(
         H,
         c_ops,
-        method=ss,
-        use_precond=True,
+        method=method,
+        solver=ss,
         use_rcm=use_rcm,
-        tol=1e-15,
-        return_info=True,
+        **solver_options,
     )
-    print(ss, "solution time =", info["solution_time"])
+    end = time()
+
+    print(f"Solver: {ss}, Time: {np.round(end-start, 5)}")
     rho_mech = ptrace(rho_ss, 1)
     mech_dms.append(rho_mech)
-mech_dms = np.asarray(mech_dms)
+
+rho_mech = mech_dms[0]
+mech_dms = [mech_dm.data.as_ndarray() for mech_dm in mech_dms]
 ```
 
 ### Check Consistency of Solutions
@@ -174,7 +188,8 @@ for kk in range(len(mech_dms)):
     c = np.where(
             np.abs(mech_dms[kk].flatten() - mech_dms[0].flatten()) > 1e-5
         )[0]
-    print("#NNZ for k = {}: {}".format(kk, len(c)))
+    print(f"#NNZ for k = {kk} : {len(c)}")
+    assert len(c) == 0
 ```
 
 ## Plot the Mechanical Oscillator Wigner Function
@@ -183,13 +198,13 @@ for kk in range(len(mech_dms)):
 It is known that the density matrix for the mechanical oscillator is diagonal in the Fock basis due to phase diffusion. If we look at the `hinton()` plot of the density matrix, we can see the magnitude of the diagonal elements is higher, such that the non-diagonal have a vanishing importance.
 
 ```python
-hinton(rho_mech, xlabels=[""] * Nm, ylabels=[""] * Nm);
+hinton(rho_mech.data.as_ndarray(), x_basis=[""] * Nm, y_basis=[""] * Nm);
 ```
 
 However some small off-diagonal terms show up during the factorization process, which we can display by the using `plt.spy()`.
 
 ```python
-plt.spy(rho_mech.data, ms=1)
+plt.spy(rho_mech.data.as_ndarray(), markersize=1);
 ```
 
 Therefore, to remove this error, let use explicitly take the diagonal elements and form a new operator out of them.
@@ -197,7 +212,7 @@ Therefore, to remove this error, let use explicitly take the diagonal elements a
 ```python
 diag = rho_mech.diag()
 rho_mech2 = qdiags(diag, 0, dims=rho_mech.dims, shape=rho_mech.shape)
-hinton(rho_mech2, xlabels=[""] * Nm, ylabels=[""] * Nm);
+hinton(rho_mech2, x_basis=[""] * Nm, y_basis=[""] * Nm);
 ```
 
 Now lets compute the oscillator Wigner function and plot it to see if there are any regions of negativity.
