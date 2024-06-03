@@ -25,7 +25,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from IPython.display import Image
 from qutip import (about, destroy, hinton, ptrace, qdiags, qeye, steadystate,
-                   tensor, wigner, wigner_cmap, fidelity)
+                   tensor, wigner, wigner_cmap, basis, fidelity, mesolve)
 
 %matplotlib inline
 ```
@@ -187,7 +187,7 @@ for solver in solvers:
     )
     end = time.time()
 
-    print(f"Solver: {ss}, Time: {np.round(end-start, 5)}")
+    print(f"Solver: {solver}, Time: {np.round(end-start, 5)}")
     rho_mech = ptrace(rho_ss, 1)
     mech_dms.append(rho_mech)
 
@@ -257,10 +257,10 @@ about()
 
 ```python
 # assert obtained steady-state via mesolve evolution
-psi0 = qutip.tensor(qutip.basis(Nc), qutip.basis(Nm))
+psi0 = tensor(basis(Nc), basis(Nm))
 rho0 = psi0 @ psi0.dag()
 tlist = np.linspace(0, 1500, 1500)
-rho_evolve = qutip.mesolve(H, rho0, tlist, c_ops)
+rho_evolve = mesolve(H, rho0, tlist, c_ops)
 rho_final = ptrace(rho_evolve.states[-1], 1)
 assert fidelity(rho_mech, rho_final) > 0.99
 
