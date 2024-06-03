@@ -25,7 +25,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from IPython.display import Image
 from qutip import (about, destroy, hinton, ptrace, qdiags, qeye, steadystate,
-                   tensor, wigner, wigner_cmap)
+                   tensor, wigner, wigner_cmap, fidelity)
 
 %matplotlib inline
 ```
@@ -256,6 +256,14 @@ about()
 ### Testing
 
 ```python
+# assert obtained steady-state via mesolve evolution
+psi0 = qutip.tensor(qutip.basis(Nc), qutip.basis(Nm))
+rho0 = psi0 @ psi0.dag()
+tlist = np.linspace(0, 1500, 1500)
+rho_evolve = qutip.mesolve(H, rho0, tlist, c_ops)
+rho_final = ptrace(rho_evolve.states[-1], 1)
+assert fidelity(rho_mech, rho_final) > 0.99
+
 # assert magnitude of diagonal elements are more than non-diagonal
 rho_ss_dmat = rho_ss.data.to_array()
 rho_ss_diag = np.diag(rho_ss.diag())
