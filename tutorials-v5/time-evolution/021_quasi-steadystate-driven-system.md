@@ -46,7 +46,7 @@ from qutip import (
 ```
 
 ### System setup
-We consider the usual driven system with the following Hamiltonian: 
+We consider a driven system with the following Hamiltonian: 
 
 $$ H = - \frac{\Delta}{2} \sigma_x - \frac{\epsilon_0}{2} \sigma_z + \frac{A}{2} \sigma_z \sin(\omega t) $$
 
