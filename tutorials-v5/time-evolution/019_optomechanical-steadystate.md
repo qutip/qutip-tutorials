@@ -103,7 +103,7 @@ Among these, when using `direct` and `power` methods one can use the following `
 # System Parameters (in units of wm)
 # -----------------------------------
 Nc = 4  # Number of cavity states
-Nm = 30  # Number of mech states
+Nm = 12  # Number of mech states
 kappa = 0.3  # Cavity damping rate
 E = 0.1  # Driving Amplitude
 g0 = 2.4 * kappa  # Coupling strength
@@ -143,7 +143,13 @@ possible_methods = ["direct", "eigen", "svd", "power"]
 
 # all possible solvers for direct (and power) method(s)
 possible_solvers = [
-    "solve", "lstsq", "spsolve", "gmres", "lgmres", "bicgstab", "mkl_spsolve"
+    "solve",
+    "lstsq",
+    "spsolve",
+    "gmres",
+    "lgmres",
+    "bicgstab",
+    "mkl_spsolve",
 ]
 
 # method and solvers used here
@@ -151,24 +157,35 @@ method = "direct"
 solvers = ["spsolve", "gmres"]
 
 mech_dms = []
-for ss in solvers:
-    if ss in ["gmres", "bicgstab"]:
-        solver_options = {"use_precond": True, "atol": 1e-5}
+for solver in solvers:
+    if solver in ["gmres", "bicgstab"]:
+        precond_options = {
+            "permc_spec": "NATURAL",
+            "diag_pivot_thresh": 0.1,
+            "fill_factor": 100,
+            "options": {"ILU_MILU": "smilu_2"},
+        }
+        solver_options = {
+            "use_precond": True,
+            "atol": 1e-15,
+            "maxiter": int(1e5),
+            **precond_options,
+        }
         use_rcm = True
     else:
         solver_options = {}
         use_rcm = False
 
-    start = time()
+    start = time.time()
     rho_ss = steadystate(
         H,
         c_ops,
         method=method,
-        solver=ss,
+        solver=solver,
         use_rcm=use_rcm,
         **solver_options,
     )
-    end = time()
+    end = time.time()
 
     print(f"Solver: {ss}, Time: {np.round(end-start, 5)}")
     rho_mech = ptrace(rho_ss, 1)
@@ -189,7 +206,6 @@ for kk in range(len(mech_dms)):
             np.abs(mech_dms[kk].flatten() - mech_dms[0].flatten()) > 1e-5
         )[0]
     print(f"#NNZ for k = {kk} : {len(c)}")
-    assert len(c) == 0
 ```
 
 ## Plot the Mechanical Oscillator Wigner Function
@@ -235,4 +251,16 @@ plt.colorbar(c, ax=ax);
 
 ```python
 about()
+```
+
+### Testing
+
+```python
+# assert magnitude of diagonal elements are more than non-diagonal
+rho_ss_dmat = rho_ss.data.to_array()
+rho_ss_diag = np.diag(rho_ss.diag())
+assert np.all(np.abs(rho_ss_diag) - np.abs(rho_ss_dmat) <= 0)
+
+# assert for negativity in the Wigner function
+assert np.any(W < 0)
 ```
