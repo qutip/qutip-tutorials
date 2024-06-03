@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.16.1
+      jupytext_version: 1.13.8
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -119,8 +119,10 @@ def final_expect(solver, rho0, t, w):
 dfinal_expect_dt = jax.jit(
     jax.grad(final_expect, argnums=[2]), static_argnames=["solver"]
 )
+
+# When qutip-jax is fixed, uncomment the line bellow and deleted the line after it
+# dfinal_expect_dt(solver, qutip.basis(10, 8, dtype="jax"), 0.1, 1.0)
 jax.grad(final_expect, argnums=[2])(solver, qutip.basis(10, 8, dtype="jax"), 0.1, 1.0)
-#dfinal_expect_dt(solver, qutip.basis(10, 8, dtype="jax"), 0.1, 1.0)
 ```
 
 
