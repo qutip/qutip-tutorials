@@ -119,7 +119,8 @@ def final_expect(solver, rho0, t, w):
 dfinal_expect_dt = jax.jit(
     jax.grad(final_expect, argnums=[2]), static_argnames=["solver"]
 )
-dfinal_expect_dt(solver, qutip.basis(10, 8, dtype="jax"), 0.1, 1.0)
+jax.grad(final_expect, argnums=[2])(solver, qutip.basis(10, 8, dtype="jax"), 0.1, 1.0)
+#dfinal_expect_dt(solver, qutip.basis(10, 8, dtype="jax"), 0.1, 1.0)
 ```
 
 
