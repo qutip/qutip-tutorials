@@ -152,18 +152,27 @@ prob_fss = expect(psi_1 * psi_1.dag(), rho_fss)
 fig, ax = plt.subplots(figsize=(12, 6))
 
 # Plot
-ax.plot(t_list, prob_me, label='Master equation')
-ax.plot(t_list, prob_ss * np.ones(t_list.shape[0]), label='Steady state')
-ax.plot(t_list, prob_pss * np.ones(t_list.shape[0]), label='Propagator steady state')
-ax.plot(t_list, prob_fss * np.ones(t_list.shape[0]), label='Floquet steady state')
+ax.plot(t_list, prob_me, label="Master equation")
+ax.plot(t_list, prob_ss * np.ones(t_list.shape[0]), label="Steady state")
+ax.plot(t_list, prob_pss * np.ones(t_list.shape[0]), label="Propagator steady state")
+ax.plot(t_list, prob_fss * np.ones(t_list.shape[0]), label="Floquet steady state")
 ax.set_ylim(0, 1)
 
 # Inset
-ax_inset = inset_axes(ax, width="60%", height="80%", loc='center', bbox_to_anchor=(0.2, 0.45, 0.5, 0.45), bbox_transform=ax.transAxes)
-ax_inset.plot(t_list, prob_me, label='Master Equation')
-ax_inset.plot(t_list, prob_ss * np.ones(t_list.shape[0]), label='Steady state')
-ax_inset.plot(t_list, prob_pss * np.ones(t_list.shape[0]), label='Propagator steady state')
-ax_inset.plot(t_list, prob_fss * np.ones(t_list.shape[0]), label='Floquet steady state')
+ax_inset = inset_axes(
+    ax,
+    width="60%",
+    height="80%",
+    loc="center",
+    bbox_to_anchor=(0.2, 0.45, 0.5, 0.45),
+    bbox_transform=ax.transAxes,
+)
+ax_inset.plot(t_list, prob_me, label="Master Equation")
+ax_inset.plot(t_list, prob_ss * np.ones(t_list.shape[0]), label="Steady state")
+ax_inset.plot(
+    t_list, prob_pss * np.ones(t_list.shape[0]), label="Propagator steady state"
+)
+ax_inset.plot(t_list, prob_fss * np.ones(t_list.shape[0]), label="Floquet steady state")
 ax_inset.set_xlim(40, 50)
 ax_inset.set_ylim(0.25, 0.3)
 ax_inset.set_xticks([40, 45, 50])
@@ -172,7 +181,7 @@ mark_inset(ax, ax_inset, loc1=3, loc2=4, fc="none", ec="0.5")
 
 # Labels
 ax.set_xlabel("Time")
-ax.set_ylabel("$P\,(|1\\rangle)$")
+ax.set_ylabel("$P(|1\\rangle)$")
 ax.set_title("Excitation probabilty of qubit")
 ax.legend()
 plt.show()
