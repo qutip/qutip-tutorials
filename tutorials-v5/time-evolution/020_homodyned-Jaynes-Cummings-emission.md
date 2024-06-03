@@ -21,13 +21,12 @@ updated by A.V. Domingues, University of São Paulo
 This Jupyter notebook demonstrates how to simulate quantum statistics of homodyned emission from a detuned Jaynes-Cummings system. The
 purpose is to understand how well the first polariton of a dissipative Jaynes-Cummings system can act as an ideal two-level system. This notebook closely follows an example from my simulation paper, [An architecture for self-homodyned nonclassical light](https://arxiv.org/abs/1611.01566), Phys. Rev. Applied 7, 044002 (2017).
 
-For more information about QuTiP see the project web page: http://qutip.org/
+For more information about QuTiP see the project web page: <http://qutip.org/>
 
 ```python
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import (about, destroy, expect, mesolve,
-                   qeye, steadystate, tensor)
+from qutip import about, destroy, expect, mesolve, qeye, steadystate, tensor
 
 %matplotlib inline
 %config InlineBackend.figure_format = 'retina'
@@ -189,10 +188,10 @@ The dashed black line shows the intensity without interference and the violet li
 ```python
 plt.figure(figsize=(8, 5))
 
-plt.plot(delta_list / g, I_jc / effective_gamma, "k",
-         linestyle="dashed", label="JC")
-plt.plot(delta_list / g, I_int / effective_gamma,
-         "blueviolet", label="JC w/ interference")
+plt.plot(delta_list / g, I_jc / effective_gamma, "k", linestyle="dashed", label="JC")
+plt.plot(
+    delta_list / g, I_int / effective_gamma, "blueviolet", label="JC w/ interference"
+)
 plt.vlines(delta_s / g, 0, 0.7, "gray")
 plt.xlim(-6, 9)
 plt.ylim(0, 0.7)
@@ -229,8 +228,7 @@ I_c = expect(a.dag(), rho_ss) * expect(a, rho_ss)
 I_inc = expect(a.dag() * a, rho_ss) - I_c
 
 # additionally calculate g^(2)(0)
-g20 = expect(a.dag() * a.dag() * a * a, rho_ss) \
-        / expect(a.dag() * a, rho_ss) ** 2
+g20 = expect(a.dag() * a.dag() * a * a, rho_ss) / expect(a.dag() * a, rho_ss) ** 2
 ```
 
 ### Visualize the results
@@ -304,8 +302,7 @@ for i, rho in enumerate(rho_ss):
         expect(a.dag() + alpha_c_list[i], rho) * expect(a + alpha_list[i], rho)
     )
     I_inc_int.append(
-        expect((a.dag() + alpha_c_list[i]) * (a + alpha_list[i]), rho)
-        - I_c_int[-1]
+        expect((a.dag() + alpha_c_list[i]) * (a + alpha_list[i]), rho) - I_c_int[-1]
     )
 ```
 
@@ -317,11 +314,9 @@ The dashed red and blue lines, which represent the TLS decomposition are now mat
 plt.figure(figsize=(8, 8))
 
 plt.subplot(211)
-plt.semilogx(Om_list_TLS, abs(I_c_TLS),
-             linestyle="dashed", label=r"TLS $I_\mathrm{c}$")
+plt.semilogx(Om_list_TLS, abs(I_c_TLS), linestyle="dashed", label=r"TLS $I_\mathrm{c}$")
 plt.semilogx(
-    Om_list_TLS, abs(I_inc_TLS), "r",
-    linestyle="dashed", label=r"TLS $I_\mathrm{inc}$"
+    Om_list_TLS, abs(I_inc_TLS), "r", linestyle="dashed", label=r"TLS $I_\mathrm{inc}$"
 )
 plt.semilogx(
     Om_list / np.sqrt(effective_gamma),
@@ -342,16 +337,14 @@ plt.semilogx(
     "b",
     label=r"JC w/ homodyne $I_\mathrm{c}$",
 )
-plt.semilogx(Om_list / np.sqrt(effective_gamma),
-             abs(I_inc_int / effective_gamma), "r")
+plt.semilogx(Om_list / np.sqrt(effective_gamma), abs(I_inc_int / effective_gamma), "r")
 plt.ylim(5e-4, 0.6)
 plt.xlabel(r"Driving strength [$\Gamma_\mathrm{eff}$]")
 plt.ylabel(r"Normalized flux [$\Gamma_\mathrm{eff}$]")
 plt.legend(loc=2)
 
 plt.subplot(212)
-plt.loglog(Om_list / np.sqrt(effective_gamma), g20, "k",
-           linestyle="dashed", label="JC")
+plt.loglog(Om_list / np.sqrt(effective_gamma), g20, "k", linestyle="dashed", label="JC")
 plt.loglog(
     Om_list / np.sqrt(effective_gamma),
     g20_int,
@@ -395,7 +388,7 @@ corr_vec_int = expect(
         taulist,
         c_op,
         [],
-        options={"atol":1e-13, "rtol":1e-11},
+        options={"atol": 1e-13, "rtol": 1e-11},
     ).states,
 )
 n_int = expect(rho0, (a.dag() + alpha.conjugate()) * (a + alpha))
@@ -409,7 +402,7 @@ corr_vec = expect(
         taulist,
         c_op,
         [],
-        options={"atol":1e-12, "rtol":1e-10},
+        options={"atol": 1e-12, "rtol": 1e-10},
     ).states,
 )
 n = expect(rho0, a.dag() * a)
@@ -420,8 +413,7 @@ c_ops_TLS = [sm_TLS * np.sqrt(effective_gamma)]
 rho0_TLS = steadystate(H_TLS, c_ops_TLS)
 corr_vec_TLS = expect(
     sm_TLS.dag() * sm_TLS,
-    mesolve(H_TLS, sm_TLS * rho0_TLS * sm_TLS.dag(),
-            taulist, c_ops_TLS, []).states,
+    mesolve(H_TLS, sm_TLS * rho0_TLS * sm_TLS.dag(), taulist, c_ops_TLS, []).states,
 )
 n_TLS = expect(rho0_TLS, sm_TLS.dag() * sm_TLS)
 ```
@@ -440,8 +432,9 @@ plt.figure(figsize=(8, 5))
     linestyle="dotted",
     label="TLS",
 )
-plt.plot(taulist * effective_gamma, corr_vec / n**2, "k",
-         linestyle="dashed", label="JC")
+plt.plot(
+    taulist * effective_gamma, corr_vec / n**2, "k", linestyle="dashed", label="JC"
+)
 plt.plot(
     taulist * effective_gamma,
     corr_vec_int / n_int**2,
@@ -457,4 +450,34 @@ plt.legend(loc=2);
 
 ```python
 about()
+```
+
+## Testing
+
+```python
+# g20 of TLS should be approx. 0
+g20_TLS = (
+    expect(sm_TLS.dag() * sm_TLS.dag() * sm_TLS * sm_TLS, rho_ss_TLS)
+    / expect(sm_TLS.dag() * sm_TLS, rho_ss_TLS) ** 2
+)
+assert np.allclose(g20_TLS, 0)
+
+# g20 of homodyne interf. should be less than 1 while JC whitout it not necessarily
+assert np.all(np.less(g20_int, 1))
+assert not np.all(np.less(g20, 1))
+
+# Homodyne interf. and TLS should match and the other pairs shouldn't
+assert np.allclose(corr_vec_int / n_int**2, corr_vec_TLS / n_TLS**2, atol=1e-1)
+assert not np.allclose(corr_vec_int / n_int**2, corr_vec / n**2, atol=1e-1)
+assert not np.allclose(corr_vec_TLS / n_TLS**2, corr_vec / n**2, atol=1e-1)
+
+# Traces of all states should be approx. 1
+assert np.allclose(rho0.tr(), 1)
+assert np.allclose(rho0_TLS.tr(), 1)
+for rho in rho_ss:
+    assert np.allclose(rho.tr(), 1)
+for rho in rho_ss_c:
+    assert np.allclose(rho.tr(), 1)
+for rho in rho_ss_TLS:
+    assert np.allclose(rho.tr(), 1)
 ```
