@@ -253,7 +253,7 @@ plt.colorbar(c, ax=ax);
 about()
 ```
 
-### Testing
+## Testing
 
 ```python
 # assert obtained steady-state via mesolve evolution
@@ -264,10 +264,9 @@ rho_evolve = mesolve(H, rho0, tlist, c_ops)
 rho_final = ptrace(rho_evolve.states[-1], 1)
 assert fidelity(rho_mech, rho_final) > 0.99
 
-# assert magnitude of diagonal elements are more than non-diagonal
-rho_ss_dmat = rho_ss.data.to_array()
-rho_ss_diag = np.diag(rho_ss.diag())
-assert np.all(np.abs(rho_ss_diag) - np.abs(rho_ss_dmat) <= 0)
+# assert steady-state is diagonally dominant
+rho_mat = np.abs(rho_mech.data.to_array())
+assert np.all(2 * np.diag(rho_mat) >= np.sum(rho_mat, axis=1))
 
 # assert for negativity in the Wigner function
 assert np.any(W < 0)
