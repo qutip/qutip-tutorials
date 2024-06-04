@@ -25,7 +25,7 @@ For more information about QuTiP see the project web page: http://qutip.org/
 ```python
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import (Options, about, destroy, expect, mesolve, parallel_map,
+from qutip import (about, destroy, expect, mesolve, parallel_map,
                    qeye, steadystate, tensor)
 
 %matplotlib inline
