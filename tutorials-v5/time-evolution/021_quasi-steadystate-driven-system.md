@@ -1,15 +1,15 @@
 ---
-jupytext:
-  formats: md:myst
-  text_representation:
-    extension: .md
-    format_name: myst
-    format_version: 0.13
-    jupytext_version: 1.16.2
-kernelspec:
-  display_name: dev
-  language: python
-  name: dev
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .md
+      format_name: markdown
+      format_version: '1.3'
+      jupytext_version: 1.13.8
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
 ---
 
 # Steady-State: Time-dependent (periodic) quantum system
@@ -26,7 +26,7 @@ You can also find more on solving for steady-state solutions with QuTiP [here](h
 ### Imports
 Here we import the required modules for this example.
 
-```{code-cell} ipython3
+```python
 import matplotlib.pyplot as plt
 import numpy as np
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes, mark_inset
@@ -52,7 +52,7 @@ $$ H = - \frac{\Delta}{2} \sigma_x - \frac{\epsilon_0}{2} \sigma_z + \frac{A}{2}
 
 We also assume a coupling with the external heat bath described by a coupling constant $\kappa_1$, the temperature of the heat bath is defined via the average photon number $\langle n \rangle$. In addition, we assume a variation in the phase of the qubit described by a collapse operator with a constant $\kappa_2$.
 
-```{code-cell} ipython3
+```python
 # Parameters
 delta = (2 * np.pi) * 0.3
 eps_0 = (2 * np.pi) * 1.0
@@ -102,7 +102,7 @@ if rate > 0.0:
 
 ### Time evolution
 
-```{code-cell} ipython3
+```python
 # Period
 T = 2 * np.pi / w
 
@@ -116,7 +116,7 @@ psi_1 = basis(2, 1)
 
 ### Master equation
 
-```{code-cell} ipython3
+```python
 # Solve with the Master equation
 output = mesolve(H, psi_0, t_list, c_op_list, [psi_1 * psi_1.dag()], args)
 prob_me = output.expect[0]
@@ -133,7 +133,7 @@ $$
 
 More details for the steady-state methods and solvers can be found in [Steady-state solution methods for open quantum optical systems](https://arxiv.org/abs/1504.06768) by P. D. Nation.
 
-```{code-cell} ipython3
+```python
 # Evaluate the steady-state using the steadystate method
 rho_ss = steadystate(H0, c_op_list, method="direct", solver="solve")
 prob_ss = expect(psi_1 * psi_1.dag(), rho_ss)
@@ -149,7 +149,7 @@ where $\rho_\text{vec}$ is the vector representation of the density matrix.
 `H` is the time-dependent system Hamiltonian, `T` represents the time for which to evaluate the propagator. If a single time is passed, the propagator from $0$ to $T$ is computed, `c_ops` is a list of quantum objects for the system collapse operators, and `args` are the parameters to callback functions for time-dependent Hamiltonians and collapse operators.
 Afterward, the `propagator_steadystate` method takes the propagator evaluated before and finds the steady-state for successive applications of the propagator. Computationally, evaluates the eigenvalues and eigenstates for $U(t)$, identifies the closest value to $1$ defined as the steady-state, and builds the normalized density matrix `rho_pss`.
 
-```{code-cell} ipython3
+```python
 # Evaluate the steady-state using the propagator method
 U = propagator(H, T, c_op_list, args)
 rho_pss = propagator_steadystate(U)
@@ -163,7 +163,7 @@ $$
 $$
 where $\omega$ is the drive frequency. Finally, the $\mathcal{M}$ superoperator is used to evaluate the steady-state using the `steadystate` method presented previously.
 
-```{code-cell} ipython3
+```python
 # Evaluate the steady-state using the Floquet method
 rho_fss = steadystate_floquet(H0, c_op_list, H1, w)
 prob_fss = expect(psi_1 * psi_1.dag(), rho_fss)
@@ -171,7 +171,7 @@ prob_fss = expect(psi_1 * psi_1.dag(), rho_fss)
 
 ### Results
 
-```{code-cell} ipython3
+```python
 # Figure
 fig, ax = plt.subplots(figsize=(12, 6))
 
@@ -213,13 +213,13 @@ plt.show()
 
 ### About
 
-```{code-cell} ipython3
+```python
 about()
 ```
 
 ### Testing
 
-```{code-cell} ipython3
+```python
 np.testing.assert_allclose(prob_ss, np.mean(prob_me[200:]), atol=1e-2)
 np.testing.assert_allclose(prob_pss, np.mean(prob_me[200:]), atol=1e-2)
 np.testing.assert_allclose(prob_fss, np.mean(prob_me[200:]), atol=1e-2)
