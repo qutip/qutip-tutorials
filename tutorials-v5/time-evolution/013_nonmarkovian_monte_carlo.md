@@ -204,7 +204,7 @@ We specify some numerical parameters, i.e., the number of trajectories and wheth
 nmmc_options = {"map": "parallel",
                 "norm_steps": 10}  # options specific to nm_mcsolve
 options = {"progress_bar": "enhanced"}  # options shared by all solvers
-ntraj = 5000
+ntraj = 5500
 
 H = 2 * qt.sigmap() * qt.sigmam()
 ops_and_rates = [[qt.sigmam(), Gamma_int]]
