@@ -4,7 +4,7 @@ jupyter:
     text_representation:
       extension: .md
       format_name: markdown
-      format_version: '1.3'
+      format_version: "1.3"
       jupytext_version: 1.13.8
   kernelspec:
     display_name: qutip-dev
@@ -13,6 +13,7 @@ jupyter:
 ---
 
 # Plotting and Customizing Quantum Circuits using MatRenderer
+
 Author: Rushiraj Gadhvi (gadhvirushiraj@gmail.com)
 
 This notebook serves as a comprehensive guide to plotting quantum circuits using QuTiP-QIP's MatRenderer, a Matplotlib-based rendering tool. It explores the various customization options available to users for creating and modifying plots. The content is organized into two main sections:
@@ -38,9 +39,10 @@ qc.draw()
 ```
 
 ---
-### Circuit Level Customization Options
----
 
+### Circuit Level Customization Options
+
+---
 
 ##### Changing FontSize
 
@@ -102,7 +104,7 @@ qc.draw(theme="dark", title="QuTiP")
 qc.draw(theme="modern")
 ```
 
-##### Aligning Layer 
+##### Aligning Layer
 
 ```python
 qc = QubitCircuit(3)
@@ -126,7 +128,9 @@ qc.draw(align_layer=True, theme="modern")
 ```
 
 ---
+
 ### Gate Level Customization Options
+
 ---
 
 ```python
@@ -136,15 +140,15 @@ qc.add_gate("H", targets=[1], style={"fontstyle": "italic"})
 qc.add_gate("H", targets=[2], style={"fontweight": "bold"})
 qc.add_gate("H", targets=[3], style={"color": "green"})
 qc.add_gate("H", targets=[4], style={"fontsize": 12})
-qc.add_gate("H", targets=[5], style={"text": "hadamard gate"})
-qc.add_gate("H", targets=[6], style={"text": "hadamard gate", "fontfamily": "cursive"})
+qc.add_gate("H", targets=[5], arg_label="hadamard gate")
+qc.add_gate("H", targets=[6], style={"fontfamily": "cursive"})
 ```
 
 ```python
 qc.draw()
 ```
 
-##### Rendering Argument Value 
+##### Rendering Argument Value
 
 ```python
 qc = QubitCircuit(3)
@@ -190,8 +194,10 @@ qc.add_gate("S", targets=[2])
 qc.draw()
 ```
 
- ---
+---
+
 ### Some more circuit examples
+
 ---
 
 ```python
