@@ -4,8 +4,8 @@ jupyter:
     text_representation:
       extension: .md
       format_name: markdown
-      format_version: "1.3"
-      jupytext_version: 1.13.8
+      format_version: '1.3'
+      jupytext_version: 1.16.4
   kernelspec:
     display_name: qutip-dev
     language: python
@@ -22,6 +22,7 @@ This notebook serves as a comprehensive guide to plotting quantum circuits using
 - **Gate-Level Customization**
 
 ```python
+import qutip
 import numpy as np
 from qutip_qip.circuit import QubitCircuit
 ```
@@ -111,7 +112,6 @@ qc = QubitCircuit(3)
 qc.add_gate("H", targets=[1])
 qc.add_gate("RZ", targets=[2], arg_value=0.5, style={"showarg": True})
 qc.add_gate("RZ", targets=[2], arg_value=0.5, style={"showarg": True})
-qc.add_1q_gate("RX")
 qc.add_gate("CNOT", controls=[0], targets=[1], style={"showarg": True})
 qc.add_gate("CNOT", controls=[0], targets=[1], style={"showarg": True})
 qc.add_gate("SWAP", targets=[0, 2])
@@ -231,4 +231,10 @@ trotter_simulation_noisey.add_gate("CNOT", controls=1, targets=3)
 trotter_simulation_noisey.add_gate("RZ", targets=[3], arg_value=np.pi / 2)
 
 trotter_simulation_noisey.draw(theme="dark", title="Trotter Simulation")
+```
+
+---
+
+```python
+qutip.about()
 ```

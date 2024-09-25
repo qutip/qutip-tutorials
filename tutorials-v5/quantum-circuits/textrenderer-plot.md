@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.13.8
+      jupytext_version: 1.16.4
   kernelspec:
     display_name: qutip-dev
     language: python
@@ -21,6 +21,7 @@ This notebook serves as a comprehensive guide to plotting quantum circuits using
 - **Gate-Level Customization**
 
 ```python
+import qutip
 import numpy as np
 from qutip_qip.circuit import QubitCircuit
 ```
@@ -112,4 +113,10 @@ qc.add_gate("S", targets=[2])
 
 ```python
 qc.draw("text")
+```
+
+---
+
+```python
+qutip.about()
 ```
