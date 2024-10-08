@@ -15,7 +15,7 @@ jupyter:
 <!-- #region -->
 # Excitation-number-restricted states: Jaynes-Cummings Chain
 
-### Authors: Robert Johansson### Authors: Robert Johansson (jrjohansson@gmail.com) and Neill Lambert (nwlambert@gmail.com)
+Authors: Robert Johansson (jrjohansson@gmail.com), Neill Lambert (nwlambert@gmail.com), Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com)
 
 ## Introduction
 
@@ -71,6 +71,7 @@ from qutip import (
     enr_state_dictionaries,
     Qobj,
     Options,
+    about,
 )
 
 %matplotlib inline
@@ -244,4 +245,18 @@ res1.states[10].ptrace([0, 1, 4])
 
 ```python
 ENR_ptrace(res2.states[10], [0, 1, 4], excite)
+```
+
+## About
+
+```python
+about()
+```
+
+## Testing
+
+```python
+assert np.allclose(
+    res1.states[10].ptrace([1]), ENR_ptrace(res2.states[10], [1], excite)
+), "The approaches do not yield the same result."
 ```
