@@ -21,7 +21,7 @@ For more information about QuTiP see http://qutip.org.
 
 For more information about Qubism see:
 * J. Rodriguez-Laguna, P. Migdał, M. Ibanez Berganza, M. Lewenstein, G. Sierra,
-  [Qubism: self-similar visualization of many-body wavefunctions](http://dx.doi.org/10.1088/1367-2630/14/5/053028), New J. Phys. 14 053028 (2012), [arXiv:1112.3560](http://arxiv.org/abs/1112.3560),
+  [Qubism: self-similar visualization of many-body wavefunctions](http://doi.org/10.1088/1367-2630/14/5/053028), New J. Phys. 14 053028 (2012), [arXiv:1112.3560](http://arxiv.org/abs/1112.3560),
 * [its video abstract](https://www.youtube.com/watch?v=8fPAzOziTZo),
 * [C++ and Mathematica code on GitHub](https://github.com/stared/qubism).
 
