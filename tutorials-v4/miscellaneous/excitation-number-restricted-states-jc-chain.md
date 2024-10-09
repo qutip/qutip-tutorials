@@ -219,16 +219,12 @@ def ENR_ptrace(rho, sel, excitations):
     rest = np.setdiff1d(np.arange(len(drho)), sel)
     for state in idx2state:
         for state2 in idx2state:
-            #if the parts of the states of the systems(s) being traced out are diagonal, add this to the new DM
-            if  np.all(np.asarray(state).take(rest) == np.asarray(state2).take(rest)):
+            #if the parts of the states of the system(s) being traced out are diagonal, add this to the new DM
+            if np.all(np.asarray(state).take(rest) == np.asarray(state2).take(rest)):
                 rhout[state2idx2[tuple(np.asarray(state).take(sel))],
-                      state2idx2[tuple(np.asarray(state2).take(sel))]] += rho.data[state2idx[state],
-                                                                                    state2idx[state2]]
+                      state2idx2[tuple(np.asarray(state2).take(sel))]] += rho.data[state2idx[state], state2idx[state2]]
 
-    rhout_dims = [dims_short, dims_short]
-    rhout_shape = [nstates2, nstates2]
-    
-    return Qobj(rhout, rhout_dims, rhout_shape)
+    return Qobj(rhout)
 ```
 
 ```python
