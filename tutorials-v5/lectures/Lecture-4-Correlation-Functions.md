@@ -157,8 +157,8 @@ $L(\tau) = 2\langle Q(\tau)Q(0)\rangle - \langle Q(2\tau)Q(0)\rangle \leq 1$
 
 ### References
 
-* [A. J. Leggett and A. Garg, Phys. Rev. Lett. 54, 857 (1985)](http://dx.doi.org/10.1103/PhysRevLett.54.857)
-* [A. J. Leggett, J. Phys. Condens. Matter 14, R415 (2002)](http://dx.doi.org/10.1088/0953-8984/14/15/201)
+* [A. J. Leggett and A. Garg, Phys. Rev. Lett. 54, 857 (1985)](http://doi.org/10.1103/PhysRevLett.54.857)
+* [A. J. Leggett, J. Phys. Condens. Matter 14, R415 (2002)](http://doi.org/10.1088/0953-8984/14/15/201)
 <!-- #endregion -->
 
 ```python
@@ -191,7 +191,7 @@ def leggett_garg(c_mat):
 
 References:
 
- * [N. Lambert, J.R. Johansson, F. Nori, Phys. Rev. B 82, 245421 (2011)](http://dx.doi.org/10.1103/PhysRevB.84.245421).
+ * [N. Lambert, J.R. Johansson, F. Nori, Phys. Rev. B 82, 245421 (2011)](http://doi.org/10.1103/PhysRevB.84.245421).
 <!-- #endregion -->
 
 ```python

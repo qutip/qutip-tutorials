@@ -27,7 +27,7 @@ We aim to reproduce the experimental results from:
 
 
 
->  Gleyzes et al., "Quantum jumps of light recording the birth and death of a photon in a cavity", [Nature **446**,297 (2007)](http://dx.doi.org/10.1038/nature05589).
+>  Gleyzes et al., "Quantum jumps of light recording the birth and death of a photon in a cavity", [Nature **446**,297 (2007)](http://doi.org/10.1038/nature05589).
 
 
 In particular, we will simulate the creation and annihilation of photons inside an optical cavity due to the thermal environment when the initial cavity is a single-photon Fock state $ |1\rangle$, as presented in Fig. 3 from the article.
