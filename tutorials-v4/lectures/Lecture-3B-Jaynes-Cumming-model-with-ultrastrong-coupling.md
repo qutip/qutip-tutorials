@@ -51,11 +51,11 @@ The regime $g$ is large compared with all other energy scales in the Hamiltonian
 
 References:
 
- * [P. Nataf et al., Phys. Rev. Lett. 104, 023601 (2010)](http://dx.doi.org/10.1103/PhysRevLett.104.023601)
+ * [P. Nataf et al., Phys. Rev. Lett. 104, 023601 (2010)](http://doi.org/10.1103/PhysRevLett.104.023601)
 
- * [J. Casanova et al., Phys. Rev. Lett. 105, 26360 (2010)](http://dx.doi.org/10.1103/PhysRevLett.105.263603).
+ * [J. Casanova et al., Phys. Rev. Lett. 105, 26360 (2010)](http://doi.org/10.1103/PhysRevLett.105.263603).
 
- * [S. Ashhab et al., Phys. Rev. A 81, 042311 (2010)](http://dx.doi.org/10.1103/PhysRevA.81.042311)
+ * [S. Ashhab et al., Phys. Rev. A 81, 042311 (2010)](http://doi.org/10.1103/PhysRevA.81.042311)
 <!-- #endregion -->
 
 <!-- #region -->

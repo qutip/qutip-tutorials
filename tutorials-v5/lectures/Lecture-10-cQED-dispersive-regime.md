@@ -51,7 +51,7 @@ In a beautiful experiment by D. I. Schuster et al., the dispersive regime was us
 
 ### References
 
- * [D. I. Schuster et al., Resolving photon number states in a superconducting circuit, Nature 445, 515 (2007)](http://dx.doi.org/10.1038/nature05461)
+ * [D. I. Schuster et al., Resolving photon number states in a superconducting circuit, Nature 445, 515 (2007)](http://doi.org/10.1038/nature05461)
 
 
 ## Parameters
