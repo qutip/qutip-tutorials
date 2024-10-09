@@ -63,9 +63,9 @@ in units where $\hbar = 1$.
 
 References:
 
- * [Yi Mu, C.M. Savage, Phys. Rev. A 46, 5944 (1992)](http://dx.doi.org/10.1103/PhysRevA.46.5944)
+ * [Yi Mu, C.M. Savage, Phys. Rev. A 46, 5944 (1992)](https://journals.aps.org/pra/abstract/10.1103/PhysRevA.46.5944)
 
- * [D.A. Rodrigues, J. Imbers, A.D. Armour, Phys. Rev. Lett. 98, 067204 (2007)](http://dx.doi.org/10.1103/PhysRevLett.98.067204)
+ * [D.A. Rodrigues, J. Imbers, A.D. Armour, Phys. Rev. Lett. 98, 067204 (2007)](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.98.067204)
 
  * [S. Ashhab, J.R. Johansson, A.M. Zagoskin, F. Nori, New J. Phys. 11, 023030 (2009)](http://dx.doi.org/10.1088/1367-2630/11/2/023030)
 
