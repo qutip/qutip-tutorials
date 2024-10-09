@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.16.1
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -424,6 +424,33 @@ plot_result_expectations([
     (result_udbath, P11p, 'b', "P11 (UnderDampedBath)"),
     (result_udbath, P12p, 'r', "P12 (UnderDampedBath)"),
 ]);
+```
+
+The `UnderDampedBath` class also allows us to easily evaluate analytical expressions for the power spectrum, correlation function, and spectral density. In the following plots, the solid lines are the exact expressions, and the dashed lines are based on our approximation of the correlation function with a finite number of exponents. In this case, there is an excellent agreement.
+
+```{code-cell} ipython3
+w = np.linspace(-3, 3, 1000)
+w2 = np.linspace(0, 3, 1000)
+t = np.linspace(0, 10, 1000)
+bath_cf = bath.correlation_function(t)  # uses numerical integration
+
+fig, axs = plt.subplots(2, 2)
+
+axs[0, 0].plot(w, bath.power_spectrum(w))
+axs[0, 0].plot(w, bath.power_spectrum_approx(w), '--')
+axs[0, 0].set(xlabel=r'$\omega$', ylabel=r'$S(\omega)$')
+axs[0, 1].plot(w2, bath.spectral_density(w2))
+axs[0, 1].plot(w2, bath.spectral_density_approx(w2), '--')
+axs[0, 1].set(xlabel=r'$\omega$', ylabel=r'$J(\omega)$')
+axs[1, 0].plot(t, np.real(bath_cf))
+axs[1, 0].plot(t, np.real(bath.correlation_function_approx(t)), '--')
+axs[1, 0].set(xlabel=r'$t$', ylabel=r'$C_{R}(t)$')
+axs[1, 1].plot(t, np.imag(bath_cf))
+axs[1, 1].plot(t, np.imag(bath.correlation_function_approx(t)), '--')
+axs[1, 1].set(xlabel=r'$t$', ylabel=r'$C_{I}(t)$')
+
+fig.tight_layout()
+plt.show()
 ```
 
 ## Compare the results
