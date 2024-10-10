@@ -161,6 +161,15 @@ psi0 = tensor(
 )
 ```
 
+Regular operators of different systems commute as they belong to different Hilbert spaces.
+Example:
+
+```python
+d[0].dag() * d[1] == d[1] * d[0].dag()
+```
+
+Solving the time evolution:
+
 ```python
 %time res1, H1, L1 = solve(d, psi0)
 ```
@@ -171,6 +180,15 @@ psi0 = tensor(
 d = enr_destroy(dims, excite)
 psi0 = enr_fock(dims, excite, [init_excite if n == 1 else 0 for n in range(2 * N)])
 ```
+
+Using ENR states forces us to give up on the standard tensor structure of multiple Hilbert spaces.
+Operators for different systems therefore generally no longer commute:
+
+```python
+d[0].dag() * d[1] == d[1] * d[0].dag()
+```
+
+Solving the time evolution:
 
 ```python
 %time res2, H2, L2 = solve(d, psi0)
@@ -256,7 +274,7 @@ about()
 
 ```python
 assert np.allclose(
-    res1.states[10].ptrace([1]).data.to_array(),
-    ENR_ptrace(res2.states[10], [1], excite).data.to_array(),
+    res1.states[10].ptrace([1]).full(),
+    ENR_ptrace(res2.states[10], [1], excite).full(),
 ), "The approaches do not yield the same result."
 ```
