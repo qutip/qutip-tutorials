@@ -72,6 +72,7 @@ from qutip import (
     Qobj,
     about,
 )
+from qutip.core.energy_restricted import EnrSpace
 
 %matplotlib inline
 ```
@@ -245,7 +246,8 @@ def ENR_ptrace(rho, sel, excitations):
                     state2idx2[tuple(np.asarray(state2).take(sel))],
                 ] += rho[state2idx[state], state2idx[state2]]
 
-    return Qobj(rhout)
+    new_dims = np.asarray(drho).take(sel).tolist()
+    return Qobj(rhout, dims=[EnrSpace(new_dims, excite)] * 2)
 ```
 
 ```python
