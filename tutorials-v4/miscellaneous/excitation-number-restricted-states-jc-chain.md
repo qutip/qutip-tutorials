@@ -7,7 +7,7 @@ jupyter:
       format_version: '1.3'
       jupytext_version: 1.16.1
   kernelspec:
-    display_name: qutip-tutorials
+    display_name: Python 3 (ipykernel)
     language: python
     name: python3
 ---
@@ -194,18 +194,18 @@ fig.tight_layout()
 ### Calculation of Partial Trace
 
 The usage of ENR states makes many standard QuTiP features fail.
-```ptrace``` is one of those.
+*ptrace* is one of those.
 Below we demonstrate how the partial trace for ENR states can be calculated and show the corresponding result together with the standrad QuTiP approach.
 
 ```python
 def ENR_ptrace(rho, sel, excitations):
     if isinstance(sel, int):
-        sel = np.arrau([sel])
+        sel = np.array([sel])
     else:
         sel = np.asarray(sel)
 
     if (sel < 0).any() or (sel >= len(rho.dims[0])).any():
-            raise TypeError("Invalid selection index in ptrace.")
+        raise TypeError("Invalid selection index in ptrace.")
 
     drho = rho.dims[0]
     _, state2idx, idx2state = enr_state_dictionaries(drho, excitations)
@@ -219,20 +219,22 @@ def ENR_ptrace(rho, sel, excitations):
     rest = np.setdiff1d(np.arange(len(drho)), sel)
     for state in idx2state:
         for state2 in idx2state:
-            #if the parts of the states of the system(s) being traced out are diagonal, add this to the new DM
+            # if the parts of the states of the system(s) being traced out are diagonal, add this to the new DM
             if np.all(np.asarray(state).take(rest) == np.asarray(state2).take(rest)):
-                rhout[state2idx2[tuple(np.asarray(state).take(sel))],
-                      state2idx2[tuple(np.asarray(state2).take(sel))]] += rho.data[state2idx[state], state2idx[state2]]
+                rhout[
+                    state2idx2[tuple(np.asarray(state).take(sel))],
+                    state2idx2[tuple(np.asarray(state2).take(sel))],
+                ] += rho.data[state2idx[state], state2idx[state2]]
 
     return Qobj(rhout)
 ```
 
 ```python
-res1.states[10].ptrace([1])
+res1.states[10].ptrace(1)
 ```
 
 ```python
-ENR_ptrace(res2.states[10], [1], excite)
+ENR_ptrace(res2.states[10], 1, excite)
 ```
 
 ```python

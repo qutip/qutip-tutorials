@@ -58,7 +58,6 @@ To find all available functions to work with ENR states see [Energy Restricted O
 
 ```python
 import numpy as np
-import matplotlib as plt
 from qutip import (
     basis,
     tensor,
@@ -71,7 +70,6 @@ from qutip import (
     enr_fock,
     enr_state_dictionaries,
     Qobj,
-    Options,
     about,
 )
 
@@ -197,13 +195,13 @@ fig.tight_layout()
 ### Calculation of Partial Trace
 
 The usage of ENR states makes many standard QuTiP features fail.
-```ptrace``` is one of those.
+*ptrace* is one of those.
 Below we demonstrate how the partial trace for ENR states can be calculated and show the corresponding result together with the standrad QuTiP approach.
 
 ```python
 def ENR_ptrace(rho, sel, excitations):
     if isinstance(sel, int):
-        sel = np.arrau([sel])
+        sel = np.array([sel])
     else:
         sel = np.asarray(sel)
 
@@ -233,11 +231,11 @@ def ENR_ptrace(rho, sel, excitations):
 ```
 
 ```python
-p1 = res1.states[10].ptrace([1])
+res1.states[10].ptrace(1)
 ```
 
 ```python
-p2 = ENR_ptrace(res2.states[10], [1], excite)
+ENR_ptrace(res2.states[10], 1, excite)
 ```
 
 ```python
