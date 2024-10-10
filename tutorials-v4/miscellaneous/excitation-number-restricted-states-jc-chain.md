@@ -244,7 +244,8 @@ def ENR_ptrace(rho, sel, excitations):
                     state2idx2[tuple(np.asarray(state2).take(sel))],
                 ] += rho.data[state2idx[state], state2idx[state2]]
 
-    return Qobj(rhout)
+    new_dims = np.asarray(drho).take(sel).tolist()
+    return Qobj(rhout, dims=[new_dims, new_dims], shape=[nstates2, nstates2])
 ```
 
 ```python
