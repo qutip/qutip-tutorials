@@ -25,6 +25,7 @@ jobs:
       with:
         use-quiet-mode: 'yes'
         folder-path: tutorials-v${{ matrix.qutip-version }}
+        config-file: mlc_config.json
 
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v2
