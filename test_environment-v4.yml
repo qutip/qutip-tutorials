@@ -1,11 +1,11 @@
-name: test-environment
+name: test-environment-v4
 channels:
 - conda-forge
 dependencies:
 - python==3.10.4
 - pip==22.1.2
-- numpy==1.23
-- scipy==1.9
+- numpy==1.22.4
+- scipy==1.8.1
 - matplotlib==3.5.2
 - imagemagick==7.1.0_36
 - mpmath==1.2.1
