@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.16.1
+      jupytext_version: 1.16.4
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -207,7 +207,7 @@ options = {"progress_bar": "enhanced"}  # options shared by all solvers
 ntraj = 5500
 
 H = 2 * qt.sigmap() * qt.sigmam()
-ops_and_rates = [[qt.sigmam(), Gamma_int]]
+ops_and_rates = [[qt.sigmam(), qt.coefficient(Gamma_int)]]
 psi0 = qt.basis(2, 0)
 e_ops = [H]
 ```

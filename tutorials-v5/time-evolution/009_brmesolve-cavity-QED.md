@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.13.8
+      jupytext_version: 1.16.4
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -134,7 +134,7 @@ The `qutip.brmesolve()` function automatically uses the secular approximation, i
 
 ```python
 result_brme_nonsec = brmesolve(H_strong, psi0, times, a_ops,
-                               e_ops, sec_cutoff=-1)
+                               sec_cutoff=1, e_ops = e_ops)
 fig, axes = plot_expectation_values(
     [result_brme_strong, result_brme_nonsec], ylabels=["<n_cav>", "<n_atom>"]
 )
