@@ -419,10 +419,9 @@ def plot_covariance_matrix(V, ax):
     ax.axes.xaxis.set_major_locator(plt.IndexLocator(1, -0.5))
     ax.axes.yaxis.set_major_locator(plt.IndexLocator(1, -0.5))
     ax.axes.xaxis.set_ticklabels(("$q_-$", "$p_-$", "$q_+$", "$p_+$"),
-                                   fontsize=12)
+                                 fontsize=12)
     ax.axes.yaxis.set_ticklabels(("$q_-$", "$p_-$", "$q_+$", "$p_+$"),
-                                   fontsize=12)
-    
+                                 fontsize=12)
 ```
 
 ```python

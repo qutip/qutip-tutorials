@@ -24,7 +24,6 @@ import matplotlib as mpl
 import matplotlib.pylab as plt
 import numpy as np
 from matplotlib import cm
-from mpl_toolkits.mplot3d import Axes3D
 from qutip import about, basis, destroy, qfunc, wigner, wigner_cmap
 
 %matplotlib inline
@@ -49,7 +48,7 @@ plt.colorbar();
 
 ```python
 fig = plt.figure(figsize=(10, 8))
-ax = fig.add_subplot(111, projection='3d',azim=-30, elev=73)
+ax = fig.add_subplot(111, projection='3d', azim=-30, elev=73)
 ax.plot_surface(X, Y, W, cmap=cmap, rstride=1, cstride=1, alpha=1, linewidth=0)
 ax.set_zlim3d(-0.25, 0.25)
 for a in ax.zaxis.get_ticklines() + ax.zaxis.get_ticklabels():
