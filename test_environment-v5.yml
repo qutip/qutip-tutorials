@@ -3,7 +3,7 @@ channels:
 - conda-forge
 dependencies:
 - python==3.12
-- p ip>=22.1.2
+- pip>=22.1.2
 - numpy>=2.0.0
 - scipy>=1.9
 - matplotlib>=3.9
