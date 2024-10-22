@@ -766,8 +766,8 @@ if results_folder_exists and NUM_BATCHES > 0:
     fit = np.polyfit(np.log(xval), yval, 1)
     print(('Approximate number of trajectories required for convergence until '
            'time t (according to linear fit):\n'
-           f'N = {np.exp(-fit[1] / fit[0]) :.2f} * '
-           f'exp( {1 / fit[0] / times3[-1] :.2f} * t )\n'))
+           f'N = {np.exp(-fit[1] / fit[0]):.2f} * '
+           f'exp( {1 / fit[0] / times3[-1]:.2f} * t )\n'))
 
     plt.semilogx(xval, yval, label='Simulation result')
     plt.semilogx(xval, fit[0] * np.log(xval) + fit[1], '--', label='Fit')
