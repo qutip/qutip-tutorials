@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.13.8
+      jupytext_version: 1.16.4
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -280,7 +280,7 @@ def calculate_rho_ss_c(Om):
 rho_ss_c = [calculate_rho_ss_c(Om) for Om in Om_list]
 
 # calculate list of interference values for all driving strengths
-alpha_list = -expect(rho_ss_c, a_r)
+alpha_list = -np.array(expect(rho_ss_c, a_r))
 alpha_c_list = alpha_list.conjugate()
 
 # decompose emission for all driving strengths

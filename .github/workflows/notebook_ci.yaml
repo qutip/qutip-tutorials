@@ -27,13 +27,16 @@ jobs:
       with:
         use-quiet-mode: 'yes'
         folder-path: tutorials-v${{ matrix.qutip-version }}
+        #use config file to define 403 and 405 errors as valid links 
+        #(APS blocks this link check)
+        config-file: mlc_config.json
 
     - name: Setup Mambaforge
       uses: conda-incubator/setup-miniconda@v2
       with:
         miniforge-variant: Mambaforge
         miniforge-version: latest
-        activate-environment: test-environment
+        activate-environment: test-environment-v${{ matrix.qutip-version }}
         use-mamba: true
 
     - name: Get Date
@@ -53,7 +56,7 @@ jobs:
 
     - name: Install environment
       if: steps.cache.outputs.cache-hit != 'true'
-      run: mamba env update -n test-environment -f test_environment.yml
+      run: mamba env update -n test-environment-v${{ matrix.qutip-version }} -f test_environment-v${{ matrix.qutip-version }}.yml
 
     - name: Install QuTiP
       run: |

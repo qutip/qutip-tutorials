@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.16.1
+      jupytext_version: 1.16.4
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -207,7 +207,7 @@ options = {"progress_bar": "enhanced"}  # options shared by all solvers
 ntraj = 5500
 
 H = 2 * qt.sigmap() * qt.sigmam()
-ops_and_rates = [[qt.sigmam(), Gamma_int]]
+ops_and_rates = [[qt.sigmam(), qt.coefficient(Gamma_int)]]
 psi0 = qt.basis(2, 0)
 e_ops = [H]
 ```
@@ -766,8 +766,8 @@ if results_folder_exists and NUM_BATCHES > 0:
     fit = np.polyfit(np.log(xval), yval, 1)
     print(('Approximate number of trajectories required for convergence until '
            'time t (according to linear fit):\n'
-           f'N = {np.exp(-fit[1] / fit[0]) :.2f} * '
-           f'exp( {1 / fit[0] / times3[-1] :.2f} * t )\n'))
+           f'N = {np.exp(-fit[1] / fit[0]):.2f} * '
+           f'exp( {1 / fit[0] / times3[-1]:.2f} * t )\n'))
 
     plt.semilogx(xval, yval, label='Simulation result')
     plt.semilogx(xval, fit[0] * np.log(xval) + fit[1], '--', label='Fit')

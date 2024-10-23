@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.13.8
+      jupytext_version: 1.16.4
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -24,7 +24,6 @@ import matplotlib as mpl
 import matplotlib.pylab as plt
 import numpy as np
 from matplotlib import cm
-from mpl_toolkits.mplot3d import Axes3D
 from qutip import about, basis, destroy, qfunc, wigner, wigner_cmap
 
 %matplotlib inline
@@ -49,10 +48,10 @@ plt.colorbar();
 
 ```python
 fig = plt.figure(figsize=(10, 8))
-ax = Axes3D(fig, azim=-30, elev=73)
+ax = fig.add_subplot(111, projection='3d', azim=-30, elev=73)
 ax.plot_surface(X, Y, W, cmap=cmap, rstride=1, cstride=1, alpha=1, linewidth=0)
 ax.set_zlim3d(-0.25, 0.25)
-for a in ax.w_zaxis.get_ticklines() + ax.w_zaxis.get_ticklabels():
+for a in ax.zaxis.get_ticklines() + ax.zaxis.get_ticklabels():
     a.set_visible(False)
 nrm = mpl.colors.Normalize(W.min(), W.max())
 cax, kw = mpl.colorbar.make_axes(ax, shrink=0.66, pad=0.02)
@@ -85,7 +84,7 @@ X, Y = np.meshgrid(xvec, xvec)
 W = wigner(psi, xvec, xvec)
 
 fig1 = plt.figure(figsize=(8, 6))
-ax = Axes3D(fig1)
+ax = fig1.add_subplot(111, projection='3d')
 ax.plot_surface(X, Y, W, rstride=2, cstride=2, cmap=cm.jet, alpha=0.7)
 ax.contour(X, Y, W, 15, zdir="x", offset=-6)
 ax.contour(X, Y, W, 15, zdir="y", offset=6)
@@ -102,7 +101,7 @@ plt.title("Wigner function of squeezed state");
 Q = qfunc(psi, xvec, xvec, g)
 
 fig2 = plt.figure(figsize=(8, 6))
-ax = Axes3D(fig2)
+ax = fig2.add_subplot(111, projection='3d')
 ax.plot_surface(X, Y, Q, rstride=2, cstride=2, cmap=cm.jet, alpha=0.7)
 ax.contour(X, Y, Q, zdir="x", offset=-6)
 ax.contour(X, Y, Q, zdir="y", offset=6)
