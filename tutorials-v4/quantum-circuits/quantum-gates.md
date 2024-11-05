@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.13.8
+      jupytext_version: 1.16.4
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -63,7 +63,7 @@ cphase(pi / 2)
 ```python
 q = QubitCircuit(2, reverse_states=False)
 q.add_gate("CSIGN", controls=[0], targets=[1])
-q.png
+q.draw()
 ```
 
 ### Rotation about X-axis
@@ -74,8 +74,8 @@ rx(pi / 2)
 
 ```python
 q = QubitCircuit(1, reverse_states=False)
-q.add_gate("RX", targets=[0], arg_value=pi / 2, arg_label=r"\frac{\pi}{2}")
-q.png
+q.add_gate("RX", targets=[0], arg_value=pi / 2, style={"showarg": True})
+q.draw()
 ```
 
 ### Rotation about Y-axis
@@ -86,8 +86,8 @@ ry(pi / 2)
 
 ```python
 q = QubitCircuit(1, reverse_states=False)
-q.add_gate("RY", targets=[0], arg_value=pi / 2, arg_label=r"\frac{\pi}{2}")
-q.png
+q.add_gate("RY", targets=[0], arg_value=pi / 2, style={"showarg": True})
+q.draw()
 ```
 
 ### Rotation about Z-axis
@@ -98,8 +98,8 @@ rz(pi / 2)
 
 ```python
 q = QubitCircuit(1, reverse_states=False)
-q.add_gate("RZ", targets=[0], arg_value=pi / 2, arg_label=r"\frac{\pi}{2}")
-q.png
+q.add_gate("RZ", targets=[0], arg_value=pi / 2, style={"showarg": True})
+q.draw()
 ```
 
 ### CNOT
@@ -111,7 +111,7 @@ cnot()
 ```python
 q = QubitCircuit(2, reverse_states=False)
 q.add_gate("CNOT", controls=[0], targets=[1])
-q.png
+q.draw()
 ```
 
 ### CSIGN
@@ -123,7 +123,7 @@ csign()
 ```python
 q = QubitCircuit(2, reverse_states=False)
 q.add_gate("CSIGN", controls=[0], targets=[1])
-q.png
+q.draw()
 ```
 
 ### Berkeley
@@ -135,7 +135,7 @@ berkeley()
 ```python
 q = QubitCircuit(2, reverse_states=False)
 q.add_gate("BERKELEY", targets=[0, 1])
-q.png
+q.draw()
 ```
 
 ### SWAPalpha
@@ -162,7 +162,7 @@ toffoli()
 swap()
 q = QubitCircuit(2, reverse_states=False)
 q.add_gate("SWAP", targets=[0, 1])
-q.png
+q.draw()
 ```
 
 ### ISWAP
@@ -171,7 +171,7 @@ q.png
 iswap()
 q = QubitCircuit(2, reverse_states=False)
 q.add_gate("ISWAP", targets=[0, 1])
-q.png
+q.draw()
 ```
 
 ### SQRTiSWAP
@@ -234,7 +234,7 @@ cnot(N=3)
 ```python
 q = QubitCircuit(3, reverse_states=False)
 q.add_gate("CNOT", controls=[1], targets=[2])
-q.png
+q.draw()
 ```
 
 Furthermore, the control and target qubits (when applicable) can also be similarly specified using keyword arguments `control` and `target` (or in some cases `controls` or `targets`):
@@ -246,7 +246,7 @@ cnot(N=3, control=2, target=0)
 ```python
 q = QubitCircuit(3, reverse_states=False)
 q.add_gate("CNOT", controls=[0], targets=[2])
-q.png
+q.draw()
 ```
 
 ## Setup of a Qubit Circuit
@@ -261,7 +261,7 @@ In the following example, we take a SWAP gate. It is known that a swap gate is e
 N = 2
 qc0 = QubitCircuit(N)
 qc0.add_gate("ISWAP", [0, 1], None)
-qc0.png
+qc0.draw()
 ```
 
 ```python
@@ -275,7 +275,7 @@ qc1 = QubitCircuit(N)
 qc1.add_gate("CNOT", 0, 1)
 qc1.add_gate("CNOT", 1, 0)
 qc1.add_gate("CNOT", 0, 1)
-qc1.png
+qc1.draw()
 ```
 
 ```python
@@ -288,7 +288,7 @@ In place of manually converting the SWAP gate to CNOTs, it can be automatically 
 
 ```python
 qc2 = qc0.resolve_gates("CNOT")
-qc2.png
+qc2.draw()
 ```
 
 ```python
@@ -301,7 +301,7 @@ From QuTiP 4.4, we can also add gate at arbitrary position in a circuit.
 
 ```python
 qc1.add_gate("CSIGN", index=[1], targets=[0], controls=[1])
-qc1.png
+qc1.draw()
 ```
 
 ## Example of basis transformation
@@ -313,7 +313,7 @@ qc3.add_gate("RX", 0, None, pi / 2, r"\pi/2")
 qc3.add_gate("RY", 1, None, pi / 2, r"\pi/2")
 qc3.add_gate("RZ", 2, None, pi / 2, r"\pi/2")
 qc3.add_gate("ISWAP", [1, 2])
-qc3.png
+qc3.draw()
 ```
 
 ```python
@@ -325,7 +325,7 @@ U3
 
 ```python
 qc4 = qc3.resolve_gates("CNOT")
-qc4.png
+qc4.draw()
 ```
 
 ```python
@@ -335,7 +335,7 @@ U4
 
 ```python
 qc5 = qc3.resolve_gates("ISWAP")
-qc5.png
+qc5.draw()
 ```
 
 ```python
@@ -347,7 +347,7 @@ U5
 
 ```python
 qc6 = qc3.resolve_gates(["ISWAP", "RX", "RY"])
-qc6.png
+qc6.draw()
 ```
 
 ```python
@@ -357,7 +357,7 @@ U6
 
 ```python
 qc7 = qc3.resolve_gates(["CNOT", "RZ", "RX"])
-qc7.png
+qc7.draw()
 ```
 
 ```python
@@ -373,7 +373,7 @@ Interactions between non-adjacent qubits can be resolved by QubitCircuit to a se
 ```python
 qc8 = QubitCircuit(3)
 qc8.add_gate("CNOT", 2, 0)
-qc8.png
+qc8.draw()
 ```
 
 ```python
@@ -393,7 +393,7 @@ U9
 
 ```python
 qc10 = qc9.resolve_gates("CNOT")
-qc10.png
+qc10.draw()
 ```
 
 ```python
