@@ -5,9 +5,9 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.16.1
+      jupytext_version: 1.13.8
   kernelspec:
-    display_name: Python 3 (ipykernel)
+    display_name: qutip-tutorials-v5
     language: python
     name: python3
 ---
@@ -43,7 +43,7 @@ a1, a2, a3, a4 = enr_destroy([5, 5, 5, 5], excitations=2)
 ```
 
 creates destruction operators for each mode.
-From this point onwards, the annihiltion operators a1, ..., a4 can be used to setup a Hamiltonian, collapse operators and expectation-value operators, etc., following the usual patterne.
+From this point onwards, the annihiltion operators a1, ..., a4 can be used to setup a Hamiltonian, collapse operators and expectation-value operators, etc., following the usual pattern.
 
 In this example we outline the advantage of ENR states by comparing them with the regular qutip implementation.
 For this we calculate the time evolution and the partial trace for each and see consistent results with notable performance improvements.
@@ -58,20 +58,9 @@ To find all available functions to work with ENR states see [Energy Restricted O
 
 ```python
 import numpy as np
-from qutip import (
-    basis,
-    tensor,
-    identity,
-    destroy,
-    mesolve,
-    liouvillian,
-    plot_expectation_values,
-    enr_destroy,
-    enr_fock,
-    enr_state_dictionaries,
-    Qobj,
-    about,
-)
+from qutip import (Qobj, about, basis, destroy, enr_destroy, enr_fock,
+                   enr_state_dictionaries, identity, liouvillian, mesolve,
+                   plot_expectation_values, tensor)
 from qutip.core.energy_restricted import EnrSpace
 
 %matplotlib inline
@@ -116,7 +105,7 @@ def solve(d, psi0):
     # atomic annihilation operators
     sm = d[1::2]
 
-    # when constructing the Hamiltonian notice the ordering of annihilation and creation operators (see introduction)
+    # notice the ordering of annihilation and creation operators
     H0 = sum([aa.dag() * aa for aa in a]) + sum([s.dag() * s for s in sm])
 
     # atom-cavity couplings
@@ -136,9 +125,8 @@ def solve(d, psi0):
 
     times = np.linspace(0, 250, 1000)
     L = liouvillian(H, c_ops)
-    result = mesolve(
-        H, psi0, times, c_ops, e_ops, options={"nsteps": 5000, "store_states": True}
-    )
+    opt = {"nsteps": 5000, "store_states": True}
+    result = mesolve(H, psi0, times, c_ops, e_ops, options=opt)
     return result, H, L
 ```
 
@@ -172,27 +160,30 @@ d[0].dag() * d[1] == d[1] * d[0].dag()
 Solving the time evolution:
 
 ```python
-%time res1, H1, L1 = solve(d, psi0)
+res1, H1, L1 = solve(d, psi0)
+print(f"Run time: {res1.stats['run time']}s")
 ```
 
 ### Using ENR States and Operators
 
 ```python
-d = enr_destroy(dims, excite)
-psi0 = enr_fock(dims, excite, [init_excite if n == 1 else 0 for n in range(2 * N)])
+d_enr = enr_destroy(dims, excite)
+init_enr = [init_excite if n == 1 else 0 for n in range(2 * N)]
+psi0_enr = enr_fock(dims, excite, init_enr)
 ```
 
 Using ENR states forces us to give up on the standard tensor structure of multiple Hilbert spaces.
 Operators for different systems therefore generally no longer commute:
 
 ```python
-d[0].dag() * d[1] == d[1] * d[0].dag()
+d_enr[0].dag() * d_enr[1] == d_enr[1] * d_enr[0].dag()
 ```
 
 Solving the time evolution:
 
 ```python
-%time res2, H2, L2 = solve(d, psi0)
+res2, H2, L2 = solve(d_enr, psi0_enr)
+print(f"Run time: {res2.stats['run time']}s")
 ```
 
 ### Comparison of Expectation Values
@@ -239,8 +230,10 @@ def ENR_ptrace(rho, sel, excitations):
     rest = np.setdiff1d(np.arange(len(drho)), sel)
     for state in state2idx:
         for state2 in state2idx:
-            # if the parts of the states of the systems(s) being traced out are diagonal, add this to the new DM
-            if np.all(np.asarray(state).take(rest) == np.asarray(state2).take(rest)):
+            # add diagonal elements to the new density matrix
+            state_red = np.asarray(state).take(rest)
+            state2_red = np.asarray(state2).take(rest)
+            if np.all(state_red == state2_red):
                 rhout[
                     state2idx2[tuple(np.asarray(state).take(sel))],
                     state2idx2[tuple(np.asarray(state2).take(sel))],

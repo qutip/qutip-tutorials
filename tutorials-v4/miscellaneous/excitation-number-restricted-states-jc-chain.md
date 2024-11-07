@@ -5,9 +5,9 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.16.1
+      jupytext_version: 1.13.8
   kernelspec:
-    display_name: Python 3 (ipykernel)
+    display_name: qutip-tutorials
     language: python
     name: python3
 ---
@@ -58,21 +58,9 @@ To find all available functions to work with ENR states see [Energy Restricted O
 
 ```python
 import numpy as np
-from qutip import (
-    basis,
-    tensor,
-    identity,
-    destroy,
-    mesolve,
-    liouvillian_ref,
-    plot_expectation_values,
-    enr_destroy,
-    enr_fock,
-    enr_state_dictionaries,
-    Qobj,
-    Options,
-    about,
-)
+from qutip import (Options, Qobj, about, basis, destroy, enr_destroy, enr_fock,
+                   enr_state_dictionaries, identity, liouvillian_ref, mesolve,
+                   plot_expectation_values, tensor)
 
 %matplotlib inline
 ```
@@ -116,7 +104,7 @@ def solve(d, psi0):
     # atomic annihilation operators
     sm = d[1::2]
 
-    # when constructing the Hamiltonian notice the ordering of annihilation and creation operators (see introduction)
+    # notice the ordering of annihilation and creation operators
     H0 = sum([aa.dag() * aa for aa in a]) + sum([s.dag() * s for s in sm])
 
     # atom-cavity couplings
@@ -136,9 +124,8 @@ def solve(d, psi0):
 
     times = np.linspace(0, 250, 1000)
     L = liouvillian_ref(H, c_ops)
-    result = mesolve(
-        H, psi0, times, c_ops, e_ops, options=Options(nsteps=5000, store_states=True)
-    )
+    opt = Options(nsteps=5000, store_states=True)
+    result = mesolve(H, psi0, times, c_ops, e_ops, options=opt)
     return result, H, L
 ```
 
@@ -172,27 +159,28 @@ d[0].dag() * d[1] == d[1] * d[0].dag()
 Solving the time evolution:
 
 ```python
-%time res1, H1, L1 = solve(d, psi0)
+res1, H1, L1 = solve(d, psi0)
 ```
 
 ### Using ENR States and Operators
 
 ```python
-d = enr_destroy(dims, excite)
-psi0 = enr_fock(dims, excite, [init_excite if n == 1 else 0 for n in range(2 * N)])
+d_enr = enr_destroy(dims, excite)
+init_enr = [init_excite if n == 1 else 0 for n in range(2 * N)]
+psi0_enr = enr_fock(dims, excite, init_enr)
 ```
 
 Using ENR states forces us to give up on the standard tensor structure of multiple Hilbert spaces.
 Operators for different systems therefore generally no longer commute:
 
 ```python
-d[0].dag() * d[1] == d[1] * d[0].dag()
+d_enr[0].dag() * d_enr[1] == d_enr[1] * d_enr[0].dag()
 ```
 
 Solving the time evolution:
 
 ```python
-%time res2, H2, L2 = solve(d, psi0)
+res2, H2, L2 = solve(d_enr, psi0_enr)
 ```
 
 ### Comparison of Expectation Values
@@ -237,8 +225,10 @@ def ENR_ptrace(rho, sel, excitations):
     rest = np.setdiff1d(np.arange(len(drho)), sel)
     for state in idx2state:
         for state2 in idx2state:
-            # if the parts of the states of the system(s) being traced out are diagonal, add this to the new DM
-            if np.all(np.asarray(state).take(rest) == np.asarray(state2).take(rest)):
+            # add diagonal elements to the new density matrix
+            state_red = np.asarray(state).take(rest)
+            state2_red = np.asarray(state2).take(rest)
+            if np.all(state_red == state2_red):
                 rhout[
                     state2idx2[tuple(np.asarray(state).take(sel))],
                     state2idx2[tuple(np.asarray(state2).take(sel))],
