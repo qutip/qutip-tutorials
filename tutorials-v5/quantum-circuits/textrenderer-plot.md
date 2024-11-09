@@ -23,6 +23,8 @@ This notebook serves as a comprehensive guide to plotting quantum circuits using
 ```python
 import qutip
 import numpy as np
+from qutip import Qobj
+from qutip_qip.operations import rx
 from qutip_qip.circuit import QubitCircuit
 ```
 
@@ -80,11 +82,6 @@ qc.draw("text")
 ```
 
 #### With User Custom Gates
-
-```python
-from qutip import Qobj
-from qutip_qip.operations import rx
-```
 
 ```python
 def user_gate1(arg_value):

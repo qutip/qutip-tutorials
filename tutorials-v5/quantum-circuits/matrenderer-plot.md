@@ -24,6 +24,8 @@ This notebook serves as a comprehensive guide to plotting quantum circuits using
 ```python
 import qutip
 import numpy as np
+from qutip import Qobj
+from qutip_qip.operations import rx
 from qutip_qip.circuit import QubitCircuit
 ```
 
@@ -153,17 +155,14 @@ qc.draw()
 ```python
 qc = QubitCircuit(3)
 qc.add_gate("RX", targets=[0], arg_value=np.pi / 12, style={"showarg": True})
-qc.add_gate("RY", targets=[1], arg_value=2 * np.pi / 3, style={"showarg": True})
+qc.add_gate(
+    "RY", targets=[1], arg_value=2 * np.pi / 3, style={"showarg": True}
+)
 qc.add_gate("RY", targets=[2], arg_value=0.3, style={"showarg": True})
 qc.draw()
 ```
 
 #### With User Custom Gates
-
-```python
-from qutip import Qobj
-from qutip_qip.operations import rx
-```
 
 ```python
 def user_gate1(arg_value):
