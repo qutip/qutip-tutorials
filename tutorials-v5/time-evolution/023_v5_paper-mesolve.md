@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# QuTiPv5 Paper Example: `sesolve` and `mesolve` with the new solver class
+# QuTiPv5 Paper Example: `sesolve` and `mesolve` and the new solver class
 
 In QuTiP v5 a unified interface for interacting with solvers is introduced.
 This can be useful when the same Hamiltonian data is reused with different initial conditions, time steps or other options.
@@ -27,10 +27,14 @@ In this notebook we will consider several examples illustrating the usage of the
 import matplotlib.pyplot as plt
 import numpy as np
 from qutip import (SESolver, about, basis, brmesolve, fidelity, mesolve, qeye,
-                   sigmam, sigmax, sigmaz)
+                   sigmam, sigmax, sigmaz, spost, spre, sprepost)
+
+# from qutip.solver.heom import HEOMSolver, BosonicBath
+
+%matplotlib inline
 ```
 
-## Example 1:
+## Part 0: Introduction to the New Solver Class
 
 In our first example, we want to look at two interacting qubits that are (for now) decoupled from an environment.
 Such a system is described by the Hamiltonian
@@ -120,7 +124,7 @@ se_res = se_solver.run(psi0, tlist)
 print(se_res)
 ```
 
-## Example 2: Lindblad Dynamics and Beyond
+## Part 1: Lindblad Dynamics and Beyond
 
 In principle, the Schrödinger equation describes the dynamics of any quantum system.
 However, it is often impossible to solve once larger or even continious systems are explored.
@@ -158,7 +162,7 @@ plt.legend()
 plt.show()
 ```
 
-### Global Master Equation - Born-Markoc-secular approximation
+### Global Master Equation - Born-Markov-secular approximation
 
 In the previous example, the collapse operators act locally on each qubit.
 However, different kinds of collapse operators can be found under certain approximations.
@@ -189,24 +193,27 @@ def power_spectrum(w):
         return gam
     else:
         return 0
+
+
+def make_co_list(energies, eigenstates):
+    Nmax = len(eigenstates)
+    collapse_list = []
+    for i in range(Nmax):
+        for j in range(Nmax):
+            delE = energies[j] - energies[i]
+            m1 = sx1.matrix_element(eigenstates[i].dag(), eigenstates[j])
+            m2 = sx2.matrix_element(eigenstates[i].dag(), eigenstates[j])
+            absolute = np.abs(m1) ** 2 + np.abs(m2) ** 2
+            rate = power_spectrum(delE) * absolute
+            if rate > 0:
+                outer = eigenstates[i] * eigenstates[j].dag()
+                collapse_list.append(np.sqrt(rate) * outer)
+    return collapse_list
 ```
 
 ```python
 all_energy, all_state = H.eigenstates()
-Nmax = len(all_state)
-collapse_list = []
-for i in range(Nmax):
-    for j in range(Nmax):
-        delE = all_energy[j] - all_energy[i]
-        absolute = (
-            np.abs(sx1.matrix_element(all_state[i].dag(), all_state[j])) ** 2
-            + np.abs(sx2.matrix_element(all_state[i].dag(), all_state[j])) ** 2
-        )
-        rate = power_spectrum(delE) * absolute
-        if rate > 0:
-            outer = all_state[i] * all_state[j].dag()
-            collapse_list.append(np.sqrt(rate) * outer)
-
+collapse_list = make_co_list(all_energy, all_state)
 tlist_long = np.linspace(0, 1000, 100)
 ```
 
@@ -240,8 +247,14 @@ H_weak = (epsilon1 / 2) * sz1 + (epsilon2 / 2) * sz2 + g * sx1 * sx2
 ```
 
 ```python
+# generate new collapse operators for weak coupling Hamiltonian
+all_energy, all_state = H_weak.eigenstates()
+co_list = make_co_list(all_energy, all_state)
+```
+
+```python
 me_local_res = mesolve(H_weak, psi0, tlist, c_ops, e_ops=[sz1, sz2])
-me_global_res = mesolve(H_weak, psi0, tlist, collapse_list, e_ops=[sz1, sz2])
+me_global_res = mesolve(H_weak, psi0, tlist, co_list, e_ops=[sz1, sz2])
 br_res = brmesolve(
     H_weak,
     psi0,
@@ -269,26 +282,262 @@ H_strong = (epsilon1 / 2) * sz1 + (epsilon2 / 2) * sz2 + g * sx1 * sx2
 ```
 
 ```python
-me_local_res = mesolve(H_strong, psi0, tlist, c_ops, e_ops=[sz1, sz2])
-me_global_res = mesolve(H_strong, psi0, tlist, collapse_list, e_ops=[sz1, sz2])
+# generate new collapse operators for weak coupling Hamiltonian
+all_energy, all_state = H_strong.eigenstates()
+co_list = make_co_list(all_energy, all_state)
+
+# time list with smaller steps
+tlist_fine = np.linspace(0, 40, 1000)
+```
+
+```python
+me_local_res = mesolve(H_strong, psi0, tlist_fine, c_ops, e_ops=[sz1, sz2])
+me_global_res = mesolve(H_strong, psi0, tlist_fine, co_list, e_ops=[sz1, sz2])
 br_res = brmesolve(
     H_strong,
     psi0,
-    tlist,
+    tlist_fine,
     e_ops=[sz1, sz2],
     a_ops=[[sx1, power_spectrum], [sx2, power_spectrum]],
 )
 ```
 
 ```python
-plt.plot(tlist, me_local_res.expect[0], label=r"Local Lindblad")
-plt.plot(tlist, me_global_res.expect[0], "--", label=r"Dressed Lindblad")
-plt.plot(tlist, br_res.expect[0], ":", label=r"Bloch-Redfield")
-plt.title("Weak Coupling")
+plt.plot(tlist_fine, me_local_res.expect[0], label=r"Local Lindblad")
+plt.plot(tlist_fine, me_global_res.expect[0], "--", label=r"Dressed Lindblad")
+plt.plot(tlist_fine, br_res.expect[0], ":", label=r"Bloch-Redfield")
+plt.title("Strong Coupling")
 plt.xlabel("Time")
 plt.ylabel(r"$\langle \sigma_z^{(1)} \rangle$")
 plt.legend()
 plt.show()
+```
+
+### Manual Liouvillian Superoperator
+
+As mentioned before, QuTiP's master equation solver can be used to solve any other master equation.
+By using `spre()`, `spost()` and `sprepost()`, we can manually construct such equations.
+These functions specifically convert the operators from the original Hilbert space to operators in the double space which is internally used by QuTiP to optimize computations (see the paper for more details).
+
+For example, the Lindbladian corresponding to the master equation of the previous example can be constructed manually via:
+
+
+```python
+lindbladian = -1.0j * (spre(H) - spost(H))
+for c in c_ops:
+    lindbladian += sprepost(c, c.dag())
+    lindbladian -= 0.5 * (spre(c.dag() * c) + spost(c.dag() * c))
+```
+
+```python
+manual_res = mesolve(lindbladian, psi0, tlist_fine, [], e_ops=[sz1, sz2])
+```
+
+```python
+plt.plot(tlist_fine, me_local_res.expect[0], label="i=1")
+plt.plot(tlist_fine, me_local_res.expect[1], label="i=2")
+plt.xlabel("Time")
+plt.ylabel(r"$\langle \sigma_z^{(i)} \rangle$")
+plt.legend()
+plt.show()
+```
+
+<!-- #region -->
+## Part 2: Time-Dependent Systems
+
+
+Finally, we compare the results with another `mesolve` considering the rotating-wave approximation, the Bloch-Redfield solver and the HEOMSolver.
+<!-- #endregion -->
+
+```python
+# Hamiltonian parameters
+Delta = 2 * np.pi  # qubit splitting
+omega_d = Delta  # drive frequency
+A = 0.01 * Delta  # drive amplitude
+
+# Bath parameters
+gamma = 0.005 * Delta / (2 * np.pi)  # dissipation strength
+temp = 0  # temperature
+
+# Simulation parameters
+psi0 = basis(2, 0)  # initial state
+e_ops = [sigmaz()]
+T = 2 * np.pi / omega_d  # period length
+tlist = np.linspace(0, 1000 * T, 500)
+```
+
+### With `mesolve`
+
+```python
+# driving field
+def f(t):
+    return np.sin(omega_d * t)
+```
+
+```python
+H0 = Delta / 2.0 * sigmaz()
+H1 = [A / 2.0 * sigmax(), f]
+H = [H0, H1]
+```
+
+```python
+c_ops_me = [np.sqrt(gamma) * sigmam()]
+```
+
+```python
+driv_res = mesolve(H, psi0, tlist, c_ops=c_ops_me, e_ops=e_ops)
+```
+
+### With Rotating-Wave-Approximated `mesolve`
+
+```python
+H_RWA = (Delta - omega_d) * 0.5 * sigmaz() + A / 4 * sigmax()
+c_ops_me_RWA = [np.sqrt(gamma) * sigmam()]
+```
+
+```python
+driv_RWA_res = mesolve(H_RWA, psi0, tlist, c_ops=c_ops_me_RWA, e_ops=e_ops)
+```
+
+### With `brmesolve`
+
+```python
+# Bose einstein distribution
+def nth(w):
+    if temp > 0:
+        return 1 / (np.exp(w / temp) - 1)
+    else:
+        return 0
+
+
+# Power spectrum
+def power_spectrum(w):
+    if w > 0:
+        return gamma * (nth(w) + 1)
+    elif w == 0:
+        return 0
+    else:
+        return gamma * nth(-w)
+```
+
+```python
+a_ops = [[sigmax(), power_spectrum]]
+```
+
+```python
+driv_br_res = brmesolve(H, psi0, tlist, a_ops, e_ops, sec_cutoff=-1)
+```
+
+### With `HEOMSolver`
+
+```python
+wsamp = 2 * np.pi
+w0 = 5 * 2 * np.pi
+
+gamma_heom = 1.9 * w0
+
+
+lambd = np.sqrt(
+    0.5
+    * gamma
+    * ((w0**2 - wsamp**2) ** 2 + (gamma_heom**2) * ((wsamp) ** 2))
+    / (gamma_heom * wsamp)
+)
+```
+
+```python
+# TODO UnderDampedEnvironment is in a big separate on Overleaf, how to handle?
+
+# Create Environment
+# bath = UnderDampedEnvironment(lam=lambd, w0=w0, gamma=gamma_heom, T=1e-30)
+fit_times = np.linspace(0, 5, 1000)  # range for correlation function fit
+```
+
+### Comparison of Solver Results
+
+```python
+plt.figure()
+
+plt.plot(tlist, driv_res.expect[0], "-", label="mesolve (time-dep)")
+plt.plot(tlist, driv_RWA_res.expect[0], "-.", label="mesolve (rwa)")
+# plt.plot(tlist, results_corr_fit.expect[0], '--', label=r'heomsolve')
+plt.plot(tlist, driv_br_res.expect[0], ":", linewidth=3, label="brmesolve")
+
+plt.xlabel(r"$t\, /\, \Delta^{-1}$")
+plt.ylabel(r"$\langle \sigma_z \rangle$")
+plt.legend()
+plt.show()
+```
+
+### Adiabatic Energy Switching
+
+To illustrate where using naive local-basis collapse operators can fail, we look at a single qubit whose energies are adiabatically switched between positive and negative values.
+
+$H = \dfrac{\Delta}{2} \sin{(\omega_d t)} \sigma_z$.
+
+For slow drives, we expect the bath to respond to this change.
+Therefore, transitions from higher to lower energy levels should be induced.
+
+```python
+# Hamiltonian
+omega_d = 0.05 * Delta  # drive frequency
+A = Delta  # drive amplitude
+H_adi = [[A / 2.0 * sigmaz(), f]]
+# H = [H0]
+
+# Bath parameters
+gamma = 0.05 * Delta / (2 * np.pi)
+
+# Simulation parameters
+tlist = np.linspace(0, 2 * T, 400)
+```
+
+```python
+# Simple mesolve
+adi_me_res = mesolve(H_adi, psi0, tlist, c_ops=c_ops_me, e_ops=e_ops)
+```
+
+```python
+# bath = UnderDampedEnvironment(lam=lambd, w0=w0, gamma=gamma_heom, T=1e-30)
+# fit_times = np.linspace(0, 5, 1000)  # range for correlation function fit
+
+# cfit, fit_info = bath.approx_by_cf_fit(fit_times,
+#                                        Ni_max=1, Nr_max=2, target_rsme=None)
+# print(fit_info["summary"])
+# Convert to a HEOM bath
+# heombath = cfit.to_bath(sigmax())
+
+
+# HEOM_corr_fit = HEOMSolver(
+# qt.QobjEvo(H),
+# heombath,
+# max_depth=max_depth,
+# options={"nsteps": 15000, "rtol": 1e-12, "atol": 1e-12},
+# )
+# results_corr_fit = HEOM_corr_fit.run(psi0 * psi0.dag(), tlist, e_ops=e_ops)
+```
+
+```python
+# BRSolve
+brme_result2 = brmesolve(H, psi0, tlist, a_ops=a_ops, e_ops=e_ops)
+```
+
+```python
+# BRSolve non-flat power spectrum
+# a_ops_non_flat = [[sigmax(), lambda w: cfit.power_spectrum(w).item()]]
+# brme_result = brmesolve(H, psi0, tlist, a_ops=a_ops_non_flat, e_ops=e_ops)
+```
+
+```python
+plt.plot(tlist, adi_me_res.expect[0], "-", label="mesolve")
+# plt.plot(tlist, results_corr_fit.expect[0], '--', label=r'heomsolve')
+# plt.plot(tlist, brme_result.expect[0], ":", linewidth=6,
+#                                           label="brmesolve non-flat")
+plt.plot(tlist, brme_result2.expect[0], ":", linewidth=6, label="brmesolve")
+
+plt.xlabel(r"$t\, /\, \Delta^{-1}$", fontsize=18)
+plt.ylabel(r"$\langle \sigma_z \rangle$", fontsize=18)
+plt.legend()
 ```
 
 ## About
