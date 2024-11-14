@@ -18,7 +18,7 @@ Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com)
 
 ## Introduction
 
-When modelling an open quantum system, classical noise stochastic noise can be used to simulate a large range of phenomena.
+When modelling an open quantum system, stochastic noise can be used to simulate a large range of phenomena.
 In the `smesolve()` solver, noise appears because of continuous measurement.
 It allows us to generate the trajectory evolution of a quantum system conditioned on a noisy measurement record.
 Historically speaking, such models were used by the quantum optics community to model homodyne and heterodyne detection of light emitted from a cavity.
@@ -93,7 +93,8 @@ stoc_solution = smesolve(
 ## Comparison of Results
 
 We plot the averaged homodyne current $J_x = \langle x \rangle + dW / dt$ and the average system behaviour $\langle x \rangle$ for 500 trajectories.
-This is compared with the prediction of the regular `mesolve()` solver that does not include the conditioned trajectory.
+This is compared with the prediction of the regular `mesolve()` solver that does not include the conditioned trajectories.
+Since the conditioned expectation values do not depend on the trajectories, we expect that this reproduces the result of the standard `me_solve`.
 
 ```python
 stoc_meas_mean = np.array(stoc_solution.measurement).mean(axis=0)[0, :].real
@@ -125,5 +126,7 @@ about()
 ## Testing
 
 ```python
-
+assert np.allclose(
+    stoc_solution.expect[0] == me_solution.expect[0]
+), "The smesolve and mesolve do not preoduce the same trajectory."
 ```
