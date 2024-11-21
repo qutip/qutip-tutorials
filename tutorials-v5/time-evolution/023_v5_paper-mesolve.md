@@ -7,12 +7,14 @@ jupyter:
       format_version: '1.3'
       jupytext_version: 1.13.8
   kernelspec:
-    display_name: qutip-tutorials-v5
+    display_name: Python 3 (ipykernel)
     language: python
     name: python3
 ---
 
 # QuTiPv5 Paper Example: `sesolve` and `mesolve` and the new solver class
+
+Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com), Neill Lambert (nwlambert@gmail.com)
 
 In QuTiP v5 a unified interface for interacting with solvers is introduced.
 This can be useful when the same Hamiltonian data is reused with different initial conditions, time steps or other options.
