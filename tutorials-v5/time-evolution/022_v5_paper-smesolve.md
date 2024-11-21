@@ -7,20 +7,20 @@ jupyter:
       format_version: '1.3'
       jupytext_version: 1.13.8
   kernelspec:
-    display_name: qutip-tutorials-v5
+    display_name: Python 3 (ipykernel)
     language: python
     name: python3
 ---
 
 # QuTiPv5 Paper Example: Stochastic Solver - Homodyne Detection
 
-Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com)
+Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com), Neill Lambert (nwlambert@gmail.com)
 
 ## Introduction
 
 When modelling an open quantum system, stochastic noise can be used to simulate a large range of phenomena.
-In the `smesolve()` solver, noise appears because of continuous measurement.
-It allows us to generate the trajectory evolution of a quantum system conditioned on a noisy measurement record.
+In the `smesolve()` solver, noise is introduced by continuous measurement.
+This allows us to generate the trajectory evolution of a quantum system conditioned on a noisy measurement record.
 Historically speaking, such models were used by the quantum optics community to model homodyne and heterodyne detection of light emitted from a cavity.
 However, this solver is of course quite general and can thus also be applied to other problems.
 
@@ -77,7 +77,7 @@ This is compared to the regular `mesolve()` solver for the same model but withou
 rho_0 = coherent(N, np.sqrt(A))  # initial state
 times = np.arange(0, 1, 0.0025)
 num_traj = 500  # number of computed trajectories
-opt = {"dt": 0.00125, "store_measurement": True}
+opt = {"dt": 0.00125, "store_measurement": True, "map": "parallel"}
 ```
 
 ```python
@@ -127,6 +127,6 @@ about()
 
 ```python
 assert np.allclose(
-    stoc_solution.expect[0] == me_solution.expect[0]
-), "The smesolve and mesolve do not preoduce the same trajectory."
+    stoc_solution.expect[0], me_solution.expect[0], atol=1e-1
+), "smesolve and mesolve do not preoduce the same trajectory."
 ```
