@@ -44,6 +44,8 @@ $\mathcal{H}[a]\rho = a \rho + \rho a^\dag - tr[a \rho + \rho a^\dag]$
 captures the conditioning of the trajectory through continious monitoring of the operator $a$.
 The term $dW(t)$ is the increment of a Wiener process that obeys $\mathbb{E}[dW] = 0$ and $\mathbb{E}[dW^2] = dt$.
 
+Note that a similiar example is available in the [QuTiP user guide](https://qutip.readthedocs.io/en/qutip-5.0.x/guide/dynamics/dynamics-stochastic.html#stochastic-master-equation).
+
 ```python
 import numpy as np
 from matplotlib import pyplot as plt
