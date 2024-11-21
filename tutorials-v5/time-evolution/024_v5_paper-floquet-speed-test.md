@@ -7,14 +7,14 @@ jupyter:
       format_version: '1.3'
       jupytext_version: 1.13.8
   kernelspec:
-    display_name: qutip-tutorials-v5
+    display_name: Python 3 (ipykernel)
     language: python
     name: python3
 ---
 
 # QuTiPv5 Paper Example: Floquet Speed Test
 
-Authors: Maximilian Meyer-Mölleringhof
+Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com), Neill Lambert (nwlambert@gmail.com)
 
 ## Introdcution
 
@@ -53,8 +53,8 @@ import time
 
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import (CoreOptions, FloquetBasis, basis, expect, qeye, qzero_like,
-                   sesolve, sigmax, sigmay, sigmaz, tensor)
+from qutip import (CoreOptions, FloquetBasis, about, basis, expect, qeye,
+                   qzero_like, sesolve, sigmax, sigmay, sigmaz, tensor)
 
 %matplotlib inline
 ```
@@ -317,4 +317,16 @@ txt = f"$N={N}$, $g_0={g0}$, $J_0={J0}$, $A={A}$"
 axs[0].text(0.0, 1.05, txt, transform=axs[0].transAxes)
 
 plt.show()
+```
+
+## About
+
+```python
+about()
+```
+
+## Testing
+
+```python
+# TODO
 ```
