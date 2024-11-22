@@ -135,7 +135,7 @@ Generally, a master equation refers to a first-order linear differential equatio
 Although `mesolve` supports master equations of various forms, the Lindbladian type is implemented by default in QuTiP.
 Such an equation has the following form:
 
-$\dot{\rho}(t) = - \dfrac{i}{\hbar} [H(t), \rho(t)] + \sum_n \dfrac{1}{2}[ 2 C_n \rho(t) C_n^\dag - \rho(t) C_n^\dag C_n - C^\dag_n C_n \rho(t) ]$.
+$\dot{\rho}(t) = - \dfrac{i}{\hbar} [H(t), \rho(t)] + \sum_n \dfrac{1}{2}[ 2 C_n \rho(t) C_n^\dagger - \rho(t) C_n^\dagger C_n - C^\dagger_n C_n \rho(t) ]$.
 
 Next to the desnity operator $\rho(t)$ and the Hamiltonian $H(t)$, this equation includes the so-called collapse (or jump) operators $C_n = \sqrt{\gamma_n} A_n$.
 They define the dissipation due to contanct with and environment.
