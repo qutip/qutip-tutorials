@@ -31,15 +31,15 @@ $d \rho(t) = -i [H, \rho(t)] dt + \mathcal{D}[a] \rho (t) dt + \mathcal{H}[a] \r
 
 with the Hamiltonian
 
-$H = \Delta a^\dag a$
+$H = \Delta a^\dagger a$
 
 and the Lindblad dissipator
 
-$\mathcal{D}[a] = a \rho a^\dag - \dfrac{1}{2} a^\dag a \rho - \dfrac{1}{2} \rho a^\dag a$.
+$\mathcal{D}[a] = a \rho a^\dagger - \dfrac{1}{2} a^\dagger a \rho - \dfrac{1}{2} \rho a^\dagger a$.
 
 The stochastic part
 
-$\mathcal{H}[a]\rho = a \rho + \rho a^\dag - tr[a \rho + \rho a^\dag]$
+$\mathcal{H}[a]\rho = a \rho + \rho a^\dagger - tr[a \rho + \rho a^\dagger]$
 
 captures the conditioning of the trajectory through continious monitoring of the operator $a$.
 The term $dW(t)$ is the increment of a Wiener process that obeys $\mathbb{E}[dW] = 0$ and $\mathbb{E}[dW^2] = dt$.
