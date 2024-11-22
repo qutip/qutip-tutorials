@@ -5,9 +5,9 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.16.4
 kernelspec:
-  display_name: Python 3 (ipykernel)
+  display_name: qutip-dev
   language: python
   name: python3
 ---
@@ -39,10 +39,10 @@ from qutip import (
     ket2dm,
     sigmax,
     sigmaz,
+    DrudeLorentzEnvironment
 )
 from qutip.solver.heom import (
-    HEOMSolver,
-    DrudeLorentzPadeBath,
+    HEOMSolver
 )
 
 from ipywidgets import IntProgress
@@ -51,16 +51,7 @@ from IPython.display import display
 %matplotlib inline
 ```
 
-## Helper functions
-
-Let's define some helper functions for calculating the spectral density:
-
-```{code-cell} ipython3
-def dl_spectrum(w, lam, gamma):
-    """ Return the Drude-Lorentz spectral density. """
-    J = w * 2 * lam * gamma / (gamma**2 + w**2)
-    return J
-```
+## Solver options
 
 ```{code-cell} ipython3
 # Solver options:
@@ -95,10 +86,10 @@ H_sys = 0 * sigmaz()
 
 ```{code-cell} ipython3
 # Define some operators with which we will measure the system
-# 1,1 element of density matrix - corresonding to groundstate
+# 1,1 element of density matrix - corresponding to groundstate
 P11p = basis(2, 0) * basis(2, 0).dag()
 P22p = basis(2, 1) * basis(2, 1).dag()
-# 1,2 element of density matrix  - corresonding to coherence
+# 1,2 element of density matrix  - corresponding to coherence
 P12p = basis(2, 0) * basis(2, 1).dag()
 ```
 
@@ -115,7 +106,9 @@ Q = sigmaz()
 # number of terms to keep in the expansion of the bath correlation function:
 Nk = 3
 
-bath = DrudeLorentzPadeBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
+env = DrudeLorentzEnvironment(lam=lam, gamma=gamma,T=T)
+env_approx=env.approx_by_pade(Nk=Nk)
+bath=(env_approx,Q)
 ```
 
 ```{code-cell} ipython3
@@ -168,10 +161,13 @@ Let's start by plotting the spectral density of our Drude-Lorentz bath:
 
 ```{code-cell} ipython3
 wlist = np.linspace(0, 0.5, 1000)
-J = dl_spectrum(wlist, lam, gamma)
+J = env.spectral_density(wlist)
+J_approx = env_approx.spectral_density(wlist)
 
 fig, axes = plt.subplots(1, 1, figsize=(8, 8))
 axes.plot(wlist, J, 'r', linewidth=2)
+axes.plot(wlist, J_approx, 'b--', linewidth=2)
+
 axes.set_xlabel(r'$\omega$', fontsize=28)
 axes.set_ylabel(r'J', fontsize=28);
 ```
@@ -448,8 +444,9 @@ def simulate_100_pulses(lam, gamma, T, NC, Nk):
     duration = integral / amplitude
     delay = avg_cycle_time - duration
 
-    bath = DrudeLorentzPadeBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
-
+    env = DrudeLorentzEnvironment(lam=lam, gamma=gamma, T=T)
+    env_approx = env.approx_by_pade(Nk=Nk)
+    bath=(env_approx,Q)
     # Equally spaced pulses:
 
     pulse_eq = drive(amplitude, delay, integral)
