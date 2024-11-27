@@ -14,12 +14,12 @@ jupyter:
 
 # QuTiPv5 Paper - Quantum Circuits with QIP
 
-Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com)
+Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com), Neill Lambert (nwlambert@gmail.com)
 
-Quantum circuits are a common conceptual and visual tool to represent and manipulate quantum algorithms.
-As part of the QuTiP familiy, the QuTiP-QIP package supports this kind of language with several unique features.
-It enables seamles integration of the unitaries representing a given circuit with the rest of QuTiP via the `Qobj` class.
-Additionally, it integrates both QuTiP-QOC and the various QuTiP open-system solvers to allow for pulse level-simulation of quantum circuits, including realistic noise.
+Quantum circuits serve as a standard framework for representing and manipulating quantum algorithms visually and conceptually.
+As a member of the QuTiP family, the QuTiP-QIP package add this framework and enables several distinctive capabilities.
+It allows seamless incorporation of circuit-representing unitaries into QuTiP's ecosystem using the `Qobj` class.
+Moreover, it links QuTiP-QOC and the open-system solvers, enabling pulse-level simulations of circuits with realistic noise effects.
 
 ```python
 import matplotlib.pyplot as plt
@@ -34,7 +34,7 @@ from qutip_qip.device import SCQubits
 
 ## Introduction
 
-In this example, we show:
+In this example, we show how to
 
 - Construct a simple quantum circuit which simulates the dynamics of a two-qubit Hamiltonian
 - Simulate the dynamics of an open system, using ancillas to induce noise
@@ -90,24 +90,21 @@ qc.draw("latex")
 
 ## Simulating Hamiltonian Dynamics
 
-In quantum simulation the main approach to simulating the dynamics of a quantum system is by reducing the propagation of the Schrödinger equation into a discrete set of short time steps.
-The propagator in one-time step is approximated by *Trotterization*:
+A very common method in quantum simulations is to reduce the propagation of the Schrödinger equation into several short time steps in order to finally arrive at the desired solution.
+The propagator for one-time such step is well approximated by using *Trotterization*:
 
 $\psi(t_f) = e^{-i (H_A + H_B) t_f} \psi(0) \approx [e^{-i H_A dt} e^{-i H_B dt}]^d \psi(0)$,
 
 given that the time steps $dt = t_f / d$ is sufficiently small.
-The Hamiltonians $H_A$ and $H_B$ here should be chosen such that the individual unitaries $e^{-i H_{A,B} dt}$ can easily be mapped to basic quantum gates.
+The idea then is that the Hamiltonians $H_A$ and $H_B$ are chosen such that $e^{-i H_{A,B} dt}$ can be mapped to quantum gates.
 
-For our example of two interacting qubits, we express
+For our example, we express
 
 $H_A = \dfrac{\epsilon_1}{2} \sigma_z^{(1)} + \dfrac{\epsilon_2}{2} \sigma_z^{(2)}$ and
 
 $H_B = g \sigma_x^{(1)} \sigma_x^{(2)}$.
 
-In this case, the mapping the Hilbert space to the circuit model.
-More complex cases like for fermions, bosons, large spins and so on are currently not natively supported in QuTiP-QIP.
-
-To implement out Hamiltonian we then construct the circuit consisting of two qubits and a set of gates
+We can then construct the circuit with two qubits and a set of gates:
 
 $A_1 = e^{-i \epsilon_1 \sigma_z^{(1)} dt / 2}$,
 
@@ -116,9 +113,11 @@ $A_2 = e^{-i \epsilon_2 \sigma_z^{(2)} dt / 2}$ and
 $B = e^{-i g \sigma_x^{(1)} \sigma_x^{(2)} dt}$.
 
 We apply them to an initial state and then repeat them $d$ times.
-The physical gates one can use to represent these operations depend on the hardware.
-Here, we use RZ defining rotations around the Z axis, and a combination of Hadamard gate and ZX rotation RZX gates to implement the XX interaction unitary as it is the native interaction when using the superconducting qubit hardware backend.
-A full list of available gates can be found in the documentation and custom gates are easily be added too.
+
+Depending on the hardware, the type of available physical gates changes.
+Since we will be using a superconducting qubit hardware backend, we will express these gates in terms of RZ (rotation around Z axis), RZX (combined rotation around XZ) and Hadamard gates.
+In general, QuTiP-QIP supports a great variety of gates and also the option for custom gates exists.
+More information on this is presented in the original paper for QuTiP-QIP [\[1\]](#References).
 
 ```python
 # simulation parameters
@@ -158,8 +157,8 @@ for dd in range(num_steps):
 
 ### Noisy Hardware
 
-To run a given quantum circuit on a processor, we simply initialize the desired processor and then load the circuit into it.
-For example, here we use the superconducting circuit processor.
+We can load our quantum circuit into a hardware backed to simulate the execution on various types of hardware.
+In our case, we are interested in a superconducting circuit:
 
 ```python
 processor = SCQubits(num_qubits=2, t1=2e5, t2=2e5)
@@ -171,7 +170,7 @@ init_state_trit = tensor(basis(3, 0), basis(3, 1))
 Now we can run the simulation in a similar fashion as we did before.
 In this case however, the results is a `results` object from the QuTiP solver being used.
 For our example, `mesolve()` is used as we specified finite $T_1$ and $T_2$ upon initialization.
-The processor itself is defined internally by a Hamiltonian, available control operations, pulse shapes, $T_1$ and $T_2$ and so on.
+The processor itself defines an internal Hamiltonian as well as available control operations, pulse shapes, $T_1$ and $T_2$, etc..
 
 ```python
 state_proc = init_state_trit
@@ -183,7 +182,7 @@ for dd in range(num_steps):
     state_list_proc.append(result.final_state)
 ```
 
-Since we used the specific processor, we can see the pulse shapes used in the solver:
+We can see the pulse shapes used in the solver:
 
 ```python
 processor.plot_pulses()
@@ -217,11 +216,13 @@ plt.show()
 
 ## Lindblad Simulation
 
-To realize the Lindblad master equation, we employ a single ancilla, and measurements / resets, for each Lindblad collapse operator.
-At t = 0, we prepare the dilated state $\ket{\psi_D(t=0)} = \ket{\psi(t = 0)} \otimes \ket{0}^{\otimes K}$ for the K total ancillas.
-At every time step $dt$ the system interacts with the ancillas for a time $\sqrt{dt}$, after which the ancillas are reset to their ground-state again.
-We can find the Trotter approcimation for the unitary describing the interaction between system $i$ and its associated ancilla for collapse operator $k$ and write
-The unitary operation part of the interaction between system $i$ and its associated ancilla for collapse operator $k$ is given by,
+To simulate the Lindblad master equation, we consider two recent proposals [\[2, 3\]](#References) where a sequence of unitaries is used to approximate Lindblad dynamics to arbitrary order.
+This is realized by employing a ancilla qubits, and measurements / resets, for the Lindblad collapse operators.
+The initial state is a dilated state $\ket{\psi_D(t=0)} = \ket{\psi(t = 0)} \otimes \ket{0}^{\otimes K}$ where $K$ referes to the number of ancillas.
+Every time step, the system and the ancillas interact for a time span $\sqrt{dt}$.
+Thereafter, the ancillas are reset to their ground state.
+
+We can find the Trotter approximation for the unitary describing the interaction between system $i$ and its associated ancilla for collapse operator $k$:
 
 $U(\sqrt{dt}) \approx e^{-\frac{1}{2} i \sigma_{x}^{(i)}\sigma_{x}^{(k)} \sqrt{\gamma_k dt}} \cdot e^{\frac{1}{2} i \sigma_{y}^{(i)}\sigma_{y}^{(k)}\sqrt{\gamma_k dt}}$,
 
@@ -284,7 +285,7 @@ for dd in range(num_steps):
     state_trotter_circ.append(state_system)
 ```
 
-Again, we want to run this trotterized evolution on the suuperconducting hardware backend. Be aware that because of the increased complexity, this computation can take several minutes depending on your hardware.
+Again, we want to run this trotterized evolution on the suuperconducting hardware backend. Be aware that, due of the increased complexity, this computation can take several minutes depending on your hardware.
 
 ```python
 processor = SCQubits(num_qubits=4, t1=3.0e4, t2=3.0e4)
@@ -343,6 +344,15 @@ plt.ylabel("Expectation values")
 plt.legend()
 plt.show()
 ```
+
+## References
+
+\[1\] [Li, et. al, Quantum (2022)](http://dx.doi.org/10.22331/q-2022-01-24-630)
+
+\[2\] [Ding, et. al, PRX Quantum (2024)](https://doi.org/10.1103/PRXQuantum.5.020332)
+
+\[3\] [Cleve and Lang, ICALP (2017)](https://doi.org/10.48550/arXiv.1612.09512)
+
 
 ## About
 
