@@ -17,11 +17,11 @@ jupyter:
 Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com), Neill Lambert (nwlambert@gmail.com)
 
 For many years now, GPUs have been a fundamental tool for accelerating numerical tasks.
-Today, many libraries like TensorFlow, CuPy, and JAX enable off-the-shelf methods to leverage GPUs' potential to speed up costly calculations.
-QuTiP’s flexible data layer can directly be used with these libraries and thereby drastically reduce computation time.
-Despite a big variety of frameworks, in connection to QuTiP, development has centered on the QuTiP-JAX integration due to JAX's robust auto-differentiation features and widespread adoption in machine learning.
+Today, many libraries enable off-the-shelf methods to leverage GPUs' potential to speed up costly calculations.
+QuTiP’s flexible data layer can directly be used with many such libraries and thereby drastically reduce computation time.
+Despite a big variety of frameworks, in connection to QuTiP, development has centered on the QuTiP-JAX integration [\[1\]] due to JAX's robust auto-differentiation features and widespread adoption in machine learning.
 
-In these examples we illustrate how JAX naturally integrates into QuTiP using the QuTiP-JAX package.
+In these examples we illustrate how JAX naturally integrates into QuTiP v5 [\[2\]] using the QuTiP-JAX package.
 As a simple first example, we look at a one-dimensional spin chain and how we might employ `mesolve()` and JAX to solve the related master equation.
 In the second part, we focus on the auto-differentiation capabilities.
 For this we first consider the counting statistics of an open quantum system connected to an environment.
@@ -274,7 +274,7 @@ def driving_coeff(t, omega):
 
 
 # system Hamiltonian
-def setup_system(omega):
+def setup_system():
     H_0 = sigmaz()
     H_1 = sigmax()
     H = [H_0, [H_1, driving_coeff]]
@@ -292,9 +292,9 @@ e_ops = [projection(2, 1, 1)]
 ```python
 # Objective function: returns final exc. state population
 def f(omega):
-    H = setup_system(omega)
+    H = setup_system()
     arg = {"omega": omega}
-    result = mcsolve(H, psi0, tlist, c_ops, e_ops, ntraj=100, args=arg)
+    result = mcsolve(H, psi0, tlist, c_ops, e_ops=e_ops, ntraj=100, args=arg)
     return result.expect[0][-1]
 ```
 
@@ -307,9 +307,11 @@ grad_f = grad(f)(2.0)
 
 
 
-```python
-# TODO
-```
+
+[1] [QuTiP-JAX](https://github.com/qutip/qutip-jax)
+
+[2] [QuTiP v5: The Quantum Toolbox in Python](about:blank)
+
 
 ## About
 
@@ -320,5 +322,6 @@ about()
 ## Testing
 
 ```python
-# TODO
+assert jnp.isclose(Itest, ncurr, rtol=1e-5), "Current calc. deviates"
+assert jnp.isclose(shottest, nshot, rtol=1e-1), "Shot noise calc. deviates."
 ```
