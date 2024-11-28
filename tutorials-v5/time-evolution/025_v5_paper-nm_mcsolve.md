@@ -45,15 +45,13 @@ To finally arrive at the Lindblad form, the shift function
 
 $s(t) = 2 | \min \{ 0, \gamma_1(t), \gamma_2(t), ... \} |$,
 
-such that the shifted rates $\Gamma_n (t) = \gamma_n(t) + s(t)$ non-negative.
+such that the shifted rates $\Gamma_n (t) = \gamma_n(t) + s(t)$ are non-negative.
 Using the regular MCWF method, we obtain the completely positive Lindblad equation
 
 $\dot{\rho}'(t) = - \dfrac{i}{\hbar} [ H(t), \rho'(t) ] + \sum_n \Gamma(t) \mathcal{D}_n[\rho'(t)]$,
 
-so that $\rho'(t) = \mathcal{E} \{\ket{\psi(t)} \bra{\psi(t)}\}$ for the generated trajecotries $\ket{\psi (t)}$.
-
-
-
+so that $\rho'(t) = \mathbb{E} \{\ket{\psi(t)} \bra{\psi(t)}\}$ for the generated trajecotries $\ket{\psi (t)}$, where $\mathbb{E}$ is the ensemble average over the trajectories.
+This can furthermore be used to finally reconstruct the original states via $\rho(t) = \mathbb{E}\{\mu(t) \ket{\psi(t)} \bra{\psi(t)}\}$.
 
 ```python
 import matplotlib.pyplot as plt
@@ -152,7 +150,6 @@ A = CubicSpline(tlist, np.complex128(_A))
 ```python
 unitary_gen = liouvillian(H)
 dissipator = lindblad_dissipator(sigmam())
-me_sol = mesolve([[unitary_gen, A], [dissipator, gamma]], initial_state, tlist)
 ```
 
 ```python
@@ -169,12 +166,18 @@ mc_sol = nm_mcsolve(
 
 ## Comparison to other methods
 
-We want to compare this computation with the HEOM and the Bloch-Refield solver.
-For these methods we directly apply a spin-boson model and the free reservoir auto-correlation function
+We want to compare this computation with the standard `mesolve()`, the HEOM and the Bloch-Refield solver.
+For the `mesolve()` we can directly use the operators we have created for `nm_mcsolve()`:
+
+```python
+me_sol = mesolve([[unitary_gen, A], [dissipator, gamma]], initial_state, tlist)
+```
+
+For the other methods we directly apply a spin-boson model and the free reservoir auto-correlation function
 
 $C(t) = \dfrac{\lambda \Gamma}{2} e^{-i (\omega - \Delta) t - \lambda |t|}$
 
-as well as the same power specture as we used above.
+as well as the same power specturm as we used above.
 We use the Hamiltonian $H = \omega_0 \sigma_+ \sigma_-$ in the Schrödinger picture and the coupling operator $Q = \sigma_+ + \sigma_-$.
 Here, we chose $\omega_0 \gg \Delta$ to ensure validity of the rotating wave approximation.
 
@@ -204,7 +207,7 @@ heom_bath = qt.heom.BosonicBath(Q, ck_real, vk_real, ck_imag, vk_imag)
 heom_sol = qt.heom.heomsolve(H, heom_bath, 10, qt.ket2dm(initial_state), tlist)
 ```
 
-And secondly, for the Bloch-Redfield solver we can directly use the power spectrum as input:
+Secondly, for the Bloch-Redfield solver we can directly use the power spectrum as input:
 
 ```python
 br_sol = brmesolve(H, initial_state, tlist, a_ops=[(sigmax(), power_spectrum)])
@@ -234,14 +237,14 @@ root4 = root_scalar(lambda t: cgamma(t), method="bisect", bracket=(4, 5)).root
 projector = (sigmaz() + qeye(2)) / 2
 
 rho11_me = expect(projector, me_sol.states)
-rho11_mc = expect(projector, mc_sol.states[::10])
+rho11_mc = expect(projector, mc_sol.states)
 rho11_br = expect(projector, br_sol.states)
 rho11_heom = expect(projector, heom_states)
 
 plt.plot(tlist, rho11_me, "-", color="orange", label="mesolve")
 plt.plot(
     tlist[::10],
-    rho11_mc,
+    rho11_mc[::10],
     "x",
     color="blue",
     label="nm_mcsolve",
@@ -265,20 +268,20 @@ plt.show()
 
 ```python
 me_x = expect(sigmax(), me_sol.states)
-mc_x = expect(sigmax(), mc_sol.states[::10])
+mc_x = expect(sigmax(), mc_sol.states)
 heom_x = expect(sigmax(), heom_states)
 br_x = expect(sigmax(), br_states)
 
 me_y = expect(sigmay(), me_sol.states)
-mc_y = expect(sigmay(), mc_sol.states[::10])
+mc_y = expect(sigmay(), mc_sol.states)
 heom_y = expect(sigmay(), heom_states)
 br_y = expect(sigmay(), br_states)
 ```
 
 ```python
 # We smooth the HEOM result because it oscillates quickly and gets hard to see
-heom_plot = heom_x * heom_x + heom_y * heom_y
-heom_plot = np.convolve(heom_plot, np.array([1 / 11] * 11), mode="valid")
+rho01_heom = heom_x * heom_x + heom_y * heom_y
+rho01_heom = np.convolve(rho01_heom, np.array([1 / 11] * 11), mode="valid")
 heom_tlist = tlist[5:-5]
 ```
 
@@ -288,8 +291,8 @@ rho01_mc = mc_x * mc_x + mc_y * mc_y
 rho01_br = br_x * br_x + br_y * br_y
 
 plt.plot(tlist, rho01_me, "-", color="orange", label=r"mesolve")
-plt.plot(tlist[::10], rho01_mc, "x", color="blue", label=r"nm_mcsolve")
-plt.plot(heom_tlist, heom_plot, "--", color="green", label=r"heomsolve")
+plt.plot(tlist[::10], rho01_mc[::10], "x", color="blue", label=r"nm_mcsolve")
+plt.plot(heom_tlist, rho01_heom, "--", color="green", label=r"heomsolve")
 plt.plot(tlist, rho01_br, "-.", color="gray", label=r"brmesolve")
 
 plt.xlabel(r"$t\, /\, \lambda^{-1}$")
@@ -310,10 +313,14 @@ plt.show()
 ```
 
 ```python
+mart_dev = mc_sol.trace - 1
+```
+
+```python
 plt.plot(tlist, np.zeros_like(tlist), "-", color="orange", label=r"Zero")
 plt.plot(
     tlist[::10],
-    1000 * (mc_sol.trace[::10] - 1),
+    1000 * mart_dev[::10],
     "x",
     color="blue",
     label=r"nm_mcsolve",
@@ -332,6 +339,14 @@ plt.axvspan(root3, root4, color="gray", alpha=0.08, zorder=0)
 plt.legend()
 plt.show()
 ```
+
+In these plots we notice two things.
+First, the result from the Bloch-Redfield equation deviates greatly from the others, showing us that non-Markovian effects are strongly influencing the dynamics.
+Second, in the grey areas - when $\gamma(t)$ is negative - the atom state restores coherence.
+In the last plot especially we see that during these times, the average influence martingale fluctuates, but is constant otherwise.
+Its deviation from unity tells us how well the simulation has converged.
+
+
 
 ## References
 
@@ -354,5 +369,19 @@ about()
 ## Testing
 
 ```python
-# TODO
+assert np.allclose(
+    rho11_me, rho11_heom, atol=1e-3
+), "rho11 of mesolve and heomsolve do not agree."
+assert np.allclose(
+    rho11_me, rho11_mc, atol=1e-2
+), "rho11 of nm_mcsolve deviates from mesolve too much."
+assert np.allclose(
+    rho01_me[5:-5], rho01_heom, atol=1e-3
+), "|rho01|^2 of mesolve and heomsolve do not agree."
+assert np.allclose(
+    rho01_me, rho01_mc, atol=1e-1
+), "|rho01|^2 of nm_mcsolve deviates from mesolve too much."
+assert (
+    np.max(mart_dev) < 1e-1
+), "MC Simulation has not converged well enough. Average infl. mart. > 1e-1"
 ```
