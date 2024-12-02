@@ -7,14 +7,14 @@ jupyter:
       format_version: '1.3'
       jupytext_version: 1.13.8
   kernelspec:
-    display_name: Python 3 (ipykernel)
+    display_name: Python 3
     language: python
     name: python3
 ---
 
 # QuTiPv5 Paper Example: Floquet Speed Test
 
-Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com), Neill Lambert (nwlambert@gmail.com)
+Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com), Marc Gali (galilabarias.marc@aist.go.jp), Neill Lambert (nwlambert@gmail.com)
 
 ## Introdcution
 
@@ -328,5 +328,8 @@ about()
 ## Testing
 
 ```python
-# TODO
+for i in range(N):
+    assert np.allclose(
+        np.real(expect_floquet[i, :]), np.real(expect_sesolve[i, :]), atol=1e-5
+    ), f"floquet and sesolve solutions for Ising chain element {i} deviate."
 ```
