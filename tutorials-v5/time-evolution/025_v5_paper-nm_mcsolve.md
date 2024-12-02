@@ -5,16 +5,16 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.13.8
+      jupytext_version: 1.16.4
   kernelspec:
-    display_name: Python 3
+    display_name: Python 3 (ipykernel)
     language: python
     name: python3
 ---
 
 # QuTiPv5 Paper Example: Monte Carlo Solver for non-Markovian Baths
 
-Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com), Neill Lambert (nwlambert@gmail.com)
+Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com), Paul Menczel (paul@menczel.net), Neill Lambert (nwlambert@gmail.com)
 
 ## Introduction
 
@@ -30,28 +30,28 @@ $\mathcal{D}_n[\rho(t)] = A_n \rho(t) A^\dagger_n - \dfrac{1}{2} [A^\dagger_n A_
 These equations include the system Hamiltonian $H(t)$ and jump operators $A_n$.
 Contrary to a Lindblad equation, the coupling rates $\gamma_n(t)$ may be negative here.
 
-In QuTiPv5, the non-Markovian Monte Carlo solver is introduced.
+In QuTiP v5, the non-Markovian Monte Carlo solver is introduced.
 It enables the mapping of the general master equation given above, to a Lindblad equation on the same Hilbert space.
-This is achieved by the introduction of so called "influence martingale" which act as trajectory weighting [\[1, 2, 3\]](#References):
+This is achieved by the introduction of the so called "influence martingale" which acts as trajectory weighting [\[1, 2, 3\]](#References):
 
 $\mu (t) = \exp \left[ \alpha \int_0^t s(\tau) d \tau \right] \Pi_k \dfrac{\gamma_{n_k} (t_k)}{\Gamma_{n_k} (t_k)}$.
 
 Here, the product runs over all jump operators on the trajectory with jump channels $n_k$ and jump times $t_k < t$.
-
-The jump operators are required to fulfill the completeness relation $\sum_n A_n^\dagger A_n = \alpha \mathbb{1}$ for $\alpha > 0$.
-This condition is automatically taken care off by QuTiP's `nm_mcsolve()` function.
-
 To finally arrive at the Lindblad form, the shift function
 
-$s(t) = 2 | \min \{ 0, \gamma_1(t), \gamma_2(t), ... \} |$,
+$s(t) = 2 \left| \min \{ 0, \gamma_1(t), \gamma_2(t), ... \} \right|$
 
-such that the shifted rates $\Gamma_n (t) = \gamma_n(t) + s(t)$ are non-negative.
-Using the regular MCWF method, we obtain the completely positive Lindblad equation
+is applied, such that the shifted rates $\Gamma_n (t) = \gamma_n(t) + s(t)$ are non-negative.
+We obtain the completely positive Lindblad equation
 
 $\dot{\rho}'(t) = - \dfrac{i}{\hbar} [ H(t), \rho'(t) ] + \sum_n \Gamma(t) \mathcal{D}_n[\rho'(t)]$,
 
-so that $\rho'(t) = \mathbb{E} \{\ket{\psi(t)} \bra{\psi(t)}\}$ for the generated trajecotries $\ket{\psi (t)}$, where $\mathbb{E}$ is the ensemble average over the trajectories.
+and $\rho'(t) = \mathbb{E} \{\ket{\psi(t)} \bra{\psi(t)}\}$ using the regular MCWF method.
+Here, $\ket{\psi (t)}$ are the generated trajectories and $\mathbb{E}$ is the ensemble average over the trajectories.
 This can furthermore be used to finally reconstruct the original states via $\rho(t) = \mathbb{E}\{\mu(t) \ket{\psi(t)} \bra{\psi(t)}\}$.
+
+Note that, for this technique, the jump operators are required to fulfill the completeness relation $\sum_n A_n^\dagger A_n = \alpha \mathbb{1}$ for $\alpha > 0$.
+This condition is automatically taken care of by QuTiP's `nm_mcsolve()` function.
 
 ```python
 import matplotlib.pyplot as plt
@@ -106,17 +106,13 @@ deltaSq = deltaR**2 + deltaI**2
 # calculate gamma and A
 def prefac(t):
     return (
-        2
-        * gamma0
-        * lamb
-        / (
+        2 * gamma0 * lamb / (
             (lamb**2 + Delta**2 - deltaSq) * np.cos(deltaI * t)
             - (lamb**2 + Delta**2 + deltaSq) * np.cosh(deltaR * t)
             - 2 * (Delta * deltaR + lamb * deltaI) * np.sin(deltaI * t)
             + 2 * (Delta * deltaI - lamb * deltaR) * np.sinh(deltaR * t)
         )
     )
-
 
 def cgamma(t):
     return prefac(t) * (
@@ -125,7 +121,6 @@ def cgamma(t):
         - deltaI * np.sin(deltaI * t)
         - deltaR * np.sinh(deltaR * t)
     )
-
 
 def cA(t):
     return prefac(t) * (
@@ -175,9 +170,9 @@ me_sol = mesolve([[unitary_gen, A], [dissipator, gamma]], initial_state, tlist)
 
 For the other methods we directly apply a spin-boson model and the free reservoir auto-correlation function
 
-$C(t) = \dfrac{\lambda \Gamma}{2} e^{-i (\omega - \Delta) t - \lambda |t|}$
+$C(t) = \dfrac{\lambda \Gamma}{2} e^{-i (\omega - \Delta) t - \lambda |t|}$,
 
-as well as the same power specturm as we used above.
+which corresponds to the power spectrum defined above.
 We use the Hamiltonian $H = \omega_0 \sigma_+ \sigma_-$ in the Schrödinger picture and the coupling operator $Q = \sigma_+ + \sigma_-$.
 Here, we chose $\omega_0 \gg \Delta$ to ensure validity of the rotating wave approximation.
 
@@ -187,7 +182,6 @@ omega_0 = omega_c + Delta
 
 H = omega_0 * qt.sigmap() * qt.sigmam()
 Q = qt.sigmap() + qt.sigmam()
-
 
 def power_spectrum(w):
     return gamma0 * lamb**2 / ((omega_c - w) ** 2 + lamb**2)
@@ -203,8 +197,8 @@ vk_imag = vk_real
 ```
 
 ```python
-heom_bath = qt.heom.BosonicBath(Q, ck_real, vk_real, ck_imag, vk_imag)
-heom_sol = qt.heom.heomsolve(H, heom_bath, 10, qt.ket2dm(initial_state), tlist)
+heom_env = qt.ExponentialBosonicEnvironment(ck_real, vk_real, ck_imag, vk_imag)
+heom_sol = qt.heom.heomsolve(H, (heom_env, Q), 10, qt.ket2dm(initial_state), tlist)
 ```
 
 Secondly, for the Bloch-Redfield solver we can directly use the power spectrum as input:
