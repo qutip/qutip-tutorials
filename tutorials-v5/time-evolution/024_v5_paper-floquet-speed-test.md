@@ -5,18 +5,18 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.13.8
+      jupytext_version: 1.16.4
   kernelspec:
-    display_name: Python 3
+    display_name: Python 3 (ipykernel)
     language: python
     name: python3
 ---
 
 # QuTiPv5 Paper Example: Floquet Speed Test
 
-Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com), Marc Gali (galilabarias.marc@aist.go.jp), Neill Lambert (nwlambert@gmail.com)
+Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com), Marc Gali (galilabarias.marc@aist.go.jp), Neill Lambert (nwlambert@gmail.com), Paul Menczel (paul@menczel.net)
 
-## Introdcution
+## Introduction
 
 In this example we will discuss Hamiltonians with periodic time-dependence and how we can solve the time evolution of the system in QuTiP.
 A natural approach to this is using the Floquet theorem.
@@ -32,7 +32,7 @@ $\ket{\psi_\alpha (t)} = \exp(-i \epsilon_\alpha t / \hbar) \ket{\Psi_\alpha (t)
 where $\ket{\Psi_\alpha (t)} = \ket{\Psi_\alpha (t + T)}$ are the Floquet modes and $\epsilon_\alpha$ are the quasi-energies.
 Any solution of the Schrödinger equation can then be written as a linear combination
 
-$\ket{\psi(t)} = \sum_\alpha c_\alpha \ket{\Psi_\alpha}$,
+$\ket{\psi(t)} = \sum_\alpha c_\alpha \ket{\psi_\alpha(t)}$,
 
 where the constants $c_\alpha$ are determined by the initial conditions.
 
@@ -46,7 +46,7 @@ $H_F(t) \ket{\Psi_\alpha(t)} = \epsilon_\alpha \ket{\Psi_\alpha(t)}$.
 
 Solving this equation then allows us to find $\ket{\psi (t)}$ at any large $t$.
 
-Our goal in this notebook is to show, how this prcedure is done in QuTiP and how it compares to the standard `sesolve` method - specifically in terms of computation time.
+Our goal in this notebook is to show how this procedure is done in QuTiP and how it compares to the standard `sesolve` method - specifically in terms of computation time.
 
 ```python
 import time
@@ -163,7 +163,8 @@ where $g_0$ is the level splitting, $J_0$ is the nearest-neighbour coupling cons
 
 As outlined in the QuTiPv5 paper, it's educational to study the dimensional scaling of the Floquet method compared to the standard `sesolve`.
 Specifically how the crossing time (when the Floquet method becomes faster) depends on the dimensions $N$.
-Although we will not reproduce the whole plot for computation time reasons, we implement the solution for one specific choice of $N$ and give the user the freedom to play with the paramteres.
+Although we will not reproduce the whole plot for computation time reasons, we implement the solution for one specific choice of $N$.
+Feel free to play around with the parameters!
 
 ```python
 N = 4  # number of spins
