@@ -19,7 +19,7 @@ Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com), Marc G
 ## Introduction
 
 In this example we will discuss Hamiltonians with periodic time-dependence and how we can solve the time evolution of the system in QuTiP.
-A natural approach to this is using the Floquet theorem.
+A natural approach to this is using the Floquet theorem [\[1, 2\]](#References).
 Similar to the Bloch theorem (for spatial periodicity), this method helps to drastically simplify the problem.
 Let $H$ be a time-dependent and periodic Hamiltonian with period $T$, such that
 
@@ -319,6 +319,13 @@ axs[0].text(0.0, 1.05, txt, transform=axs[0].transAxes)
 
 plt.show()
 ```
+
+## References
+
+[1] [Floquet, Annales scientifiques de l’École Normale Supérieure (1883)](http://www.numdam.org/articles/10.24033/asens.220/)
+
+[2] [Shirley, Phys.Rev. (1965)](https://link.aps.org/doi/10.1103/PhysRev.138.B979)
+
 
 ## About
 
