@@ -7,14 +7,14 @@ jupyter:
       format_version: '1.3'
       jupytext_version: 1.13.8
   kernelspec:
-    display_name: Python 3
+    display_name: qutip-tutorials-v5
     language: python
     name: python3
 ---
 
 # QuTiPv5 Paper Example: QuTiP-JAX with mesolve and auto-differnetiation
 
-Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com), Neill Lambert (nwlambert@gmail.com)
+Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com), Rochisha Agarwal (rochisha.agarwal2302@gmail.com), Neill Lambert (nwlambert@gmail.com)
 
 For many years now, GPUs have been a fundamental tool for accelerating numerical tasks.
 Today, many libraries enable off-the-shelf methods to leverage GPUs' potential to speed up costly calculations.
@@ -29,7 +29,7 @@ Lastly, we look at a driven qubit system and computing the gradient of its state
 
 ## Introduction
 
-In addition to the standrad QuTiP package, in order to use QuTiP-JAX, the JAX package needs to be installed.
+In addition to the standard QuTiP package, in order to use QuTiP-JAX, the JAX package needs to be installed.
 This package also comes with `jax.numpy` which mirrors all of `numpy`s functionality for seamless integration with JAX.
 
 ```python
@@ -57,7 +57,7 @@ print(qeye(3, dtype="jaxdia").dtype.__name__)
 In order to use the JAX data layer also within the master equation solver, there are two settings we can choose.
 First, is simply adding `method: diffrax` to the options parameter of the solver.
 Second, is to use the `qutip_jax.set_as_default()` method.
-It automatically switches all data data tyeps to JAX compatible versions and sets the default solver method to `diffrax`.
+It automatically switches all data data types to JAX compatible versions and sets the default solver method to `diffrax`.
 
 ```python
 qj.set_as_default()
@@ -86,7 +86,7 @@ We hereby consider $N$ spins that share an energy splitting of $g_0$ and have a 
 The end of the chain connects to an environment described by a Lindbladian dissipator which we model with the collapse operator $\sigma_x^{(N-1)}$ and coupling rate $\gamma$.
 
 As part of the [QuTiPv5 paper](#References), we see an extensive study on the computation time depending on the dimensionality $N$.
-In this example we cannot replicate the performance of a supercomputer of course, so we rather focus on the correct implementation to solve the Lindablad equation for this system using JAX and `mesolve()`.
+In this example we cannot replicate the performance of a supercomputer of course, so we rather focus on the correct implementation to solve the Lindblad equation for this system using JAX and `mesolve()`.
 
 ```python
 # system parameters
@@ -157,7 +157,7 @@ On top of that, JAX adds the features of auto-differentiation.
 To compute derivatives, it is often numerical approximations (e.g., finite difference method) that need to be employed.
 Especially for higher order derivatives, these methods can turn into costly and inaccurate calculations.
 
-Auto-differenciation, on the other hand, exploits the chain rule to compute such derivatives.
+Auto-differentiation, on the other hand, exploits the chain rule to compute such derivatives.
 The idea is that any numerical function can be expressed by elementary analytical functions and operations.
 Consequently, using the chain rule, the derivatives of almost any higher-level function become accessible.
 
@@ -259,7 +259,7 @@ $P_e(t) = \bra{e} \rho(t) \ket{e}$
 and its gradient with respect to the frequency $\omega$.
 
 We want to optimize this quantity by adjusting the drive frequency $\omega$.
-To achieve this, we compute the gradient of $P_e(t)$ in respect to $\omega$ by using JAX's auto-differentiation tools nad QuTiP's `mcsolve()`.
+To achieve this, we compute the gradient of $P_e(t)$ in respect to $\omega$ by using JAX's auto-differentiation tools and QuTiP's `mcsolve()`.
 
 ```python
 # system parameters
