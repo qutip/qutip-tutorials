@@ -18,19 +18,19 @@ Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com), Marc G
 
 ## Introdcution
 
-In this example we will discuss Hamiltonians with period time-dependence and how we can solve the time evolution of the system in QuTiP.
+In this example we will discuss Hamiltonians with periodic time-dependence and how we can solve the time evolution of the system in QuTiP.
 A natural approach to this is using the Floquet theorem.
-Similar to the Block theorem (for spatial periodicity), this method helps to drastically simplify the problem.
-Let $H$ be a Hamiltonian periodic in time with period $T$, such that
+Similar to the Bloch theorem (for spatial periodicity), this method helps to drastically simplify the problem.
+Let $H$ be a time-dependent and periodic Hamiltonian with period $T$, such that
 
 $H(t) = H(t + T)$
 
-The Floquet theorem states that there exist solutions to the Schrödinger equation that take the form
+Following Floquet's theorem, there exist solutions to the Schrödinger equation that take the form
 
 $\ket{\psi_\alpha (t)} = \exp(-i \epsilon_\alpha t / \hbar) \ket{\Psi_\alpha (t)}$,
 
-where $\epsilon_\alpha$ are the quasi-energies and $\ket{\Psi_\alpha (t)} = \ket{\Psi_\alpha (t + T)}$ the Floquet modes.
-We can then write any solution of the time-dependent Schrödinger equation as a linear combination of them
+where $\ket{\Psi_\alpha (t)} = \ket{\Psi_\alpha (t + T)}$ are the Floquet modes and $\epsilon_\alpha$ are the quasi-energies.
+Any solution of the Schrödinger equation can then be written as a linear combination
 
 $\ket{\psi(t)} = \sum_\alpha c_\alpha \ket{\Psi_\alpha}$,
 
@@ -161,9 +161,9 @@ $H(t) = g_0 \sum_{n=1}^N \sigma_z^{(n)} - J_0 \sum_{n=1}^{N - 1} \sigma_x^{(n)} 
 
 where $g_0$ is the level splitting, $J_0$ is the nearest-neighbour coupling constant and $A$ is the drive amplitude.
 
-As outlined in the QuTiPv5 paper, it educational to study the dimensional scaling of the Floquet method compared to the standard `sesolve`.
-Specifically how the crossing time (so when the Floquet method becomes faster) depends on the dimensions $N$.
-Although we will not reproduce the whole plot, we implement the solution for one specific choice of $N$ and give the user the freedom to play with the paramteres.
+As outlined in the QuTiPv5 paper, it's educational to study the dimensional scaling of the Floquet method compared to the standard `sesolve`.
+Specifically how the crossing time (when the Floquet method becomes faster) depends on the dimensions $N$.
+Although we will not reproduce the whole plot for computation time reasons, we implement the solution for one specific choice of $N$ and give the user the freedom to play with the paramteres.
 
 ```python
 N = 4  # number of spins
