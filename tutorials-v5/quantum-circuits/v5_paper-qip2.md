@@ -7,14 +7,14 @@ jupyter:
       format_version: '1.3'
       jupytext_version: 1.13.8
   kernelspec:
-    display_name: Python 3
+    display_name: qutip-tutorials-v5
     language: python
     name: python3
 ---
 
 # QuTiPv5 Paper - Quantum Circuits with QIP
 
-Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com), Neill Lambert (nwlambert@gmail.com)
+Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com), Boxi Li (etamin1201@gmail.com), Neill Lambert (nwlambert@gmail.com)
 
 Quantum circuits serve as a standard framework for representing and manipulating quantum algorithms visually and conceptually.
 As a member of the QuTiP family, the QuTiP-QIP package add this framework and enables several distinctive capabilities.
@@ -157,7 +157,7 @@ for dd in range(num_steps):
 
 ### Noisy Hardware
 
-We can load our quantum circuit into a hardware backed to simulate the execution on various types of hardware.
+We can load our quantum circuit into a hardware backend to simulate the execution on various types of hardware.
 In our case, we are interested in a superconducting circuit:
 
 ```python
