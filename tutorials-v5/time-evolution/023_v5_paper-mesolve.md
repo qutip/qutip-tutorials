@@ -34,10 +34,11 @@ In this notebook we will consider several examples illustrating the usage of the
 ```python
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import (SESolver, about, basis, brmesolve, fidelity, mesolve, qeye,
-                   sigmam, sigmax, sigmaz, spost, spre, sprepost)
+from qutip import (QobjEvo, SESolver, UnderDampedEnvironment,
+                   about, basis, brmesolve, fidelity, mesolve,
+                   qeye, sigmam, sigmax, sigmaz, spost, spre, sprepost)
 
-# from qutip.solver.heom import HEOMSolver, BosonicBath
+from qutip.solver.heom import HEOMSolver
 
 %matplotlib inline
 ```
@@ -442,26 +443,32 @@ driv_br_res = brmesolve(H, psi0, tlist, a_ops, sec_cutoff=-1, e_ops=e_ops)
 ### With `HEOMSolver`
 
 ```python
+max_depth = 4  # number of hierarchy levels
+
 wsamp = 2 * np.pi
 w0 = 5 * 2 * np.pi
-
 gamma_heom = 1.9 * w0
 
-
 lambd = np.sqrt(
-    0.5
-    * gamma
+    0.5 * gamma / (gamma_heom * wsamp)
     * ((w0**2 - wsamp**2) ** 2 + (gamma_heom**2) * ((wsamp) ** 2))
-    / (gamma_heom * wsamp)
 )
 ```
 
 ```python
-# TODO UnderDampedEnvironment is in a big separate on Overleaf, how to handle?
-
 # Create Environment
-# bath = UnderDampedEnvironment(lam=lambd, w0=w0, gamma=gamma_heom, T=1e-30)
+bath = UnderDampedEnvironment(lam=lambd, w0=w0, gamma=gamma_heom, T=1e-10)
 fit_times = np.linspace(0, 5, 1000)  # range for correlation function fit
+
+# Fit correlation function with exponentials
+exp_bath, fit_info = bath.approx_by_cf_fit(fit_times, Ni_max=1, Nr_max=2, target_rsme=None)
+print(fit_info["summary"])
+```
+
+```python
+HEOM_corr_fit = HEOMSolver(QobjEvo(H), (exp_bath, sigmax()), max_depth=max_depth,
+                    options={'nsteps': 15000, 'rtol': 1e-12, 'atol': 1e-12})
+results_corr_fit = HEOM_corr_fit.run(psi0 * psi0.dag(), tlist, e_ops=e_ops)
 ```
 
 ### Comparison of Solver Results
@@ -471,7 +478,7 @@ plt.figure()
 
 plt.plot(tlist, driv_res.expect[0], "-", label="mesolve (time-dep)")
 plt.plot(tlist, driv_RWA_res.expect[0], "-.", label="mesolve (rwa)")
-# plt.plot(tlist, results_corr_fit.expect[0], '--', label=r'heomsolve')
+plt.plot(tlist, np.real(results_corr_fit.expect[0]), '--', label=r'heomsolve')
 plt.plot(tlist, driv_br_res.expect[0], ":", linewidth=3, label="brmesolve")
 
 plt.xlabel(r"$t\, /\, \Delta^{-1}$")
@@ -494,61 +501,50 @@ If the drive is slow enough, we expect the bath to respond to this change and tr
 omega_d = 0.05 * Delta  # drive frequency
 A = Delta  # drive amplitude
 H_adi = [[A / 2.0 * sigmaz(), f]]
-# H = [H0]
 
 # Bath parameters
 gamma = 0.05 * Delta / (2 * np.pi)
 
 # Simulation parameters
+T = 2 * np.pi / omega_d  # period length
 tlist = np.linspace(0, 2 * T, 400)
 ```
 
 ```python
 # Simple mesolve
+c_ops_me = [np.sqrt(gamma) * sigmam()]
 adi_me_res = mesolve(H_adi, psi0, tlist, c_ops=c_ops_me, e_ops=e_ops)
 ```
 
 ```python
-# bath = UnderDampedEnvironment(lam=lambd, w0=w0, gamma=gamma_heom, T=1e-30)
-# fit_times = np.linspace(0, 5, 1000)  # range for correlation function fit
-
-# cfit, fit_info = bath.approx_by_cf_fit(fit_times,
-#                                        Ni_max=1, Nr_max=2, target_rsme=None)
-# print(fit_info["summary"])
-# Convert to a HEOM bath
-# heombath = cfit.to_bath(sigmax())
-
-
-# HEOM_corr_fit = HEOMSolver(
-# qt.QobjEvo(H),
-# heombath,
-# max_depth=max_depth,
-# options={"nsteps": 15000, "rtol": 1e-12, "atol": 1e-12},
-# )
-# results_corr_fit = HEOM_corr_fit.run(psi0 * psi0.dag(), tlist, e_ops=e_ops)
+# HEOM
+HEOM_corr_fit = HEOMSolver(QobjEvo(H_adi), (exp_bath, sigmax()), max_depth=max_depth,
+                           options={"nsteps": 15000, "rtol": 1e-12, "atol": 1e-12})
+results_corr_fit = HEOM_corr_fit.run(psi0 * psi0.dag(), tlist, e_ops=e_ops)
 ```
 
 ```python
 # BRSolve
-brme_result2 = brmesolve(H, psi0, tlist, a_ops=a_ops, e_ops=e_ops)
+brme_result2 = brmesolve(H_adi, psi0, tlist, a_ops=a_ops, e_ops=e_ops)
 ```
 
 ```python
 # BRSolve non-flat power spectrum
-# a_ops_non_flat = [[sigmax(), lambda w: cfit.power_spectrum(w).item()]]
-# brme_result = brmesolve(H, psi0, tlist, a_ops=a_ops_non_flat, e_ops=e_ops)
+a_ops_non_flat = [[sigmax(), lambda w: exp_bath.power_spectrum(w)]]
+brme_result = brmesolve(H_adi, psi0, tlist, a_ops=a_ops_non_flat, e_ops=e_ops)
 ```
 
 ```python
 plt.plot(tlist, adi_me_res.expect[0], "-", label="mesolve")
-# plt.plot(tlist, results_corr_fit.expect[0], '--', label=r'heomsolve')
-# plt.plot(tlist, brme_result.expect[0], ":", linewidth=6,
-#                                           label="brmesolve non-flat")
+plt.plot(tlist, np.real(results_corr_fit.expect[0]), '--', label=r'heomsolve')
+plt.plot(tlist, brme_result.expect[0], ":", linewidth=6,
+                                          label="brmesolve non-flat")
 plt.plot(tlist, brme_result2.expect[0], ":", linewidth=6, label="brmesolve")
 
 plt.xlabel(r"$t\, /\, \Delta^{-1}$", fontsize=18)
 plt.ylabel(r"$\langle \sigma_z \rangle$", fontsize=18)
 plt.legend()
+plt.show()
 ```
 
 ## References
