@@ -530,7 +530,7 @@ brme_result2 = brmesolve(H_adi, psi0, tlist, a_ops=a_ops, e_ops=e_ops)
 
 ```python
 # BRSolve non-flat power spectrum
-a_ops_non_flat = [[sigmax(), lambda w: exp_bath.power_spectrum(w)]]
+a_ops_non_flat = [[sigmax(), exp_bath]]
 brme_result = brmesolve(H_adi, psi0, tlist, a_ops=a_ops_non_flat, e_ops=e_ops)
 ```
 
