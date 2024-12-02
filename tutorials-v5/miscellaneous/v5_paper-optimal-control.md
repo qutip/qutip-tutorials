@@ -7,24 +7,25 @@ jupyter:
       format_version: '1.3'
       jupytext_version: 1.13.8
   kernelspec:
-    display_name: qutip-tutorials-v5
+    display_name: Python 3
     language: python
     name: python3
 ---
 
 # QuTiPv5 Paper Example: The Quantum Optimal Control Package
 
-Quantum systems are sensitive to external perturbations, which on the one hand can be used to perform
-precise measurements or operations, but on the other hand also introduce noise and errors. Therefore,
-finding the optimal control fields that achieve a desired quantum operation under various objectives (e.g.
-minimum energy or maximum robustness) is a challenging and important problem. In practice, there are
-often constraints and limitations on the control fields, such as bandwidth, amplitude, duration, and noise.
-These factors make quantum optimal control a complex and rich field of research.
+Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com), Boxi Li (etamin1201@gmail.com), Neill Lambert (nwlambert@gmail.com)
 
-To find optimal control parameters, several methods have been developed.
-Here, we look at three algorithms: *gradient ascent pulse engineering* (GRAPE), *chopped random basis* (CRAB) and *gradient optimization af analytic controls* (GOAT).
+Quantum systems are naturally sensitive to their environment and external perturbations.
+This is great, as it allows for very precise measurements.
+However, it also makes handling errors and imprecisions a big challenge.
+In the case for quantum computing, finding the optimal parameters to achieve a desired operation is this thus an important problem.
+Optimization parameters may include amplitude, frequency, duration, bandwidth, etc. and are generally directly dependent on the considered hardware.
+
+To find these optimal control parameters, several methods have been developed.
+Here, we look at three algorithms: *gradient ascent pulse engineering* (GRAPE) [\[3\]](#References), *chopped random basis* (CRAB) [\[4\]](#References) and *gradient optimization af analytic controls* (GOAT) [\[5\]](#References).
 Whereas the former two have been part of the `QuTiP-QTRL` package of QuTiPv4, the latter is a new addition in version 5.
-Allthogether, these algorithms are now included in the new `QuTiP-QOC` package that also adds additional functionalities such as integration with JAX via the JAX optimization technique (JOPT).
+Althogether, these algorithms are now included in the new `QuTiP-QOC` package that also adds `QuTiP-JAX` [\[6\]](#References) integration via the JAX optimization technique (JOPT).
 
 ```python
 import matplotlib.pyplot as plt
@@ -72,9 +73,10 @@ H = [Hd, Hc[0], Hc[1], Hc[2]]
 ```
 
 ```python
-# objective for optimization
+# objectives for optimization
 initial = qeye(2)
 target = gates.hadamard_transform()
+fid_err = 0.01
 ```
 
 ```python
@@ -99,7 +101,7 @@ res_grape = optimize_pulses(
         "ctrl_z": {"guess": np.tanh(times), "bounds": [-1, 1]},
     },
     tlist=times,
-    algorithm_kwargs={"alg": "GRAPE", "fid_err_targ": 0.01},
+    algorithm_kwargs={"alg": "GRAPE", "fid_err_targ": fid_err},
 )
 ```
 
@@ -113,7 +115,7 @@ The basis function is only expanded for some finite number of summands and the i
 
 ```python
 n_params = 3  # adjust in steps of 3
-alg_args = {"alg": "CRAB", "fid_err_targ": 0.01, "fix_frequency": False}
+alg_args = {"alg": "CRAB", "fid_err_targ": fid_err, "fix_frequency": False}
 ```
 
 ```python
@@ -163,10 +165,8 @@ def grad_sin(t, c, idx):
 ```python
 H = [Hd] + [[hc, sin, {"grad": grad_sin}] for hc in Hc]
 
-ctrl_parameters = {
-    id: {"guess": [1, 0], "bounds": [(-1, 1), (0, 2 * np.pi)]}  # c0 and c1
-    for id in ["x", "y", "z"]
-}
+bnds = [(-1, 1), (0, 2 * np.pi)]
+ctrl_param = {id: {"guess": [1, 0], "bounds": bnds} for id in ["x", "y", "z"]}
 ```
 
 For even faster convergence QuTiP extends to original algorithm with the option to optimize controls with
@@ -175,7 +175,7 @@ argument:
 
 ```python
 # treats time as optimization variable
-ctrl_parameters["__time__"] = {
+ctrl_param["__time__"] = {
     "guess": times[len(times) // 2],
     "bounds": [times[0], times[-1]],
 }
@@ -185,11 +185,11 @@ ctrl_parameters["__time__"] = {
 # run the optimization
 res_goat = optimize_pulses(
     objectives=Objective(initial, H, target),
-    control_parameters=ctrl_parameters,
+    control_parameters=ctrl_param,
     tlist=times,
     algorithm_kwargs={
         "alg": "GOAT",
-        "fid_err_targ": 0.01,
+        "fid_err_targ": fid_err,
     },
 )
 ```
@@ -225,11 +225,11 @@ H = [Hd] + [[Hc[0], sin_x], [Hc[1], sin_y], [Hc[2], sin_z]]
 ```python
 res_jopt = optimize_pulses(
     objectives=Objective(initial, H, target),
-    control_parameters=ctrl_parameters,
+    control_parameters=ctrl_param,
     tlist=times,
     algorithm_kwargs={
         "alg": "JOPT",
-        "fid_err_targ": 0.01,
+        "fid_err_targ": fid_err,
     },
 )
 ```
@@ -242,7 +242,7 @@ algorithms through a `qoc.Result` object, which provides common optimization met
 ### Pulse Amplitudes
 
 ```python
-fig, ax = plt.subplots(1, 3, figsize=(13.6, 4.54))
+fig, ax = plt.subplots(1, 3, figsize=(13, 5))
 
 goat_range = times < res_goat.optimized_params[-1]
 jopt_range = times < res_jopt.optimized_params[-1]
@@ -269,7 +269,6 @@ ax[0].legend(loc=0)
 ax[0].set_ylabel(r"Pulse amplitude $c_x(t)$", labelpad=-5)
 ax[1].set_ylabel(r"Pulse amplitude $c_y(t)$", labelpad=-5)
 ax[2].set_ylabel(r"Pulse amplitude $c_z(t)$", labelpad=-5)
-ax[2].set_ylim(-0.2, 1.1)  # ensure equal spacing between subplots
 
 plt.show()
 ```
@@ -290,6 +289,22 @@ print("JOPT : ", res_jopt.fid_err)
 print(res_jopt.total_seconds, " seconds")
 ```
 
+## References
+
+[1] [QuTiP v5: The Quantum Toolbox in Python](about:blank)
+
+[2] [QuTiP-QOC Repository](https://github.com/qutip/qutip-qoc)
+
+[3] [Khaneja, et. al, Journal of Magnetic Resonance (2005)](https://www.sciencedirect.com/science/article/pii/S1090780704003696)
+
+[4] [Caneva, et. al, Phys. Rev. A (2011)](https://link.aps.org/doi/10.1103/PhysRevA.84.022326)
+
+[5] [Machnes, et. al, Phys. Rev. Lett. (2018)](https://link.aps.org/doi/10.1103/PhysRevLett.120.150401)
+
+[6] [QuTiP-JAX Repository](https://github.com/qutip/qutip-jax)
+
+
+
 ## About
 
 ```python
@@ -297,3 +312,18 @@ about()
 ```
 
 ## Testing
+
+```python
+assert (
+    res_grape.fid_err < fid_err
+), f"GRAPE did not reach the target infidelity of < {fid_err}."
+assert (
+    res_crab.fid_err < fid_err
+), f"CRAB did not reach the target infidelity of < {fid_err}."
+assert (
+    res_goat.fid_err < fid_err
+), f"GOAT did not reach the target infidelity of < {fid_err}."
+assert (
+    res_jopt.fid_err < fid_err
+), f"JOPT did not reach the target infidelity of < {fid_err}."
+```
