@@ -5,9 +5,9 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.13.8
+      jupytext_version: 1.16.4
   kernelspec:
-    display_name: Python 3
+    display_name: Python 3 (ipykernel)
     language: python
     name: python3
 ---
@@ -16,16 +16,17 @@ jupyter:
 
 Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com), Neill Lambert (nwlambert@gmail.com)
 
-In QuTiP `Qobj` and `QobjEvo` classes for the very heart of almost all calculations that can be performed.
-With them, open quantum system with various interactions and structures can be simulated by using the wide variety of solvers provided.
+In QuTiP, the `Qobj` and `QobjEvo` classes form the very heart of almost all calculations that can be performed.
+With these classes, open quantum systems with various interactions and structures can be simulated by using the wide variety of solvers provided.
 Most of the time, these solvers are given an initial state, a Hamiltonian and an environment that is often described using rates or coupling strengths.
 QuTiP then uses numerical integration to determine the time evolution of the system.
 
 QuTiP v5 introduces a unified interface for interacting with these solvers.
+This new interface is class-based, allowing users to instantiate a solver object for a specific problem.
 This can be useful when the same Hamiltonian data is reused with different initial conditions, time steps or other options.
-A noticable speed-up can thus be achieved if solvers is reused multiple times.
+A noticable speed-up can thus be achieved if solvers are reused multiple times.
 
-Upon instantiation, one first supplies only the Hamiltonian and the collapse operators (e.g., collapse operators for a Lindabladian master equation).
+Upon instantiation, one first supplies only the Hamiltonian and the collapse operators (e.g., collapse operators for a Lindbladian master equation).
 Initial conditions, time steps, etc. are passed to the `Solver.run()` method which then performs the simulation.
 
 In this notebook we will consider several examples illustrating the usage of the new solver classes.
@@ -69,7 +70,7 @@ print(H)
 The dynamics of such a system is described by the Schrödinger equation
 
 $i \hbar \dfrac{d}{dt} \ket{\psi} = H \ket{\psi}$.
-Therefore, we can use `SESovler` to calculate the dynamics.
+Therefore, we can use `SESolver` to calculate the dynamics.
 
 ```python
 se_solver = SESolver(H)
@@ -93,9 +94,9 @@ plt.show()
 ### Manual Stepping Interface
 
 A new feature in QuTiP v5 is that time steps can be controlled manually.
-This is specficially useful if the Hamiltonian depends on external control parameters such as field strength.
-Such parameters can be updated in euch step using the optional paramter `args`.
-In paractice, this can look like this:
+This is specifically useful if the Hamiltonian depends on an external control parameter such as a field strength.
+Such parameters can be updated in each step using the optional parameter `args`.
+In practice, this can look like this:
 
 ```python
 t = 0
@@ -111,13 +112,13 @@ while t < 40:
 ### Solver and Integrator Options
 
 Another change in QuTiP v5 is that the `options` argument takes a standard Python dictionary.
-This should increase future felxibility and allow different solvers to provide individual sets of options more easily.
+This should increase future flexibility and allow different solvers to provide individual sets of options more easily.
 The complete list of options can be found in the online documentation for each solver.
 
-As an example of frequently used options, we show `store_states`, determining whether the output should include the system state at each time step and `store_final_state` determening the same but for the final state.
-`method` is another common option, specifying the ODE integration method as well as its specific options.
-Also shown here are `atol` to control the precision (absolute tolerance),
-`nsteps` controls the maximum number of steps between two time steps and `max_step` giving the maximum allowed integration step of the default Adams ODE.
+As an example of frequently used options, we show `store_states`, determining whether the output should include the system state at each time step, and `store_final_state`, determining the same but for the final state.
+`method` is another common option, specifying the ODE integration method.
+Specific options related to the numeric integration depend on the chosen method; here, we show `atol` controlling the precision (absolute tolerance),
+`nsteps` controlling the maximum number of steps between two time steps, and `max_step` giving the maximum allowed integration step of the default Adams ODE integration method.
 
 ```python
 options = {"store_states": True, "atol": 1e-12, "nsteps": 1e3, "max_step": 0.1}
@@ -135,18 +136,18 @@ print(se_res)
 ## Part 1: Lindblad Dynamics and Beyond
 
 In general, the Schrödinger equation describes the dynamics of any quantum system.
-Once systems become large or we consider continious system, however, solving it often comes impossible.
+Once systems become large or we consider continuous systems, however, solving it often becomes impossible.
 Therefore, master equations of various types were developed and have now become the most common way to describe the dynamics of finite (open) quantum systems.
 Generally, a master equation refers to a first-order linear differential equation for $\rho(t)$ which is the reduced density operator describing the quantum state.
-In QuTiP `mesolve` is the general solver we use to solve such master equations.
+In QuTiP, `mesolve` is the general solver we use to solve such master equations.
 Although it supports master equations of various forms, the Lindbladian type is implemented by default.
 The general form of such an equation is given by
 
-$\dot{\rho}(t) = - \dfrac{i}{\hbar} [H(t), \rho(t)] + \sum_n \dfrac{1}{2}[ 2 C_n \rho(t) C_n^\dagger - \rho(t) C_n^\dagger C_n - C^\dagger_n C_n \rho(t) ]$.
+$$ \dot{\rho}(t) = - \dfrac{i}{\hbar} [H(t), \rho(t)] + \sum_n \dfrac{1}{2}[ 2 C_n \rho(t) C_n^\dagger - \rho(t) C_n^\dagger C_n - C^\dagger_n C_n \rho(t) ] . $$
 
 Next to the density operator $\rho(t)$ and the Hamiltonian $H(t)$, this equation includes the so-called collapse (or jump) operators $C_n = \sqrt{\gamma_n} A_n$.
-They define the dissipation due to contanct with and environment.
-$\gamma_n$ can hereby be understood as rates describing the frequency of transitions between the states connected by the operator $A_n$.
+They define the dissipation due to contact with an environment.
+The rates $\gamma_n$ describe the frequency of transitions between the states connected by the operator $A_n$.
 
 To continue our example of the two qubits, we now connect them to an evironment using the collapse operators $C_1 = \sqrt{\gamma} \sigma_{-}^{(1)}$ and $C_2 = \sqrt{\gamma} \sigma_{-}^{(2)}$ where $\sigma_{-}^{(i)}$ takes qubit (i) from its excited state to its ground state.
 This time, however, we will be using the `mesolve` solver.
@@ -174,7 +175,7 @@ plt.show()
 ### Global Master Equation - Born-Markov-secular approximation
 
 In the previous example, the collapse operators acted *locally* on each qubit.
-However, depending on the considered approximation different kinds of collapse operators are found.
+However, depending on the considered approximation, different kinds of collapse operators are found.
 One example for this is when the qubits interact more strongly with each other than with the bath.
 One then arrives at the *global* master equation under the standard Born-Markox approximation.
 Although the collapse operators still act like annihilation and creation operators here, they now act on the total coupled eigenstates of the interacting two-qubit system
@@ -185,20 +186,16 @@ with rates
 
 $\gamma_{ij} = | \bra{\psi_i} d \ket{\psi_j} |^2 S(\Delta_{ij})$.
 
-The $\ket{\psi_i}$ are the eigenstates of $H$ and $\Delta_{ij} = E_j - E_i$ are the difference of eigenenergies.
+The $\ket{\psi_i}$ are the eigenstates of $H$ and $\Delta_{ij} = E_j - E_i$ are the differences of eigenenergies.
 $d$ is the coupling operator of the system to the environment.
 We use the power spectrum
 
 $S(\omega) = 2 J(\omega) [n_{th} (\omega) + 1] \theta(\omega) + 2J(-\omega)[n_{th}(-\omega)]\theta(-\omega)$
 
-which depends on details of the environment such as its spectral density $J(\omega)$ and temperature through the Bose-Einstein distribution $n_{th} (\omega)$.
+which depends on details of the environment such as its spectral density $J(\omega)$ and, through the Bose-Einstein distribution $n_{th} (\omega)$, its temperature.
 $\theta$ denotes the Heaviside function.
 
-By assuming spectral density to be flat:
-
-$J(\omega) = \gamma / 2$
-
-and considering zero temperature, we can write
+By assuming spectral density to be flat, $J(\omega) = \gamma / 2$, and considering zero temperature, we can write
 
 $S(\omega) = \gamma \theta(\omega)$.
 
@@ -210,7 +207,6 @@ def power_spectrum(w):
         return gam
     else:
         return 0
-
 
 def make_co_list(energies, eigenstates):
     Nmax = len(eigenstates)
@@ -241,21 +237,20 @@ me_global_res = mesolve(
 )
 ```
 
+It is interesting to note that the long-time evolution leads to a state that is close to the coupled ground state of the two qubit system:
+
 ```python
 grnd_state = all_state[0] @ all_state[0].dag()
 fidelity = fidelity(me_global_res.states[-1], grnd_state)
 print(f"Fidelity with ground-state: {fidelity:.6f}")
 ```
 
-It is interesting to note that the long-time evolution leads to a state that is close to the coupled ground state of the two qubit system.
-
-
 ### Solver comparison
 
 In the following, we compare the results of the local and dressed (global) Lindblad simulations from above with the Bloch-Redfield solver.
 The Bloch-Redfield solver is explained in more detail in other tutorials, but we use it here to solve the weak-coupling master equation from a given bath power spectrum.
 For small coupling strengths, the results from the local and global master equations both agree with the Bloch-Redfield solver.
-However, this changes when considering stronger couplings where the local master equation deviates from both the global as well as the Bloch-Redfield approach.
+However, this changes when considering stronger couplings where the local master equation deviates from the result of the global and the Bloch-Redfield approach.
 
 ```python
 # weak coupling
@@ -359,12 +354,12 @@ plt.legend()
 plt.show()
 ```
 
-<!-- #region -->
 ## Part 2: Time-Dependent Systems
 
-
-Finally, we compare the results with another `mesolve` considering the rotating-wave approximation, the Bloch-Redfield solver and the HEOMSolver.
-<!-- #endregion -->
+Finally, we consider another example: a driven system, where the Hamiltonian is time-dependent.
+It is assumed to have the form
+$$ H = \frac{\Delta}{2} \sigma_z + \frac{A}{2} \sin (\omega_d t) \sigma_x . $$
+We solve this problem with a direct `mesolve()` simulation, with a time-independent simulation in the rotating-wave approximation (see the QuTiP v5 paper for details), with the Bloch-Redfield solver and with the HEOMSolver.
 
 ```python
 # Hamiltonian parameters
@@ -425,7 +420,6 @@ def nth(w):
         return 1 / (np.exp(w / temp) - 1)
     else:
         return 0
-
 
 # Power spectrum
 def power_spectrum(w):
