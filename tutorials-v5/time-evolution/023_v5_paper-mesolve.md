@@ -5,16 +5,16 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.16.4
+      jupytext_version: 1.13.8
   kernelspec:
-    display_name: Python 3 (ipykernel)
+    display_name: qutip-tutorials-v5
     language: python
     name: python3
 ---
 
 # QuTiPv5 Paper Example: `sesolve` and `mesolve` and the new solver class
 
-Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com), Neill Lambert (nwlambert@gmail.com)
+Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com), Neill Lambert (nwlambert@gmail.com), Paul Menczel (paul@menczel.net)
 
 In QuTiP, the `Qobj` and `QobjEvo` classes form the very heart of almost all calculations that can be performed.
 With these classes, open quantum systems with various interactions and structures can be simulated by using the wide variety of solvers provided.
@@ -34,10 +34,9 @@ In this notebook we will consider several examples illustrating the usage of the
 ```python
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import (QobjEvo, SESolver, UnderDampedEnvironment,
-                   about, basis, brmesolve, fidelity, mesolve,
-                   qeye, sigmam, sigmax, sigmaz, spost, spre, sprepost)
-
+from qutip import (QobjEvo, SESolver, UnderDampedEnvironment, about, basis,
+                   brmesolve, fidelity, mesolve, qeye, sigmam, sigmax, sigmaz,
+                   spost, spre, sprepost)
 from qutip.solver.heom import HEOMSolver
 
 %matplotlib inline
@@ -48,7 +47,7 @@ from qutip.solver.heom import HEOMSolver
 In our first example, we want to look at two interacting qubits that are (for now) decoupled from an environment.
 Such a system is described by the Hamiltonian
 
-$H = \dfrac{\epsilon_1}{2} \sigma_z^{(1)} + \dfrac{\epsilon_2}{2} \sigma_z^{(2)} + g \sigma_{x}^{(1)} \sigma_{x}^{(2)}$.
+$$H = \dfrac{\epsilon_1}{2} \sigma_z^{(1)} + \dfrac{\epsilon_2}{2} \sigma_z^{(2)} + g \sigma_{x}^{(1)} \sigma_{x}^{(2)}.$$
 
 The Pauli matrices $\sigma_z^{(1/2)}$ describe the respective two-level system of the qubits.
 The qubits are coupled via $\sigma_{x}^{(1/2)}$ and their interaction strength is given by $g$.
@@ -70,7 +69,8 @@ print(H)
 
 The dynamics of such a system is described by the Schrödinger equation
 
-$i \hbar \dfrac{d}{dt} \ket{\psi} = H \ket{\psi}$.
+$$i \hbar \dfrac{d}{dt} \ket{\psi} = H \ket{\psi}.$$
+
 Therefore, we can use `SESolver` to calculate the dynamics.
 
 ```python
@@ -181,24 +181,24 @@ One example for this is when the qubits interact more strongly with each other t
 One then arrives at the *global* master equation under the standard Born-Markox approximation.
 Although the collapse operators still act like annihilation and creation operators here, they now act on the total coupled eigenstates of the interacting two-qubit system
 
-$A_{ij} = \ket{\psi_i}\bra{\psi_i}$
+$$A_{ij} = \ket{\psi_i}\bra{\psi_i}$$
 
 with rates
 
-$\gamma_{ij} = | \bra{\psi_i} d \ket{\psi_j} |^2 S(\Delta_{ij})$.
+$$\gamma_{ij} = | \bra{\psi_i} d \ket{\psi_j} |^2 S(\Delta_{ij}).$$
 
 The $\ket{\psi_i}$ are the eigenstates of $H$ and $\Delta_{ij} = E_j - E_i$ are the differences of eigenenergies.
 $d$ is the coupling operator of the system to the environment.
 We use the power spectrum
 
-$S(\omega) = 2 J(\omega) [n_{th} (\omega) + 1] \theta(\omega) + 2J(-\omega)[n_{th}(-\omega)]\theta(-\omega)$
+$$S(\omega) = 2 J(\omega) [n_{th} (\omega) + 1] \theta(\omega) + 2J(-\omega)[n_{th}(-\omega)]\theta(-\omega)$$
 
 which depends on details of the environment such as its spectral density $J(\omega)$ and, through the Bose-Einstein distribution $n_{th} (\omega)$, its temperature.
 $\theta$ denotes the Heaviside function.
 
 By assuming spectral density to be flat, $J(\omega) = \gamma / 2$, and considering zero temperature, we can write
 
-$S(\omega) = \gamma \theta(\omega)$.
+$$S(\omega) = \gamma \theta(\omega).$$
 
 For this example, we manually implement this zero temperature environment for our two-qubit system using `mesolve()`.
 
@@ -208,6 +208,7 @@ def power_spectrum(w):
         return gam
     else:
         return 0
+
 
 def make_co_list(energies, eigenstates):
     Nmax = len(eigenstates)
@@ -357,10 +358,12 @@ plt.show()
 
 ## Part 2: Time-Dependent Systems
 
-Finally, we consider another example: a driven system, where the Hamiltonian is time-dependent.
-It is assumed to have the form
-$$ H = \frac{\Delta}{2} \sigma_z + \frac{A}{2} \sin (\omega_d t) \sigma_x . $$
-We solve this problem with a direct `mesolve()` simulation, with a time-independent simulation in the rotating-wave approximation (see the QuTiP v5 paper for details), with the Bloch-Redfield solver and with the HEOMSolver.
+Finally, we compare the results from another example, that of a driven system using, first, `mesolve()` with and without the rotating-wave approximation (RWA) for the drive, and then without RWA with the Bloch-Redfield and HEOM solvers.
+For this, we consider a Hamiltonian of the form
+
+$$ H = \frac{\Delta}{2} \sigma_z + \frac{A}{2} \sin (\omega_d t) \sigma_x , $$
+
+where $\Delta$ is the energy splitting, $A$ is the drive amplitude and $\omega_d$ is the drive's frequency.
 
 ```python
 # Hamiltonian parameters
@@ -422,6 +425,7 @@ def nth(w):
     else:
         return 0
 
+
 # Power spectrum
 def power_spectrum(w):
     if w > 0:
@@ -450,7 +454,9 @@ w0 = 5 * 2 * np.pi
 gamma_heom = 1.9 * w0
 
 lambd = np.sqrt(
-    0.5 * gamma / (gamma_heom * wsamp)
+    0.5
+    * gamma
+    / (gamma_heom * wsamp)
     * ((w0**2 - wsamp**2) ** 2 + (gamma_heom**2) * ((wsamp) ** 2))
 )
 ```
@@ -461,13 +467,19 @@ bath = UnderDampedEnvironment(lam=lambd, w0=w0, gamma=gamma_heom, T=1e-10)
 fit_times = np.linspace(0, 5, 1000)  # range for correlation function fit
 
 # Fit correlation function with exponentials
-exp_bath, fit_info = bath.approx_by_cf_fit(fit_times, Ni_max=1, Nr_max=2, target_rsme=None)
+exp_bath, fit_info = bath.approx_by_cf_fit(
+    fit_times, Ni_max=1, Nr_max=2, target_rsme=None
+)
 print(fit_info["summary"])
 ```
 
 ```python
-HEOM_corr_fit = HEOMSolver(QobjEvo(H), (exp_bath, sigmax()), max_depth=max_depth,
-                    options={'nsteps': 15000, 'rtol': 1e-12, 'atol': 1e-12})
+HEOM_corr_fit = HEOMSolver(
+    QobjEvo(H),
+    (exp_bath, sigmax()),
+    max_depth=max_depth,
+    options={"nsteps": 15000, "rtol": 1e-12, "atol": 1e-12},
+)
 results_corr_fit = HEOM_corr_fit.run(psi0 * psi0.dag(), tlist, e_ops=e_ops)
 ```
 
@@ -478,7 +490,7 @@ plt.figure()
 
 plt.plot(tlist, driv_res.expect[0], "-", label="mesolve (time-dep)")
 plt.plot(tlist, driv_RWA_res.expect[0], "-.", label="mesolve (rwa)")
-plt.plot(tlist, np.real(results_corr_fit.expect[0]), '--', label=r'heomsolve')
+plt.plot(tlist, np.real(results_corr_fit.expect[0]), "--", label=r"heomsolve")
 plt.plot(tlist, driv_br_res.expect[0], ":", linewidth=3, label="brmesolve")
 
 plt.xlabel(r"$t\, /\, \Delta^{-1}$")
@@ -492,9 +504,10 @@ plt.show()
 To show where usage of these local-basis collapse operators can lead to errors, we look at a single qubit system.
 This time however, the energies of the qubit are adiabatically switched between positive and negative values.
 
-$H = \dfrac{\Delta}{2} \sin{(\omega_d t)} \sigma_z$.
+$$H = \dfrac{\Delta}{2} \sin{(\omega_d t)} \sigma_z.$$
 
 If the drive is slow enough, we expect the bath to respond to this change and transitions from higher to lower energy levels should be induced.
+These changes in system energy thus have to be taken into account so that `mesolve()` still produces a correct result.
 
 ```python
 # Hamiltonian
@@ -518,8 +531,12 @@ adi_me_res = mesolve(H_adi, psi0, tlist, c_ops=c_ops_me, e_ops=e_ops)
 
 ```python
 # HEOM
-HEOM_corr_fit = HEOMSolver(QobjEvo(H_adi), (exp_bath, sigmax()), max_depth=max_depth,
-                           options={"nsteps": 15000, "rtol": 1e-12, "atol": 1e-12})
+HEOM_corr_fit = HEOMSolver(
+    QobjEvo(H_adi),
+    (exp_bath, sigmax()),
+    max_depth=max_depth,
+    options={"nsteps": 15000, "rtol": 1e-12, "atol": 1e-12},
+)
 results_corr_fit = HEOM_corr_fit.run(psi0 * psi0.dag(), tlist, e_ops=e_ops)
 ```
 
@@ -536,10 +553,9 @@ brme_result = brmesolve(H_adi, psi0, tlist, a_ops=a_ops_non_flat, e_ops=e_ops)
 
 ```python
 plt.plot(tlist, adi_me_res.expect[0], "-", label="mesolve")
-plt.plot(tlist, np.real(results_corr_fit.expect[0]), '--', label=r'heomsolve')
-plt.plot(tlist, brme_result.expect[0], ":", linewidth=6,
-                                          label="brmesolve non-flat")
-plt.plot(tlist, brme_result2.expect[0], ":", linewidth=6, label="brmesolve")
+plt.plot(tlist, np.real(results_corr_fit.expect[0]), "--", label=r"heom")
+plt.plot(tlist, brme_result.expect[0], ":", linewidth=6, label="br non-flat")
+plt.plot(tlist, brme_result2.expect[0], ":", linewidth=6, label="br")
 
 plt.xlabel(r"$t\, /\, \Delta^{-1}$", fontsize=18)
 plt.ylabel(r"$\langle \sigma_z \rangle$", fontsize=18)
