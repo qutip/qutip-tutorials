@@ -418,7 +418,7 @@ From QuTiP 4.4 on, user defined gates can be defined by a python function that t
 ```python
 def user_gate1(arg_value):
     # controlled rotation X
-    mat = np.zeros((4, 4), dtype=np.complex)
+    mat = np.zeros((4, 4), dtype=complex)
     mat[0, 0] = mat[1, 1] = 1.0
     mat[2:4, 2:4] = rx(arg_value)
     return Qobj(mat, dims=[[2, 2], [2, 2]])
