@@ -7,7 +7,7 @@ jupyter:
       format_version: '1.3'
       jupytext_version: 1.13.8
   kernelspec:
-    display_name: qutip-tutorials-v5
+    display_name: Python 3 (ipykernel)
     language: python
     name: python3
 ---
@@ -19,9 +19,9 @@ Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com), Rochis
 For many years now, GPUs have been a fundamental tool for accelerating numerical tasks.
 Today, many libraries enable off-the-shelf methods to leverage GPUs' potential to speed up costly calculations.
 QuTiP’s flexible data layer can directly be used with many such libraries and thereby drastically reduce computation time.
-Despite a big variety of frameworks, in connection to QuTiP, development has centered on the QuTiP-JAX integration [\[1\]] due to JAX's robust auto-differentiation features and widespread adoption in machine learning.
+Despite a big variety of frameworks, in connection to QuTiP, development has centered on the QuTiP-JAX integration [\[1\]](#References) due to JAX's robust auto-differentiation features and widespread adoption in machine learning.
 
-In these examples we illustrate how JAX naturally integrates into QuTiP v5 [\[2\]] using the QuTiP-JAX package.
+In these examples we illustrate how JAX naturally integrates into QuTiP v5 [\[2\]](#References) using the QuTiP-JAX package.
 As a simple first example, we look at a one-dimensional spin chain and how we might employ `mesolve()` and JAX to solve the related master equation.
 In the second part, we focus on the auto-differentiation capabilities.
 For this we first consider the counting statistics of an open quantum system connected to an environment.
@@ -74,7 +74,7 @@ To revert this setting, we can set the function parameter `revert = True`.
 Before diving into the example, it is worth noting here that GPU acceleration depends heavily on the type of problem.
 GPUs are good at parallelizing many small matrix-vector operations, such as integrating small systems across multiple parameters or simulating quantum circuits with repeated small matrix operations.
 For a single ODE involving large matrices, the advantages are less straightforward since ODE solvers are inherently sequential.
-However, as it is illustrated in the [QuTiPv5 paper](#References), there is a cross-over point at which using JAX is beneficial.
+However, as it is illustrated in the QuTiP v5 paper [\[2\]](#References), there is a cross-over point at which using JAX is beneficial.
 
 ### 1D Ising Spin Chain
 
@@ -161,7 +161,7 @@ Auto-differentiation, on the other hand, exploits the chain rule to compute such
 The idea is that any numerical function can be expressed by elementary analytical functions and operations.
 Consequently, using the chain rule, the derivatives of almost any higher-level function become accessible.
 
-Although there are many applications for this technique, in chapter we want to focus two examples where auto-differentiation becomes relevant.
+Although there are many applications for this technique, in this chapter we want to focus on two examples where auto-differentiation becomes relevant.
 
 ### Statistics of Excitations between Quantum System and Environment
 
@@ -310,7 +310,7 @@ grad_f = grad(f)(2.0)
 
 [1] [QuTiP-JAX](https://github.com/qutip/qutip-jax)
 
-[2] [QuTiP v5: The Quantum Toolbox in Python](about:blank)
+[2] [QuTiP v5: The Quantum Toolbox in Python](https://arxiv.org/abs/2412.04705)
 
 
 ## About
