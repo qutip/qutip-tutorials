@@ -7,7 +7,7 @@ jupyter:
       format_version: '1.3'
       jupytext_version: 1.13.8
   kernelspec:
-    display_name: qutip-tutorials-v5
+    display_name: Python 3 (ipykernel)
     language: python
     name: python3
 ---
@@ -21,7 +21,7 @@ With these classes, open quantum systems with various interactions and structure
 Most of the time, these solvers are given an initial state, a Hamiltonian and an environment that is often described using rates or coupling strengths.
 QuTiP then uses numerical integration to determine the time evolution of the system.
 
-QuTiP v5 introduces a unified interface for interacting with these solvers.
+QuTiP v5 [\[1\]](#references) introduces a unified interface for interacting with these solvers.
 This new interface is class-based, allowing users to instantiate a solver object for a specific problem.
 This can be useful when the same Hamiltonian data is reused with different initial conditions, time steps or other options.
 A noticable speed-up can thus be achieved if solvers are reused multiple times.
@@ -565,7 +565,7 @@ plt.show()
 
 ## References
 
-[QuTiP 5: The Quantum Toolbox in Python](about:blank)
+\[1\] [QuTiP 5: The Quantum Toolbox in Python](https://arxiv.org/abs/2412.04705)
 
 
 ## About
