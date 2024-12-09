@@ -5,9 +5,9 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.16.4
+      jupytext_version: 1.13.8
   kernelspec:
-    display_name: Python 3 (ipykernel)
+    display_name: qutip-tutorials-v5
     language: python
     name: python3
 ---
@@ -56,10 +56,10 @@ This condition is automatically taken care of by QuTiP's `nm_mcsolve()` function
 ```python
 import matplotlib.pyplot as plt
 import numpy as np
-import qutip as qt
-from qutip import (about, basis, brmesolve, expect, lindblad_dissipator,
-                   liouvillian, mesolve, nm_mcsolve, qeye, sigmam, sigmap,
-                   sigmax, sigmay, sigmaz)
+from qutip import (ExponentialBosonicEnvironment, about, basis, brmesolve,
+                   expect, heom, ket2dm, lindblad_dissipator, liouvillian,
+                   mesolve, nm_mcsolve, qeye, sigmam, sigmap, sigmax, sigmay,
+                   sigmaz)
 from scipy.interpolate import CubicSpline
 from scipy.optimize import root_scalar
 ```
@@ -106,13 +106,17 @@ deltaSq = deltaR**2 + deltaI**2
 # calculate gamma and A
 def prefac(t):
     return (
-        2 * gamma0 * lamb / (
+        2
+        * gamma0
+        * lamb
+        / (
             (lamb**2 + Delta**2 - deltaSq) * np.cos(deltaI * t)
             - (lamb**2 + Delta**2 + deltaSq) * np.cosh(deltaR * t)
             - 2 * (Delta * deltaR + lamb * deltaI) * np.sin(deltaI * t)
             + 2 * (Delta * deltaI - lamb * deltaR) * np.sinh(deltaR * t)
         )
     )
+
 
 def cgamma(t):
     return prefac(t) * (
@@ -121,6 +125,7 @@ def cgamma(t):
         - deltaI * np.sin(deltaI * t)
         - deltaR * np.sinh(deltaR * t)
     )
+
 
 def cA(t):
     return prefac(t) * (
@@ -180,8 +185,9 @@ Here, we chose $\omega_0 \gg \Delta$ to ensure validity of the rotating wave app
 omega_c = 100
 omega_0 = omega_c + Delta
 
-H = omega_0 * qt.sigmap() * qt.sigmam()
-Q = qt.sigmap() + qt.sigmam()
+H = omega_0 * sigmap() * sigmam()
+Q = sigmap() + sigmam()
+
 
 def power_spectrum(w):
     return gamma0 * lamb**2 / ((omega_c - w) ** 2 + lamb**2)
@@ -197,8 +203,8 @@ vk_imag = vk_real
 ```
 
 ```python
-heom_env = qt.ExponentialBosonicEnvironment(ck_real, vk_real, ck_imag, vk_imag)
-heom_sol = qt.heom.heomsolve(H, (heom_env, Q), 10, qt.ket2dm(initial_state), tlist)
+heom_env = ExponentialBosonicEnvironment(ck_real, vk_real, ck_imag, vk_imag)
+heom_sol = heom.heomsolve(H, (heom_env, Q), 10, ket2dm(initial_state), tlist)
 ```
 
 Secondly, for the Bloch-Redfield solver we can directly use the power spectrum as input:
@@ -351,6 +357,8 @@ Its deviation from unity tells us how well the simulation has converged.
 \[3\] [Donvil and Muratore-Ginanneschi. *Open Systems & Information Dynamics*.](https://www.worldscientific.com/worldscinet/osid)
 
 \[4\] [Breuer and Petruccione *The Theory of Open Quantum Systems*.](https://doi.org/10.1093/acprof:oso/9780199213900.001.0001)
+
+\[5\] [QuTiP 5: The Quantum Toolbox in Python](https://arxiv.org/abs/2412.04705)
 
 
 
