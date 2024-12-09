@@ -17,7 +17,7 @@ jupyter:
 Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com), Boxi Li (etamin1201@gmail.com), Neill Lambert (nwlambert@gmail.com)
 
 Quantum circuits serve as a standard framework for representing and manipulating quantum algorithms visually and conceptually.
-As a member of the QuTiP family, the QuTiP-QIP package add this framework and enables several distinctive capabilities.
+As a member of the QuTiP family, the QuTiP-QIP [\[1\]](#References) package add this framework and enables several distinctive capabilities.
 It allows seamless incorporation of circuit-representing unitaries into QuTiP's ecosystem using the `Qobj` class.
 Moreover, it links QuTiP-QOC and the open-system solvers, enabling pulse-level simulations of circuits with realistic noise effects.
 
@@ -352,6 +352,8 @@ plt.show()
 \[2\] [Ding, et. al, PRX Quantum (2024)](https://doi.org/10.1103/PRXQuantum.5.020332)
 
 \[3\] [Cleve and Lang, ICALP (2017)](https://doi.org/10.48550/arXiv.1612.09512)
+
+\[4\] [QuTiP 5: The Quantum Toolbox in Python](https://arxiv.org/abs/2412.04705)
 
 
 ## About
