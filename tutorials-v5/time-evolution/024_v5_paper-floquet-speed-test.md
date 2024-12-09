@@ -326,6 +326,8 @@ plt.show()
 
 [2] [Shirley, Phys.Rev. (1965)](https://link.aps.org/doi/10.1103/PhysRev.138.B979)
 
+[3] [QuTiP 5: The Quantum Toolbox in Python](https://arxiv.org/abs/2412.04705)
+
 
 ## About
 
