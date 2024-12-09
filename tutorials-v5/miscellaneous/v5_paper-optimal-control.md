@@ -7,7 +7,7 @@ jupyter:
       format_version: '1.3'
       jupytext_version: 1.13.8
   kernelspec:
-    display_name: Python 3
+    display_name: Python 3 (ipykernel)
     language: python
     name: python3
 ---
@@ -291,7 +291,7 @@ print(res_jopt.total_seconds, " seconds")
 
 ## References
 
-[1] [QuTiP v5: The Quantum Toolbox in Python](about:blank)
+[1] [QuTiP 5: The Quantum Toolbox in Python](https://arxiv.org/abs/2412.04705)
 
 [2] [QuTiP-QOC Repository](https://github.com/qutip/qutip-qoc)
 
