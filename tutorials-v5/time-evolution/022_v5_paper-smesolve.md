@@ -119,6 +119,11 @@ plt.xlabel(r"$t \cdot \kappa$")
 plt.show()
 ```
 
+## References
+
+[1] [QuTiP 5: The Quantum Toolbox in Python](https://arxiv.org/abs/2412.04705)
+
+
 ## About
 
 ```python
