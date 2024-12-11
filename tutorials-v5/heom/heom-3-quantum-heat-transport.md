@@ -5,9 +5,9 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.16.4
 kernelspec:
-  display_name: Python 3 (ipykernel)
+  display_name: qutip-dev
   language: python
   name: python3
 ---
@@ -58,9 +58,13 @@ import matplotlib.pyplot as plt
 
 import qutip as qt
 from qutip.solver.heom import (
-    DrudeLorentzPadeBath,
-    BathExponent,
     HEOMSolver,
+    DrudeLorentzPadeBath
+)
+from qutip.core.environment import (
+    CFExponent,
+    DrudeLorentzEnvironment,
+    system_terminator,
 )
 
 from ipywidgets import IntProgress
@@ -143,9 +147,11 @@ class BathParams:
         return qt.tensor(Q)
 
     def bath(self, Nk, tag=None):
-        return DrudeLorentzPadeBath(
-            self.Q(), self.lam, self.gamma, self.T, Nk, tag=tag
+        env=DrudeLorentzEnvironment(
+            lam=self.lam, gamma=self.gamma, T=self.T, tag=tag
         )
+        env_approx,delta=env.approx_by_pade(Nk=Nk,compute_delta=True,tag=tag)
+        return (env_approx,self.Q()),system_terminator(self.Q(),delta),delta
 
     def replace(self, **kw):
         return dataclasses.replace(self, **kw)
@@ -201,9 +207,9 @@ def bath_heat_current(bath_tag, ado_state, hamiltonian, coupling_op, delta=0):
         [exp] = ado_state.exps(label)
         result += exp.vk * (coupling_op * ado_state.extract(label)).tr()
 
-        if exp.type == BathExponent.types['I']:
+        if exp.type == CFExponent.types['I']:
             cI0 += exp.ck
-        elif exp.type == BathExponent.types['RI']:
+        elif exp.type == CFExponent.types['RI']:
             cI0 += exp.ck2
 
     result -= 2 * cI0 * (coupling_op * coupling_op * ado_state.rho).tr()
@@ -290,14 +296,13 @@ tlist = np.linspace(0, 50, 250)
 ```{code-cell} ipython3
 H = sys.H()
 
-bath1 = bath_p1.bath(Nk, tag='bath 1')
+bath1,b1term,b1delta = bath_p1.bath(Nk, tag='bath 1')
 Q1 = bath_p1.Q()
 
-bath2 = bath_p2.bath(Nk, tag='bath 2')
+bath2,b2term,b2delta = bath_p2.bath(Nk, tag='bath 2')
 Q2 = bath_p2.Q()
 
-b1delta, b1term = bath1.terminator()
-b2delta, b2term = bath2.terminator()
+
 solver = HEOMSolver(
     qt.liouvillian(H) + b1term + b2term,
     [bath1, bath2],
@@ -382,14 +387,12 @@ def heat_currents(sys, bath_p1, bath_p2, Nk, NC, options):
     """ Calculate the steady sate heat currents for the given system and
         bath.
     """
-    bath1 = bath_p1.bath(Nk, tag="bath 1")
+
+    bath1,b1term,b1delta = bath_p1.bath(Nk, tag='bath 1')
     Q1 = bath_p1.Q()
 
-    bath2 = bath_p2.bath(Nk, tag="bath 2")
+    bath2,b2term,b2delta = bath_p2.bath(Nk, tag='bath 2')
     Q2 = bath_p2.Q()
-
-    b1delta, b1term = bath1.terminator()
-    b2delta, b2term = bath2.terminator()
 
     solver = HEOMSolver(
         qt.liouvillian(sys.H()) + b1term + b2term,
