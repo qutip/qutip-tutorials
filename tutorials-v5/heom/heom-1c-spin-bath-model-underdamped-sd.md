@@ -5,9 +5,9 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.16.4
 kernelspec:
-  display_name: Python 3 (ipykernel)
+  display_name: qutip-dev
   language: python
   name: python3
 ---
@@ -96,8 +96,10 @@ from qutip import (
 )
 from qutip.solver.heom import (
     HEOMSolver,
-    BosonicBath,
-    UnderDampedBath,
+)
+from qutip.core.environment import (
+    UnderDampedEnvironment,
+    ExponentialBosonicEnvironment
 )
 
 %matplotlib inline
@@ -388,8 +390,8 @@ Below we create the bath and solver and then solve for the dynamics by calling `
 
 ```{code-cell} ipython3
 with timer("RHS construction time"):
-    bath = BosonicBath(Q, ckAR, vkAR, ckAI, vkAI)
-    HEOMMats = HEOMSolver(Hsys, bath, NC, options=options)
+    bath = ExponentialBosonicEnvironment(ckAR, vkAR, ckAI, vkAI)
+    HEOMMats = HEOMSolver(Hsys, (bath,Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultMats = HEOMMats.run(rho0, tlist)
@@ -403,8 +405,8 @@ plot_result_expectations([
 ```
 
 In practice, one would not perform this laborious expansion for the underdamped correlation function, because
-QuTiP already has a class, `UnderDampedBath`, that can construct this bath for you. Nevertheless, knowing how
-to perform this expansion will allow you to construct your own baths for other spectral densities.
+QuTiP already has a class, `UnderDampedEnvironment`, that can construct this bath for you. Nevertheless, knowing how
+to perform this expansion is an useful skill.
 
 Below we show how to use this built-in functionality:
 
@@ -412,8 +414,9 @@ Below we show how to use this built-in functionality:
 # Compare to built-in under-damped bath:
 
 with timer("RHS construction time"):
-    bath = UnderDampedBath(Q, lam=lam, gamma=gamma, w0=w0, T=T, Nk=Nk)
-    HEOM_udbath = HEOMSolver(Hsys, bath, NC, options=options)
+    bath = UnderDampedEnvironment(lam=lam, gamma=gamma, w0=w0, T=T)
+    bath_approx=bath.approx_by_matsubara(Nk=Nk)
+    HEOM_udbath = HEOMSolver(Hsys, (bath_approx,Q), NC, options=options)
 
 with timer("ODE solver time"):
     result_udbath = HEOM_udbath.run(rho0, tlist)
@@ -421,9 +424,38 @@ with timer("ODE solver time"):
 
 ```{code-cell} ipython3
 plot_result_expectations([
-    (result_udbath, P11p, 'b', "P11 (UnderDampedBath)"),
-    (result_udbath, P12p, 'r', "P12 (UnderDampedBath)"),
+    (result_udbath, P11p, 'b', "P11 (UnderDampedEnvironment)"),
+    (result_udbath, P12p, 'r', "P12 (UnderDampedEnvironment)"),
+    (resultMats, P11p, 'r--', "P11 Mats"),
+    (resultMats, P12p, 'b--', "P12 Mats"),
 ]);
+```
+
+The `UnderDampedEnvironment` class also allows us to easily evaluate analytical expressions for the power spectrum, correlation function, and spectral density. In the following plots, the solid lines are the exact expressions, and the dashed lines are based on our approximation of the correlation function with a finite number of exponents. In this case, there is an excellent agreement.
+
+```{code-cell} ipython3
+w = np.linspace(-3, 3, 1000)
+w2 = np.linspace(0, 3, 1000)
+t = np.linspace(0, 10, 1000)
+bath_cf = bath.correlation_function(t)  # uses numerical integration
+
+fig, axs = plt.subplots(2, 2)
+
+axs[0, 0].plot(w, bath.power_spectrum(w))
+axs[0, 0].plot(w, bath_approx.power_spectrum(w), '--')
+axs[0, 0].set(xlabel=r'$\omega$', ylabel=r'$S(\omega)$')
+axs[0, 1].plot(w2, bath.spectral_density(w2))
+axs[0, 1].plot(w2, bath_approx.spectral_density(w2), '--')
+axs[0, 1].set(xlabel=r'$\omega$', ylabel=r'$J(\omega)$')
+axs[1, 0].plot(t, np.real(bath_cf))
+axs[1, 0].plot(t, np.real(bath_approx.correlation_function(t)), '--')
+axs[1, 0].set(xlabel=r'$t$', ylabel=r'$C_{R}(t)$')
+axs[1, 1].plot(t, np.imag(bath_cf))
+axs[1, 1].plot(t, np.imag(bath_approx.correlation_function(t)), '--')
+axs[1, 1].set(xlabel=r'$t$', ylabel=r'$C_{I}(t)$')
+
+fig.tight_layout()
+plt.show()
 ```
 
 ## Compare the results
@@ -433,17 +465,10 @@ plot_result_expectations([
 ### We can compare these results to those of the Bloch-Redfield solver in QuTiP:
 
 ```{code-cell} ipython3
-UD = (
-    f"2 * {lam}**2 * {gamma} / ( {w0}**4 * {beta}) if (w==0)"
-    " else "
-    f"2 * ({lam}**2 * {gamma} * w / (({w0}**2 - w**2)**2 + {gamma}**2 * w**2))"
-    f" * ((1 / (exp(w * {beta}) - 1)) + 1)"
-)
-
 with timer("ODE solver time"):
     resultBR = brmesolve(
         Hsys, rho0, tlist,
-        a_ops=[[sigmaz(), UD]], options=options,
+        a_ops=[[sigmaz(), bath]], options=options,
     )
 ```
 
