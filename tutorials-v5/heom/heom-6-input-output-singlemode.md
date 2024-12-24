@@ -37,11 +37,11 @@ from qutip.solver.heom import (BathExponent, BosonicBath, HEOMSolver,
 
 <!-- #region -->
 ## SHO Bath
-To be precise, our system is a single qubit coupled to a bath whose spectral density is the (unphysical) lorentzian
+To be precise, our system is a single qubit coupled to a bath whose power spectrum is the Lorentzian
 
-$J(\omega) = \frac{\lambda^2}{(\omega^2-\omega_0^2) + \Gamma^2}$
+$S(\omega) = \frac{2\lambda^2 \Gamma}{(\omega-\omega_0)^2 + \Gamma^2}$
 
-This is unphysical from the continuum bath perspective as it has support on negative frequencies. Nevertheless, the standard HEOM derivation applies, and is known to then reproduce the physics of the locally-damped Rabi model.
+This is potentially unphysical from the continuum bath perspective as it either corresponds to a bath with a spectral density that has support on negative frequencies, or one with a frequency dependent temperature. Nevertheless, the standard HEOM derivation applies, and is known to then reproduce the physics of the locally-damped Rabi model.
 
 
 The two-time correlation functions of this bath, at zero-temperature, are
