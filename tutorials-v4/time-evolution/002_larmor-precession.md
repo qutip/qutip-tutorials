@@ -21,7 +21,7 @@ Author: C. Staufenbiel, 2022
 This notebook guides you through the process of setting up a Schrödinger
 equation in QuTiP and using the corresponding solver to obtain the time
 evolution. We will investigate the example of the Larmor precession to
-explore the functionality of [`qutip.sesolve()`](https://qutip.readthedocs.io/en/latest/apidoc/functions.html?highlight=sesolve#module-qutip.sesolve).
+explore the functionality of [`qutip.sesolve()`](https://qutip.readthedocs.io/en/latest/apidoc/solver.html#module-qutip.solver.sesolve).
 
 You can also find more on time evolutions with QuTiP [here](https://qutip.readthedocs.io/en/latest/guide/guide-dynamics.html).
 
@@ -85,7 +85,7 @@ b.show()
 
 ## Simulation with varying magnetic field
 
-Above we passed a constant Hamiltonian to `sesolve`. In QuTiP these constant operators are represented by `Qobj`. However, `sesolve` can also take time-dependent operators as an argument, which are represented by [`QobjEvo`](https://qutip.readthedocs.io/en/latest/apidoc/classes.html?highlight=qobjevo#qutip.QobjEvo) in QuTiP. In this section we define the magnetic field with a linear and a periodic field strength, and observe the changes in the expecation value of $\sigma_y$.
+Above we passed a constant Hamiltonian to `sesolve`. In QuTiP these constant operators are represented by `Qobj`. However, `sesolve` can also take time-dependent operators as an argument, which are represented by [`QobjEvo`](https://qutip.readthedocs.io/en/latest/apidoc/time_dep.html#qutip.core.cy.qobjevo.QobjEvo) in QuTiP. In this section we define the magnetic field with a linear and a periodic field strength, and observe the changes in the expecation value of $\sigma_y$.
 You can find more information on `QobjEvo` in [this notebook](https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/qobjevo.ipynb).
 
 We start by defining two functions for the field strength of the magnetic field. To be passed on to `QobjEvo` the functions need two arguments: the times and optional arguments.
