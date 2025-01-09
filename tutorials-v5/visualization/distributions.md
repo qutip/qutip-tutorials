@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# Using distributions in qutip
+# Using qutip.distributions
 
 Author: Mathis Beaudoin (2025)
 
@@ -46,7 +46,7 @@ wigner = WignerDistribution(rho, extent=[[-10, 10], [-10, 10]], steps=300)
 wigner.visualize()
 ```
 
-It is also possible to calculate the marginal and projection distribution along a given dimension. These methods are available for the other distributions below.
+It is also possible to calculate the marginal and projection distribution along a given dimension. These methods are available for the other distributions below as well.
 
 ```python
 alpha = 2.0
@@ -86,7 +86,7 @@ psi = (tensor(coherent(N, alpha), basis(N, 0)) + tensor(basis(N, 0), coherent(N,
 rho = (ket2dm(tensor(coherent(N, alpha), basis(N, 0))) + ket2dm(tensor(basis(N, 0), coherent(N, -alpha)))).unit() 
 ```
 
-In this case, use the `TwoModeQuadratureCorrelation` class.
+In this case, we use the `TwoModeQuadratureCorrelation` class.
 
 ```python
 two_mode_psi = TwoModeQuadratureCorrelation(psi)
