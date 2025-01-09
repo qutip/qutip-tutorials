@@ -112,7 +112,7 @@ for n in range(M):
 
 ### Harmonic Oscillator Probability Function
 
-The class `HarmonicOscillatorProbabilityFunction` is equivalent to the class `HarmonicOscillatorWaveFunction` but in the case where we work with a density matrix. A ket can be given and it will automatically be transformed into a density matrix. We use the same example as before.
+The class `HarmonicOscillatorProbabilityFunction` is the squared magnitude of the data that would normally be in `HarmonicOscillatorWaveFunction`. We use the same example as before.
 
 ```python
 M=8
