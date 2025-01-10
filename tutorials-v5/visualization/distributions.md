@@ -32,8 +32,6 @@ Here, we display the spatial distribution of the wave function for the harmonic 
 
 Optionally, define a range of values for each coordinate with the parameter called `extent`. Also, define a number of data points inside the given range with the optional parameter called `steps`. From this information, the distribution is generated and can be visualized with the `.visualize()` method.
 
-It is also possible to calculate, along a given axis, the marginal distribution with `.marginal()` or the projection distribution with `.project()`.
-
 ```python
 M=8
 N=20
