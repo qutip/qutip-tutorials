@@ -22,7 +22,8 @@ This notebook shows how to use probability distributions inside QuTiP. We begin 
 
 ```python
 from qutip import fock
-from qutip.distributions import HarmonicOscillatorWaveFunction, HarmonicOscillatorProbabilityFunction
+from qutip.distributions import HarmonicOscillatorWaveFunction
+from qutip.distributions import HarmonicOscillatorProbabilityFunction
 import matplotlib.pyplot as plt
 ```
 
@@ -33,8 +34,8 @@ Here, we display the spatial distribution of the wave function for the harmonic 
 Optionally, define a range of values for each coordinate with the parameter called `extent`. Also, define a number of data points inside the given range with the optional parameter called `steps`. From this information, the distribution is generated and can be visualized with the `.visualize()` method.
 
 ```python
-M=8
-N=20
+M = 8
+N = 20
 
 fig, ax = plt.subplots(M, 1, figsize=(10, 12), sharex=True)
 
@@ -49,8 +50,8 @@ for n in range(M):
 The class `HarmonicOscillatorProbabilityFunction()` is the squared magnitude of the data that would normally be in `HarmonicOscillatorWaveFunction()`. We use the same example as before.
 
 ```python
-M=8
-N=20
+M = 8
+N = 20
 
 fig, ax = plt.subplots(M, 1, figsize=(10, 12), sharex=True)
 
@@ -63,5 +64,5 @@ for n in range(M):
 ### About
 
 ```python
-qutip.about()
+about()
 ```
