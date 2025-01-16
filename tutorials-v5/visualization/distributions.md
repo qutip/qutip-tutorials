@@ -21,7 +21,7 @@ Author: Mathis Beaudoin (2025)
 This notebook shows how to use probability distributions inside QuTiP. We begin by importing the necessary packages.
 
 ```python
-from qutip import fock
+from qutip import fock, about
 from qutip.distributions import HarmonicOscillatorWaveFunction
 from qutip.distributions import HarmonicOscillatorProbabilityFunction
 import matplotlib.pyplot as plt
