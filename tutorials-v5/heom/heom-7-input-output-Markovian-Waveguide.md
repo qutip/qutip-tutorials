@@ -39,7 +39,7 @@ from functools import partial
 
 import matplotlib.animation as animation
 import numpy as np
-import qutip as qt
+import qutip as qt #redduce imports
 from IPython.display import HTML
 from matplotlib import pyplot as plt
 import qutip
@@ -221,7 +221,32 @@ options = {
     "max_step": 1e-3,
 }
 
+def omega_out(t, args): 
+            tout_p = args['tout'] + x_out / c
+            tout_m = args['tout'] - x_out / c
+            return np.sqrt(Gamma * np.abs(Deltax_out) / c) * (
+                delta_fun_approx(t, tout_p) + delta_fun_approx(t, tout_m)
+            )
+
+def fun_1_R(t, args):
+    return omega_out(t, args)
+
+def fun_2_L(t, args):
+    return omega_out(t, args)
+
+ck_out_1_R = [fun_1_R]
+ck_out_2_L = [fun_2_L]
+
+bathp = InputOutputBath(destroy(2), ck_input=ck_in_p, tag="in1")
+bathm = InputOutputBath(destroy(2).dag(), ck_input=ck_in_m, tag="in2")
+bath1 = InputOutputBath(destroy(2), ck_output_fn_R=ck_out_1_R,
+                        tag="out1")
+bath2 = InputOutputBath(destroy(2).dag(), ck_output_fn_L=ck_out_2_L,
+                        tag="out2")
 NC = 4
+args = {'tout': 1}
+HEOMMats = HEOMSolver(L0, [bathp, bathm, bath1, bath2], NC,
+                        options=options, args = args)
 
 x_out_expect = []
 
@@ -230,35 +255,9 @@ for x_out in x_out_list:
 
     for t_out in t_out_list:
 
-        tout_p = t_out + x_out / c
-        tout_m = t_out - x_out / c
-
-        def omega_out(t):
-            return np.sqrt(Gamma * np.abs(Deltax_out) / c) * (
-                delta_fun_approx(t, tout_p) + delta_fun_approx(t, tout_m)
-            )
-
-        def fun_1_R(t):
-            return omega_out(t)
-
-        def fun_2_L(t):
-            return omega_out(t)
-
-        ck_out_1_R = [fun_1_R]
-        ck_out_2_L = [fun_2_L]
-
-        bathp = InputOutputBath(destroy(2), ck_input=ck_in_p, tag="in1")
-        bathm = InputOutputBath(destroy(2).dag(), ck_input=ck_in_m, tag="in2")
-        bath1 = InputOutputBath(destroy(2), ck_output_fn_R=ck_out_1_R,
-                                tag="out1")
-        bath2 = InputOutputBath(destroy(2).dag(), ck_output_fn_L=ck_out_2_L,
-                                tag="out2")
-
-        HEOMMats = HEOMSolver(L0, [bathp, bathm, bath1, bath2], NC,
-                              options=options)
-
-        t_list = np.linspace(0, t_out, 100)
-        resultMats = HEOMMats.run(rho0, t_list)
+        t_list = np.linspace(0, t_out, 100) 
+        args = {'tout': t_out}
+        resultMats = HEOMMats.run(rho0, t_list, args=args)
         ft = cross(c, Deltax_out, sigma_in, p_in, x_in, x_out, t_out)
 
         # 00,00
@@ -400,7 +399,7 @@ plt.plot(
     expect(resultMats.states, obser),
     "r",
     alpha=1,
-    label=r"heom",
+    label=r"heom without input pulse",
 )
 plt.plot(
     [t / abs(x_in / c) for t in t_list],
@@ -413,7 +412,7 @@ plt.plot(
 # plt.plot(tlist, result_mc.runs_expect[0][7],':',label=r'mcsolve 1 run')
 
 plt.xlabel("Time (|x|/c)", fontsize=18)
-plt.ylabel(r"$\langle \sigma_z \rangle$", fontsize=18)
+plt.ylabel(r"$P_{e}$", fontsize=18)
 plt.legend()
 # plt.savefig("mcsolve.pdf")
 plt.show()
