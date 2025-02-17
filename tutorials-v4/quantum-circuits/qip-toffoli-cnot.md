@@ -5,9 +5,9 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.13.8
+      jupytext_version: 1.16.4
   kernelspec:
-    display_name: Python 3 (ipykernel)
+    display_name: qutip-dev
     language: python
     name: python3
 ---
@@ -39,7 +39,7 @@ q.add_gate("TOFFOLI", controls=[0, 2], targets=[1])
 ```
 
 ```python
-q.png
+q.draw()
 ```
 
 ```python
@@ -53,7 +53,7 @@ q2 = q.resolve_gates()
 ```
 
 ```python
-q2.png
+q2.draw()
 ```
 
 ```python
