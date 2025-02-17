@@ -21,7 +21,7 @@ Modified by: C. Staufebiel (2022)
 ### Introduction
 In this notebook we will explore the dynamics of a single-qubit interacting with an environment. The evolution of the qubit state is governed by the Master equation. We will make use of the master equation solver `qutip.mesolve` implemented in qutip, to obtain the time-evolution of the qubit for different settings.
 
-You can read more about the master equation solver (and the theory behind it) in the [QuTiP docs](https://qutip.readthedocs.io/en/latest/apidoc/functions.html?highlight=sesolve#module-qutip.sesolve).
+You can read more about the master equation solver (and the theory behind it) in the [QuTiP docs](https://qutip.readthedocs.io/en/latest/guide/dynamics/dynamics-master.html).
 
 ### Import
 Here we import the required modules for this example.
