@@ -49,7 +49,7 @@ $\displaystyle J_\pm = \sum_{i=1}^N \sigma_\pm^{(i)}$
 
 ### References
 
- * [R.H. Dicke, Phys. Rev. 93, 99–110 (1954)](http://dx.doi.org/10.1103/PhysRev.93.99)
+ * [R.H. Dicke, Phys. Rev. 93, 99–110 (1954)](https://journals.aps.org/pr/abstract/10.1103/PhysRev.93.99)
 
 
 ## Setup problem in QuTiP
@@ -198,7 +198,7 @@ fig.tight_layout()
 
 ### References
 
-* [Lambert et al., Phys. Rev. Lett. 92, 073602 (2004)](http://dx.doi.org/10.1103/PhysRevLett.92.073602).
+* [Lambert et al., Phys. Rev. Lett. 92, 073602 (2004)](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.92.073602).
 
 ```python
 def calulcate_entropy(M, N, g_vec):

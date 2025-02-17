@@ -39,7 +39,7 @@ where $E_C$ is the charge energy, $E_J$ is the Josephson energy, and $\left| n\r
 
 #### References
 
- * [J. Koch et al, Phys. Rec. A 76, 042319 (2007)](http://link.aps.org/doi/10.1103/PhysRevA.76.042319)
+ * [J. Koch et al, Phys. Rec. A 76, 042319 (2007)](https://journals.aps.org/pra/abstract/10.1103/PhysRevA.76.042319)
  * [Y.A. Pashkin et al, Quantum Inf Process 8, 55 (2009)](http://dx.doi.org/10.1007/s11128-009-0101-5)
 
 
