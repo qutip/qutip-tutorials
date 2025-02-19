@@ -5,9 +5,9 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.14.5
+      jupytext_version: 1.16.4
   kernelspec:
-    display_name: Python 3 (ipykernel)
+    display_name: qutip-dev
     language: python
     name: python3
 ---
@@ -66,7 +66,7 @@ density is given by:
     c_k = \begin{cases}
                \lambda \gamma (\cot(\beta \gamma / 2) - i) \
                & k = 0\\
-               4 \lambda \gamma \nu_k / \{(nu_k^2 - \gamma^2)\beta \} \
+               4 \lambda \gamma \nu_k / \{(\nu_k^2 - \gamma^2)\beta \} \
                & k \geq 1\\
            \end{cases}
 \end{equation*}
@@ -98,11 +98,12 @@ from qutip import (
     spre,
     tensor,
 )
-
+from qutip.core.environment import (
+    DrudeLorentzEnvironment,
+    ExponentialBosonicEnvironment,
+    system_terminator
+)
 from qutip.solver.heom import (
-    BosonicBath,
-    DrudeLorentzBath,
-    DrudeLorentzPadeBath,
     HEOMSolver,
     HSolverDL,
 )
@@ -128,15 +129,8 @@ def dl_matsubara_params(lam, gamma, T, nk):
     """
     ckAR = [lam * gamma * cot(gamma / (2 * T))]
     ckAR.extend(
-        4
-        * lam
-        * gamma
-        * T
-        * 2
-        * np.pi
-        * k
-        * T
-        / ((2 * np.pi * k * T) ** 2 - gamma**2)
+        (8 * lam * gamma * T * np.pi * k * T /
+         ((2 * np.pi * k * T)**2 - gamma**2))
         for k in range(1, nk + 1)
     )
     vkAR = [gamma]
@@ -146,21 +140,6 @@ def dl_matsubara_params(lam, gamma, T, nk):
     vkAI = [gamma]
 
     return ckAR, vkAR, ckAI, vkAI
-```
-
-```python
-def dl_corr_approx(t, nk):
-    """Drude-Lorenz correlation function approximation.
-
-    Approximates the correlation function at each time t to nk exponents.
-    """
-    c = lam * gamma * (-1.0j + cot(gamma / (2 * T))) * np.exp(-gamma * t)
-    for k in range(1, nk):
-        vk = 2 * np.pi * k * T
-        c += (4 * lam * gamma * T * vk / (vk**2 - gamma**2)) * np.exp(
-            -vk * t
-        )
-    return c
 ```
 
 ```python
@@ -292,7 +271,7 @@ ckAR, vkAR, ckAI, vkAI = dl_matsubara_params(nk=Nk, lam=lam, gamma=gamma, T=T)
 ```
 
 Having created the lists which specify the bath correlation functions, we
-create a `BosonicBath` from them and pass the bath to the `HEOMSolver` class.
+create an `ExponentialBosonicEnvironment` from them and pass the environment to the `HEOMSolver` class.
 
 The solver constructs the "right hand side" (RHS) determinining how the
 system and auxiliary density operators evolve in time. This can then be used
@@ -305,8 +284,8 @@ calling `.run(rho0, tlist)`.
 options = {**default_options}
 
 with timer("RHS construction time"):
-    bath = BosonicBath(Q, ckAR, vkAR, ckAI, vkAI)
-    HEOMMats = HEOMSolver(Hsys, bath, NC, options=options)
+    env = ExponentialBosonicEnvironment(ckAR, vkAR, ckAI, vkAI)
+    HEOMMats = HEOMSolver(Hsys, (env,Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultMats = HEOMMats.run(rho0, tlist)
@@ -333,8 +312,9 @@ Below we show how to use this built-in functionality:
 # Compare to built-in Drude-Lorentz bath:
 
 with timer("RHS construction time"):
-    bath = DrudeLorentzBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
-    HEOM_dlbath = HEOMSolver(Hsys, bath, NC, options=options)
+    dlenv = DrudeLorentzEnvironment(lam=lam, gamma=gamma, T=T,Nk=100)
+    dlenv_approx=dlenv.approx_by_matsubara(Nk=Nk)
+    HEOM_dlbath = HEOMSolver(Hsys, (dlenv_approx,Q), NC, options=options)
 
 with timer("ODE solver time"):
     result_dlbath = HEOM_dlbath.run(rho0, tlist)  # normal  115
@@ -347,6 +327,30 @@ plot_result_expectations(
         (result_dlbath, P12p, "r", "P12 (DrudeLorentzBath)"),
     ]
 );
+```
+
+The `DrudeLorentzEnvironment` class also allows us to easily obtain the power spectrum, correlation function, and spectral density. The approximated Environment is a `BosonicEnvironment` where the effective power spectrum, correlation function, and spectral density  from the approximation is also accessible. In the following plots, the solid lines are the exact expressions, and the dashed lines are based on our approximation of the correlation function with a finite number of exponents.
+
+```python
+w = np.linspace(-10, 20, 1000)
+w2 = np.linspace(0, 20, 1000)
+fig, axs = plt.subplots(2, 2)
+
+axs[0, 0].plot(w, dlenv.power_spectrum(w))
+axs[0, 0].plot(w, dlenv_approx.power_spectrum(w), '--')
+axs[0, 0].set(xlabel=r'$\omega$', ylabel=r'$S(\omega)$')
+axs[0, 1].plot(w2, dlenv.spectral_density(w2))
+axs[0, 1].plot(w2, dlenv_approx.spectral_density(w2), '--')
+axs[0, 1].set(xlabel=r'$\omega$', ylabel=r'$J(\omega)$')
+axs[1, 0].plot(w2, np.real(dlenv.correlation_function(w2)))
+axs[1, 0].plot(w2, np.real(dlenv_approx.correlation_function(w2)), '--')
+axs[1, 0].set(xlabel=r'$t$', ylabel=r'$C_{R}(t)$')
+axs[1, 1].plot(w2, np.imag(dlenv.correlation_function(w2)))
+axs[1, 1].plot(w2, np.imag(dlenv_approx.correlation_function(w2)), '--')
+axs[1, 1].set(xlabel=r'$t$', ylabel=r'$C_{I}(t)$')
+
+fig.tight_layout()
+plt.show()
 ```
 
 We also provide a legacy class, `HSolverDL`, which calculates the
@@ -394,13 +398,14 @@ $ e^{-\nu_k t} \approx \delta(t)/\nu_k$, and $C(t)=\sum_{k=N_k}^{\infty}
 \frac{c_k}{\nu_k} \delta(t)$
 
 It is convenient to calculate the whole sum
-$ C(t)=\sum_{k=0}^{\infty} \frac{c_k}{\nu_k} =  2 \lambda / (\beta \gamma)
-- i\lambda $
+$ C(t)=\sum_{k=0}^{\infty} \frac{c_k}{\nu_k} =  2 \lambda / (\beta \gamma)- i\lambda $
 , and subtract off the contribution from the finite number of Matsubara terms
-that are kept in the hierarchy, and treat the residual as a Lindblad.
+that are kept in the hierarchy, and treat the residual as a contribution in 
+Lindblad form.
 
 This is clearer if we plot the correlation function with a large number of
-Matsubara terms:
+Matsubara terms. To create the plot, we use the utility function of the
+`DrudeLorentzBath` class mentioned above.
 
 ```python
 def plot_correlation_expansion_divergence():
@@ -410,16 +415,16 @@ def plot_correlation_expansion_divergence():
     t = np.linspace(0, 2, 100)
 
     # correlation coefficients with 15k and 2 terms
-    corr_15k = dl_corr_approx(t, 15_000)
-    corr_2 = dl_corr_approx(t, 2)
+    corr_15k = dlenv.correlation_function(t)
+    corr_2 = dlenv_approx.correlation_function(t)
 
     fig, ax1 = plt.subplots(figsize=(12, 7))
 
     ax1.plot(
-        t, np.real(corr_2), color="b", linewidth=3, label=r"Mats = 2 real"
+        t, np.real(corr_2), color="b", linewidth=3, label=rf"Mats = {Nk} real"
     )
     ax1.plot(
-        t, np.imag(corr_2), color="r", linewidth=3, label=r"Mats = 2 imag"
+        t, np.imag(corr_2), color="r", linewidth=3, label=rf"Mats = {Nk} imag"
     )
     ax1.plot(
         t, np.real(corr_15k), "b--", linewidth=3, label=r"Mats = 15000 real"
@@ -432,8 +437,7 @@ def plot_correlation_expansion_divergence():
     ax1.set_ylabel(r"$C$")
     ax1.legend()
 
-
-plot_correlation_expansion_divergence();
+plot_correlation_expansion_divergence()
 ```
 
 Let us evaluate the result including this Ishizaki-Tanimura terminator:
@@ -443,9 +447,9 @@ Let us evaluate the result including this Ishizaki-Tanimura terminator:
 
 # Notes:
 #
-# * when using the built-in DrudeLorentzBath, the terminator (L_bnd) is
+# * when using the built-in DrudeLorentzEnvironment the terminator (L_bnd) is
 #   available from bath.terminator().
-#
+# 
 # * in the legacy HSolverDL function the terminator is included automatically
 #   if the parameter bnd_cut_approx=True is used.
 
@@ -467,8 +471,8 @@ Ltot = liouvillian(Hsys) + L_bnd
 options = {**default_options, "rtol": 1e-14, "atol": 1e-14}
 
 with timer("RHS construction time"):
-    bath = BosonicBath(Q, ckAR, vkAR, ckAI, vkAI)
-    HEOMMatsT = HEOMSolver(Ltot, bath, NC, options=options)
+    bath = ExponentialBosonicEnvironment(ckAR, vkAR, ckAI, vkAI)
+    HEOMMatsT = HEOMSolver(Ltot, (bath,Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultMatsT = HEOMMatsT.run(rho0, tlist)
@@ -483,16 +487,15 @@ plot_result_expectations(
 );
 ```
 
-Or using the built-in Drude-Lorentz bath we can write simply:
+Or using the built-in Drude-Lorentz environment we can write simply:
 
 ```python
 options = {**default_options, "rtol": 1e-14, "atol": 1e-14}
 
 with timer("RHS construction time"):
-    bath = DrudeLorentzBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
-    _, terminator = bath.terminator()
-    Ltot = liouvillian(Hsys) + terminator
-    HEOM_dlbath_T = HEOMSolver(Ltot, bath, NC, options=options)
+    bath,delta = dlenv.approx_by_matsubara(Nk=Nk,compute_delta=True)
+    Ltot = liouvillian(Hsys) + system_terminator(Q,delta)
+    HEOM_dlbath_T = HEOMSolver(Ltot, (bath,Q), NC, options=options)
 
 with timer("ODE solver time"):
     result_dlbath_T = HEOM_dlbath_T.run(rho0, tlist)
@@ -510,16 +513,11 @@ plot_result_expectations(
 We can compare the solution obtained from the QuTiP Bloch-Redfield solver:
 
 ```python
-DL = (
-    f"2*pi* 2.0 * {lam} / (pi * {gamma} * {beta}) if (w == 0) else "
-    f"2*pi*(2.0*{lam}*{gamma} *w /(pi*(w**2+{gamma}**2))) "
-    f"* ((1/(exp((w) * {beta})-1))+1)"
-)
 options = {**default_options}
 
 with timer("ODE solver time"):
     resultBR = brmesolve(
-        Hsys, rho0, tlist, a_ops=[[sigmaz(), DL]], options=options
+        Hsys, rho0, tlist, a_ops=[[sigmaz(), dlenv]], options=options
     )
 ```
 
@@ -641,8 +639,8 @@ def pade_corr(tlist, lmax):
 
 tlist_corr = np.linspace(0, 2, 100)
 cppLP, etapLP, gampLP = pade_corr(tlist_corr, 2)
-corr_15k = dl_corr_approx(tlist_corr, 15_000)
-corr_2k = dl_corr_approx(tlist_corr, 2)
+corr_15k = dlenv.correlation_function(tlist_corr, Nk=15_000)
+corr_2k = dlenv.correlation_function(tlist_corr, Nk=2)
 
 fig, ax1 = plt.subplots(figsize=(12, 7))
 ax1.plot(
@@ -668,7 +666,7 @@ ax1.plot(
 )
 
 ax1.set_xlabel("t")
-ax1.set_ylabel(r"$C$")
+ax1.set_ylabel(r"$C_{R}(t)$")
 ax1.legend()
 
 fig, ax1 = plt.subplots(figsize=(12, 7))
@@ -703,8 +701,8 @@ vkAI = [gampLP[0] + 0j]
 options = {**default_options, "rtol": 1e-14, "atol": 1e-14}
 
 with timer("RHS construction time"):
-    bath = BosonicBath(Q, ckAR, vkAR, ckAI, vkAI)
-    HEOMPade = HEOMSolver(Hsys, bath, NC, options=options)
+    bath = ExponentialBosonicEnvironment(ckAR, vkAR, ckAI, vkAI)
+    HEOMPade = HEOMSolver(Hsys, (bath,Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultPade = HEOMPade.run(rho0, tlist)
@@ -724,21 +722,22 @@ plot_result_expectations(
 ```
 
 The Padé decomposition of the Drude-Lorentz bath is also available via a
-built-in class, `DrudeLorentzPadeBath` bath. Like `DrudeLorentzBath`, one
-can obtain the terminator by calling `bath.terminator()`.
+built-in class, `DrudeLorentzEnvironment` bath. Similarly to the terminator
+section when approximating by Padé one can calculate the terminator easily by
+requesting the approximation function to compute delta
 
-Below we show how to use the built-in Padé Drude-Lorentz bath and its
-terminator (although the terminator does not provide much improvement here,
-because the Padé expansion already fits the correlation function well):
+Below we show how to use the built-in Drude-Lorentz Environment to obtain a
+Padé decomposition approximation and its terminator (although the terminator 
+does not provide much improvement here,because the Padé expansion already fits 
+the correlation function well):
 
 ```python
 options = {**default_options, "rtol": 1e-14, "atol": 1e-14}
 
 with timer("RHS construction time"):
-    bath = DrudeLorentzPadeBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
-    _, terminator = bath.terminator()
-    Ltot = liouvillian(Hsys) + terminator
-    HEOM_dlpbath_T = HEOMSolver(Ltot, bath, NC, options=options)
+    env_approx,delta = dlenv.approx_by_pade(Nk=2,compute_delta=True)
+    Ltot = liouvillian(Hsys) + system_terminator(Q,delta)
+    HEOM_dlpbath_T = HEOMSolver(Ltot, (env_approx,Q), NC, options=options)
 
 with timer("ODE solver time"):
     result_dlpbath_T = HEOM_dlpbath_T.run(rho0, tlist)
@@ -755,16 +754,18 @@ plot_result_expectations(
 
 ### Next we compare the Matsubara and Pade correlation function fits
 
-This is not efficient for this example, but can be extremely useful in
-situations where large number of exponents are needed (e.g., near zero
-temperature).
+Fitting the correlation function is not efficient for this example, but
+can be extremely useful in situations where large number of exponents
+are needed (e.g., near zero temperature). We will perform the fitting
+manually below, and then show how to do it with the built-in tools
 
-First we collect a large sum of Matsubara terms for many time steps:
+For the manual fit we First we collect a large sum of Matsubara terms for 
+many time steps:
 
 ```python
 tlist2 = np.linspace(0, 2, 10000)
 
-corr_15k_t10k = dl_corr_approx(tlist2, 15_000)
+corr_15k_t10k = dlenv.correlation_function(tlist2, Nk=15_000)
 
 corrRana = np.real(corr_15k_t10k)
 corrIana = np.imag(corr_15k_t10k)
@@ -831,7 +832,7 @@ with timer("Correlation (real) fitting time"):
     for i in range(kR):
         poptR.append(fitter(corrRana, tlist2, i + 1))
 
-corrRMats = np.real(dl_corr_approx(tlist2, Nk))
+corrRMats = np.real(dlenv_approx.correlation_function(tlist2))
 
 kI = 1  # number of exponents for imaginary part
 poptI = []
@@ -843,28 +844,43 @@ with timer("Correlation (imaginary) fitting time"):
 And plot the results of the fits:
 
 ```python
-plt.plot(tlist2, corrRana, label="Analytic")
-plt.plot(tlist2, corrRMats, label="Matsubara")
+# Define line styles and colors
+linestyles = ["-", "--", "-.", ":", (0, (3, 1, 1, 1)), (0, (5, 1))]
+colors = ["blue", "green", "purple", "orange", "red", "brown", "cyan", "magenta"]
+
+# Define a larger linewidth
+linewidth = 2.5
+
+# Create a single figure with two subplots
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+
+# Plot the real part on the first subplot (ax1)
+ax1.plot(tlist2, corrRana, label="Analytic", color=colors[0], linestyle=linestyles[0], linewidth=linewidth)
+ax1.plot(tlist2, corrRMats, label="Matsubara", color=colors[1], linestyle=linestyles[1], linewidth=linewidth)
 
 for i in range(kR):
     y = fit_func(tlist2, *poptR[i])
-    plt.plot(tlist2, y, label=f"Fit with {i} terms")
+    ax1.plot(tlist2, y, label=f"Fit with {i} terms", color=colors[(i + 2) % len(colors)], linestyle=linestyles[(i + 2) % len(linestyles)], linewidth=linewidth)
+ax1.set_ylabel(r"$C_{R}(t)$")
+ax1.set_xlabel(r"$t$")
+ax1.legend()
 
-plt.title("Fit to correlations (real part)")
-plt.legend()
-plt.show()
-```
-
-```python
-plt.plot(tlist2, corrIana, label="Analytic")
+# Plot the imaginary part on the second subplot (ax2)
+ax2.plot(tlist2, corrIana, label="Analytic", color=colors[0], linestyle=linestyles[0], linewidth=linewidth)
 
 for i in range(kI):
     y = fit_func(tlist2, *poptI[i])
-    plt.plot(tlist2, y, label=f"Fit with {i} terms")
+    ax2.plot(tlist2, y, label=f"Fit with {i} terms", color=colors[(i + 3) % len(colors)], linestyle=linestyles[(i + 1) % len(linestyles)], linewidth=linewidth)
+ax2.set_ylabel(r"$C_{I}(t)$")
+ax2.set_xlabel(r"$t$")
 
-plt.title("Fit to correlations (imaginary part)")
-plt.legend()
+ax2.legend()
+
+# Add overall plot title and show the figure
+fig.suptitle("Comparison of Analytic and Fit to Correlations (Real and Imaginary Parts)", fontsize=16)
 plt.show()
+
+
 ```
 
 ```python
@@ -897,8 +913,8 @@ options = {**default_options}
 NC = 4
 
 with timer("RHS construction time"):
-    bath = BosonicBath(Q, ckAR, vkAR, ckAI, vkAI)
-    HEOMFit = HEOMSolver(Hsys, bath, NC, options=options)
+    bath = ExponentialBosonicEnvironment(ckAR, vkAR, ckAI, vkAI)
+    HEOMFit = HEOMSolver(Hsys, (bath,Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultFit = HEOMFit.run(rho0, tlist)
@@ -909,6 +925,75 @@ plot_result_expectations(
     [
         (resultFit, P11p, "b", "P11 Fit"),
         (resultFit, P12p, "r", "P12 Fit"),
+    ]
+);
+```
+
+Now we use the built-in functions. The `BosonicEnvironment` class, includes a 
+method that performs this fit automatically. More information on how the
+built-in functios work can be found in `HEOM 1d: Spin-Bath model, fitting of spectrum and correlation functions`
+
+```python
+tlist3 = np.linspace(0, 2, 200)
+envfit, fitinfo =dlenv.approx_by_cf_fit(tlist=tlist3,full_ansatz=True,maxfev=1e6,Ni_max=1,Nr_max=3)
+```
+
+The approx_by_cf_fit method outputs a `ExponentialBosonicEnvironment` object,
+which contains a decaying exponential representation of the original 
+environment , and a dictionary containing all information related to the fit.
+The dictionary contains a summary of the fir information and the normalized 
+root mean squared error, which assesses how good the fit is. 
+
+```python
+print(fitinfo['summary'])
+```
+
+We can then compare the result of the built-in fit with the manual fit
+
+```python
+# Create a single figure with two subplots
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+
+# Plot the real part on the first subplot (ax1)
+ax1.plot(tlist2, corrRana, label="Original", marker="o", markevery=500)
+ax1.plot(tlist2, fit_func(tlist2, *poptR[-1]), color="r", label="Manual Fit")
+ax1.plot(tlist2, np.real(envfit.correlation_function(tlist2)), "k--", label="Built-in fit")
+ax1.set_ylabel(r"$C_{R}(t)$")
+ax1.set_xlabel(r"$t$")
+ax1.legend()
+
+# Plot the imaginary part on the second subplot (ax2)
+ax2.plot(tlist2, corrIana, label="Original", marker="o", markevery=500)
+ax2.plot(tlist2, fit_func(tlist2, *poptI[-1]), color="r", label="Manual Fit")
+ax2.plot(tlist2, np.imag(envfit.correlation_function(tlist2)), "k--", label="Built-in fit")
+ax2.set_ylabel(r"$C_{I}(t)$")
+ax2.set_xlabel(r"$t$")
+ax2.legend()
+# Add an overall title and adjust layout
+plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+plt.show()
+
+```
+
+```python
+options = {**default_options}
+
+NC = 4
+
+with timer("RHS construction time"):
+    HEOMFit_2 = HEOMSolver(Hsys, (envfit,Q), NC, options=options)
+
+with timer("ODE solver time"):
+    resultFit_2 = HEOMFit_2.run(rho0, tlist)
+```
+
+```python
+plot_result_expectations(
+    [
+        (resultFit, P11p, "b", "P11 Fit"),
+        (resultFit, P12p, "r", "P12 Fit"),
+        (resultFit_2, P11p, "r--", "P11 Built-in-Fit"),
+        (resultFit_2, P12p, "b--", "P12 Built-in-Fit"),
     ]
 );
 ```

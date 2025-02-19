@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.16.4
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -95,7 +95,7 @@ The complete setup now consists of four parts:
 
 ## Setup
 
-```{code-cell} ipython3
+```{code-cell}
 import contextlib
 import dataclasses
 import time
@@ -122,7 +122,7 @@ from IPython.display import display
 
 ## Helpers
 
-```{code-cell} ipython3
+```{code-cell}
 @contextlib.contextmanager
 def timer(label):
     """ Simple utility for timing functions:
@@ -136,7 +136,7 @@ def timer(label):
     print(f"{label}: {end - start}")
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 def state_current(ado_state, bath_tag):
     """ Determine current from the given bath (either "R" or "L") to
         the system in the given ADO state.
@@ -158,7 +158,7 @@ def state_current(ado_state, bath_tag):
     )
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Solver options:
 
 # We set store_ados to True so that we can
@@ -181,7 +181,7 @@ options = {
 
 Let us set up the system Hamiltonian and specify the properties of the two reservoirs.
 
-```{code-cell} ipython3
+```{code-cell}
 # Define the system Hamiltonian:
 
 @dataclasses.dataclass
@@ -208,7 +208,7 @@ class SystemParameters:
 sys_p = SystemParameters()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Define parameters for left and right fermionic baths.
 # Each bath is a lead (i.e. a wire held at a potential)
 # with temperature T and chemical potential mu.
@@ -262,7 +262,7 @@ bath_R = LorentzianBathParameters(W=10**4, lead="R")
 
 Next let's plot the emission and absorption by the leads.
 
-```{code-cell} ipython3
+```{code-cell}
 w_list = np.linspace(-2, 2, 100)
 
 fig, ax = plt.subplots(figsize=(12, 7))
@@ -310,7 +310,7 @@ Here we just give one example of the current as a function of bias voltage, but 
 
 One note:  for very large problems, this can be slow.
 
-```{code-cell} ipython3
+```{code-cell}
 def steady_state_pade_for_theta(sys_p, bath_L, bath_R, theta, Nk, Nc, Nbos):
     """ Return the steady state current using the Pade approximation. """
 
@@ -336,7 +336,7 @@ def steady_state_pade_for_theta(sys_p, bath_L, bath_R, theta, Nk, Nc, Nbos):
     return np.real(2.434e-4 * 1e6 * current)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Parameters:
 
 Nk = 6
@@ -360,7 +360,7 @@ for theta in thetas:
     progress.value += 1
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 fig, ax = plt.subplots(figsize=(12, 10))
 
 ax.plot(
@@ -382,7 +382,7 @@ ax.legend(loc=4);
 
 ## About
 
-```{code-cell} ipython3
+```{code-cell}
 qutip.about()
 ```
 
@@ -390,6 +390,6 @@ qutip.about()
 
 This section can include some tests to verify that the expected outputs are generated within the notebook. We put this section at the end of the notebook, so it's not interfering with the user experience. Please, define the tests using assert, so that the cell execution fails if a wrong output is generated.
 
-```{code-cell} ipython3
+```{code-cell}
 assert 1 == 1
 ```
