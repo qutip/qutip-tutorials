@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.16.4
+    jupytext_version: 1.16.1
 kernelspec:
   display_name: qutip-dev
   language: python
@@ -50,7 +50,7 @@ References:
 
 ## Setup
 
-```{code-cell} ipython3
+```{code-cell}
 import dataclasses
 
 import numpy as np
@@ -75,7 +75,7 @@ from IPython.display import display
 
 ## Helpers
 
-```{code-cell} ipython3
+```{code-cell}
 # Solver options:
 
 options = {
@@ -91,7 +91,7 @@ options = {
 
 ## System and bath definition
 
-```{code-cell} ipython3
+```{code-cell}
 @dataclasses.dataclass
 class SystemParams:
     """ System parameters and Hamiltonian. """
@@ -120,7 +120,7 @@ class SystemParams:
         return dataclasses.replace(self, **kw)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 @dataclasses.dataclass
 class BathParams:
     """ Bath parameters. """
@@ -175,7 +175,7 @@ In the expression for the bath heat currents, we left out terms involving $[Q_1,
 
 In QuTiP, these currents can be conveniently calculated as follows:
 
-```{code-cell} ipython3
+```{code-cell}
 def bath_heat_current(bath_tag, ado_state, hamiltonian, coupling_op, delta=0):
     """
     Bath heat current from the system into the heat bath with the given tag.
@@ -270,7 +270,7 @@ Note that at long times, we expect $j_{\text{B}}^1 = -j_{\text{B}}^2$ and $j_{\t
 
 For our simulations, we will represent the bath spectral densities using the first term of their Padé decompositions, and we will use $7$ levels of the HEOM hierarchy.
 
-```{code-cell} ipython3
+```{code-cell}
 Nk = 1
 NC = 7
 ```
@@ -280,7 +280,7 @@ NC = 7
 We fix $J_{12} = 0.1 \epsilon$ (as in Fig. 3(a-ii) of Ref. \[2\]) and choose the fixed coupling strength $\lambda_1 = \lambda_2 = J_{12}\, /\, (2\epsilon)$ (corresponding to $\bar\zeta = 1$ in Ref. \[2\]).
 Using these values, we will study the time evolution of the system state and the heat currents.
 
-```{code-cell} ipython3
+```{code-cell}
 # fix qubit-qubit and qubit-bath coupling strengths
 sys = SystemParams(J12=0.1)
 bath_p1 = BathParams(qubit=0, sign="+", lam=sys.J12 / 2)
@@ -293,7 +293,7 @@ rho0 = qt.tensor(qt.identity(2), qt.identity(2)) / 4
 tlist = np.linspace(0, 50, 250)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 H = sys.H()
 
 bath1,b1term,b1delta = bath_p1.bath(Nk, tag='bath 1')
@@ -321,7 +321,7 @@ result = solver.run(rho0, tlist, e_ops=[
 
 We first plot $\langle \sigma_z^1 \rangle$ to see the time evolution of the system state:
 
-```{code-cell} ipython3
+```{code-cell}
 fig, axes = plt.subplots(figsize=(8, 8))
 axes.plot(tlist, result.expect[0], 'r', linewidth=2)
 axes.set_xlabel('t', fontsize=28)
@@ -330,7 +330,7 @@ axes.set_ylabel(r"$\langle \sigma_z^1 \rangle$", fontsize=28);
 
 We find a rather quick thermalization of the system state. For the heat currents, however, it takes a somewhat longer time until they converge to their long-time values:
 
-```{code-cell} ipython3
+```{code-cell}
 fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(16, 8))
 
 ax1.plot(
@@ -382,7 +382,7 @@ ax2.legend(loc=0, fontsize=12);
 
 Here, we try to reproduce the HEOM curves in Fig. 3(a) of Ref. \[1\] by varying the coupling strength and finding the steady state for each coupling strength.
 
-```{code-cell} ipython3
+```{code-cell}
 def heat_currents(sys, bath_p1, bath_p2, Nk, NC, options):
     """ Calculate the steady sate heat currents for the given system and
         bath.
@@ -411,7 +411,7 @@ def heat_currents(sys, bath_p1, bath_p2, Nk, NC, options):
     )
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Define number of points to use for the plot
 plot_points = 10  # use 100 for a smoother curve
 
@@ -464,7 +464,7 @@ j3s = [
 
 ## Create Plot
 
-```{code-cell} ipython3
+```{code-cell}
 fig, axes = plt.subplots(figsize=(12, 7))
 
 axes.plot(
@@ -495,7 +495,7 @@ axes.legend(loc=0);
 
 ## About
 
-```{code-cell} ipython3
+```{code-cell}
 qt.about()
 ```
 
@@ -503,6 +503,6 @@ qt.about()
 
 This section can include some tests to verify that the expected outputs are generated within the notebook. We put this section at the end of the notebook, so it's not interfering with the user experience. Please, define the tests using assert, so that the cell execution fails if a wrong output is generated.
 
-```{code-cell} ipython3
+```{code-cell}
 assert 1 == 1
 ```

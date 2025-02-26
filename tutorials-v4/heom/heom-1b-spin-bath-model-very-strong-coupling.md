@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.4
+    jupytext_version: 1.16.1
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -81,7 +81,7 @@ Note that in the above, and the following, we set $\hbar = k_\mathrm{B} = 1$.
 
 ## Setup
 
-```{code-cell} ipython3
+```{code-cell}
 import contextlib
 import time
 
@@ -114,13 +114,13 @@ from qutip.nonmarkov.heom import (
 
 Let's define some helper functions for calculating correlation function expansions, plotting results and timing how long operations take:
 
-```{code-cell} ipython3
+```{code-cell}
 def cot(x):
     """ Vectorized cotangent of x. """
     return 1. / np.tan(x)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 @contextlib.contextmanager
 def timer(label):
     """ Simple utility for timing functions:
@@ -138,19 +138,19 @@ def timer(label):
 
 And let us set up the system Hamiltonian, bath and system measurement operators:
 
-```{code-cell} ipython3
+```{code-cell}
 # Defining the system Hamiltonian
 eps = .0     # Energy of the 2-level system.
 Del = .2     # Tunnelling term
 Hsys = 0.5 * eps * sigmaz() + 0.5 * Del * sigmax()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Initial state of the system.
 rho0 = basis(2, 0) * basis(2, 0).dag()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # System-bath coupling (Drude-Lorentz spectral density)
 Q = sigmaz()  # coupling operator
 
@@ -173,7 +173,7 @@ NC = 13
 tlist = np.linspace(0, np.pi / Del, 600)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Define some operators with which we will measure the system
 # 1,1 element of density matrix - corresonding to groundstate
 P11p = basis(2, 0) * basis(2, 0).dag()
@@ -186,7 +186,7 @@ P12p = basis(2, 0) * basis(2, 1).dag()
 
 Let us briefly inspect the spectral density.
 
-```{code-cell} ipython3
+```{code-cell}
 w = np.linspace(0, 5, 1000)
 J = w * 2 * lam * gamma / ((gamma**2 + w**2))
 
@@ -199,7 +199,7 @@ axes.set_ylabel(r'J', fontsize=28);
 
 ## Simulation 1: Matsubara decomposition, not using Ishizaki-Tanimura terminator
 
-```{code-cell} ipython3
+```{code-cell}
 options = Options(nsteps=15000, store_states=True, rtol=1e-14, atol=1e-14)
 
 with timer("RHS construction time"):
@@ -212,7 +212,7 @@ with timer("ODE solver time"):
 
 ## Simulation 2: Matsubara decomposition (including terminator)
 
-```{code-cell} ipython3
+```{code-cell}
 options = Options(nsteps=15000, store_states=True, rtol=1e-14, atol=1e-14)
 
 with timer("RHS construction time"):
@@ -225,7 +225,7 @@ with timer("ODE solver time"):
     resultMatsT = HEOMMatsT.run(rho0, tlist)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Plot the results
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 8))
 
@@ -248,7 +248,7 @@ axes.legend(loc=0, fontsize=12);
 
 ## Simulation 3: Pade decomposition
 
-```{code-cell} ipython3
+```{code-cell}
 # First, compare Matsubara and Pade decompositions
 matsBath = DrudeLorentzBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
 padeBath = DrudeLorentzPadeBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
@@ -316,7 +316,7 @@ ax2.set_xlabel(r't', fontsize=28)
 ax2.legend(loc=0, fontsize=12);
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 options = Options(nsteps=15000, store_states=True, rtol=1e-14, atol=1e-14)
 
 with timer("RHS construction time"):
@@ -327,7 +327,7 @@ with timer("ODE solver time"):
     resultPade = HEOMPade.run(rho0, tlist)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Plot the results
 fig, axes = plt.subplots(figsize=(8, 8))
 
@@ -352,7 +352,7 @@ axes.legend(loc=0, fontsize=12);
 
 ## Simulation 4: Fitting approach
 
-```{code-cell} ipython3
+```{code-cell}
 def wrapper_fit_func(x, N, args):
     """ Fit function wrapper that unpacks its arguments. """
     x = np.array(x)
@@ -404,7 +404,7 @@ def fitter(ans, tlist, k):
     return (a, b)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Fitting the real part of the correlation function:
 
 # Correlation function values to fit:
@@ -419,7 +419,7 @@ with timer("Correlation (real) fitting time"):
         poptR.append(fitter(corrRana, tlist_fit, i + 1))
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 plt.plot(tlist_fit, corrRana, label="Analytic")
 
 for i in range(kR):
@@ -431,7 +431,7 @@ plt.legend()
 plt.show()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Set the exponential coefficients from the fit parameters
 
 ckAR1 = poptR[-1][0]
@@ -446,7 +446,7 @@ ckAI = [lam * gamma * (-1.0) + 0j]
 vkAI = [gamma + 0j]
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 options = Options(nsteps=1500, store_states=True, rtol=1e-12, atol=1e-12)
 
 with timer("RHS construction time"):
@@ -462,7 +462,7 @@ with timer("ODE solver time"):
 
 ## Simulation 5: Bloch-Redfield
 
-```{code-cell} ipython3
+```{code-cell}
 DL = (
     "2 * pi * 2.0 * {lam} / (pi * {gamma} * {beta}) if (w==0) "
     "else 2 * pi * (2.0 * {lam} * {gamma} * w / (pi * (w**2 + {gamma}**2))) "
@@ -480,7 +480,7 @@ resultBR = brmesolve(
 
 Finally, let's plot all of our different results to see how they shape up against each other.
 
-```{code-cell} ipython3
+```{code-cell}
 # Calculate expectation values in the bases:
 P11_mats = np.real(expect(resultMats.states, P11p))
 P11_matsT = np.real(expect(resultMatsT.states, P11p))
@@ -489,7 +489,7 @@ P11_fit = np.real(expect(resultFit.states, P11p))
 P11_br = np.real(expect(resultBR.states, P11p))
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 rcParams = {
     "axes.titlesize": 25,
     "axes.labelsize": 30,
@@ -506,7 +506,7 @@ rcParams = {
 }
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(12, 7))
 
 with plt.rc_context(rcParams):
@@ -546,7 +546,7 @@ with plt.rc_context(rcParams):
 
 ## About
 
-```{code-cell} ipython3
+```{code-cell}
 qutip.about()
 ```
 
@@ -554,7 +554,7 @@ qutip.about()
 
 This section can include some tests to verify that the expected outputs are generated within the notebook. We put this section at the end of the notebook, so it's not interfering with the user experience. Please, define the tests using assert, so that the cell execution fails if a wrong output is generated.
 
-```{code-cell} ipython3
+```{code-cell}
 assert np.allclose(P11_matsT, P11_pade, rtol=1e-3)
 assert np.allclose(P11_matsT, P11_fit, rtol=1e-3)
 ```

@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.16.4
+    jupytext_version: 1.16.1
 kernelspec:
   display_name: qutip-dev
   language: python
@@ -31,7 +31,7 @@ quantum environment reduces the effect of pure dephasing.
 
 ## Setup
 
-```{code-cell} ipython3
+```{code-cell}
 import contextlib
 import time
 
@@ -62,7 +62,7 @@ from qutip.core.environment import (
 
 Let's define some helper functions for calculating correlation functions, spectral densities, thermal energy level occupations, and for plotting results and timing how long operations take:
 
-```{code-cell} ipython3
+```{code-cell}
 @contextlib.contextmanager
 def timer(label):
     """ Simple utility for timing functions:
@@ -76,7 +76,7 @@ def timer(label):
     print(f"{label}: {end - start}")
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Solver options:
 
 options = {
@@ -94,7 +94,7 @@ options = {
 
 And let us set up the system Hamiltonian and bath parameters:
 
-```{code-cell} ipython3
+```{code-cell}
 # System Hamiltonian:
 #
 # We use the Hamiltonian employed in
@@ -112,7 +112,7 @@ Hsys = 3e10 * 2 * np.pi * Qobj([
 ])
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Bath parameters
 
 lam = 35 * 3e10 * 2 * np.pi
@@ -125,11 +125,11 @@ beta = 1 / T
 
 Let's quickly plot the spectral density and environment correlation functions so that we can see what they look like.
 
-```{code-cell} ipython3
+```{code-cell}
 env=DrudeLorentzEnvironment(T=T,lam=lam,gamma=gamma)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 wlist = np.linspace(0, 200 * 3e10 * 2 * np.pi, 100)
 tlist = np.linspace(0, 1e-12, 1000)
 
@@ -165,7 +165,7 @@ axes[1].legend();
 
 Now let us solve for the evolution of this system using the HEOM.
 
-```{code-cell} ipython3
+```{code-cell}
 # We start the excitation at site 1:
 rho0 = basis(7, 0) * basis(7, 0).dag()
 
@@ -188,7 +188,7 @@ for m in range(7):
     baths.append((env_approx,Q))
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 with timer("RHS construction time"):
     HEOMMats = HEOMSolver(Hsys, baths, NC, options=options)
 
@@ -196,7 +196,7 @@ with timer("ODE solver time"):
     outputFMO_HEOM = HEOMMats.run(rho0, tlist)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 fig, axes = plt.subplots(1, 1, figsize=(12, 8))
 
 colors = ['r', 'g', 'b', 'y', 'c', 'm', 'k']
@@ -232,7 +232,7 @@ Now let us solve the same problem using the Bloch-Redfield solver. We will see t
 
 In the next section, we will examine the role of pure dephasing in the evolution to understand why this happens.
 
-```{code-cell} ipython3
+```{code-cell}
 with timer("BR ODE solver time"):
     outputFMO_BR = brmesolve(
         Hsys, rho0, tlist,
@@ -243,7 +243,7 @@ with timer("BR ODE solver time"):
 
 And now let's plot the Bloch-Redfield solver results:
 
-```{code-cell} ipython3
+```{code-cell}
 fig, axes = plt.subplots(1, 1, figsize=(12, 8))
 
 for m, Q in enumerate(Q_list):
@@ -275,7 +275,7 @@ First we will write a function to return the list of collapse operators for a gi
 
 TODO: Maybe power spectrum at zero is wrong, by a factor 2
 
-```{code-cell} ipython3
+```{code-cell}
 def J0_dephasing():
     """ Under-damped brownian oscillator dephasing probability.
 
@@ -284,11 +284,11 @@ def J0_dephasing():
     return 2 * lam * gamma / gamma**2
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 env.power_spectrum(0)/2 -J0_dephasing()*T
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 def get_collapse(H, T, dephasing=1):
     """ Calculate collapse operators for a given system H and
         temperature T.
@@ -352,7 +352,7 @@ Now we are able to switch the pure dephasing terms on and off.
 
 Let us starting by including the dephasing operators. We expect to see the same behaviour that we saw when using the Bloch-Redfield solver.
 
-```{code-cell} ipython3
+```{code-cell}
 # dephasing terms on, we recover the full BR solution:
 
 with timer("Building the collapse operators"):
@@ -362,7 +362,7 @@ with timer("ME ODE solver"):
     outputFMO_ME = mesolve(Hsys, rho0, tlist, collapse_list)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 fig, axes = plt.subplots(1, 1, figsize=(12, 8))
 
 for m, Q in enumerate(Q_list):
@@ -381,7 +381,7 @@ We see similar results to before.
 
 Now let us examine what happens when we remove the dephasing collapse operators:
 
-```{code-cell} ipython3
+```{code-cell}
 # dephasing terms off
 
 with timer("Building the collapse operators"):
@@ -391,7 +391,7 @@ with timer("ME ODE solver"):
     outputFMO_ME_nodephase = mesolve(Hsys, rho0, tlist, collapse_list)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 fig, axes = plt.subplots(1, 1, figsize=(12, 8))
 for m, Q in enumerate(Q_list):
     axes.plot(
@@ -415,7 +415,7 @@ And now we see that without the dephasing, the oscillations reappear. The full d
 
 ## About
 
-```{code-cell} ipython3
+```{code-cell}
 qutip.about()
 ```
 
@@ -423,7 +423,7 @@ qutip.about()
 
 This section can include some tests to verify that the expected outputs are generated within the notebook. We put this section at the end of the notebook, so it's not interfering with the user experience. Please, define the tests using assert, so that the cell execution fails if a wrong output is generated.
 
-```{code-cell} ipython3
+```{code-cell}
 assert np.allclose(
     expect(outputFMO_BR.states, Q_list[0]),
     expect(outputFMO_ME.states, Q_list[0]),

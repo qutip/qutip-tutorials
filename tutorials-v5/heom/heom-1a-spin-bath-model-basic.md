@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.16.4
+      jupytext_version: 1.16.1
   kernelspec:
     display_name: qutip-dev
     language: python
@@ -639,7 +639,7 @@ def pade_corr(tlist, lmax):
 
 tlist_corr = np.linspace(0, 2, 100)
 cppLP, etapLP, gampLP = pade_corr(tlist_corr, 2)
-corr_15k = dlenv.correlation_function(tlist_corr, Nk=15_000)
+corr_15k = dlenv.correlation_function(tlist_corr, Nk=15)
 corr_2k = dlenv.correlation_function(tlist_corr, Nk=2)
 
 fig, ax1 = plt.subplots(figsize=(12, 7))
@@ -655,7 +655,7 @@ ax1.plot(
     np.real(corr_15k),
     "r--",
     linewidth=3,
-    label=r"real mats 15000 terms",
+    label=r"real pade 15 terms",
 )
 ax1.plot(
     tlist_corr,
@@ -765,7 +765,7 @@ many time steps:
 ```python
 tlist2 = np.linspace(0, 2, 10000)
 
-corr_15k_t10k = dlenv.correlation_function(tlist2, Nk=15_000)
+corr_15k_t10k = dlenv.correlation_function(tlist2, Nk=100)
 
 corrRana = np.real(corr_15k_t10k)
 corrIana = np.imag(corr_15k_t10k)
@@ -935,7 +935,7 @@ built-in functios work can be found in `HEOM 1d: Spin-Bath model, fitting of spe
 
 ```python
 tlist3 = np.linspace(0, 2, 200)
-envfit, fitinfo =dlenv.approx_by_cf_fit(tlist=tlist3,full_ansatz=True,maxfev=1e6,Ni_max=1,Nr_max=3)
+envfit, fitinfo =dlenv.approximate("cf",tlist=tlist3,full_ansatz=True,maxfev=1e6,Ni_max=1,Nr_max=3)
 ```
 
 The approx_by_cf_fit method outputs a `ExponentialBosonicEnvironment` object,
