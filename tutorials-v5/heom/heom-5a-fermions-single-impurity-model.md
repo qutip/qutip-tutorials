@@ -5,9 +5,9 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.16.4
 kernelspec:
-  display_name: Python 3 (ipykernel)
+  display_name: qutip-dev
   language: python
   name: python3
 ---
@@ -145,52 +145,12 @@ H = e1 * d1.dag() * d1
 ```
 
 ```{code-cell} ipython3
-# Define parameters for left and right fermionic baths.
-# Each bath is a lead (i.e. a wire held at a potential)
-# with temperature T and chemical potential mu.
 
-@dataclasses.dataclass
-class LorentzianBathParameters:
-    lead: str
-    Q: object  # coupling operator
-    gamma: float = 0.01  # coupling strength
-    W: float = 1.0  # cut-off
-    T: float = 0.025851991  # temperature
-    theta: float = 2.0  # bias
-
-    def __post_init__(self):
-        assert self.lead in ("L", "R")
-        self.beta = 1 / self.T
-        if self.lead == "L":
-            self.mu = self.theta / 2.0
-        else:
-            self.mu = - self.theta / 2.0
-
-    def J(self, w):
-        """ Spectral density. """
-        return self.gamma * self.W**2 / ((w - self.mu)**2 + self.W**2)
-
-    def fF(self, w, sign=1.0):
-        """ Fermi distribution for this bath. """
-        x = sign * self.beta * (w - self.mu)
-        return fF(x)
-
-    def lamshift(self, w):
-        """ Return the lamshift. """
-        return 0.5 * (w - self.mu) * self.J(w) / self.W
-
-    def replace(self, **kw):
-        return dataclasses.replace(self, **kw)
+from qutip.core.environment import LorentzianEnvironment
 
 
-def fF(x):
-    """ Return the Fermi distribution. """
-    # in units where kB = 1.0
-    return 1 / (np.exp(x) + 1)
-
-
-bath_L = LorentzianBathParameters(Q=d1, lead="L")
-bath_R = LorentzianBathParameters(Q=d1, lead="R")
+envL=LorentzianEnvironment(T= 0.025851991,W=1,mu=1,gamma=0.01,Nk=20)
+envR=LorentzianEnvironment(T= 0.025851991,W=1,mu=-1,gamma=0.01,Nk=20)
 ```
 
 ## Spectral density
@@ -198,12 +158,12 @@ bath_R = LorentzianBathParameters(Q=d1, lead="R")
 Let's plot the spectral density.
 
 ```{code-cell} ipython3
-w_list = np.linspace(-2, 2, 100)
+w_list = np.linspace(-30, 30, 2000)
 
 fig, ax = plt.subplots(figsize=(12, 7))
 
-spec_L = bath_L.J(w_list)
-spec_R = bath_R.J(w_list)
+spec_L = envL.spectral_density(w_list)
+spec_R = envR.spectral_density(w_list)
 
 ax.plot(
     w_list, spec_L,
@@ -221,19 +181,54 @@ ax.set_ylabel(r"$J(\omega)$")
 ax.legend();
 ```
 
+```{code-cell} ipython3
+from qutip.core.environment import FermionicEnvironment
+```
+
+```{code-cell} ipython3
+# fenvL=FermionicEnvironment.from_spectral_density(envL.spectral_density(w_list),w_list,T=0.025851991,mu=1)
+# fenvR=FermionicEnvironment.from_spectral_density(envR.spectral_density(w_list),w_list,T=0.025851991,mu=-1)
+# fenvL=FermionicEnvironment.from_power_spectra(envL.power_spectrum_minus(w_list),w_list,T=0.025851991,mu=1,sigma=-1)
+# fenvR=FermionicEnvironment.from_power_spectra(envR.power_spectrum_minus(w_list),w_list,T=0.025851991,mu=-1,sigma=-1)
+tk=np.linspace(0,120,1000)
+fenvL=FermionicEnvironment.from_correlation_functions(envL.correlation_function_plus(tk),tk,T=0.025851991,mu=1,sigma=1)
+fenvR=FermionicEnvironment.from_correlation_functions(envR.correlation_function_plus(tk),tk,T=0.025851991,mu=-1,sigma=1)
+```
+
+```{code-cell} ipython3
+
+fig, ax = plt.subplots(figsize=(12, 7))
+ax.plot(
+    w_list,envR.spectral_density(w_list) ,
+    "r", linewidth=3,
+    label=r"J_R(w)",
+)
+ax.plot(
+    w_list, fenvR.spectral_density(w_list),
+    "g--", linewidth=3,
+    label=r"J_R_env(w)",
+)
+ax.set_xlabel("w")
+ax.set_ylabel(r"$J(\omega)$")
+ax.legend();
+```
+
+```{code-cell} ipython3
+fenvR.spectral_density(w_list)[1200]
+```
+
 ## Emission and absorption by the leads
 
 Next let's plot the emission and absorption by the leads.
 
 ```{code-cell} ipython3
-w_list = np.linspace(-2, 2, 100)
 
 fig, ax = plt.subplots(figsize=(12, 7))
 
 # Left lead emission and absorption
 
-gam_L_in = bath_L.J(w_list) * bath_L.fF(w_list, sign=1.0)
-gam_L_out = bath_L.J(w_list) * bath_L.fF(w_list, sign=-1.0)
+gam_L_in = envL.power_spectrum_plus(w_list)
+gam_L_out = envL.power_spectrum_minus(w_list)
 
 ax.plot(
     w_list, gam_L_in,
@@ -248,8 +243,8 @@ ax.plot(
 
 # Right lead emission and absorption
 
-gam_R_in = bath_R.J(w_list) * bath_R.fF(w_list, sign=1.0)
-gam_R_out = bath_R.J(w_list) * bath_R.fF(w_list, sign=-1.0)
+gam_R_in = envR.power_spectrum_plus(w_list)
+gam_R_out = envR.power_spectrum_minus(w_list)
 
 ax.plot(
     w_list, gam_R_in,
@@ -265,6 +260,175 @@ ax.plot(
 ax.set_xlabel("w")
 ax.set_ylabel(r"$S(\omega)$")
 ax.legend();
+```
+
+```{code-cell} ipython3
+w_list = np.linspace(-20, 20, 1600)
+
+fig, ax = plt.subplots(figsize=(12, 7))
+
+# Left lead emission and absorption
+
+gam_L_in = envL.power_spectrum_plus(w_list)
+gam_L_out = envL.power_spectrum_minus(w_list)
+
+# ax.plot(
+#     w_list, gam_L_in,
+#     "b", linewidth=3,
+#     label=r"S_L(w) input (absorption)",
+# )
+ax.plot(
+    w_list, gam_L_out,
+    "r", linewidth=3,
+    label=r"S_L(w) output (emission)",
+)
+
+# Right lead emission and absorption
+
+gam_R_in = fenvL.power_spectrum_plus(w_list)
+gam_R_out = fenvL.power_spectrum_minus(w_list)
+
+# ax.plot(
+#     w_list, gam_R_in,
+#     "r--", linewidth=3,
+#     label=r"S_R(w) input (absorption)",
+# )
+# ax.plot(
+#     w_list, gam_R_out,
+#     "b--", linewidth=3,
+#     label=r"S_R(w) output (emission)",
+# )
+# ax.axvline(x=1)
+# ax.set_ylim(0,0.04)
+ax.set_xlabel("w")
+ax.set_ylabel(r"$S(\omega)$")
+ax.legend();
+```
+
+```{code-cell} ipython3
+from qutip.utilities import fermi_dirac
+f = fermi_dirac(w_list, 1/envL.T, envL.mu)
+ff=1/f
+print(ff)
+ff -= 1
+result = fenvL.power_spectrum_plus(w_list)
+```
+
+```{code-cell} ipython3
+np.argmax(gam_R_out)
+```
+
+```{code-cell} ipython3
+w_list[1572]
+```
+
+```{code-cell} ipython3
+plt.plot(w_list,envL.power_spectrum_plus(w_list)-fenvL.power_spectrum_plus(w_list))
+```
+
+```{code-cell} ipython3
+fenvL.power_spectrum_plus(w_list[1572])
+```
+
+```{code-cell} ipython3
+assert 1==0
+```
+
+```{code-cell} ipython3
+tk = np.linspace(-60, 60, 1000)
+
+fig, ax = plt.subplots(figsize=(12, 7))
+
+# Left lead emission and absorption
+
+gam_L_in = envL.correlation_function_plus(tk) .imag
+gam_L_out = envL.correlation_function_minus(tk)
+
+ax.plot(
+    tk, gam_L_in,
+    "b", linewidth=3,
+    label=r"S_L(w) input (absorption)",
+)
+# ax.plot(
+#     w_list, gam_L_out,
+#     "r", linewidth=3,
+#     label=r"S_L(w) output (emission)",
+# )
+
+# Right lead emission and absorption
+
+gam_R_in = fenvL.correlation_function_plus(tk).imag
+# gam_R_out = fenvL.correlation_function_minus(w_list)
+
+ax.plot(
+    tk, gam_R_in,
+    "r--", linewidth=3,
+    label=r"S_R(w) input (absorption)",
+)
+# ax.plot(
+#     w_list, gam_R_out,
+#     "b--", linewidth=3,
+#     label=r"S_R(w) output (emission)",
+# )
+
+ax.set_xlabel("w")
+ax.set_ylabel(r"$S(\omega)$")
+ax.legend();
+```
+
+```{code-cell} ipython3
+w_list = np.linspace(0, 60, 1000)
+
+fig, ax = plt.subplots(figsize=(12, 7))
+
+# Left lead emission and absorption
+
+gam_L_in = envL.correlation_function_plus(w_list).imag 
+gam_L_out = envL.correlation_function_minus(w_list).imag
+
+ax.plot(
+    w_list, gam_L_in,
+    "b", linewidth=3,
+    label=r"S_L(w) input (absorption)",
+)
+# ax.plot(
+#     w_list, gam_L_out,
+#     "r", linewidth=3,
+#     label=r"S_L(w) output (emission)",
+# )
+
+# Right lead emission and absorption
+
+gam_R_in = fenvL.correlation_function_plus(w_list).imag
+#gam_R_out = fenvL.correlation_function_minus(w_list).imag
+
+ax.plot(
+    w_list, gam_R_in,
+    "r--", linewidth=3,
+    label=r"S_R(w) input (absorption)",
+)
+# ax.plot(
+#     w_list, gam_R_out,
+#     "b--", linewidth=3,
+#     label=r"S_R(w) output (emission)",
+# )
+
+ax.set_xlabel("w")
+ax.set_ylabel(r"$S(\omega)$")
+ax.legend();
+```
+
+```{code-cell} ipython3
+cm=envL.correlation_function_minus(w_list)
+```
+
+```{code-cell} ipython3
+cmm=lambda t:fenvL.correlation_function_plus(t-1j*(1/envL.T)).conj()*np.exp(-envL.mu/envL.T)
+```
+
+```{code-cell} ipython3
+plt.plot(w_list,cm.real)
+plt.plot(w_list,cmm(w_list).real*1e17)
 ```
 
 ## Comparing the Matsubara and Pade approximations

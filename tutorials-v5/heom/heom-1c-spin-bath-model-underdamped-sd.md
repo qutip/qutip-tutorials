@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.16.4
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -76,7 +76,7 @@ Note that in the above, and the following, we set $\hbar = k_\mathrm{B} = 1$.
 
 ## Setup
 
-```{code-cell} ipython3
+```{code-cell}
 import contextlib
 import time
 
@@ -107,19 +107,19 @@ from qutip.solver.heom import (
 
 Let's define some helper functions for calculating correlation function expansions, plotting results and timing how long operations take:
 
-```{code-cell} ipython3
+```{code-cell}
 def cot(x):
     """ Vectorized cotangent of x. """
     return 1. / np.tan(x)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 def coth(x):
     """ Vectorized hyperbolic cotangent of x. """
     return 1. / np.tanh(x)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 def underdamped_matsubara_params(lam, gamma, T, nk):
     """ Calculation of the real and imaginary expansions of the
         underdamped correlation functions.
@@ -161,7 +161,7 @@ def underdamped_matsubara_params(lam, gamma, T, nk):
     return ckAR, vkAR, ckAI, vkAI
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 def plot_result_expectations(plots, axes=None):
     """ Plot the expectation values of operators as functions of time.
 
@@ -189,7 +189,7 @@ def plot_result_expectations(plots, axes=None):
     return fig
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 @contextlib.contextmanager
 def timer(label):
     """ Simple utility for timing functions:
@@ -203,7 +203,7 @@ def timer(label):
     print(f"{label}: {end - start}")
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Solver options:
 
 options = {
@@ -220,19 +220,19 @@ options = {
 
 And let us set up the system Hamiltonian, bath and system measurement operators:
 
-```{code-cell} ipython3
+```{code-cell}
 # Defining the system Hamiltonian
 eps = .5     # Energy of the 2-level system.
 Del = 1.0    # Tunnelling term
 Hsys = 0.5 * eps * sigmaz() + 0.5 * Del * sigmax()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Initial state of the system.
 rho0 = basis(2, 0) * basis(2, 0).dag()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # System-bath coupling (underdamed spectral density)
 Q = sigmaz()  # coupling operator
 
@@ -256,7 +256,7 @@ NC = 10
 tlist = np.linspace(0, 50, 1000)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Define some operators with which we will measure the system
 # 1,1 element of density matrix - corresonding to groundstate
 P11p = basis(2, 0) * basis(2, 0).dag()
@@ -267,7 +267,7 @@ P12p = basis(2, 0) * basis(2, 1).dag()
 
 ### First let us look at what the underdamped spectral density looks like:
 
-```{code-cell} ipython3
+```{code-cell}
 def plot_spectral_density():
     """ Plot the underdamped spectral density """
     w = np.linspace(0, 5, 1000)
@@ -288,7 +288,7 @@ The correlation functions are now very oscillatory, because of the Lorentzian pe
 
 ### So next, let us plot the correlation functions themselves:
 
-```{code-cell} ipython3
+```{code-cell}
 def Mk(t, k, gamma, w0, beta):
     """ Calculate the Matsubara terms for a given t and k. """
     Om = np.sqrt(w0**2 - (gamma / 2)**2)
@@ -340,7 +340,7 @@ plot_correlation_function()
 
 It is useful to look at what the Matsubara contributions do to this spectral density. We see that they modify the real part around $t=0$:
 
-```{code-cell} ipython3
+```{code-cell}
 def plot_matsubara_correlation_function_contributions():
     """ Plot the underdamped correlation function. """
     t = np.linspace(0, 20, 1000)
@@ -374,7 +374,7 @@ Next we calculate the exponents using the Matsubara decompositions. Here we spli
 
 The HEOM code will optimize these, and reduce the number of exponents when real and imaginary parts have the same exponent. This is clearly the case for the first term in the vkAI and vkAR lists.
 
-```{code-cell} ipython3
+```{code-cell}
 ckAR, vkAR, ckAI, vkAI = underdamped_matsubara_params(
     lam=lam, gamma=gamma, T=T, nk=Nk,
 )
@@ -386,7 +386,7 @@ The solver constructs the "right hand side" (RHS) determinining how the system a
 
 Below we create the bath and solver and then solve for the dynamics by calling `.run(rho0, tlist)`.
 
-```{code-cell} ipython3
+```{code-cell}
 with timer("RHS construction time"):
     bath = BosonicBath(Q, ckAR, vkAR, ckAI, vkAI)
     HEOMMats = HEOMSolver(Hsys, bath, NC, options=options)
@@ -395,7 +395,7 @@ with timer("ODE solver time"):
     resultMats = HEOMMats.run(rho0, tlist)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 plot_result_expectations([
     (resultMats, P11p, 'b', "P11 Mats"),
     (resultMats, P12p, 'r', "P12 Mats"),
@@ -408,7 +408,7 @@ to perform this expansion will allow you to construct your own baths for other s
 
 Below we show how to use this built-in functionality:
 
-```{code-cell} ipython3
+```{code-cell}
 # Compare to built-in under-damped bath:
 
 with timer("RHS construction time"):
@@ -419,7 +419,7 @@ with timer("ODE solver time"):
     result_udbath = HEOM_udbath.run(rho0, tlist)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 plot_result_expectations([
     (result_udbath, P11p, 'b', "P11 (UnderDampedBath)"),
     (result_udbath, P12p, 'r', "P12 (UnderDampedBath)"),
@@ -432,7 +432,7 @@ plot_result_expectations([
 
 ### We can compare these results to those of the Bloch-Redfield solver in QuTiP:
 
-```{code-cell} ipython3
+```{code-cell}
 UD = (
     f"2 * {lam}**2 * {gamma} / ( {w0}**4 * {beta}) if (w==0)"
     " else "
@@ -447,7 +447,7 @@ with timer("ODE solver time"):
     )
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 plot_result_expectations([
     (resultMats, P11p, 'b', "P11 Mats"),
     (resultMats, P12p, 'r', "P12 Mats"),
@@ -462,7 +462,7 @@ plot_result_expectations([
 
 The thermal state of a reaction coordinate (treating the environment as a single damped mode) should, at high temperatures and small gamma, tell us the steady-state:
 
-```{code-cell} ipython3
+```{code-cell}
 dot_energy, dot_state = Hsys.eigenstates()
 deltaE = dot_energy[1] - dot_energy[0]
 
@@ -495,7 +495,7 @@ P11RC = tensor(qeye(NRC), basis(2, 0) * basis(2, 0).dag())
 P11RC = expect(rhoss, P11RC)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 rcParams = {
     "axes.titlesize": 25,
     "axes.labelsize": 30,
@@ -512,7 +512,7 @@ rcParams = {
 }
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(12, 7))
 
 with plt.rc_context(rcParams):
@@ -541,7 +541,7 @@ with plt.rc_context(rcParams):
 
 ## About
 
-```{code-cell} ipython3
+```{code-cell}
 qutip.about()
 ```
 
@@ -549,7 +549,7 @@ qutip.about()
 
 This section can include some tests to verify that the expected outputs are generated within the notebook. We put this section at the end of the notebook, so it's not interfering with the user experience. Please, define the tests using assert, so that the cell execution fails if a wrong output is generated.
 
-```{code-cell} ipython3
+```{code-cell}
 assert np.allclose(
     expect(P11p, resultMats.states[-100:]), P11RC, rtol=1e-2,
 )

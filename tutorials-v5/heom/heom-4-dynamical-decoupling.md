@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.16.4
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -27,7 +27,7 @@ We first show the standard example of equally spaced pulses, and then consider t
 
 ## Setup
 
-```{code-cell} ipython3
+```{code-cell}
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -55,14 +55,14 @@ from IPython.display import display
 
 Let's define some helper functions for calculating the spectral density:
 
-```{code-cell} ipython3
+```{code-cell}
 def dl_spectrum(w, lam, gamma):
     """ Return the Drude-Lorentz spectral density. """
     J = w * 2 * lam * gamma / (gamma**2 + w**2)
     return J
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Solver options:
 
 # The max_step must be set to a short time than the
@@ -84,7 +84,7 @@ options = {
 
 Now we define the system and bath properties and the HEOM parameters. The system is a single stationary qubit with $H = 0$ and the bath is a bosonic bath with a Drude-Lorentz spectrum.
 
-```{code-cell} ipython3
+```{code-cell}
 # Define the system Hamlitonian.
 #
 # The system isn't evolving by itself, so the Hamiltonian is 0 (with the
@@ -93,7 +93,7 @@ Now we define the system and bath properties and the HEOM parameters. The system
 H_sys = 0 * sigmaz()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Define some operators with which we will measure the system
 # 1,1 element of density matrix - corresonding to groundstate
 P11p = basis(2, 0) * basis(2, 0).dag()
@@ -102,7 +102,7 @@ P22p = basis(2, 1) * basis(2, 1).dag()
 P12p = basis(2, 0) * basis(2, 1).dag()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Properties for the Drude-Lorentz bath
 
 lam = 0.0005
@@ -118,7 +118,7 @@ Nk = 3
 bath = DrudeLorentzPadeBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # HEOM parameters
 
 # number of layers to keep in the hierarchy:
@@ -129,7 +129,7 @@ To perform the dynamic decoupling from the environment, we will drive the system
 
 Below we define a function that returns the pulse (which is itself a function):
 
-```{code-cell} ipython3
+```{code-cell}
 def drive(amplitude, delay, integral):
     """ Coefficient of the drive as a function of time.
 
@@ -166,7 +166,7 @@ H_drive = sigmax()
 
 Let's start by plotting the spectral density of our Drude-Lorentz bath:
 
-```{code-cell} ipython3
+```{code-cell}
 wlist = np.linspace(0, 0.5, 1000)
 J = dl_spectrum(wlist, lam, gamma)
 
@@ -184,7 +184,7 @@ First we will drive the system with fast, large amplitude pulses. Then we will d
 
 Let's start by simulating the fast pulses:
 
-```{code-cell} ipython3
+```{code-cell}
 # Fast driving (quick, large amplitude pulses)
 
 tlist = np.linspace(0, 400, 1000)
@@ -207,7 +207,7 @@ outputDD = hsolver.run(rho0, tlist)
 
 And now the longer slower pulses:
 
-```{code-cell} ipython3
+```{code-cell}
 # Slow driving (longer, small amplitude pulses)
 
 # without pulses
@@ -224,7 +224,7 @@ outputDDslow = hsolver.run(rho0, tlist)
 
 Now let's plot all of the results and the shapes of the pulses:
 
-```{code-cell} ipython3
+```{code-cell}
 def plot_dd_results(outputnoDD, outputDD, outputDDslow):
     fig, axes = plt.subplots(2, 1, sharex=False, figsize=(12, 12))
 
@@ -290,7 +290,7 @@ def plot_dd_results(outputnoDD, outputDD, outputDDslow):
     fig.tight_layout()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 plot_dd_results(outputnoDD, outputDD, outputDDslow)
 ```
 
@@ -310,7 +310,7 @@ $$
 
 This is just a convenient way to describe the varying delay. We could have chosen another monotonically increasing function to represent the cummulative delay (although it might not be as effective).
 
-```{code-cell} ipython3
+```{code-cell}
 def cummulative_delay_fractions(N):
     """ Return an array of N + 1 cummulative delay
         fractions.
@@ -364,7 +364,7 @@ Let's plot the cummulative delays and see what they look like. Note that the cum
 
 On the same axes we plot the individual $j^{th}$ delays as a fraction of the average delay.
 
-```{code-cell} ipython3
+```{code-cell}
 def plot_cummulative_delay_fractions(N):
     cummulative = cummulative_delay_fractions(N)
     individual = (cummulative[1:] - cummulative[:-1]) * N
@@ -380,7 +380,7 @@ plot_cummulative_delay_fractions(100)
 
 And now let us plot the first ten even and optimally spaced pulses together to compare them:
 
-```{code-cell} ipython3
+```{code-cell}
 def plot_even_and_optimally_spaced_pulses():
     amplitude = 10.0
     integral = np.pi / 2
@@ -408,7 +408,7 @@ Now let's simulate the effectiveness of the two sets of delays by comparing how 
 
 We'll perform the simulation over a range of lambdas and gammas to show how the non-evenly spaced delays become optimal as the width of the bath spectral function increases.
 
-```{code-cell} ipython3
+```{code-cell}
 # Bath parameters to simulate over:
 
 # We use only two lambdas and two gammas so that the notebook executes
@@ -488,7 +488,7 @@ P12_results = [
 
 Now that we have the expectation values of $\rho_{01}$ let's plot them as a function of gamma for each lambda. Note how in each case the non-evenly spaced pulses become optimal once gamma is sufficiently small:
 
-```{code-cell} ipython3
+```{code-cell}
 fig, axes = plt.subplots(1, 1, sharex=False, figsize=(10, 7))
 colors = ["green", "red", "blue"]
 
@@ -518,7 +518,7 @@ And now you know about dynamically decoupling a qubit from its environment!
 
 ## About
 
-```{code-cell} ipython3
+```{code-cell}
 qutip.about()
 ```
 
@@ -526,6 +526,6 @@ qutip.about()
 
 This section can include some tests to verify that the expected outputs are generated within the notebook. We put this section at the end of the notebook, so it's not interfering with the user experience. Please, define the tests using assert, so that the cell execution fails if a wrong output is generated.
 
-```{code-cell} ipython3
+```{code-cell}
 assert 1 == 1
 ```
