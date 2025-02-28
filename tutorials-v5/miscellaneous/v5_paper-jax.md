@@ -7,7 +7,7 @@ jupyter:
       format_version: '1.3'
       jupytext_version: 1.13.8
   kernelspec:
-    display_name: Python 3 (ipykernel)
+    display_name: qutip-tutorials-v5
     language: python
     name: python3
 ---
@@ -74,7 +74,7 @@ To revert this setting, we can set the function parameter `revert = True`.
 Before diving into the example, it is worth noting here that GPU acceleration depends heavily on the type of problem.
 GPUs are good at parallelizing many small matrix-vector operations, such as integrating small systems across multiple parameters or simulating quantum circuits with repeated small matrix operations.
 For a single ODE involving large matrices, the advantages are less straightforward since ODE solvers are inherently sequential.
-However, as it is illustrated in the QuTiP v5 paper [\[2\]](#References), there is a cross-over point at which using JAX is beneficial.
+However, as it is illustrated in the QuTiP v5 paper [\[2\]](#References), there is a cross-over point at which using JAX becomes beneficial.
 
 ### 1D Ising Spin Chain
 
@@ -152,7 +152,7 @@ plt.show()
 
 ## Auto-Differentiation
 
-We have seen in the previous example how the new JAX data-layer in QuTiP enables us to run calculations on the GPU.
+We have seen in the previous example how the new JAX data-layer in QuTiP works.
 On top of that, JAX adds the features of auto-differentiation.
 To compute derivatives, it is often numerical approximations (e.g., finite difference method) that need to be employed.
 Especially for higher order derivatives, these methods can turn into costly and inaccurate calculations.
@@ -199,8 +199,12 @@ options = {
 }
 ```
 
+When working with JAX you can choose the type of device / processor to be used.
+In our case, we will resort to the CPU since this is a simple Jupyter Notebook.
+However, when running this on your machine, you can opt for using your GPU by simpy changing the argument below.
+
 ```python
-with default_device(devices("gpu")[0]):
+with default_device(devices("cpu")[0]):
     with CoreOptions(default_dtype="jaxdia"):
         d = destroy(2)
         H = ed * d.dag() * d
@@ -310,7 +314,7 @@ grad_f = grad(f)(2.0)
 
 [1] [QuTiP-JAX](https://github.com/qutip/qutip-jax)
 
-[2] [QuTiP v5: The Quantum Toolbox in Python](https://arxiv.org/abs/2412.04705)
+[2] [QuTiP 5: The Quantum Toolbox in Python](https://arxiv.org/abs/2412.04705)
 
 
 ## About
