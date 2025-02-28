@@ -440,10 +440,10 @@ def analytical_steady_state_current(bath_L, bath_R, e1):
 
     # in principle the bounds for the integral should be rechecked if
     # bath or system parameters are changed substantially:
-    bounds = [-10, 10]
+    bounds = [-100, 100]
 
-    real_integral, _ = quad(real_part, *bounds)
-    imag_integral, _ = quad(imag_part, *bounds)
+    real_integral, _ = quad(real_part, *bounds,epsrel=1e-10,epsabs=1e-10)
+    imag_integral, _ = quad(imag_part, *bounds,epsrel=1e-10,epsabs=1e-10)
 
     return real_integral + 1.0j * imag_integral
 
@@ -487,8 +487,8 @@ Now we can calculate the steady state currents from the Pade and Matsubara HEOM 
 tlist = np.linspace(0, 100, 1000)
 rho0 = basis(2, 0) * basis(2, 0).dag()
 Nk=10
-penvL=envL.approx_by_pade(Nk=15,tag="L")
-penvR=envR.approx_by_pade(Nk=15,tag="R")
+penvL=envL.approx_by_pade(Nk=Nk,tag="L")
+penvR=envR.approx_by_pade(Nk=Nk,tag="R")
 
 with timer("RHS construction time"):
     solver_pade = HEOMSolver(H, [(penvL,d1), (penvR,d1)], max_depth=2, options=options)
@@ -540,10 +540,11 @@ print(f"Matsubara steady state current (R): {curr_ss_mats_R}")
 # Times to solve for and initial system state:
 tlist = np.linspace(0, 100, 1000)
 rho0 = basis(2, 0) * basis(2, 0).dag()
-tk=np.linspace(0,200,1_000)
-k=5
-fpenvL=envL._approx_by_prony(method="espira-II",tlist=tk,Np=k,Nm=k,tag="L")
-fpenvR=envR._approx_by_prony(method="espira-II",tlist=tk,Np=k,Nm=k,tag="R")
+#tk=np.linspace(0,300,1_000)
+tk=np.linspace(0,1000,2000)
+k=11
+fpenvL=envL._approx_by_prony(method="espira-I",tlist=tk,Np=k,Nm=k,tag="L")
+fpenvR=envR._approx_by_prony(method="espira-I",tlist=tk,Np=k,Nm=k,tag="R")
 
 with timer("RHS construction time"):
     solver_fit = HEOMSolver(H, [(fpenvL,d1), (fpenvR,d1)], max_depth=2, options=options)
@@ -553,6 +554,18 @@ with timer("ODE solver time"):
 
 with timer("Steady state solver time"):
     rho_ss_fit, ado_ss_fit = solver_fit.steady_state()
+```
+
+```{code-cell} ipython3
+rho_ss_fit
+```
+
+```{code-cell} ipython3
+rho_ss_mats
+```
+
+```{code-cell} ipython3
+rho_ss_pade
 ```
 
 ```{code-cell} ipython3
