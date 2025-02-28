@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.16.4
+    jupytext_version: 1.16.1
 kernelspec:
   display_name: qutip-dev
   language: python
@@ -145,12 +145,11 @@ H = e1 * d1.dag() * d1
 ```
 
 ```{code-cell} ipython3
-
 from qutip.core.environment import LorentzianEnvironment
 
 
-envL=LorentzianEnvironment(T= 0.025851991,W=1,mu=1,gamma=0.01,Nk=20)
-envR=LorentzianEnvironment(T= 0.025851991,W=1,mu=-1,gamma=0.01,Nk=20)
+envL=LorentzianEnvironment(T= 0.025851991,W=1,mu=1,gamma=0.01,Nk=10)
+envR=LorentzianEnvironment(T= 0.025851991,W=1,mu=-1,gamma=0.01,Nk=10)
 ```
 
 ## Spectral density
@@ -158,7 +157,7 @@ envR=LorentzianEnvironment(T= 0.025851991,W=1,mu=-1,gamma=0.01,Nk=20)
 Let's plot the spectral density.
 
 ```{code-cell} ipython3
-w_list = np.linspace(-30, 30, 2000)
+w_list = np.linspace(-80, 80, 2000)
 
 fig, ax = plt.subplots(figsize=(12, 7))
 
@@ -186,17 +185,20 @@ from qutip.core.environment import FermionicEnvironment
 ```
 
 ```{code-cell} ipython3
-# fenvL=FermionicEnvironment.from_spectral_density(envL.spectral_density(w_list),w_list,T=0.025851991,mu=1)
-# fenvR=FermionicEnvironment.from_spectral_density(envR.spectral_density(w_list),w_list,T=0.025851991,mu=-1)
+w_list = np.linspace(-30, 30, 2000)
+
+fenvL=FermionicEnvironment.from_spectral_density(envL.spectral_density(w_list),w_list,T=0.025851991,mu=1)
+fenvR=FermionicEnvironment.from_spectral_density(envR.spectral_density(w_list),w_list,T=0.025851991,mu=-1)
 # fenvL=FermionicEnvironment.from_power_spectra(envL.power_spectrum_minus(w_list),w_list,T=0.025851991,mu=1,sigma=-1)
 # fenvR=FermionicEnvironment.from_power_spectra(envR.power_spectrum_minus(w_list),w_list,T=0.025851991,mu=-1,sigma=-1)
-tk=np.linspace(0,120,1000)
-fenvL=FermionicEnvironment.from_correlation_functions(envL.correlation_function_plus(tk),tk,T=0.025851991,mu=1,sigma=1)
-fenvR=FermionicEnvironment.from_correlation_functions(envR.correlation_function_plus(tk),tk,T=0.025851991,mu=-1,sigma=1)
+tk=np.linspace(0,60,2000)
+# fenvL=FermionicEnvironment.from_correlation_functions(envL.correlation_function_plus(tk),tk,T=0.025851991,mu=1,sigma=1)
+# fenvR=FermionicEnvironment.from_correlation_functions(envR.correlation_function_plus(tk),tk,T=0.025851991,mu=-1,sigma=1)
+fpenvL=fenvL._approx_by_prony(method="espira-I",tlist=tk,Np=10,Nm=10,tag="L")
+fpenvR=fenvR._approx_by_prony(method="espira-I",tlist=tk,Np=10,Nm=10,tag="R")
 ```
 
 ```{code-cell} ipython3
-
 fig, ax = plt.subplots(figsize=(12, 7))
 ax.plot(
     w_list,envR.spectral_density(w_list) ,
@@ -208,136 +210,125 @@ ax.plot(
     "g--", linewidth=3,
     label=r"J_R_env(w)",
 )
+ax.plot(
+    w_list, fpenvR.spectral_density(w_list),
+    "ko", linewidth=3,
+    label=r"J_R_env(w)",
+)
 ax.set_xlabel("w")
 ax.set_ylabel(r"$J(\omega)$")
 ax.legend();
 ```
 
 ```{code-cell} ipython3
-fenvR.spectral_density(w_list)[1200]
-```
-
-## Emission and absorption by the leads
-
-Next let's plot the emission and absorption by the leads.
-
-```{code-cell} ipython3
-
 fig, ax = plt.subplots(figsize=(12, 7))
-
-# Left lead emission and absorption
-
-gam_L_in = envL.power_spectrum_plus(w_list)
-gam_L_out = envL.power_spectrum_minus(w_list)
-
 ax.plot(
-    w_list, gam_L_in,
-    "b--", linewidth=3,
-    label=r"S_L(w) input (absorption)",
-)
-ax.plot(
-    w_list, gam_L_out,
-    "r--", linewidth=3,
-    label=r"S_L(w) output (emission)",
-)
-
-# Right lead emission and absorption
-
-gam_R_in = envR.power_spectrum_plus(w_list)
-gam_R_out = envR.power_spectrum_minus(w_list)
-
-ax.plot(
-    w_list, gam_R_in,
-    "b", linewidth=3,
-    label=r"S_R(w) input (absorption)",
-)
-ax.plot(
-    w_list, gam_R_out,
+    w_list,envL.correlation_function_plus(w_list).imag ,
     "r", linewidth=3,
-    label=r"S_R(w) output (emission)",
+    label=r"J_R(w)",
 )
-
+ax.plot(
+    w_list, fenvL.correlation_function_plus(w_list).imag,
+    "g--", linewidth=3,
+    label=r"J_R_env(w)",
+)
+ax.plot(
+    w_list, fpenvL.correlation_function_plus(w_list).imag,
+    "ko", linewidth=3,
+    label=r"J_R_env(w)",
+)
 ax.set_xlabel("w")
-ax.set_ylabel(r"$S(\omega)$")
+ax.set_ylabel(r"$J(\omega)$")
 ax.legend();
 ```
 
 ```{code-cell} ipython3
-w_list = np.linspace(-20, 20, 1600)
+from scipy.signal.windows import *
+```
 
-fig, ax = plt.subplots(figsize=(12, 7))
+```{code-cell} ipython3
+# def fg(w,x0=1):
+#     mask=w-x0<=0
+#     result=np.exp(-(w-x0)**2 / 0.03)
+#     result[mask]=1
+#     return result
+    
+# plt.plot(w_list,fg(w_list))
+```
 
-# Left lead emission and absorption
+```{code-cell} ipython3
+# from qutip.utilities import fermi_dirac
+# from scipy.fft import fftfreq
 
-gam_L_in = envL.power_spectrum_plus(w_list)
-gam_L_out = envL.power_spectrum_minus(w_list)
+# result=fenvL.power_spectrum_plus(w_list)
+# mask=w_list-fenvL.mu <0
 
+# result[~mask] = result[~mask]*fg(w_list[~mask])#gaussian(len(w_list),std=10*fenvL.mu)[~mask]
+# f = fermi_dirac(w_list, 1/envL.T, envL.mu)
+# ff=1/f
+# ff -= 1
+# result2=ff* result
+# problematic_indices = ~np.isfinite(result2)
+# # Only if there are problematic values, recalculate those specific points
+# if np.any(problematic_indices):
+#     # For problematic points, use an alternative calculation with a small epsilon
+#     ff_safe = 1/(fermi_dirac(w_list[problematic_indices],
+#                                 1/fenvL.T, fenvL.mu) + 1e-10)
+#     ff_safe -= 1
+# result2[problematic_indices]=ff_safe*result[problematic_indices]
+```
+
+```{code-cell} ipython3
+# w_list = np.linspace(-20, 20, 1600)
+
+# fig, ax = plt.subplots(figsize=(12, 7))
+
+# # Left lead emission and absorption
+
+# gam_L_in = envL.power_spectrum_plus(w_list)
+
+# # ax.plot(
+# #     w_list, gam_L_in,
+# #     "b", linewidth=3,
+# #     label=r"S_L(w) input (absorption)",
+# # )
 # ax.plot(
-#     w_list, gam_L_in,
-#     "b", linewidth=3,
-#     label=r"S_L(w) input (absorption)",
+#     w_list, gam_L_out,
+#     "r", linewidth=3,
+#     label=r"S_L(w) output (emission)",
 # )
-ax.plot(
-    w_list, gam_L_out,
-    "r", linewidth=3,
-    label=r"S_L(w) output (emission)",
-)
 
-# Right lead emission and absorption
+# # Right lead emission and absorption
 
-gam_R_in = fenvL.power_spectrum_plus(w_list)
-gam_R_out = fenvL.power_spectrum_minus(w_list)
-
+# # ax.plot(
+# #     w_list, result,
+# #     "r--", linewidth=3,
+# #     label=r"S_R(w) input (absorption)",
+# # )
 # ax.plot(
-#     w_list, gam_R_in,
-#     "r--", linewidth=3,
-#     label=r"S_R(w) input (absorption)",
-# )
-# ax.plot(
-#     w_list, gam_R_out,
+#     w_list, result2,
 #     "b--", linewidth=3,
 #     label=r"S_R(w) output (emission)",
 # )
-# ax.axvline(x=1)
-# ax.set_ylim(0,0.04)
-ax.set_xlabel("w")
-ax.set_ylabel(r"$S(\omega)$")
-ax.legend();
+# #ax.axvline(x=1)
+# ax.set_ylim(0,0.015)
+# ax.set_xlim(0,2)
+
+# ax.set_xlabel("w")
+# ax.set_ylabel(r"$S(\omega)$")
+# ax.legend();
 ```
 
 ```{code-cell} ipython3
-from qutip.utilities import fermi_dirac
-f = fermi_dirac(w_list, 1/envL.T, envL.mu)
-ff=1/f
-print(ff)
-ff -= 1
-result = fenvL.power_spectrum_plus(w_list)
-```
-
-```{code-cell} ipython3
-np.argmax(gam_R_out)
-```
-
-```{code-cell} ipython3
-w_list[1572]
-```
-
-```{code-cell} ipython3
-plt.plot(w_list,envL.power_spectrum_plus(w_list)-fenvL.power_spectrum_plus(w_list))
-```
-
-```{code-cell} ipython3
-fenvL.power_spectrum_plus(w_list[1572])
-```
-
-```{code-cell} ipython3
-assert 1==0
+# plt.plot(w_list,envL.power_spectrum_plus(w_list)-result)
+# plt.ylim(-1e-8,1e-8)
 ```
 
 ```{code-cell} ipython3
 tk = np.linspace(-60, 60, 1000)
 
-fig, ax = plt.subplots(figsize=(12, 7))
+
+ig, ax = plt.subplots(figsize=(12, 7))
 
 # Left lead emission and absorption
 
@@ -357,7 +348,7 @@ ax.plot(
 
 # Right lead emission and absorption
 
-gam_R_in = fenvL.correlation_function_plus(tk).imag
+gam_R_in = fpenvL.correlation_function_plus(tk).imag
 # gam_R_out = fenvL.correlation_function_minus(w_list)
 
 ax.plot(
@@ -399,7 +390,7 @@ ax.plot(
 
 # Right lead emission and absorption
 
-gam_R_in = fenvL.correlation_function_plus(w_list).imag
+gam_R_in = fpenvL.correlation_function_plus(w_list).imag
 #gam_R_out = fenvL.correlation_function_minus(w_list).imag
 
 ax.plot(
@@ -418,128 +409,6 @@ ax.set_ylabel(r"$S(\omega)$")
 ax.legend();
 ```
 
-```{code-cell} ipython3
-cm=envL.correlation_function_minus(w_list)
-```
-
-```{code-cell} ipython3
-cmm=lambda t:fenvL.correlation_function_plus(t-1j*(1/envL.T)).conj()*np.exp(-envL.mu/envL.T)
-```
-
-```{code-cell} ipython3
-plt.plot(w_list,cm.real)
-plt.plot(w_list,cmm(w_list).real*1e17)
-```
-
-## Comparing the Matsubara and Pade approximations
-
-Let's start by solving for the evolution using a Pade expansion of the correlation function of the Lorentzian spectral density:
-
-```{code-cell} ipython3
-# HEOM dynamics using the Pade approximation:
-
-# Times to solve for and initial system state:
-tlist = np.linspace(0, 100, 1000)
-rho0 = basis(2, 0) * basis(2, 0).dag()
-
-Nk = 10  # Number of exponents to retain in the expansion of each bath
-
-bathL = LorentzianPadeBath(
-    bath_L.Q, bath_L.gamma, bath_L.W, bath_L.mu, bath_L.T,
-    Nk, tag="L",
-)
-bathR = LorentzianPadeBath(
-    bath_R.Q, bath_R.gamma, bath_R.W, bath_R.mu, bath_R.T,
-    Nk, tag="R",
-)
-
-with timer("RHS construction time"):
-    solver_pade = HEOMSolver(H, [bathL, bathR], max_depth=2, options=options)
-
-with timer("ODE solver time"):
-    result_pade = solver_pade.run(rho0, tlist)
-
-with timer("Steady state solver time"):
-    rho_ss_pade, ado_ss_pade = solver_pade.steady_state()
-```
-
-Now let us plot the result which shows the decay of the initially excited impurity. This is not very illuminating, but we will compare it with the Matsubara expansion and analytic solution sortly:
-
-```{code-cell} ipython3
-# Plot the Pade results
-fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 8))
-
-axes.plot(
-    tlist, expect(result_pade.states, rho0),
-    'r--', linewidth=2,
-    label="P11 (Pade)",
-)
-axes.axhline(
-    expect(rho_ss_pade, rho0),
-    color='r', linestyle="dotted", linewidth=1,
-    label="P11 (Pade steady state)",
-)
-
-axes.set_xlabel('t', fontsize=28)
-axes.legend(fontsize=12);
-```
-
-Now let us do the same for the Matsubara expansion:
-
-```{code-cell} ipython3
-# HEOM dynamics using the Matsubara approximation:
-
-bathL = LorentzianBath(
-    bath_L.Q, bath_L.gamma, bath_L.W, bath_L.mu, bath_L.T,
-    Nk, tag="L",
-)
-bathR = LorentzianBath(
-    bath_R.Q, bath_R.gamma, bath_R.W, bath_R.mu, bath_R.T,
-    Nk, tag="R",
-)
-
-with timer("RHS construction time"):
-    solver_mats = HEOMSolver(H, [bathL, bathR], max_depth=2, options=options)
-
-with timer("ODE solver time"):
-    result_mats = solver_mats.run(rho0, tlist)
-
-with timer("Steady state solver time"):
-    rho_ss_mats, ado_ss_mats = solver_mats.steady_state()
-```
-
-We see a marked difference in the Matsubara vs Pade results:
-
-```{code-cell} ipython3
-# Plot the Pade results
-fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 8))
-
-axes.plot(
-    tlist, expect(result_pade.states, rho0),
-    'r--', linewidth=2,
-    label="P11 (Pade)",
-)
-axes.axhline(
-    expect(rho_ss_pade, rho0),
-    color='r', linestyle="dotted", linewidth=1,
-    label="P11 (Pade steady state)",
-)
-
-axes.plot(
-    tlist, expect(result_mats.states, rho0),
-    'b--', linewidth=2,
-    label="P11 (Mats)",
-)
-axes.axhline(
-    expect(rho_ss_mats, rho0),
-    color='b', linestyle="dotted", linewidth=1,
-    label="P11 (Mats steady state)",
-)
-
-axes.set_xlabel('t', fontsize=28)
-axes.legend(fontsize=12);
-```
-
 But which is more correct? The Matsubara or the Pade result?
 
 One advantage of this simple model is that the steady state current to the baths is analytically solvable, so we can check convergence of the result by calculating it analytically (the sum of the currents to and from the system in the steady state must be zero, so the current from one bath is the same as the current to the other).
@@ -547,15 +416,19 @@ One advantage of this simple model is that the steady state current to the baths
 See the [QuTiP-BoFiN paper](https://arxiv.org/abs/2010.10806) for a detailed description and references for the analytic result. Below we just perform the required integration numerically.
 
 ```{code-cell} ipython3
+from qutip.utilities import fermi_dirac
+def lamshift(self, w):
+    """ Return the lamshift. """
+    return 0.5 * (w - self.mu) * self.spectral_density(w) / self.W
 def analytical_steady_state_current(bath_L, bath_R, e1):
     """ Calculate the analytical steady state current. """
 
     def integrand(w):
         return (2 / np.pi) * (
-            bath_L.J(w) * bath_R.J(w) * (bath_L.fF(w) - bath_R.fF(w)) /
+            bath_L.spectral_density(w) * bath_R.spectral_density(w) * (fermi_dirac(w,1/envL.T,envL.mu) - fermi_dirac(w,1/envR.T,envR.mu)) /
             (
-                (bath_L.J(w) + bath_R.J(w))**2 +
-                4*(w - e1 - bath_L.lamshift(w) - bath_R.lamshift(w))**2
+                (bath_L.spectral_density(w) + bath_R.spectral_density(w))**2 +
+                4*(w - e1 - lamshift(envL,w) - lamshift(envL,w))**2
             )
         )
 
@@ -575,7 +448,7 @@ def analytical_steady_state_current(bath_L, bath_R, e1):
     return real_integral + 1.0j * imag_integral
 
 
-curr_ss_analytic = analytical_steady_state_current(bath_L, bath_R, e1)
+curr_ss_analytic = analytical_steady_state_current(envL, envR, e1)
 
 print(f"Analytical steady state current: {curr_ss_analytic}")
 ```
@@ -609,11 +482,49 @@ def state_current(ado_state, bath_tag):
 Now we can calculate the steady state currents from the Pade and Matsubara HEOM results:
 
 ```{code-cell} ipython3
+
+# Times to solve for and initial system state:
+tlist = np.linspace(0, 100, 1000)
+rho0 = basis(2, 0) * basis(2, 0).dag()
+Nk=10
+penvL=envL.approx_by_pade(Nk=15,tag="L")
+penvR=envR.approx_by_pade(Nk=15,tag="R")
+
+with timer("RHS construction time"):
+    solver_pade = HEOMSolver(H, [(penvL,d1), (penvR,d1)], max_depth=2, options=options)
+
+with timer("ODE solver time"):
+    result_pade = solver_pade.run(rho0, tlist)
+
+with timer("Steady state solver time"):
+    rho_ss_pade, ado_ss_pade = solver_pade.steady_state()
+```
+
+```{code-cell} ipython3
 curr_ss_pade_L = state_current(ado_ss_pade, "L")
 curr_ss_pade_R = state_current(ado_ss_pade, "R")
 
 print(f"Pade steady state current (L): {curr_ss_pade_L}")
 print(f"Pade steady state current (R): {curr_ss_pade_R}")
+```
+
+```{code-cell} ipython3
+
+# Times to solve for and initial system state:
+tlist = np.linspace(0, 100, 1000)
+rho0 = basis(2, 0) * basis(2, 0).dag()
+Nk=10
+menvL=envL.approx_by_matsubara(Nk=10,tag="L")
+menvR=envR.approx_by_matsubara(Nk=10,tag="R")
+
+with timer("RHS construction time"):
+    solver_mats = HEOMSolver(H, [(menvL,d1), (menvR,d1)], max_depth=2, options=options)
+
+with timer("ODE solver time"):
+    result_mats = solver_mats.run(rho0, tlist)
+
+with timer("Steady state solver time"):
+    rho_ss_mats, ado_ss_mats= solver_mats.steady_state()
 ```
 
 ```{code-cell} ipython3
@@ -624,6 +535,70 @@ print(f"Matsubara steady state current (L): {curr_ss_mats_L}")
 print(f"Matsubara steady state current (R): {curr_ss_mats_R}")
 ```
 
+```{code-cell} ipython3
+
+# Times to solve for and initial system state:
+tlist = np.linspace(0, 100, 1000)
+rho0 = basis(2, 0) * basis(2, 0).dag()
+tk=np.linspace(0,200,1_000)
+k=5
+fpenvL=envL._approx_by_prony(method="espira-II",tlist=tk,Np=k,Nm=k,tag="L")
+fpenvR=envR._approx_by_prony(method="espira-II",tlist=tk,Np=k,Nm=k,tag="R")
+
+with timer("RHS construction time"):
+    solver_fit = HEOMSolver(H, [(fpenvL,d1), (fpenvR,d1)], max_depth=2, options=options)
+
+with timer("ODE solver time"):
+    result_fit = solver_fit.run(rho0, tlist)
+
+with timer("Steady state solver time"):
+    rho_ss_fit, ado_ss_fit = solver_fit.steady_state()
+```
+
+```{code-cell} ipython3
+fig, ax = plt.subplots(figsize=(12, 7))
+ax.plot(
+    w_list,envL.correlation_function_plus(w_list).imag - fpenvL.correlation_function_plus(w_list).imag,
+    "r", linewidth=3,
+    label=r"J_R(w)",
+)
+ax.plot(
+    w_list,envL.correlation_function_plus(w_list).imag - penvL.correlation_function_plus(w_list).imag,
+    "b", linewidth=3,
+    label=r"J_R(w)",
+)
+
+ax.set_xlabel("w")
+ax.set_ylabel(r"$J(\omega)$")
+ax.legend();
+```
+
+```{code-cell} ipython3
+fig, ax = plt.subplots(figsize=(12, 7))
+ax.plot(
+    w_list,envL.correlation_function_plus(w_list) - fpenvL.correlation_function_plus(w_list),
+    "r", linewidth=3,
+    label=r"J_R(w)",
+)
+ax.plot(
+    w_list,envL.correlation_function_plus(w_list)  - penvL.correlation_function_plus(w_list),
+    "b", linewidth=3,
+    label=r"J_R(w)",
+)
+
+ax.set_xlabel("w")
+ax.set_ylabel(r"$J(\omega)$")
+ax.legend();
+```
+
+```{code-cell} ipython3
+curr_ss_p_L = state_current(ado_ss_fit, "L")
+curr_ss_p_R = state_current(ado_ss_fit, "R")
+
+print(f"Prony steady state current (L): {curr_ss_p_L}")
+print(f"Prony steady state current (R): {curr_ss_p_R}")
+```
+
 Note that the currents from each bath balance as is required by the steady state, but the value of the current is different for the Pade and Matsubara results.
 
 Now let's compare all three:
@@ -631,6 +606,8 @@ Now let's compare all three:
 ```{code-cell} ipython3
 print(f"Pade current (R): {curr_ss_pade_R}")
 print(f"Matsubara current (R): {curr_ss_mats_R}")
+print(f"Fit (R): {curr_ss_p_R}")
+
 print(f"Analytical curernt: {curr_ss_analytic}")
 ```
 
