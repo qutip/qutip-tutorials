@@ -7,7 +7,7 @@ jupyter:
       format_version: '1.3'
       jupytext_version: 1.13.8
   kernelspec:
-    display_name: Python 3 (ipykernel)
+    display_name: qutip-tutorials-v5
     language: python
     name: python3
 ---
@@ -119,10 +119,13 @@ Since we will be using a superconducting qubit hardware backend, we will express
 In general, QuTiP-QIP supports a great variety of gates and also the option for custom gates exists.
 More information on this is presented in the original paper for QuTiP-QIP [\[1\]](#References).
 
+Of course, the accuracy of our simulation is greatly dependent on the Trotter step size.
+To keep this tutorial at a reasonable execution time, we choose $dt = 4.0$, however it is worth exploring smaller step sizes.
+
 ```python
 # simulation parameters
 tf = 20.0  # total time
-dt = 2.0  # Trotter step size
+dt = 4.0  # Trotter step size
 num_steps = int(tf / dt)
 times_circ = np.arange(0, tf + dt, dt)
 ```
