@@ -482,7 +482,6 @@ def state_current(ado_state, bath_tag):
 Now we can calculate the steady state currents from the Pade and Matsubara HEOM results:
 
 ```{code-cell} ipython3
-
 # Times to solve for and initial system state:
 tlist = np.linspace(0, 100, 1000)
 rho0 = basis(2, 0) * basis(2, 0).dag()
@@ -509,7 +508,6 @@ print(f"Pade steady state current (R): {curr_ss_pade_R}")
 ```
 
 ```{code-cell} ipython3
-
 # Times to solve for and initial system state:
 tlist = np.linspace(0, 100, 1000)
 rho0 = basis(2, 0) * basis(2, 0).dag()
@@ -536,16 +534,18 @@ print(f"Matsubara steady state current (R): {curr_ss_mats_R}")
 ```
 
 ```{code-cell} ipython3
-
 # Times to solve for and initial system state:
 tlist = np.linspace(0, 100, 1000)
 rho0 = basis(2, 0) * basis(2, 0).dag()
 #tk=np.linspace(0,300,1_000)
-tk=np.linspace(0,1000,2000)
+tk=np.linspace(0,300,2_000)
+#tk=np.linspace(0,5000,6000)
+# wk=np.concatenate((-np.logspace(1,-8,1000),np.logspace(-8,1,1000)))
 k=11
 fpenvL=envL._approx_by_prony(method="espira-I",tlist=tk,Np=k,Nm=k,tag="L")
 fpenvR=envR._approx_by_prony(method="espira-I",tlist=tk,Np=k,Nm=k,tag="R")
-
+# fpenvL=envL._approx_by_aaa(method="aaa",wlist=wk,Np_max=k,Nm_max=k,tag="L")
+# fpenvR=envR._approx_by_aaa(method="aaa",wlist=wk,Np_max=k,Nm_max=k,tag="R")
 with timer("RHS construction time"):
     solver_fit = HEOMSolver(H, [(fpenvL,d1), (fpenvR,d1)], max_depth=2, options=options)
 
@@ -558,10 +558,6 @@ with timer("Steady state solver time"):
 
 ```{code-cell} ipython3
 rho_ss_fit
-```
-
-```{code-cell} ipython3
-rho_ss_mats
 ```
 
 ```{code-cell} ipython3
@@ -624,6 +620,157 @@ print(f"Fit (R): {curr_ss_p_R}")
 print(f"Analytical curernt: {curr_ss_analytic}")
 ```
 
+```{code-cell} ipython3
+# Plot the Pade results
+fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 8))
+
+axes.plot(
+    tlist, expect(result_pade.states, rho0),
+    'r', linewidth=2,
+    label="P11 (Pade)",
+)
+axes.plot(
+    tlist, expect(result_mats.states, rho0),
+    'g--', linewidth=2,
+    label="P11 (Mats)",
+)
+
+axes.plot(
+    tlist, expect(result_fit.states, rho0),
+    'b--', linewidth=2,
+    label="P11 (Mats)",
+)
+axes.axhline(
+    expect(rho_ss_mats, rho0),
+    color='g', linestyle="dashdot", linewidth=1,
+    label="P11 (Mats steady state)",
+)
+axes.axhline(
+    expect(rho_ss_pade, rho0),
+    color='r',linewidth=2,
+    label="P11 (Pade steady state)",
+)
+axes.axhline(
+    expect(rho_ss_fit, rho0),
+    color='b', linestyle="-.", linewidth=2,
+    label="P11 (Fit steady state)",
+)
+
+
+
+axes.set_xlabel('t', fontsize=28)
+axes.legend(fontsize=12);
+```
+
+```{code-cell} ipython3
+assert 1==0
+```
+
+```{code-cell} ipython3
+# Theta (bias voltages)
+
+thetas = np.linspace(-4, 4, 100)
+
+# Setup a progress bar:
+
+progress = IntProgress(min=0, max=2 * len(thetas))
+display(progress)
+
+# Calculate the current for the list of thetas
+
+def lamshift(w,theta,self):
+    """ Return the lamshift. """
+    return 0.5 * (w - theta) * self.spectral_density(w) / self.W
+def analytical_steady_state_current(bath_L, bath_R, e1,theta=2):
+    """ Calculate the analytical steady state current. """
+
+    def integrand(w):
+        return (2 / np.pi) * (
+            bath_L.spectral_density(w) * bath_R.spectral_density(w) * (fermi_dirac(w,1/envL.T,theta/2) - fermi_dirac(w,1/envR.T,-theta/2)) /
+            (
+                (bath_L.spectral_density(w) + bath_R.spectral_density(w))**2 +
+                4*(w - e1 - lamshift(w,theta/2,envR) - lamshift(w,-theta/2,envL))**2
+            )
+        )
+
+    def real_part(x):
+        return np.real(integrand(x))
+
+    def imag_part(x):
+        return np.imag(integrand(x))
+
+    # in principle the bounds for the integral should be rechecked if
+    # bath or system parameters are changed substantially:
+    bounds = [-10, 10]
+
+    real_integral, _ = quad(real_part, *bounds)
+    imag_integral, _ = quad(imag_part, *bounds)
+
+    return real_integral + 1.0j * imag_integral
+
+def current_analytic_for_theta(e1, theta):
+    """ Return the analytic current for a given theta. """
+    envL=LorentzianEnvironment(T= 0.025851991,W=1,mu=theta/2,gamma=0.01,Nk=20)
+    envR=LorentzianEnvironment(T= 0.025851991,W=1,mu=-theta/2,gamma=0.01,Nk=20)
+    current = analytical_steady_state_current(
+        envL,
+        envR,
+        e1,
+        theta
+    )
+    progress.value += 1
+    return np.real(current)
+
+
+def current_pade_for_theta(H, theta, Nk,method):
+    """ Return the steady state current using the Pade approximation. """
+    envL=LorentzianEnvironment(T= 0.025851991,W=1,mu=theta/2,gamma=0.01,Nk=20)
+    envR=LorentzianEnvironment(T= 0.025851991,W=1,mu=-theta/2,gamma=0.01,Nk=20)
+    if method=="pade":
+        bathL=envL.approx_by_pade(Nk=Nk,tag="L")
+        bathR=envR.approx_by_pade(Nk=Nk,tag="R")
+    else:
+        bathL=envL._approx_by_prony(method="espira-I",tlist=tk,Np=Nk,Nm=Nk,tag="L")
+        bathR=envR._approx_by_prony(method="espira-I",tlist=tk,Np=Nk,Nm=Nk,tag="R")
+    solver_pade = HEOMSolver(H, [(bathL,d1), (bathR,d1)], max_depth=2, options=options)
+    rho_ss_pade, ado_ss_pade = solver_pade.steady_state()
+    current = state_current(ado_ss_pade, bath_tag="R")
+
+    progress.value += 1
+    return np.real(current)
+
+
+curr_ss_analytic_thetas = [
+    current_analytic_for_theta(e1, theta)
+    for theta in thetas
+]
+
+# The number of expansion terms has been dropped to Nk=6 to speed
+# up notebook execution. Increase to Nk=10 for more accurate results.
+# curr_ss_pade_theta = [
+#     current_pade_for_theta(H, theta, Nk=6,method="pade")
+#     for theta in thetas
+# ]
+```
+
+```{code-cell} ipython3
+curr_ss_pade_theta = [
+    current_pade_for_theta(H, theta, Nk=6,method="pade")
+    for theta in thetas
+]
+```
+
+```{code-cell} ipython3
+from tqdm import tqdm
+```
+
+```{code-cell} ipython3
+curr_ss_fit_theta = [
+    current_pade_for_theta(H, theta, Nk=11,method="pde")
+    for theta in tqdm(thetas)
+]
+```
+
 In this case we observe that the Pade approximation has converged more closely to the analytical current than the Matsubara.
 
 The Matsubara result could be improved by increasing the number of terms retained in the Matsubara expansion (i.e. increasing `Nk`).
@@ -638,69 +785,13 @@ Now lets plot the current as a function of bias voltage (the bias voltage is the
 
 We will calculate the steady state current for each `theta` both analytically and using the HEOM with the Pade correlation expansion approximation.
 
-```{code-cell} ipython3
-# Theta (bias voltages)
-
-thetas = np.linspace(-4, 4, 100)
-
-# Setup a progress bar:
-
-progress = IntProgress(min=0, max=2 * len(thetas))
-display(progress)
-
-# Calculate the current for the list of thetas
-
-
-def current_analytic_for_theta(e1, bath_L, bath_R, theta):
-    """ Return the analytic current for a given theta. """
-    current = analytical_steady_state_current(
-        bath_L.replace(theta=theta),
-        bath_R.replace(theta=theta),
-        e1,
-    )
-    progress.value += 1
-    return np.real(current)
-
-
-def current_pade_for_theta(H, bath_L, bath_R, theta, Nk):
-    """ Return the steady state current using the Pade approximation. """
-    bath_L = bath_L.replace(theta=theta)
-    bath_R = bath_R.replace(theta=theta)
-
-    bathL = LorentzianPadeBath(
-        bath_L.Q, bath_L.gamma, bath_L.W, bath_L.mu, bath_L.T,
-        Nk, tag="L",
-    )
-    bathR = LorentzianPadeBath(
-        bath_R.Q, bath_R.gamma, bath_R.W, bath_R.mu, bath_R.T,
-        Nk, tag="R",
-    )
-
-    solver_pade = HEOMSolver(H, [bathL, bathR], max_depth=2, options=options)
-    rho_ss_pade, ado_ss_pade = solver_pade.steady_state()
-    current = state_current(ado_ss_pade, bath_tag="R")
-
-    progress.value += 1
-    return np.real(current)
-
-
-curr_ss_analytic_thetas = [
-    current_analytic_for_theta(e1, bath_L, bath_R, theta)
-    for theta in thetas
-]
-
-# The number of expansion terms has been dropped to Nk=6 to speed
-# up notebook execution. Increase to Nk=10 for more accurate results.
-curr_ss_pade_theta = [
-    current_pade_for_theta(H, bath_L, bath_R, theta, Nk=6)
-    for theta in thetas
-]
-```
++++
 
 Below we plot the results and see that even with `Nk=6`, the HEOM Pade approximation gives good results for the steady state current. Increasing `Nk` to `10` gives very accurate results.
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots(figsize=(12, 7))
+
 
 ax.plot(
     thetas, 2.434e-4 * 1e6 * np.array(curr_ss_analytic_thetas),
@@ -710,10 +801,205 @@ ax.plot(
 ax.plot(
     thetas, 2.434e-4 * 1e6 * np.array(curr_ss_pade_theta),
     'r--', linewidth=3,
-    label=r"HEOM Pade $N_k=10$, $n_{\mathrm{max}}=2$",
+    label=rf"HEOM Pade $N_k={6}$,"+r"$n_{\mathrm{max}}=2$",
+)
+ax.plot(
+    thetas, 2.434e-4 * 1e6 * np.array(curr_ss_fit_theta),
+    'b--', linewidth=3,
+    label=rf"HEOM Fit $N_k={6}$,"+r"$n_{\mathrm{max}}=2$",
 )
 
+ax.locator_params(axis='y', nbins=4)
+ax.locator_params(axis='x', nbins=4)
 
+ax.set_xticks([-2.5, 0, 2.5])
+ax.set_xticklabels([-2.5, 0, 2.5])
+ax.set_xlabel(r"Bias voltage $\Delta \mu$ ($V$)", fontsize=28)
+ax.set_ylabel(r"Current ($\mu A$)", fontsize=28)
+ax.legend(fontsize=25);
+```
+
+Using a semicircular spectral density
+
+```{code-cell} ipython3
+def semicircle(w,W):
+    result=np.zeros(len(w))
+    mask=W>=w
+    mask2=-W<=w
+    result[mask&mask2]=np.sqrt(1-(w[mask&mask2]/W)**2)
+    return result
+    
+```
+
+```{code-cell} ipython3
+w_list=np.linspace(-300,300,10_000)
+plt.plot(w_list,semicircle(w_list,30))
+```
+
+```{code-cell} ipython3
+J=semicircle(w_list,30)
+```
+
+```{code-cell} ipython3
+g=0.01
+w_list=np.linspace(-300,300,10_000)
+fenvL=FermionicEnvironment.from_spectral_density(g*semicircle(w_list,10),w_list,T=0.025851991,mu=1)
+fenvR=FermionicEnvironment.from_spectral_density(g*semicircle(w_list,10),w_list,T=0.025851991,mu=-1)
+```
+
+```{code-cell} ipython3
+# Times to solve for and initial system state:
+tlist = np.linspace(0, 30, 1000)
+rho0 = basis(2, 0) * basis(2, 0).dag()
+tk=np.linspace(0,200,1_000)
+#tk=np.linspace(0,50,1_000)
+#tk=np.linspace(0,5000,6000)
+k=12
+# fpenvL=fenvL._approx_by_prony(method="esprit",tlist=tk,Np=k,Nm=6,tag="L")
+fpenvL=fenvL._approx_by_prony(method="espira-I",tlist=tk,Np=k,Nm=k,tag="L")
+fpenvR=fenvR._approx_by_prony(method="espira-I",tlist=tk,Np=k,Nm=k,tag="R")
+
+with timer("RHS construction time"):
+    solver_fit = HEOMSolver(H, [(fpenvL,d1), (fpenvR,d1)], max_depth=2, options=options)
+
+# with timer("ODE solver time"):
+#     result_fit = solver_fit.run(rho0, tlist)
+
+with timer("Steady state solver time"):
+    rho_ss_fit, ado_ss_fit = solver_fit.steady_state()
+```
+
+```{code-cell} ipython3
+rho_ss_fit
+```
+
+```{code-cell} ipython3
+
+curr_ss_p_L = state_current(ado_ss_fit, "L")
+curr_ss_p_R = state_current(ado_ss_fit, "R")
+print(f"Fit (R): {curr_ss_p_R}")
+```
+
+```{code-cell} ipython3
+curr_ss_analytic = analytical_steady_state_current(fenvL, fenvR, e1)
+
+print(f"Analytical steady state current: {curr_ss_analytic}")
+```
+
+```{code-cell} ipython3
+plt.plot(tlist,fenvL.correlation_function_plus(tlist).real)
+plt.plot(tlist,fpenvL.correlation_function_plus(tlist).real,"--")
+plt.show()
+plt.plot(tlist,fenvL.correlation_function_plus(tlist).imag)
+plt.plot(tlist,fpenvL.correlation_function_plus(tlist).imag,"--")
+```
+
+```{code-cell} ipython3
+plt.plot(tlist,fenvL.correlation_function_minus(tlist).real)
+plt.plot(tlist,fpenvL.correlation_function_minus(tlist).real,"--")
+plt.show()
+plt.plot(tlist,fenvL.correlation_function_minus(tlist).imag)
+plt.plot(tlist,fpenvL.correlation_function_minus(tlist).imag,"--")
+```
+
+```{code-cell} ipython3
+w_list=np.linspace(-20,20,10_000)
+```
+
+```{code-cell} ipython3
+plt.plot(w_list,fenvL.power_spectrum_plus(w_list).real)
+plt.plot(w_list,fpenvL.power_spectrum_plus(w_list).real,"--")
+```
+
+```{code-cell} ipython3
+plt.plot(w_list,fenvL.power_spectrum_minus(w_list).real)
+plt.plot(w_list,fpenvL.power_spectrum_minus(w_list).real,"--")
+```
+
+```{code-cell} ipython3
+w_list=np.linspace(-100,100,10_000)
+plt.plot(w_list,g*semicircle(w_list,10))
+plt.plot(w_list,fenvL.spectral_density(w_list),"--")
+plt.plot(w_list,fpenvL.spectral_density(w_list),"--")
+# plt.xlim(50,70)
+# plt.ylim(-1e-12,1e-12)
+```
+
+```{code-cell} ipython3
+curr_ss_analytic = analytical_steady_state_current(fenvL, fenvR, e1)
+
+print(f"Analytical steady state current: {curr_ss_analytic}")
+```
+
+```{code-cell} ipython3
+def current_analytic_for_theta(e1, theta):
+    """ Return the analytic current for a given theta. """
+    fenvL=FermionicEnvironment.from_spectral_density(g*semicircle(w_list,3),w_list,T=0.025851991,mu=theta/2)
+    fenvR=FermionicEnvironment.from_spectral_density(g*semicircle(w_list,3),w_list,T=0.025851991,mu=-theta/2)
+    current = analytical_steady_state_current(
+        fenvL,
+        fenvR,
+        e1,
+        theta
+    )
+    progress.value += 1
+    return np.real(current)
+
+
+def current_pade_for_theta(H, theta, Nk,method):
+    """ Return the steady state current using the Pade approximation. """
+    fenvL=FermionicEnvironment.from_spectral_density(g*semicircle(w_list,3),w_list,T=0.025851991,mu=theta/2)
+    fenvR=FermionicEnvironment.from_spectral_density(g*semicircle(w_list,3),w_list,T=0.025851991,mu=-theta/2)
+    if method=="pade":
+        bathL=fenvL.approx_by_pade(Nk=Nk,tag="L")
+        bathR=fenvR.approx_by_pade(Nk=Nk,tag="R")
+    else:
+        bathL=fenvL._approx_by_prony(method="espira-I",tlist=tk,Np=Nk,Nm=Nk,tag="L")
+        bathR=fenvR._approx_by_prony(method="espira-I",tlist=tk,Np=Nk,Nm=Nk,tag="R")
+    solver_pade = HEOMSolver(H, [(bathL,d1), (bathR,d1)], max_depth=2, options=options)
+    rho_ss_pade, ado_ss_pade = solver_pade.steady_state()
+    current = state_current(ado_ss_pade, bath_tag="R")
+
+    progress.value += 1
+    return np.real(current)
+
+
+curr_ss_analytic_thetas = [
+    current_analytic_for_theta(e1, theta)
+    for theta in thetas
+]
+```
+
+```{code-cell} ipython3
+from tqdm import tqdm
+```
+
+```{code-cell} ipython3
+curr_ss_fit_theta = [
+    current_pade_for_theta(H, theta, Nk=5,method="pde")
+    for theta in tqdm(thetas)
+]
+```
+
+```{code-cell} ipython3
+fig, ax = plt.subplots(figsize=(12, 7))
+
+
+ax.plot(
+    thetas, 2.434e-4 * 1e6 * np.array(curr_ss_analytic_thetas),
+    color="black", linewidth=3,
+    label=r"Analytical",
+)
+ax.plot(
+    thetas, 2.434e-4 * 1e6 * np.array(curr_ss_fit_theta),
+    'b--', linewidth=3,
+    label=rf"HEOM Fit $N_k={6}$,"+r"$n_{\mathrm{max}}=2$",
+)
+# ax.plot(
+#     thetas, 2.434e-4 * 1e6 * np.array(curr_ss_pade_theta),
+#     'r--', linewidth=3,
+#     label=rf"HEOM Fit $N_k={6}$,"+r"$n_{\mathrm{max}}=2$",
+# )
 ax.locator_params(axis='y', nbins=4)
 ax.locator_params(axis='x', nbins=4)
 
