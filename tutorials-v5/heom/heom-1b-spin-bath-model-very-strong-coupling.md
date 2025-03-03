@@ -5,9 +5,9 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.16.1
 kernelspec:
-  display_name: Python 3 (ipykernel)
+  display_name: qutip-dev
   language: python
   name: python3
 ---
@@ -86,7 +86,6 @@ import contextlib
 import time
 
 import numpy as np
-from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 
 import qutip
@@ -98,12 +97,12 @@ from qutip import (
     sigmax,
     sigmaz,
 )
+from qutip.core.environment import (
+    DrudeLorentzEnvironment,
+    system_terminator
+)
 from qutip.solver.heom import (
     HEOMSolver,
-    BosonicBath,
-    DrudeLorentzBath,
-    DrudeLorentzPadeBath,
-    BathExponent,
 )
 
 %matplotlib inline
@@ -199,8 +198,9 @@ P12p = basis(2, 0) * basis(2, 1).dag()
 Let us briefly inspect the spectral density.
 
 ```{code-cell} ipython3
+bath = DrudeLorentzEnvironment(lam=lam, gamma=gamma, T=T, Nk=500)
 w = np.linspace(0, 5, 1000)
-J = w * 2 * lam * gamma / ((gamma**2 + w**2))
+J = bath.spectral_density(w)
 
 # Plot the results
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 8))
@@ -213,8 +213,8 @@ axes.set_ylabel(r'J', fontsize=28);
 
 ```{code-cell} ipython3
 with timer("RHS construction time"):
-    bath = DrudeLorentzBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
-    HEOMMats = HEOMSolver(Hsys, bath, NC, options=options)
+    matsBath=bath.approx_by_matsubara(Nk=Nk)
+    HEOMMats = HEOMSolver(Hsys, (matsBath,Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultMats = HEOMMats.run(rho0, tlist)
@@ -224,10 +224,10 @@ with timer("ODE solver time"):
 
 ```{code-cell} ipython3
 with timer("RHS construction time"):
-    bath = DrudeLorentzBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
-    _, terminator = bath.terminator()
+    matsBath,delta=bath.approx_by_matsubara(Nk=Nk,compute_delta=True)
+    terminator = system_terminator(Q,delta)
     Ltot = liouvillian(Hsys) + terminator
-    HEOMMatsT = HEOMSolver(Ltot, bath, NC, options=options)
+    HEOMMatsT = HEOMSolver(Ltot, (matsBath,Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultMatsT = HEOMMatsT.run(rho0, tlist)
@@ -258,51 +258,21 @@ axes.legend(loc=0, fontsize=12);
 
 ```{code-cell} ipython3
 # First, compare Matsubara and Pade decompositions
-matsBath = DrudeLorentzBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
-padeBath = DrudeLorentzPadeBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
-
-# We will compare against a summation of {lmaxmats} Matsubara terms
-lmaxmats = 15000
-exactBath = DrudeLorentzBath(
-    Q, lam=lam, gamma=gamma, T=T, Nk=lmaxmats, combine=False,
-)
-
-
-def CR(bath, t):
-    """ C_R, the real part of the correlation function. """
-    result = 0
-    for exp in bath.exponents:
-        if (
-            exp.type == BathExponent.types['R'] or
-            exp.type == BathExponent.types['RI']
-        ):
-            result += exp.ck * np.exp(-exp.vk * t)
-    return result
-
-
-def CI(bath, t):
-    """ C_I, the imaginary part of the correlation function. """
-    result = 0
-    for exp in bath.exponents:
-        if exp.type == BathExponent.types['I']:
-            result += exp.ck * np.exp(exp.vk * t)
-        if exp.type == BathExponent.types['RI']:
-            result += exp.ck2 * np.exp(exp.vk * t)
-    return result
+padeBath = bath.approx_by_pade(Nk=Nk)
 
 
 fig, (ax1, ax2) = plt.subplots(ncols=2, sharey=True, figsize=(16, 8))
 
 ax1.plot(
-    tlist, CR(exactBath, tlist),
-    "r", linewidth=2, label=f"Mats (Nk={lmaxmats})",
+    tlist, np.real(bath.correlation_function(tlist)),
+    "r", linewidth=2, label=f"Exact",
 )
 ax1.plot(
-    tlist, CR(matsBath, tlist),
+    tlist, np.real(matsBath.correlation_function(tlist)),
     "g--", linewidth=2, label=f"Mats (Nk={Nk})",
 )
 ax1.plot(
-    tlist, CR(padeBath, tlist),
+    tlist, np.real(padeBath.correlation_function(tlist)),
     "b--", linewidth=2, label=f"Pade (Nk={Nk})",
 )
 
@@ -312,11 +282,13 @@ ax1.legend(loc=0, fontsize=12)
 
 tlist2 = tlist[0:50]
 ax2.plot(
-    tlist2, np.abs(CR(matsBath, tlist2) - CR(exactBath, tlist2)),
+    tlist2, np.abs(matsBath.correlation_function(tlist2)
+                   - bath.correlation_function(tlist2)),
     "g", linewidth=2, label="Mats Error",
 )
 ax2.plot(
-    tlist2, np.abs(CR(padeBath, tlist2) - CR(exactBath, tlist2)),
+    tlist2, np.abs(padeBath.correlation_function(tlist2)
+                   - bath.correlation_function(tlist2)),
     "b--", linewidth=2, label="Pade Error",
 )
 
@@ -326,8 +298,7 @@ ax2.legend(loc=0, fontsize=12);
 
 ```{code-cell} ipython3
 with timer("RHS construction time"):
-    bath = DrudeLorentzPadeBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
-    HEOMPade = HEOMSolver(Hsys, bath, NC, options=options)
+    HEOMPade = HEOMSolver(Hsys, (padeBath,Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultPade = HEOMPade.run(rho0, tlist)
@@ -358,107 +329,71 @@ axes.legend(loc=0, fontsize=12);
 
 ## Simulation 4: Fitting approach
 
+In `HEOM 1a: Spin-Bath model (introduction)` a fit is performed manually, here
+we will use the built-in tools. More details about them can be seen in 
+`HEOM 1d: Spin-Bath model, fitting of spectrum and correlation functions`
+
 ```{code-cell} ipython3
-def wrapper_fit_func(x, N, args):
-    """ Fit function wrapper that unpacks its arguments. """
-    x = np.array(x)
-    a = np.array(args[:N])
-    b = np.array(args[N:2 * N])
-    return fit_func(x, a, b)
-
-
-def fit_func(x, a, b):
-    """ Fit function. Calculates the value of the
-        correlation function at each x, given the
-        fit parameters in a and b.
-    """
-    return np.sum(
-        a[:, None] * np.exp(np.multiply.outer(b, x)),
-        axis=0,
-    )
-
-
-def fitter(ans, tlist, k):
-    """ Compute fit with k exponents. """
-    upper_a = abs(max(ans, key=abs)) * 10
-    # sets initial guesses:
-    guess = (
-        [upper_a / k] * k +  # guesses for a
-        [0] * k  # guesses for b
-    )
-    # sets lower bounds:
-    b_lower = (
-        [-upper_a] * k +  # lower bounds for a
-        [-np.inf] * k  # lower bounds for b
-    )
-    # sets higher bounds:
-    b_higher = (
-        [upper_a] * k +  # upper bounds for a
-        [0] * k  # upper bounds for b
-    )
-    param_bounds = (b_lower, b_higher)
-    p1, p2 = curve_fit(
-        lambda x, *params_0: wrapper_fit_func(x, k, params_0),
-        tlist,
-        ans,
-        p0=guess,
-        sigma=[0.01 for t in tlist],
-        bounds=param_bounds,
-        maxfev=1e8,
-    )
-    a, b = p1[:k], p1[k:]
-    return (a, b)
+tfit=np.linspace(0,10,10000)
+lower = [0, -np.inf, -1e-6, -3]
+guess = [np.real(bath.correlation_function(0))/10, -10, 0, 0]
+upper = [5, 0, 1e-6, 0] # for better fits increase the first element
+# that makes the simuation slower though
+envfit,fitinfo = bath.approximate("cf",tlist=tfit,Nr_max=2,Ni_max=1,full_ansatz=True,
+                                       sigma=0.1,maxfev=1e6,target_rsme=None,
+                                       lower=lower,upper=upper,guess=guess)
 ```
 
 ```{code-cell} ipython3
-# Fitting the real part of the correlation function:
-
-# Correlation function values to fit:
-tlist_fit = np.linspace(0, 6, 10000)
-corrRana = CR(exactBath, tlist_fit)
-
-# Perform the fit:
-kR = 3  # number of exponents to use for real part
-poptR = []
-with timer("Correlation (real) fitting time"):
-    for i in range(kR):
-        poptR.append(fitter(corrRana, tlist_fit, i + 1))
+print(fitinfo['summary'])
 ```
 
-```{code-cell} ipython3
-plt.plot(tlist_fit, corrRana, label="Analytic")
-
-for i in range(kR):
-    y = fit_func(tlist_fit, *poptR[i])
-    plt.plot(tlist_fit, y, label=f"Fit with {i} terms")
-
-plt.title("Fit to correlations (real part)")
-plt.legend()
-plt.show()
-```
+We can quickly compare the result of the Fit with the Pade expansion
 
 ```{code-cell} ipython3
-# Set the exponential coefficients from the fit parameters
+fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(16, 8))
 
-ckAR1 = poptR[-1][0]
-ckAR = [x + 0j for x in ckAR1]
+ax1.plot(
+    tlist, np.real(bath.correlation_function(tlist)),
+    "r", linewidth=2, label=f"Exact",
+)
+ax1.plot(
+    tlist, np.real(envfit.correlation_function(tlist)),
+    "g--", linewidth=2, label=f"Fit",marker="o",markevery=50
+)
+ax1.plot(
+    tlist, np.real(padeBath.correlation_function(tlist)),
+    "b--", linewidth=2, label=f"Pade (Nk={Nk})",
+)
 
-vkAR1 = poptR[-1][1]
-vkAR = [-x + 0j for x in vkAR1]
+ax1.set_xlabel(r't', fontsize=28)
+ax1.set_ylabel(r"$C_R(t)$", fontsize=28)
+ax1.legend(loc=0, fontsize=12)
 
-# Imaginary part: use analytical value
+ax2.plot(
+    tlist, np.imag(bath.correlation_function(tlist)),
+    "r", linewidth=2, label=f"Exact",
+)
+ax2.plot(
+    tlist, np.imag(envfit.correlation_function(tlist)),
+    "g--", linewidth=2, label=f"Fit",marker="o",markevery=50
+)
+ax2.plot(
+    tlist, np.imag(padeBath.correlation_function(tlist)),
+    "b--", linewidth=2, label=f"Pade (Nk={Nk})",
+)
 
-ckAI = [lam * gamma * (-1.0) + 0j]
-vkAI = [gamma + 0j]
+ax2.set_xlabel(r't', fontsize=28)
+ax2.set_ylabel(r"$C_I(t)$", fontsize=28)
+ax2.legend(loc=0, fontsize=12)
 ```
 
 ```{code-cell} ipython3
 with timer("RHS construction time"):
-    bath = BosonicBath(Q, ckAR, vkAR, ckAI, vkAI)
     # We reduce NC slightly here for speed of execution because we retain
     # 3 exponents in ckAR instead of 1. Please restore full NC for
     # convergence though:
-    HEOMFit = HEOMSolver(Hsys, bath, int(NC * 0.7), options=options)
+    HEOMFit = HEOMSolver(Hsys, (envfit,Q), int(NC*0.7), options=options)
 
 with timer("ODE solver time"):
     resultFit = HEOMFit.run(rho0, tlist)
@@ -467,16 +402,10 @@ with timer("ODE solver time"):
 ## Simulation 5: Bloch-Redfield
 
 ```{code-cell} ipython3
-DL = (
-    "2 * pi * 2.0 * {lam} / (pi * {gamma} * {beta}) if (w==0) "
-    "else 2 * pi * (2.0 * {lam} * {gamma} * w / (pi * (w**2 + {gamma}**2))) "
-    "* ((1 / (exp(w * {beta}) - 1)) + 1)"
-).format(gamma=gamma, beta=beta, lam=lam)
-
 with timer("ODE solver time"):
     resultBR = brmesolve(
         Hsys, rho0, tlist,
-        a_ops=[[sigmaz(), DL]], sec_cutoff=0, options=options,
+        a_ops=[[sigmaz(),bath]], sec_cutoff=0, options=options,
     )
 ```
 

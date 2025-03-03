@@ -5,14 +5,12 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.4
+    jupytext_version: 1.16.1
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
   name: python3
 ---
-
-+++ {"tags": []}
 
 # HEOM 5a: Fermionic single impurity model
 
@@ -71,7 +69,7 @@ In this notebook we:
 
 ## Setup
 
-```{code-cell} ipython3
+```{code-cell}
 import contextlib
 import dataclasses
 import time
@@ -101,9 +99,7 @@ from IPython.display import display
 
 ## Helpers
 
-```{code-cell} ipython3
-:tags: []
-
+```{code-cell}
 @contextlib.contextmanager
 def timer(label):
     """ Simple utility for timing functions:
@@ -117,15 +113,11 @@ def timer(label):
     print(f"{label}: {end - start}")
 ```
 
-+++ {"tags": []}
-
 ## System and bath definition
 
 And let us set up the system Hamiltonian, bath and system measurement operators:
 
-```{code-cell} ipython3
-:tags: []
-
+```{code-cell}
 # Define the system Hamiltonian:
 
 # The system is a single fermion with energy level split e1:
@@ -134,9 +126,7 @@ e1 = 1.0
 H = e1 * d1.dag() * d1
 ```
 
-```{code-cell} ipython3
-:tags: []
-
+```{code-cell}
 # Define parameters for left and right fermionic baths.
 # Each bath is a lead (i.e. a wire held at a potential)
 # with temperature T and chemical potential mu.
@@ -189,9 +179,7 @@ bath_R = LorentzianBathParameters(Q=d1, lead="R")
 
 Let's plot the spectral density.
 
-```{code-cell} ipython3
-:tags: []
-
+```{code-cell}
 w_list = np.linspace(-2, 2, 100)
 
 fig, ax = plt.subplots(figsize=(12, 7))
@@ -219,7 +207,7 @@ ax.legend();
 
 Next let's plot the emission and absorption by the leads.
 
-```{code-cell} ipython3
+```{code-cell}
 w_list = np.linspace(-2, 2, 100)
 
 fig, ax = plt.subplots(figsize=(12, 7))
@@ -265,7 +253,7 @@ ax.legend();
 
 Let's start by solving for the evolution using a Pade expansion of the correlation function of the Lorentzian spectral density:
 
-```{code-cell} ipython3
+```{code-cell}
 # HEOM dynamics using the Pade approximation:
 
 # Solver options, times to solve for and initial system state:
@@ -296,7 +284,7 @@ with timer("Steady state solver time"):
 
 Now let us plot the result which shows the decay of the initially excited impurity. This is not very illuminating, but we will compare it with the Matsubara expansion and analytic solution sortly:
 
-```{code-cell} ipython3
+```{code-cell}
 # Plot the Pade results
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 8))
 
@@ -317,7 +305,7 @@ axes.legend(fontsize=12);
 
 Now let us do the same for the Matsubara expansion:
 
-```{code-cell} ipython3
+```{code-cell}
 # HEOM dynamics using the Matsubara approximation:
 
 bathL = LorentzianBath(
@@ -341,9 +329,7 @@ with timer("Steady state solver time"):
 
 We see a marked difference in the Matsubara vs Pade results:
 
-```{code-cell} ipython3
-:tags: []
-
+```{code-cell}
 # Plot the Pade results
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 8))
 
@@ -379,7 +365,7 @@ One advantage of this simple model is that the steady state current to the baths
 
 See the [QuTiP-BoFiN paper](https://arxiv.org/abs/2010.10806) for a detailed description and references for the analytic result. Below we just perform the required integration numerically.
 
-```{code-cell} ipython3
+```{code-cell}
 def analytical_steady_state_current(bath_L, bath_R, e1):
     """ Calculate the analytical steady state current. """
 
@@ -417,7 +403,7 @@ To compare the analytical result above with the result from the HEOM, we need to
 
 In the function `state_current(...)` below, we extract the first level ADOs for the specified bath and sum the contributions to the current from each:
 
-```{code-cell} ipython3
+```{code-cell}
 def state_current(ado_state, bath_tag):
     """ Determine current from the given bath (either "R" or "L") to
         the system in the given ADO state.
@@ -441,9 +427,7 @@ def state_current(ado_state, bath_tag):
 
 Now we can calculate the steady state currents from the Pade and Matsubara HEOM results:
 
-```{code-cell} ipython3
-:tags: []
-
+```{code-cell}
 curr_ss_pade_L = state_current(ado_ss_pade, "L")
 curr_ss_pade_R = state_current(ado_ss_pade, "R")
 
@@ -451,9 +435,7 @@ print(f"Pade steady state current (L): {curr_ss_pade_L}")
 print(f"Pade steady state current (R): {curr_ss_pade_R}")
 ```
 
-```{code-cell} ipython3
-:tags: []
-
+```{code-cell}
 curr_ss_mats_L = state_current(ado_ss_mats, "L")
 curr_ss_mats_R = state_current(ado_ss_mats, "R")
 
@@ -465,7 +447,7 @@ Note that the currents from each bath balance as is required by the steady state
 
 Now let's compare all three:
 
-```{code-cell} ipython3
+```{code-cell}
 print(f"Pade current (R): {curr_ss_pade_R}")
 print(f"Matsubara current (R): {curr_ss_mats_R}")
 print(f"Analytical curernt: {curr_ss_analytic}")
@@ -485,7 +467,7 @@ Now lets plot the current as a function of bias voltage (the bias voltage is the
 
 We will calculate the steady state current for each `theta` both analytically and using the HEOM with the Pade correlation expansion approximation.
 
-```{code-cell} ipython3
+```{code-cell}
 # Theta (bias voltages)
 
 thetas = np.linspace(-4, 4, 100)
@@ -546,7 +528,7 @@ curr_ss_pade_theta = [
 
 Below we plot the results and see that even with `Nk=6`, the HEOM Pade approximation gives good results for the steady state current. Increasing `Nk` to `10` gives very accurate results.
 
-```{code-cell} ipython3
+```{code-cell}
 fig, ax = plt.subplots(figsize=(12, 7))
 
 ax.plot(
@@ -573,9 +555,7 @@ ax.legend(fontsize=25);
 
 ## About
 
-```{code-cell} ipython3
-:tags: []
-
+```{code-cell}
 qutip.about()
 ```
 
@@ -583,9 +563,7 @@ qutip.about()
 
 This section can include some tests to verify that the expected outputs are generated within the notebook. We put this section at the end of the notebook, so it's not interfering with the user experience. Please, define the tests using assert, so that the cell execution fails if a wrong output is generated.
 
-```{code-cell} ipython3
-:tags: []
-
+```{code-cell}
 assert np.allclose(curr_ss_pade_L + curr_ss_pade_R, 0)
 assert np.allclose(curr_ss_mats_L + curr_ss_mats_R, 0)
 assert np.allclose(curr_ss_pade_R, curr_ss_analytic, rtol=1e-4)

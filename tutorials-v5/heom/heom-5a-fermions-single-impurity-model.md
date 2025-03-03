@@ -5,9 +5,9 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.16.1
 kernelspec:
-  display_name: Python 3 (ipykernel)
+  display_name: qutip-dev
   language: python
   name: python3
 ---
@@ -86,10 +86,8 @@ from qutip import (
 )
 from qutip.solver.heom import (
     HEOMSolver,
-    LorentzianBath,
-    LorentzianPadeBath,
 )
-
+from qutip.core.environment import LorentzianEnvironment
 from ipywidgets import IntProgress
 from IPython.display import display
 
@@ -280,17 +278,18 @@ rho0 = basis(2, 0) * basis(2, 0).dag()
 
 Nk = 10  # Number of exponents to retain in the expansion of each bath
 
-bathL = LorentzianPadeBath(
-    bath_L.Q, bath_L.gamma, bath_L.W, bath_L.mu, bath_L.T,
-    Nk, tag="L",
+envL = LorentzianEnvironment(
+    bath_L.T,bath_L.mu,bath_L.gamma, bath_L.W,
 )
-bathR = LorentzianPadeBath(
-    bath_R.Q, bath_R.gamma, bath_R.W, bath_R.mu, bath_R.T,
-    Nk, tag="R",
+envL_pade= envL.approx_by_pade(Nk=Nk, tag="L")
+envR =LorentzianEnvironment(
+    bath_R.T,bath_R.mu,bath_R.gamma, bath_R.W,
 )
+envR_pade= envR.approx_by_pade(Nk=Nk, tag="L")
+
 
 with timer("RHS construction time"):
-    solver_pade = HEOMSolver(H, [bathL, bathR], max_depth=2, options=options)
+    solver_pade = HEOMSolver(H, [(envL_pade,bath_L.Q), (envR_pade,bath_R.Q)], max_depth=2, options=options)
 
 with timer("ODE solver time"):
     result_pade = solver_pade.run(rho0, tlist)
@@ -325,17 +324,12 @@ Now let us do the same for the Matsubara expansion:
 ```{code-cell} ipython3
 # HEOM dynamics using the Matsubara approximation:
 
-bathL = LorentzianBath(
-    bath_L.Q, bath_L.gamma, bath_L.W, bath_L.mu, bath_L.T,
-    Nk, tag="L",
-)
-bathR = LorentzianBath(
-    bath_R.Q, bath_R.gamma, bath_R.W, bath_R.mu, bath_R.T,
-    Nk, tag="R",
-)
+envL_mats= envL.approx_by_matsubara(Nk=Nk, tag="L")
+envR_mats= envR.approx_by_matsubara(Nk=Nk, tag="R-")
+
 
 with timer("RHS construction time"):
-    solver_mats = HEOMSolver(H, [bathL, bathR], max_depth=2, options=options)
+    solver_mats = HEOMSolver(H, [(envL_mats,bath_L.Q), (envR_mats,bath_R.Q)], max_depth=2, options=options)
 
 with timer("ODE solver time"):
     result_mats = solver_mats.run(rho0, tlist)
