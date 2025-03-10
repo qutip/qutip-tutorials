@@ -150,7 +150,8 @@ jobs:
           cd ..
 
           # build the website
-          python create_index.py
+          python create_index.py v5 html index.html
+          python create_index.py v4 html index-v4.html
           bundle config path .gems
           bundle install
           bundle exec jekyll build
