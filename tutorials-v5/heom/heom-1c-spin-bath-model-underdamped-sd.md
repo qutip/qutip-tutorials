@@ -391,7 +391,7 @@ Below we create the bath and solver and then solve for the dynamics by calling `
 ```{code-cell}
 with timer("RHS construction time"):
     bath = ExponentialBosonicEnvironment(ckAR, vkAR, ckAI, vkAI)
-    HEOMMats = HEOMSolver(Hsys, (bath,Q), NC, options=options)
+    HEOMMats = HEOMSolver(Hsys, (bath, Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultMats = HEOMMats.run(rho0, tlist)
@@ -415,8 +415,8 @@ Below we show how to use this built-in functionality:
 
 with timer("RHS construction time"):
     bath = UnderDampedEnvironment(lam=lam, gamma=gamma, w0=w0, T=T)
-    bath_approx=bath.approximate(method="matsubara",Nk=Nk)
-    HEOM_udbath = HEOMSolver(Hsys, (bath_approx,Q), NC, options=options)
+    bath_approx = bath.approximate(method="matsubara", Nk=Nk)
+    HEOM_udbath = HEOMSolver(Hsys, (bath_approx, Q), NC, options=options)
 
 with timer("ODE solver time"):
     result_udbath = HEOM_udbath.run(rho0, tlist)
@@ -437,7 +437,7 @@ The `UnderDampedEnvironment` class also allows us to easily evaluate analytical 
 w = np.linspace(-3, 3, 1000)
 w2 = np.linspace(0, 3, 1000)
 t = np.linspace(0, 10, 1000)
-bath_cf = bath.correlation_function(t)  
+bath_cf = bath.correlation_function(t)
 
 fig, axs = plt.subplots(2, 2)
 

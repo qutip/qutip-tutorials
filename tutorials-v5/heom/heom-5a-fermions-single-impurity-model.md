@@ -279,17 +279,18 @@ rho0 = basis(2, 0) * basis(2, 0).dag()
 Nk = 10  # Number of exponents to retain in the expansion of each bath
 
 envL = LorentzianEnvironment(
-    bath_L.T,bath_L.mu,bath_L.gamma, bath_L.W,
+    bath_L.T, bath_L.mu, bath_L.gamma, bath_L.W,
 )
-envL_pade= envL.approx_by_pade(Nk=Nk, tag="L")
-envR =LorentzianEnvironment(
-    bath_R.T,bath_R.mu,bath_R.gamma, bath_R.W,
+envL_pade = envL.approx_by_pade(Nk=Nk, tag="L")
+envR = LorentzianEnvironment(
+    bath_R.T, bath_R.mu, bath_R.gamma, bath_R.W,
 )
-envR_pade= envR.approx_by_pade(Nk=Nk, tag="L")
+envR_pade = envR.approx_by_pade(Nk=Nk, tag="L")
 
 
 with timer("RHS construction time"):
-    solver_pade = HEOMSolver(H, [(envL_pade,bath_L.Q), (envR_pade,bath_R.Q)], max_depth=2, options=options)
+    solver_pade = HEOMSolver(
+        H, [(envL_pade, bath_L.Q), (envR_pade, bath_R.Q)], max_depth=2, options=options)
 
 with timer("ODE solver time"):
     result_pade = solver_pade.run(rho0, tlist)
@@ -324,12 +325,13 @@ Now let us do the same for the Matsubara expansion:
 ```{code-cell}
 # HEOM dynamics using the Matsubara approximation:
 
-envL_mats= envL.approx_by_matsubara(Nk=Nk, tag="L")
-envR_mats= envR.approx_by_matsubara(Nk=Nk, tag="R-")
+envL_mats = envL.approx_by_matsubara(Nk=Nk, tag="L")
+envR_mats = envR.approx_by_matsubara(Nk=Nk, tag="R-")
 
 
 with timer("RHS construction time"):
-    solver_mats = HEOMSolver(H, [(envL_mats,bath_L.Q), (envR_mats,bath_R.Q)], max_depth=2, options=options)
+    solver_mats = HEOMSolver(
+        H, [(envL_mats, bath_L.Q), (envR_mats, bath_R.Q)], max_depth=2, options=options)
 
 with timer("ODE solver time"):
     result_mats = solver_mats.run(rho0, tlist)

@@ -126,7 +126,7 @@ beta = 1 / T
 Let's quickly plot the spectral density and environment correlation functions so that we can see what they look like.
 
 ```{code-cell}
-env=DrudeLorentzEnvironment(T=T,lam=lam,gamma=gamma)
+env = DrudeLorentzEnvironment(T=T, lam=lam, gamma=gamma)
 ```
 
 ```{code-cell}
@@ -180,12 +180,13 @@ Nk = 0
 Q_list = []
 baths = []
 Ltot = liouvillian(Hsys)
-env_approx,delta=env.approximate(method="matsubara",Nk=Nk,compute_delta=True)
+env_approx, delta = env.approximate(
+    method="matsubara", Nk=Nk, compute_delta=True)
 for m in range(7):
     Q = basis(7, m) * basis(7, m).dag()
     Q_list.append(Q)
-    Ltot += system_terminator(Q,delta)
-    baths.append((env_approx,Q))
+    Ltot += system_terminator(Q, delta)
+    baths.append((env_approx, Q))
 ```
 
 ```{code-cell}
@@ -281,7 +282,7 @@ def J0_dephasing():
 ```
 
 ```{code-cell}
-env.power_spectrum(0)/2 -J0_dephasing()*T
+env.power_spectrum(0)/2 - J0_dephasing()*T
 ```
 
 ```{code-cell}
@@ -308,7 +309,7 @@ def get_collapse(H, T, dephasing=1):
                         np.abs(Q.matrix_element(
                             all_state[j].dag(), all_state[k]
                         ))**2 *
-                         env.power_spectrum(Deltajk)
+                        env.power_spectrum(Deltajk)
                     )
                     if rate > 0.0:
                         # emission:

@@ -147,11 +147,12 @@ class BathParams:
         return qt.tensor(Q)
 
     def bath(self, Nk, tag=None):
-        env=DrudeLorentzEnvironment(
+        env = DrudeLorentzEnvironment(
             lam=self.lam, gamma=self.gamma, T=self.T, tag=tag
         )
-        env_approx,delta=env.approximate("pade",Nk=Nk,compute_delta=True,tag=tag)
-        return (env_approx,self.Q()),system_terminator(self.Q(),delta),delta
+        env_approx, delta = env.approximate(
+            "pade", Nk=Nk, compute_delta=True, tag=tag)
+        return (env_approx, self.Q()), system_terminator(self.Q(), delta), delta
 
     def replace(self, **kw):
         return dataclasses.replace(self, **kw)
@@ -296,10 +297,10 @@ tlist = np.linspace(0, 50, 250)
 ```{code-cell}
 H = sys.H()
 
-bath1,b1term,b1delta = bath_p1.bath(Nk, tag='bath 1')
+bath1, b1term, b1delta = bath_p1.bath(Nk, tag='bath 1')
 Q1 = bath_p1.Q()
 
-bath2,b2term,b2delta = bath_p2.bath(Nk, tag='bath 2')
+bath2, b2term, b2delta = bath_p2.bath(Nk, tag='bath 2')
 Q2 = bath_p2.Q()
 
 
@@ -388,10 +389,10 @@ def heat_currents(sys, bath_p1, bath_p2, Nk, NC, options):
         bath.
     """
 
-    bath1,b1term,b1delta = bath_p1.bath(Nk, tag='bath 1')
+    bath1, b1term, b1delta = bath_p1.bath(Nk, tag='bath 1')
     Q1 = bath_p1.Q()
 
-    bath2,b2term,b2delta = bath_p2.bath(Nk, tag='bath 2')
+    bath2, b2term, b2delta = bath_p2.bath(Nk, tag='bath 2')
     Q2 = bath_p2.Q()
 
     solver = HEOMSolver(

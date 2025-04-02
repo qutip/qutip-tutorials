@@ -52,7 +52,7 @@ from qutip import (
 from qutip.solver.heom import (
     HEOMSolver
 )
-from qutip.core.environment import BosonicEnvironment,OhmicEnvironment
+from qutip.core.environment import BosonicEnvironment, OhmicEnvironment
 
 # Import mpmath functions for evaluation of gamma and zeta
 # functions in the expression for the correlation:
@@ -155,7 +155,7 @@ def ohmic_power_spectrum(w, alpha, wc, beta):
     but, this fails at w=0 where the limit should be taken properly
     """
     bose = (1 / (np.e ** (w * beta) - 1)) + 1
-    return w * alpha * np.e ** (-abs(w) / wc) * 2*bose 
+    return w * alpha * np.e ** (-abs(w) / wc) * 2*bose
 ```
 
 ### Bath and HEOM parameters
@@ -180,10 +180,10 @@ And set the cut-off for the HEOM hierarchy:
 # The max_depth defaults to 5 so that the notebook executes more
 # quickly. Change it to 11 to wait longer for more accurate results.
 max_depth = 5
-# options used for the differential equation solver, while default works it 
+# options used for the differential equation solver, while default works it
 # is way slower than using bdf
 options = {
-    "nsteps":15000, "store_states":True, "rtol":1e-12, "atol":1e-12, "method":"bdf",
+    "nsteps": 15000, "store_states": True, "rtol": 1e-12, "atol": 1e-12, "method": "bdf",
 }
 ```
 
@@ -215,7 +215,7 @@ user specified function or array
 
 ```{code-cell}
 # From an array
-sd_env=BosonicEnvironment.from_spectral_density(J=J,wlist=w)
+sd_env = BosonicEnvironment.from_spectral_density(J=J, wlist=w)
 ```
 
 The resulting `BosonicEnvironment` cannot compute the power spectrum, or 
@@ -231,7 +231,7 @@ If we want access to these properties we need to provide the Temperature at Init
 
 ```{code-cell}
 # From an array
-sd_env=BosonicEnvironment.from_spectral_density(J=J,wlist=w,T=T)
+sd_env = BosonicEnvironment.from_spectral_density(J=J, wlist=w, T=T)
 ```
 
 Now our bosonic environment can compute the Power Spectrum of the spectral 
@@ -239,18 +239,23 @@ density provided
 
 ```{code-cell}
 # Here we avoid w=0
-np.allclose(sd_env.power_spectrum(w[1:]),ohmic_power_spectrum(w[1:],alpha,wc,1/T))
+np.allclose(sd_env.power_spectrum(w[1:]),
+            ohmic_power_spectrum(w[1:], alpha, wc, 1/T))
 ```
 
 Specifying the Temperature also gives the `BosonicEnvironment` access to the 
 correlation function
 
 ```{code-cell}
-tlist=np.linspace(0,10,500)
-plt.plot(tlist,sd_env.correlation_function(tlist),label="BosonicEnvironment (Real Part)")
-plt.plot(tlist,ohmic_correlation(tlist,alpha,wc,1/T),"--",label="Original (Real Part)")
-plt.plot(tlist,np.imag(sd_env.correlation_function(tlist)),label="BosonicEnvironment (Imaginary Part)")
-plt.plot(tlist,np.imag(ohmic_correlation(tlist,alpha,wc,1/T)),"--",label="Original (Imaginary Part)")
+tlist = np.linspace(0, 10, 500)
+plt.plot(tlist, sd_env.correlation_function(tlist),
+         label="BosonicEnvironment (Real Part)")
+plt.plot(tlist, ohmic_correlation(tlist, alpha, wc, 1/T),
+         "--", label="Original (Real Part)")
+plt.plot(tlist, np.imag(sd_env.correlation_function(tlist)),
+         label="BosonicEnvironment (Imaginary Part)")
+plt.plot(tlist, np.imag(ohmic_correlation(tlist, alpha, wc, 1/T)),
+         "--", label="Original (Imaginary Part)")
 plt.ylabel("C(t)")
 plt.xlabel("t")
 plt.legend()
@@ -266,15 +271,16 @@ considered to be essentialy zero
 
 ```{code-cell}
 # From a function
-sd_env2=BosonicEnvironment.from_spectral_density(ohmic_spectral_density,T=T,wMax=10*wc,args={"alpha":alpha,"wc":wc})
+sd_env2 = BosonicEnvironment.from_spectral_density(
+    ohmic_spectral_density, T=T, wMax=10*wc, args={"alpha": alpha, "wc": wc})
 ```
 
 ```{code-cell}
-tlist=np.linspace(0,10,500)
-plt.plot(tlist,sd_env2.correlation_function(tlist))
-plt.plot(tlist,ohmic_correlation(tlist,alpha,wc,1/T),"--")
-plt.plot(tlist,np.imag(sd_env2.correlation_function(tlist)))
-plt.plot(tlist,np.imag(ohmic_correlation(tlist,alpha,wc,1/T)),"--")
+tlist = np.linspace(0, 10, 500)
+plt.plot(tlist, sd_env2.correlation_function(tlist))
+plt.plot(tlist, ohmic_correlation(tlist, alpha, wc, 1/T), "--")
+plt.plot(tlist, np.imag(sd_env2.correlation_function(tlist)))
+plt.plot(tlist, np.imag(ohmic_correlation(tlist, alpha, wc, 1/T)), "--")
 ```
 
 In this example we considered how to obtain a `BosonicEnvironment` from the spectral density, it can be done analogously from the power spectrum or correlation function using the `from_correlation_function` and `from_power_spectrum` methods.
@@ -335,7 +341,7 @@ is a  normalized root mean squared error of $5\times 10^{-6}$, if set to None
 the fit is performed only with the maximum number of exponents specified
 
 ```{code-cell}
-bath, fitinfo = sd_env.approximate("sd",w,Nmax=4)
+bath, fitinfo = sd_env.approximate("sd", w, Nmax=4)
 ```
 
 To obtain an overview of the results of the fit we may take a look at the summary from the ``fitinfo``
@@ -350,7 +356,7 @@ We may see how the number of exponents chosen affects the fit since the approxim
 fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(12, 5))
 
 ax1.plot(w, J, label="Original spectral density")
-ax1.plot(w, bath.spectral_density(w), "--",label="Effective fitted SD")
+ax1.plot(w, bath.spectral_density(w), "--", label="Effective fitted SD")
 ax1.set_xlabel(r'$\omega$')
 ax1.set_ylabel(r'$J$')
 ax1.legend()
@@ -366,12 +372,12 @@ plt.show()
 Here we see a surprisingly large discrepancy in our approximated or effective spectral density. This happens because we are not using enough exponentials from each of the underdamped modes to have an appropiate fit. All modes have the same number of exponents, when not specified it defaults to $1$ which is not enough to model a bath with the temperature considered, let us repeat this with a higher number of exponents.
 
 ```{code-cell}
-bath, fitinfo = sd_env.approximate("sd",w,Nmax=4,Nk=3)
+bath, fitinfo = sd_env.approximate("sd", w, Nmax=4, Nk=3)
 
 fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(10, 5))
 
 ax1.plot(w, J, label="Original spectral density")
-ax1.plot(w, bath.spectral_density(w), "--",label="Effective fitted SD")
+ax1.plot(w, bath.spectral_density(w), "--", label="Effective fitted SD")
 ax1.set_xlabel(r'$\omega$')
 ax1.set_ylabel(r'$J$')
 ax1.legend()
@@ -425,13 +431,17 @@ def plot_fit_components(func, J, w, lam, gamma, w0):
     plt.show()
 
 
-lam=fitinfo["params"][:,0]
-gamma=fitinfo["params"][:,1] 
-w0 = fitinfo["params"][:,2]
+lam = fitinfo["params"][:, 0]
+gamma = fitinfo["params"][:, 1]
+w0 = fitinfo["params"][:, 2]
+
+
 def _sd_fit_model(wlist, a, b, c):
     return (
         2 * a * b * wlist / ((wlist + c)**2 + b**2) / ((wlist - c)**2 + b**2)
     )
+
+
 plot_fit(_sd_fit_model, J, w, lam, gamma, w0)
 ```
 
@@ -474,16 +484,19 @@ def generate_spectrum_results(Q, N, Nk, max_depth):
     # lower = [-100*J_max, 0.1*wc,  0.1*wc]
     # guess = [J_max, wc, wc]
     # upper = [100*J_max, 100*wc, 100*wc]
-    bath, fitinfo= sd_env.approximate("sd",w,Nmax=N,Nk=Nk,target_rmse=None)#,lower=lower,upper=upper,guess=guess,sigma=sigma)
+    # ,lower=lower,upper=upper,guess=guess,sigma=sigma)
+    bath, fitinfo = sd_env.approximate(
+        "sd", w, Nmax=N, Nk=Nk, target_rmse=None)
     tlist = np.linspace(0, 30 * np.pi / Del, 600)
 
     # This problem is a little stiff, so we use  the BDF method to solve
     # the ODE ^^^
-    print(f"Starting calculations for N={N}, Nk={Nk} and max_depth={max_depth} ... ")
+    print(
+        f"Starting calculations for N={N}, Nk={Nk} and max_depth={max_depth} ... ")
 
     HEOM_spectral_fit = HEOMSolver(
         Hsys,
-        (bath,Q),
+        (bath, Q),
         max_depth=max_depth,
         options=options,
     )
@@ -592,7 +605,7 @@ plot_result_expectations(
         )
         for nc, result in zip(Nc_list, results_spectral_fit_nc)
     ]
- );
+);
 ```
 
 #### We now combine the fitting and correlation function data into one large plot. Here we define a function to plot everything together
@@ -767,10 +780,11 @@ When full_ansatz is True. the ansatz used corresponds to
 ```{code-cell}
 def generate_corr_results(N, max_depth):
     tlist = np.linspace(0, 30 * np.pi / Del, 600)
-    bath_corr ,fitinfo= sd_env.approximate("cf",tlist=t,Ni_max=N,Nr_max=N,maxfev=1e8,target_rmse=None)
+    bath_corr, fitinfo = sd_env.approximate(
+        "cf", tlist=t, Ni_max=N, Nr_max=N, maxfev=1e8, target_rmse=None)
     HEOM_corr_fit = HEOMSolver(
         Hsys,
-        (bath_corr,Q),
+        (bath_corr, Q),
         max_depth=max_depth,
         options=options,
     )
@@ -821,8 +835,10 @@ plot_result_expectations(
             "k",
             "Correlation Function Fit $k_R=k_I=3$",
         ),
-        (results_spectral_fit_pk[0], P11p, "b", "Spectral Density Fit $k_J=1$"),
-        (results_spectral_fit_pk[3], P11p, "r-.", "Spectral Density Fit $k_J=4$"),
+        (results_spectral_fit_pk[0], P11p,
+         "b", "Spectral Density Fit $k_J=1$"),
+        (results_spectral_fit_pk[3], P11p,
+         "r-.", "Spectral Density Fit $k_J=4$"),
     ],
     axes=axes,
 )
@@ -838,7 +854,7 @@ axes.legend(loc=0, fontsize=20);
  As the ohmic spectrum is popular in the modeling of open quantum systems, it has its own dedicated class, the results above can be reproduced quickly by using the OhmicBath class. This allows for rapid implementation of fitted ohmic baths via the correlation function or spectral density
 
 ```{code-cell}
-obs = OhmicEnvironment(T, alpha, wc,s=1)
+obs = OhmicEnvironment(T, alpha, wc, s=1)
 tlist = np.linspace(0, 30 * np.pi / Del, 600)
 ```
 
@@ -847,11 +863,12 @@ representation of the environment via the `approximate`, let us do the same
 methods we explored before
 
 ```{code-cell}
-Obath, fitinfo = obs.approximate(method="cf",tlist=tlist,Nr_max=4,Ni_max=4,maxfev=1e9,target_rmse=None)
+Obath, fitinfo = obs.approximate(
+    method="cf", tlist=tlist, Nr_max=4, Ni_max=4, maxfev=1e9, target_rmse=None)
 print(fitinfo["summary"])
 HEOM_ohmic_corr_fit = HEOMSolver(
     Hsys,
-    (Obath,Q),
+    (Obath, Q),
     max_depth=max_depth,
     options=options,
 )
@@ -859,11 +876,11 @@ results_ohmic_corr_fit = HEOM_ohmic_corr_fit.run(rho0, tlist)
 ```
 
 ```{code-cell}
-Obath2, fitinfo = obs.approximate(method="sd",wlist=w,Nmax=4,Nk=3)
+Obath2, fitinfo = obs.approximate(method="sd", wlist=w, Nmax=4, Nk=3)
 print(fitinfo["summary"])
 HEOM_ohmic_sd_fit = HEOMSolver(
     Hsys,
-    (Obath2,Q),
+    (Obath2, Q),
     max_depth=max_depth,
     options=options,
 )
@@ -920,15 +937,15 @@ we group it with other methods
 The method is available via `approximate` passing "prony" as method. Compared to the other approaches showed so far. The Prony based methods, shine on their simplicity no information needs to be known about the function, and one just needs to provide the sampling points, and the Number of Exponents one desires
 
 ```{code-cell}
-tlist2=np.linspace(0,40,100)
+tlist2 = np.linspace(0, 40, 100)
 ```
 
 ```{code-cell}
-pbath,fitinfo=obs.approximate("prony",tlist2,Nr=4,Ni=4)
+pbath, fitinfo = obs.approximate("prony", tlist2, Nr=4, Ni=4)
 print(fitinfo["summary"])
 HEOM_ohmic_prony_fit = HEOMSolver(
     Hsys,
-    (pbath,Q),
+    (pbath, Q),
     max_depth=max_depth,
     options=options,
 )
@@ -939,11 +956,11 @@ Similar to how we approximated via prony we can use ESPRIT, the main difference
 between both methods lies in the construction of the pencil matrix
 
 ```{code-cell}
-esbath,fitinfo=obs.approximate("esprit",tlist2,Nr=4,separate=False)
+esbath, fitinfo = obs.approximate("esprit", tlist2, Nr=4, separate=False)
 print(fitinfo["summary"])
 HEOM_ohmic_es_fit = HEOMSolver(
     Hsys,
-    (esbath,Q),
+    (esbath, Q),
     max_depth=max_depth,
     options=options,
 )
@@ -980,15 +997,15 @@ Which allows us to identify
 this method works best when the sampling points provided are in the logarithmic scale
 
 ```{code-cell}
-wlist=np.concatenate((-np.logspace(3,-8,3500),np.logspace(-8,3,3500)))
-aaabath,fitinfo=obs.approximate("aaa",wlist,Nmax=8,tol=1e-15)
+wlist = np.concatenate((-np.logspace(3, -8, 3500), np.logspace(-8, 3, 3500)))
+aaabath, fitinfo = obs.approximate("aaa", wlist, Nmax=8, tol=1e-15)
 print(fitinfo["summary"])
 ```
 
 ```{code-cell}
 HEOM_ohmic_aaa_fit = HEOMSolver(
     Hsys,
-    (aaabath,Q),
+    (aaabath, Q),
     max_depth=max_depth,
     options=options,
 )
@@ -1009,14 +1026,14 @@ $$S(\omega) = \sum_{k=1}^{N}\frac{2(a_k c_k + b_k (d_k - \omega))}
 {(\omega - d_k)^2 + c_k^2}= 2 \Re \left(\sum_{k} \frac{c_{k}}{\nu_{k}-i \omega} \right)$$
 
 ```{code-cell}
-psbath,fitinfo=obs.approximate("ps",w2,Nmax=4)
+psbath, fitinfo = obs.approximate("ps", w2, Nmax=4)
 print(fitinfo["summary"])
 ```
 
 ```{code-cell}
 HEOM_ohmic_ps_fit = HEOMSolver(
     Hsys,
-    (psbath,Q),
+    (psbath, Q),
     max_depth=max_depth,
     options=options,
 )
@@ -1042,15 +1059,15 @@ recommended
 ESPIRA I
 
 ```{code-cell}
-tlist4=np.linspace(0,20,1000)
-espibath,fitinfo=obs.approximate("espira-I",tlist4,Nr=4,Ni=4)
+tlist4 = np.linspace(0, 20, 1000)
+espibath, fitinfo = obs.approximate("espira-I", tlist4, Nr=4, Ni=4)
 print(fitinfo["summary"])
 ```
 
 ```{code-cell}
 HEOM_ohmic_espira_fit = HEOMSolver(
     Hsys,
-    (espibath,Q),
+    (espibath, Q),
     max_depth=max_depth,
     options=options,
 )
@@ -1058,15 +1075,16 @@ results_ohmic_espira_fit = HEOM_ohmic_espira_fit.run(rho0, tlist)
 ```
 
 ```{code-cell}
-tlist4=np.linspace(0,20,1000)
-espibath2,fitinfo=obs.approximate("espira-II",tlist4,Nr=4,Ni=4,separate=True)
+tlist4 = np.linspace(0, 20, 1000)
+espibath2, fitinfo = obs.approximate(
+    "espira-II", tlist4, Nr=4, Ni=4, separate=True)
 print(fitinfo["summary"])
 ```
 
 ```{code-cell}
 HEOM_ohmic_espira_fit2 = HEOMSolver(
     Hsys,
-    (espibath2,Q),
+    (espibath2, Q),
     max_depth=max_depth,
     options=options,
 )
@@ -1086,7 +1104,8 @@ plot_result_expectations(
             "b",
             "Correlation Function Fit $k_R=k_I=4$",
         ),
-        (results_spectral_fit_pk[3], P11p, "r-.", "Spectral Density Fit $k_J=4$"),
+        (results_spectral_fit_pk[3], P11p,
+         "r-.", "Spectral Density Fit $k_J=4$"),
         (results_ohmic_corr_fit, P11p, "r", "Correlation Fit Ohmic Bath"),
         (results_ohmic_sd_fit2, P11p, "g--", "Spectral Density Fit Ohmic Bath"),
         (results_ohmic_ps_fit, P11p, "g--", "Power Spectrum Fit Ohmic Bath"),
@@ -1101,7 +1120,7 @@ plot_result_expectations(
 )
 axes.set_ylabel(r"$\rho_{11}$", fontsize=30)
 axes.set_xlabel(r"$t\;\omega_c$", fontsize=30)
-axes.legend(loc=0, fontsize=20);
+axes.legend(loc=0, fontsize=20)
 axes.set_yscale("log")
 ```
 

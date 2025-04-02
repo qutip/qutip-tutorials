@@ -213,8 +213,8 @@ axes.set_ylabel(r'J', fontsize=28);
 
 ```{code-cell}
 with timer("RHS construction time"):
-    matsBath=bath.approximate(method="matsubara",Nk=Nk)
-    HEOMMats = HEOMSolver(Hsys, (matsBath,Q), NC, options=options)
+    matsBath = bath.approximate(method="matsubara", Nk=Nk)
+    HEOMMats = HEOMSolver(Hsys, (matsBath, Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultMats = HEOMMats.run(rho0, tlist)
@@ -224,10 +224,11 @@ with timer("ODE solver time"):
 
 ```{code-cell}
 with timer("RHS construction time"):
-    matsBath,delta=bath.approximate(method="matsubara",Nk=Nk,compute_delta=True)
-    terminator = system_terminator(Q,delta)
+    matsBath, delta = bath.approximate(
+        method="matsubara", Nk=Nk, compute_delta=True)
+    terminator = system_terminator(Q, delta)
     Ltot = liouvillian(Hsys) + terminator
-    HEOMMatsT = HEOMSolver(Ltot, (matsBath,Q), NC, options=options)
+    HEOMMatsT = HEOMSolver(Ltot, (matsBath, Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultMatsT = HEOMMatsT.run(rho0, tlist)
@@ -258,7 +259,7 @@ axes.legend(loc=0, fontsize=12);
 
 ```{code-cell}
 # First, compare Matsubara and Pade decompositions
-padeBath = bath.approximate("pade",Nk=Nk)
+padeBath = bath.approximate("pade", Nk=Nk)
 
 
 fig, (ax1, ax2) = plt.subplots(ncols=2, sharey=True, figsize=(16, 8))
@@ -298,7 +299,7 @@ ax2.legend(loc=0, fontsize=12);
 
 ```{code-cell}
 with timer("RHS construction time"):
-    HEOMPade = HEOMSolver(Hsys, (padeBath,Q), NC, options=options)
+    HEOMPade = HEOMSolver(Hsys, (padeBath, Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultPade = HEOMPade.run(rho0, tlist)
@@ -334,16 +335,16 @@ we will use the built-in tools. More details about them can be seen in
 `HEOM 1d: Spin-Bath model, fitting of spectrum and correlation functions`
 
 ```{code-cell}
-tfit=np.linspace(0,10,10000)
+tfit = np.linspace(0, 10, 10000)
 lower = [0, -np.inf, -1e-6, -3]
 guess = [np.real(bath.correlation_function(0))/10, -10, 0, 0]
-upper = [5, 0, 1e-6, 0] 
-# for better fits increase the first element in upper, or change approximate 
-# method that makes the simulation much slower (Larger C(t) as C(0) is fit 
+upper = [5, 0, 1e-6, 0]
+# for better fits increase the first element in upper, or change approximate
+# method that makes the simulation much slower (Larger C(t) as C(0) is fit
 # better)
-envfit,fitinfo = bath.approximate("cf",tlist=tfit,Nr_max=2,Ni_max=1,full_ansatz=True,
-                                       sigma=0.1,maxfev=1e6,target_rmse=None,
-                                       lower=lower,upper=upper,guess=guess)
+envfit, fitinfo = bath.approximate("cf", tlist=tfit, Nr_max=2, Ni_max=1, full_ansatz=True,
+                                   sigma=0.1, maxfev=1e6, target_rmse=None,
+                                   lower=lower, upper=upper, guess=guess)
 ```
 
 ```{code-cell}
@@ -361,7 +362,7 @@ ax1.plot(
 )
 ax1.plot(
     tlist, np.real(envfit.correlation_function(tlist)),
-    "g--", linewidth=2, label=f"Fit",marker="o",markevery=50
+    "g--", linewidth=2, label=f"Fit", marker="o", markevery=50
 )
 ax1.plot(
     tlist, np.real(padeBath.correlation_function(tlist)),
@@ -378,7 +379,7 @@ ax2.plot(
 )
 ax2.plot(
     tlist, np.imag(envfit.correlation_function(tlist)),
-    "g--", linewidth=2, label=f"Fit",marker="o",markevery=50
+    "g--", linewidth=2, label=f"Fit", marker="o", markevery=50
 )
 ax2.plot(
     tlist, np.imag(padeBath.correlation_function(tlist)),
@@ -395,7 +396,7 @@ with timer("RHS construction time"):
     # We reduce NC slightly here for speed of execution because we retain
     # 3 exponents in ckAR instead of 1. Please restore full NC for
     # convergence though:
-    HEOMFit = HEOMSolver(Hsys, (envfit,Q), int(NC*0.7), options=options)
+    HEOMFit = HEOMSolver(Hsys, (envfit, Q), int(NC*0.7), options=options)
 
 with timer("ODE solver time"):
     resultFit = HEOMFit.run(rho0, tlist)
@@ -407,7 +408,7 @@ with timer("ODE solver time"):
 with timer("ODE solver time"):
     resultBR = brmesolve(
         Hsys, rho0, tlist,
-        a_ops=[[sigmaz(),bath]], sec_cutoff=0, options=options,
+        a_ops=[[sigmaz(), bath]], sec_cutoff=0, options=options,
     )
 ```
 

@@ -106,9 +106,9 @@ Q = sigmaz()
 # number of terms to keep in the expansion of the bath correlation function:
 Nk = 3
 
-env = DrudeLorentzEnvironment(lam=lam, gamma=gamma,T=T)
-env_approx=env.approximate(method="pade",Nk=Nk)
-bath=(env_approx,Q)
+env = DrudeLorentzEnvironment(lam=lam, gamma=gamma, T=T)
+env_approx = env.approximate(method="pade", Nk=Nk)
+bath = (env_approx, Q)
 ```
 
 ```{code-cell}
@@ -446,7 +446,7 @@ def simulate_100_pulses(lam, gamma, T, NC, Nk):
 
     env = DrudeLorentzEnvironment(lam=lam, gamma=gamma, T=T)
     env_approx = env.approx_by_pade(Nk=Nk)
-    bath=(env_approx,Q)
+    bath = (env_approx, Q)
     # Equally spaced pulses:
 
     pulse_eq = drive(amplitude, delay, integral)

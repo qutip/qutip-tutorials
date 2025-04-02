@@ -232,8 +232,8 @@ env = DrudeLorentzEnvironment(lam=lam, gamma=gamma, T=T, Nk=Nk)
 
 ```{code-cell}
 with timer("RHS construction time"):
-    env_mats=env.approximate(method="matsubara",Nk=Nk)
-    HEOMMats = HEOMSolver(Hsys, (env_mats,Q), NC, options=options)
+    env_mats = env.approximate(method="matsubara", Nk=Nk)
+    HEOMMats = HEOMSolver(Hsys, (env_mats, Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultMats = HEOMMats.run(rho0, tlist)
@@ -251,9 +251,10 @@ plot_result_expectations([
 
 ```{code-cell}
 with timer("RHS construction time"):
-    env_mats,delta=env.approximate(method="matsubara",Nk=Nk,compute_delta=True)
-    Ltot = liouvillian(Hsys) + system_terminator(Q,delta)
-    HEOMMatsT = HEOMSolver(Ltot, (env_mats,Q), NC, options=options)
+    env_mats, delta = env.approximate(
+        method="matsubara", Nk=Nk, compute_delta=True)
+    Ltot = liouvillian(Hsys) + system_terminator(Q, delta)
+    HEOMMatsT = HEOMSolver(Ltot, (env_mats, Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultMatsT = HEOMMatsT.run(rho0, tlist)
@@ -275,8 +276,8 @@ As in example 1a, we can compare to Pade and Fitting approaches.
 
 ```{code-cell}
 with timer("RHS construction time"):
-    env_pade=env.approximate(method="pade",Nk=Nk)
-    HEOMPade = HEOMSolver(Hsys, (env_pade,Q), NC, options=options)
+    env_pade = env.approximate(method="pade", Nk=Nk)
+    HEOMPade = HEOMSolver(Hsys, (env_pade, Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultPade = HEOMPade.run(rho0, tlist)
@@ -295,10 +296,11 @@ plot_result_expectations([
 ## Simulation 4: Fitting approach
 
 ```{code-cell}
-tfit=np.linspace(0,10,1000)
+tfit = np.linspace(0, 10, 1000)
 with timer("RHS construction time"):
-    bath,_ = env.approximate(method="cf",tlist=tfit,Ni_max=1,Nr_max=3,target_rmse=None)
-    HEOMFit = HEOMSolver(Hsys, (bath,Q), NC, options=options)
+    bath, _ = env.approximate(method="cf", tlist=tfit,
+                              Ni_max=1, Nr_max=3, target_rmse=None)
+    HEOMFit = HEOMSolver(Hsys, (bath, Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultFit = HEOMFit.run(rho0, tlist)
