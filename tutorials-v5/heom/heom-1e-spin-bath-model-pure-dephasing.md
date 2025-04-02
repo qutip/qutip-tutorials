@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.16.1
+    jupytext_version: 1.16.7
 kernelspec:
   display_name: qutip-dev
   language: python
@@ -232,7 +232,7 @@ env = DrudeLorentzEnvironment(lam=lam, gamma=gamma, T=T, Nk=Nk)
 
 ```{code-cell}
 with timer("RHS construction time"):
-    env_mats=env.approx_by_matsubara(Nk=Nk)
+    env_mats=env.approximate(method="matsubara",Nk=Nk)
     HEOMMats = HEOMSolver(Hsys, (env_mats,Q), NC, options=options)
 
 with timer("ODE solver time"):
@@ -251,7 +251,7 @@ plot_result_expectations([
 
 ```{code-cell}
 with timer("RHS construction time"):
-    env_mats,delta=env.approx_by_matsubara(Nk=Nk,compute_delta=True)
+    env_mats,delta=env.approximate(method="matsubara",Nk=Nk,compute_delta=True)
     Ltot = liouvillian(Hsys) + system_terminator(Q,delta)
     HEOMMatsT = HEOMSolver(Ltot, (env_mats,Q), NC, options=options)
 
@@ -275,7 +275,7 @@ As in example 1a, we can compare to Pade and Fitting approaches.
 
 ```{code-cell}
 with timer("RHS construction time"):
-    env_pade=env.approx_by_pade(Nk=Nk)
+    env_pade=env.approximate(method="pade",Nk=Nk)
     HEOMPade = HEOMSolver(Hsys, (env_pade,Q), NC, options=options)
 
 with timer("ODE solver time"):
@@ -297,7 +297,7 @@ plot_result_expectations([
 ```{code-cell}
 tfit=np.linspace(0,10,1000)
 with timer("RHS construction time"):
-    bath,_ = env.approx_by_cf_fit(tfit,Ni_max=1,Nr_max=3,target_rsme=None)
+    bath,_ = env.approximate(method="cf",tlist=tfit,Ni_max=1,Nr_max=3,target_rmse=None)
     HEOMFit = HEOMSolver(Hsys, (bath,Q), NC, options=options)
 
 with timer("ODE solver time"):

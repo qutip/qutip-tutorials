@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.16.1
+    jupytext_version: 1.16.7
 kernelspec:
   display_name: qutip-dev
   language: python
@@ -31,7 +31,7 @@ In the example below we show how to model an Ohmic environment with exponential 
 
 * First we fit the spectral density with a set of underdamped brownian oscillator functions.
 * Second, we evaluate the correlation functions, and fit those with a certain choice of exponential functions.
-* Third, we use the available OhmicBath class 
+* Third, we use the available OhmicBath class, and explore the other approximation methods QutiP offers
 
 In each case we will use the fit parameters to determine the correlation function expansion co-efficients needed to construct a description of the bath (i.e. a `BosonicBath` object) to supply to the `HEOMSolver` so that we can solve for the system dynamics.
 
@@ -39,7 +39,7 @@ In each case we will use the fit parameters to determine the correlation functio
 
 ## Setup
 
-```{code-cell} ipython3
+```{code-cell}
 import numpy as np
 from matplotlib import pyplot as plt
 import qutip
@@ -73,7 +73,7 @@ Let us set up the system Hamiltonian, bath and system measurement operators:
 
 ### System Hamiltonian
 
-```{code-cell} ipython3
+```{code-cell}
 # Defining the system Hamiltonian
 eps = 0  # Energy of the 2-level system.
 Del = 0.2  # Tunnelling term
@@ -83,7 +83,7 @@ rho0 = basis(2, 0) * basis(2, 0).dag()
 
 ### System measurement operators
 
-```{code-cell} ipython3
+```{code-cell}
 # Define some operators with which we will measure the system
 # 1,1 element of density matrix - corresonding to groundstate
 P11p = basis(2, 0) * basis(2, 0).dag()
@@ -119,7 +119,7 @@ The corresponding spectral density for the Ohmic case is:
 J(\omega) = \omega \alpha e^{- \frac{\omega}{\omega_c}}
 \end{equation}
 
-```{code-cell} ipython3
+```{code-cell}
 def ohmic_correlation(t, alpha, wc, beta, s=1):
     """The Ohmic bath correlation function as a function of t
     (and the bath parameters).
@@ -139,7 +139,7 @@ def ohmic_correlation(t, alpha, wc, beta, s=1):
     )
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 def ohmic_spectral_density(w, alpha, wc):
     """The Ohmic bath spectral density as a function of w
     (and the bath parameters).
@@ -147,7 +147,7 @@ def ohmic_spectral_density(w, alpha, wc):
     return w * alpha * np.e ** (-w / wc)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 def ohmic_power_spectrum(w, alpha, wc, beta):
     """The Ohmic bath power spectrum as a function of w
     (and the bath parameters).
@@ -164,7 +164,7 @@ def ohmic_power_spectrum(w, alpha, wc, beta):
 
 Finally, let's set the bath parameters we will work with and write down some measurement operators:
 
-```{code-cell} ipython3
+```{code-cell}
 Q = sigmaz()
 alpha = 3.25
 T = 0.5
@@ -174,7 +174,7 @@ s = 1
 
 And set the cut-off for the HEOM hierarchy:
 
-```{code-cell} ipython3
+```{code-cell}
 # HEOM parameters:
 
 # The max_depth defaults to 5 so that the notebook executes more
@@ -203,7 +203,7 @@ where $a, b$ and $c$ are the fit parameters and each is a vector of length $k$.
 
 With the spectral density approximation $J_{\mathrm approx}(w; a, b, c)$ implemented above, we can now perform the fit and examine the results. This can be done quickly using the `SpectralFitter` class, which takes the target spectral density as an array and fits it to the series of **k** underdamped harmonic oscillators with the Meier-Tannor form
 
-```{code-cell} ipython3
+```{code-cell}
 w = np.linspace(0, 25, 20000)
 J = ohmic_spectral_density(w, alpha, wc)
 ```
@@ -213,7 +213,7 @@ create enviroments from arbitrary spectral densities, correlation functions, or
 power spectrums. Below we show how to construct a `BosonicEnvironment` from a 
 user specified function or array
 
-```{code-cell} ipython3
+```{code-cell}
 # From an array
 sd_env=BosonicEnvironment.from_spectral_density(J=J,wlist=w)
 ```
@@ -223,13 +223,13 @@ correlation function because the temperature of the environment has not been
 specified. So the `BosonicEnvironment`  is not fully characterized by the 
 parameters provided
 
-```{code-cell} ipython3
+```{code-cell}
 # sd_env.power_spectrum(w)
 ```
 
 If we want access to these properties we need to provide the Temperature at Initialization
 
-```{code-cell} ipython3
+```{code-cell}
 # From an array
 sd_env=BosonicEnvironment.from_spectral_density(J=J,wlist=w,T=T)
 ```
@@ -237,7 +237,7 @@ sd_env=BosonicEnvironment.from_spectral_density(J=J,wlist=w,T=T)
 Now our bosonic environment can compute the Power Spectrum of the spectral 
 density provided
 
-```{code-cell} ipython3
+```{code-cell}
 # Here we avoid w=0
 np.allclose(sd_env.power_spectrum(w[1:]),ohmic_power_spectrum(w[1:],alpha,wc,1/T))
 ```
@@ -245,7 +245,7 @@ np.allclose(sd_env.power_spectrum(w[1:]),ohmic_power_spectrum(w[1:],alpha,wc,1/T
 Specifying the Temperature also gives the `BosonicEnvironment` access to the 
 correlation function
 
-```{code-cell} ipython3
+```{code-cell}
 tlist=np.linspace(0,10,500)
 plt.plot(tlist,sd_env.correlation_function(tlist),label="BosonicEnvironment (Real Part)")
 plt.plot(tlist,ohmic_correlation(tlist,alpha,wc,1/T),"--",label="Original (Real Part)")
@@ -264,12 +264,12 @@ WMax needs to be specified, Wmax is the cutoff frequency for which the
 spectral density, or power spectrum has  effectively decayed to zero, after this value the function can be 
 considered to be essentialy zero
 
-```{code-cell} ipython3
+```{code-cell}
 # From a function
 sd_env2=BosonicEnvironment.from_spectral_density(ohmic_spectral_density,T=T,wMax=10*wc,args={"alpha":alpha,"wc":wc})
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 tlist=np.linspace(0,10,500)
 plt.plot(tlist,sd_env2.correlation_function(tlist))
 plt.plot(tlist,ohmic_correlation(tlist,alpha,wc,1/T),"--")
@@ -334,20 +334,19 @@ is reached or the maximum number allowed `Nmax` is reached. The default target
 is a  normalized root mean squared error of $5\times 10^{-6}$, if set to None
 the fit is performed only with the maximum number of exponents specified
 
-
-```{code-cell} ipython3
+```{code-cell}
 bath, fitinfo = sd_env.approximate("sd",w,Nmax=4)
 ```
 
 To obtain an overview of the results of the fit we may take a look at the summary from the ``fitinfo``
 
-```{code-cell} ipython3
+```{code-cell}
 print(fitinfo["summary"])
 ```
 
 We may see how the number of exponents chosen affects the fit since the approximated functions are available:
 
-```{code-cell} ipython3
+```{code-cell}
 fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(12, 5))
 
 ax1.plot(w, J, label="Original spectral density")
@@ -366,7 +365,7 @@ plt.show()
 
 Here we see a surprisingly large discrepancy in our approximated or effective spectral density. This happens because we are not using enough exponentials from each of the underdamped modes to have an appropiate fit. All modes have the same number of exponents, when not specified it defaults to $1$ which is not enough to model a bath with the temperature considered, let us repeat this with a higher number of exponents.
 
-```{code-cell} ipython3
+```{code-cell}
 bath, fitinfo = sd_env.approximate("sd",w,Nmax=4,Nk=3)
 
 fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(10, 5))
@@ -391,7 +390,7 @@ Since the number of exponents increases simulation time one should go with the l
 
 Let's take a closer look at our last fit by plotting the contribution of each term of the fit:
 
-```{code-cell} ipython3
+```{code-cell}
 # Plot the components of the fit separately:
 plt.rcParams["font.size"] = 25
 plt.rcParams["figure.figsize"] = (10, 5)
@@ -436,13 +435,13 @@ def _sd_fit_model(wlist, a, b, c):
 plot_fit(_sd_fit_model, J, w, lam, gamma, w0)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 plot_fit_components(_sd_fit_model, J, w, lam, gamma, w0)
 ```
 
 And let's also compare the power spectrum of the fit and the analytical spectral density:
 
-```{code-cell} ipython3
+```{code-cell}
 def plot_power_spectrum(alpha, wc, beta, save=True):
     """Plot the power spectrum of a fit against the actual power spectrum."""
     w = np.linspace(-10, 10, 50000)
@@ -465,7 +464,7 @@ plot_power_spectrum(alpha, wc, 1 / T, save=False)
 
 Now if we want to see the systems's behaviour as we change the number of terms in the fit, we may use this auxiliary function.
 
-```{code-cell} ipython3
+```{code-cell}
 def generate_spectrum_results(Q, N, Nk, max_depth):
     """Run the HEOM with the given bath parameters and
     and return the results of the evolution.
@@ -492,7 +491,7 @@ def generate_spectrum_results(Q, N, Nk, max_depth):
     return results_spectral_fit
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 def plot_result_expectations(plots, axes=None):
     """Plot the expectation values of operators as functions of time.
 
@@ -533,7 +532,7 @@ def plot_result_expectations(plots, axes=None):
 
 Below we generate results for different convergence parameters (number of terms in the fit, number of matsubara terms, and depth of the hierarchy).  For the parameter choices here, we need a relatively large depth of around '11', which can be a little slow.
 
-```{code-cell} ipython3
+```{code-cell}
 # # Generate results for different number of lorentzians in fit:
 
 results_spectral_fit_pk = [
@@ -553,7 +552,7 @@ plot_result_expectations(
 );
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # generate results for different number of Matsubara terms per Lorentzian
 # for max number of Lorentzians:
 
@@ -575,7 +574,7 @@ plot_result_expectations(
 );
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Generate results for different depths:
 
 Nc_list = range(2, max_depth)
@@ -598,7 +597,7 @@ plot_result_expectations(
 
 #### We now combine the fitting and correlation function data into one large plot. Here we define a function to plot everything together
 
-```{code-cell} ipython3
+```{code-cell}
 def gen_plots(fs, w, J, t, C, w2, S):
     def plot_cr_fit_vs_actual(t, C, func, axes):
         """Plot the C_R(t) fit."""
@@ -721,7 +720,7 @@ def gen_plots(fs, w, J, t, C, w2, S):
 
 #### And finally plot everything together
 
-```{code-cell} ipython3
+```{code-cell}
 t = np.linspace(0, 15, 1000)
 C = ohmic_correlation(t, alpha, wc, 1 / T)
 w2 = np.concatenate((-np.linspace(10, 1e-2, 100), np.linspace(1e-2, 10, 100)))
@@ -765,10 +764,10 @@ When full_ansatz is True. the ansatz used corresponds to
     \Bigr].
 \end{align}
 
-```{code-cell} ipython3
+```{code-cell}
 def generate_corr_results(N, max_depth):
     tlist = np.linspace(0, 30 * np.pi / Del, 600)
-    bath_corr ,fitinfo= sd_env.approximate("cf",tlist=t,Ni_max=N,Nr_max=N,maxfev=1e8,target_rsme=None)
+    bath_corr ,fitinfo= sd_env.approximate("cf",tlist=t,Ni_max=N,Nr_max=N,maxfev=1e8,target_rmse=None)
     HEOM_corr_fit = HEOMSolver(
         Hsys,
         (bath_corr,Q),
@@ -791,7 +790,7 @@ results_corr_fit_pk = [
     for i in range(1, 4)]
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 plot_result_expectations(
     [
         (
@@ -805,7 +804,7 @@ plot_result_expectations(
 );
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(12, 7))
 
 plot_result_expectations(
@@ -838,19 +837,17 @@ axes.legend(loc=0, fontsize=20);
 
  As the ohmic spectrum is popular in the modeling of open quantum systems, it has its own dedicated class, the results above can be reproduced quickly by using the OhmicBath class. This allows for rapid implementation of fitted ohmic baths via the correlation function or spectral density
 
-```{code-cell} ipython3
+```{code-cell}
 obs = OhmicEnvironment(T, alpha, wc,s=1)
 tlist = np.linspace(0, 30 * np.pi / Del, 600)
 ```
 
 Just like the other `BosonicEnvironment` we can obtain a decaying exponential 
-representation of the environment via the `approx_by_cf_fit` and 
-`approx_by_sd_fit` methods. 
+representation of the environment via the `approximate`, let us do the same 
+methods we explored before
 
-```{code-cell} ipython3
-tlist = np.linspace(0, 30 * np.pi / Del, 5000)
-
-Obath, fitinfo = obs.approximate(method="cf",tlist=tlist,Nr_max=4,Ni_max=4,maxfev=1e9,target_rsme=None)
+```{code-cell}
+Obath, fitinfo = obs.approximate(method="cf",tlist=tlist,Nr_max=4,Ni_max=4,maxfev=1e9,target_rmse=None)
 print(fitinfo["summary"])
 HEOM_ohmic_corr_fit = HEOMSolver(
     Hsys,
@@ -861,10 +858,9 @@ HEOM_ohmic_corr_fit = HEOMSolver(
 results_ohmic_corr_fit = HEOM_ohmic_corr_fit.run(rho0, tlist)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 Obath2, fitinfo = obs.approximate(method="sd",wlist=w,Nmax=4,Nk=3)
 print(fitinfo["summary"])
-tlist = np.linspace(0, 30 * np.pi / Del, 600)
 HEOM_ohmic_sd_fit = HEOMSolver(
     Hsys,
     (Obath2,Q),
@@ -874,7 +870,8 @@ HEOM_ohmic_sd_fit = HEOMSolver(
 results_ohmic_sd_fit2 = HEOM_ohmic_sd_fit.run(rho0, tlist)
 ```
 
-# Methods based on the Prony Polinomial 
+## Other Approximation methods
+### Methods based on the Prony Polinomial 
 
 The Prony polynomial forms the mathematical foundation for many spectral analysis techniques that estimate frequencies, damping factors, and amplitudes of signals. These methods work by interpreting a given signal as a sum of complex exponentials and deriving a polynomial whose roots correspond to the frequencies or poles of the system.
 
@@ -905,19 +902,28 @@ $$ V_{N,M}(z)c = f $$
 
 Where $M$ is the length, of the signal, and $f=f(t_{sample})$ is the signal evaluated in the sampling points,is a vector $c = (c_{1}, \dots, c_{N})$.
 
-The main difference between the methods is the way one obtains the roots of the polynomial, typically whether this system is solved or a low rank approximation is found for the polynomial, [this article](https://academic.oup.com/imajna/article-abstract/43/2/789/6525860?redirectedFrom=fulltext) is a good reference, the QuTiP implementations are based on it, and the matlab implementations made available by the authors
+The main difference between the methods is the way one obtains the roots of the polynomial, typically whether this system is solved or a low rank approximation is found for the polynomial, [this article](https://academic.oup.com/imajna/article-abstract/43/2/789/6525860?redirectedFrom=fulltext) is a good reference, the QuTiP implementations are based on it, and the matlab implementations made available by the authors.
+
+The prony like methods include:
+
+- Prony
+- ESPRIT
+- ESPIRA
+
+Though ESPIRA is prony like, since it is based on rational polynomial approximations
+we group it with other methods
 
 +++
 
-## Using the Original Prony Method on the Correlation Function
+##### Using the Original Prony Method on the Correlation Function
 
-The method is available via `approx_by_prony`. Compared to the other approaches showed so far. The Prony based methods, shine on their simplicity no information needs to be known about the function, and one just needs to provide the sampling points, and the Number of Exponents one desires
+The method is available via `approximate` passing "prony" as method. Compared to the other approaches showed so far. The Prony based methods, shine on their simplicity no information needs to be known about the function, and one just needs to provide the sampling points, and the Number of Exponents one desires
 
-```{code-cell} ipython3
+```{code-cell}
 tlist2=np.linspace(0,40,100)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 pbath,fitinfo=obs.approximate("prony",tlist2,Nr=4,Ni=4)
 print(fitinfo["summary"])
 HEOM_ohmic_prony_fit = HEOMSolver(
@@ -929,32 +935,10 @@ HEOM_ohmic_prony_fit = HEOMSolver(
 results_ohmic_prony_fit = HEOM_ohmic_prony_fit.run(rho0, tlist)
 ```
 
-```{code-cell} ipython3
-gen_plots(pbath, w, J, t, C, w2, S)
-```
+Similar to how we approximated via prony we can use ESPRIT, the main difference
+between both methods lies in the construction of the pencil matrix
 
-## Using the matrix Pencil Method on the Correlation Function
-
-```{code-cell} ipython3
-mpbath,fitinfo=obs.approximate(method="mp",tlist=tlist2,Nr=6,separate=False)
-print(fitinfo["summary"])
-HEOM_ohmic_mp_fit = HEOMSolver(
-    Hsys,
-    (mpbath,Q),
-    max_depth=max_depth,
-    options=options,
-)
-results_ohmic_mp_fit = HEOM_ohmic_mp_fit.run(rho0, tlist)
-```
-
-```{code-cell} ipython3
-gen_plots(mpbath, w, J, t, C, w2, S)
-```
-
-## Using the ESPRIT Method on the Correlation Function
-
-```{code-cell} ipython3
-
+```{code-cell}
 esbath,fitinfo=obs.approximate("esprit",tlist2,Nr=4,separate=False)
 print(fitinfo["summary"])
 HEOM_ohmic_es_fit = HEOMSolver(
@@ -966,18 +950,42 @@ HEOM_ohmic_es_fit = HEOMSolver(
 results_ohmic_es_fit = HEOM_ohmic_es_fit.run(rho0, tlist)
 ```
 
-```{code-cell} ipython3
-gen_plots(esbath, w, J, t, C, w2, S)
-```
+## Fitting the power spectrum 
 
-## Using the AAA Algorithm
+So far all the methods covered fitted either the spectral density or the
+correlation function. Here we will fit the power spectrum.
 
-```{code-cell} ipython3
-aaabath,fitinfo=obs.approximate("aaa",np.concatenate((-np.logspace(3,-8,3500),np.logspace(-8,3,3500))),N_max=8,tol=1e-15)
+### AAA algorithm 
+
+The Adaptive Antoulas–Anderson algorithm (AAA) is a method for the 
+approximation of a function in terms of a quotient of polynomials
+
+\begin{align}
+    f(z) =\frac{q(z)}{p(z)} \approx \sum_{j=1}^{m} \frac{residues}{z-poles}
+\end{align}
+
+We don't use this method on the correlation function directly, but on the power spectrum .  After obtaining this rational polynomial form of the power spectrum one can recover the correlation function by noticing that 
+
+\begin{align}
+    s(\omega) = \int_{-\infty}^{\infty} dt e^{i \omega t} C(t)  = 2 \Re \left(\sum_{k} \frac{c_{k}}{\nu_{k}-i \omega} \right)
+\end{align}
+
+Which allows us to identify 
+
+\begin{align}
+    \nu_{k}= i \times poles \\
+    c_{k} = -i \times residues
+\end{align}
+
+this method works best when the sampling points provided are in the logarithmic scale
+
+```{code-cell}
+wlist=np.concatenate((-np.logspace(3,-8,3500),np.logspace(-8,3,3500)))
+aaabath,fitinfo=obs.approximate("aaa",wlist,Nmax=8,tol=1e-15)
 print(fitinfo["summary"])
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 HEOM_ohmic_aaa_fit = HEOMSolver(
     Hsys,
     (aaabath,Q),
@@ -987,19 +995,59 @@ HEOM_ohmic_aaa_fit = HEOMSolver(
 results_ohmic_aaa_fit = HEOM_ohmic_aaa_fit.run(rho0, tlist)
 ```
 
-```{code-cell} ipython3
-gen_plots(aaabath, w, J, t, C, w2, S)
-```
+### NLSQ on the power spectrum
 
-ESPIRA I
+On the first part of the tutorials we dealt with methods based on non-linear
+least squares. This is another one of those methods, but applied on the power 
+spectrum, compared to fitting the spectral density this is advantageous since
+we don't need to specify $N_k$, while compared to the correlation fit, it is 
+easier to obtain approximations that hold the KMS relation.
 
-```{code-cell} ipython3
-tlist4=np.linspace(0,20,1000)
-espibath,fitinfo=obs._approx_by_prony("espira-I",tlist4,Nr=4,Ni=4)
+we fit the power spectrum to a function of the form
+
+$$S(\omega) = \sum_{k=1}^{N}\frac{2(a_k c_k + b_k (d_k - \omega))}
+{(\omega - d_k)^2 + c_k^2}= 2 \Re \left(\sum_{k} \frac{c_{k}}{\nu_{k}-i \omega} \right)$$
+
+```{code-cell}
+psbath,fitinfo=obs.approximate("ps",w2,Nmax=4)
 print(fitinfo["summary"])
 ```
 
-```{code-cell} ipython3
+```{code-cell}
+HEOM_ohmic_ps_fit = HEOMSolver(
+    Hsys,
+    (psbath,Q),
+    max_depth=max_depth,
+    options=options,
+)
+results_ohmic_ps_fit = HEOM_ohmic_ps_fit.run(rho0, tlist)
+```
+
+### ESPIRA
+
+ESPIRA is a Prony-like method, but while it takes a correlation function as 
+input. It exploits the relationship between parameter estimation (what we do 
+in Prony) and rational approximations, the rational approximation is done on the 
+DFT via the AAA algorithm, effectively using both information about the 
+power spectrum and the correlation function in the same fit.  
+
+We have two implementations of ESPIRA, ESPIRA-I and ESPIRA-II. ESPIRA-I 
+is typically better, but in many cases especially when `separate=True`, 
+ESPIRA-II will yield better results. ESPIRA-II is recommended if 
+extremely slowly decaying exponents are expected. Otherwise ESPIRA-I is 
+recommended
+
++++
+
+ESPIRA I
+
+```{code-cell}
+tlist4=np.linspace(0,20,1000)
+espibath,fitinfo=obs.approximate("espira-I",tlist4,Nr=4,Ni=4)
+print(fitinfo["summary"])
+```
+
+```{code-cell}
 HEOM_ohmic_espira_fit = HEOMSolver(
     Hsys,
     (espibath,Q),
@@ -1009,13 +1057,13 @@ HEOM_ohmic_espira_fit = HEOMSolver(
 results_ohmic_espira_fit = HEOM_ohmic_espira_fit.run(rho0, tlist)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 tlist4=np.linspace(0,20,1000)
-espibath2,fitinfo=obs._approx_by_prony("espira-II",tlist4,Nr=4,Ni=4)
+espibath2,fitinfo=obs.approximate("espira-II",tlist4,Nr=4,Ni=4,separate=True)
 print(fitinfo["summary"])
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 HEOM_ohmic_espira_fit2 = HEOMSolver(
     Hsys,
     (espibath2,Q),
@@ -1027,7 +1075,7 @@ results_ohmic_espira2_fit = HEOM_ohmic_espira_fit2.run(rho0, tlist)
 
 Finally we plot the dynamics obtained by the different methods
 
-```{code-cell} ipython3
+```{code-cell}
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(12, 7))
 
 plot_result_expectations(
@@ -1041,8 +1089,8 @@ plot_result_expectations(
         (results_spectral_fit_pk[3], P11p, "r-.", "Spectral Density Fit $k_J=4$"),
         (results_ohmic_corr_fit, P11p, "r", "Correlation Fit Ohmic Bath"),
         (results_ohmic_sd_fit2, P11p, "g--", "Spectral Density Fit Ohmic Bath"),
+        (results_ohmic_ps_fit, P11p, "g--", "Power Spectrum Fit Ohmic Bath"),
         (results_ohmic_prony_fit, P11p, "k", " Prony Fit"),
-        (results_ohmic_mp_fit, P11p, "r", "Matrix Pencil Fit"),
         (results_ohmic_es_fit, P11p, "b-.", "ESPRIT Fit"),
         (results_ohmic_aaa_fit, P11p, "r-.", "Matrix AAA Fit"),
         (results_ohmic_espira_fit, P11p, "k", "ESPIRA I Fit"),
@@ -1059,7 +1107,7 @@ axes.set_yscale("log")
 
 ## About
 
-```{code-cell} ipython3
+```{code-cell}
 qutip.about()
 ```
 
@@ -1067,8 +1115,7 @@ qutip.about()
 
 This section can include some tests to verify that the expected outputs are generated within the notebook. We put this section at the end of the notebook, so it's not interfering with the user experience. Please, define the tests using assert, so that the cell execution fails if a wrong output is generated.
 
-```{code-cell} ipython3
-
+```{code-cell}
 assert np.allclose(
     expect(P11p, results_spectral_fit_pk[2].states),
     expect(P11p, results_spectral_fit_pk[3].states),
@@ -1076,11 +1123,6 @@ assert np.allclose(
 )
 assert np.allclose(
     expect(P11p, results_ohmic_aaa_fit.states),
-    expect(P11p, results_spectral_fit_pk[3].states),
-    rtol=1e-2,
-)
-assert np.allclose(
-    expect(P11p, results_ohmic_mp_fit.states),
     expect(P11p, results_spectral_fit_pk[3].states),
     rtol=1e-2,
 )
@@ -1105,8 +1147,4 @@ assert np.allclose(
     expect(P11p, results_spectral_fit_pk[3].states),
     rtol=1e-2,
 )
-```
-
-```{code-cell} ipython3
-
 ```

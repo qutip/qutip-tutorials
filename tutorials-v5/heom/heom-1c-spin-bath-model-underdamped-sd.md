@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.16.1
+    jupytext_version: 1.16.7
 kernelspec:
   display_name: qutip-dev
   language: python
@@ -415,7 +415,7 @@ Below we show how to use this built-in functionality:
 
 with timer("RHS construction time"):
     bath = UnderDampedEnvironment(lam=lam, gamma=gamma, w0=w0, T=T)
-    bath_approx=bath.approx_by_matsubara(Nk=Nk)
+    bath_approx=bath.approximate(method="matsubara",Nk=Nk)
     HEOM_udbath = HEOMSolver(Hsys, (bath_approx,Q), NC, options=options)
 
 with timer("ODE solver time"):
@@ -437,7 +437,7 @@ The `UnderDampedEnvironment` class also allows us to easily evaluate analytical 
 w = np.linspace(-3, 3, 1000)
 w2 = np.linspace(0, 3, 1000)
 t = np.linspace(0, 10, 1000)
-bath_cf = bath.correlation_function(t)  # uses numerical integration
+bath_cf = bath.correlation_function(t)  
 
 fig, axs = plt.subplots(2, 2)
 

@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.16.1
+    jupytext_version: 1.16.7
 kernelspec:
   display_name: qutip-dev
   language: python
@@ -150,7 +150,7 @@ class BathParams:
         env=DrudeLorentzEnvironment(
             lam=self.lam, gamma=self.gamma, T=self.T, tag=tag
         )
-        env_approx,delta=env.approx_by_pade(Nk=Nk,compute_delta=True,tag=tag)
+        env_approx,delta=env.approximate("pade",Nk=Nk,compute_delta=True,tag=tag)
         return (env_approx,self.Q()),system_terminator(self.Q(),delta),delta
 
     def replace(self, **kw):

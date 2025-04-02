@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.16.1
+    jupytext_version: 1.16.7
 kernelspec:
   display_name: qutip-dev
   language: python
@@ -107,7 +107,7 @@ Q = sigmaz()
 Nk = 3
 
 env = DrudeLorentzEnvironment(lam=lam, gamma=gamma,T=T)
-env_approx=env.approx_by_pade(Nk=Nk)
+env_approx=env.approximate(method="pade",Nk=Nk)
 bath=(env_approx,Q)
 ```
 

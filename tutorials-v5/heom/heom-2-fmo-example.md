@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.16.1
+    jupytext_version: 1.16.7
 kernelspec:
   display_name: qutip-dev
   language: python
@@ -180,7 +180,7 @@ Nk = 0
 Q_list = []
 baths = []
 Ltot = liouvillian(Hsys)
-env_approx,delta=env.approx_by_matsubara(Nk=Nk,compute_delta=True)
+env_approx,delta=env.approximate(method="matsubara",Nk=Nk,compute_delta=True)
 for m in range(7):
     Q = basis(7, m) * basis(7, m).dag()
     Q_list.append(Q)
@@ -270,10 +270,6 @@ Next let us try to understand why.
 It is useful to construct the various parts of the Bloch-Redfield master equation explicitly and to solve them using the Master equation solver, `mesolve`. We will do so and show that it is the pure-dephasing terms which suppresses coherence in these oscillations.
 
 First we will write a function to return the list of collapse operators for a given system, either with or without the dephasing operators:
-
-+++
-
-TODO: Maybe power spectrum at zero is wrong, by a factor 2
 
 ```{code-cell}
 def J0_dephasing():
@@ -409,7 +405,7 @@ plt.xticks([0, 500, 1000], [0, 500, 1000])
 axes.legend(fontsize=18);
 ```
 
-And now we see that without the dephasing, the oscillations reappear. The full dynamics capture by the HEOM are still not capture by this simpler model, however.
+And now we see that without the dephasing, the oscillations reappear. The full dynamics captured by the HEOM are still not capture by this simpler model, however.
 
 +++
 
