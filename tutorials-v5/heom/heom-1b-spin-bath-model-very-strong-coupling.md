@@ -5,9 +5,9 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.16.7
 kernelspec:
-  display_name: Python 3 (ipykernel)
+  display_name: qutip-dev
   language: python
   name: python3
 ---
@@ -81,12 +81,11 @@ Note that in the above, and the following, we set $\hbar = k_\mathrm{B} = 1$.
 
 ## Setup
 
-```{code-cell} ipython3
+```{code-cell}
 import contextlib
 import time
 
 import numpy as np
-from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 
 import qutip
@@ -98,12 +97,12 @@ from qutip import (
     sigmax,
     sigmaz,
 )
+from qutip.core.environment import (
+    DrudeLorentzEnvironment,
+    system_terminator
+)
 from qutip.solver.heom import (
     HEOMSolver,
-    BosonicBath,
-    DrudeLorentzBath,
-    DrudeLorentzPadeBath,
-    BathExponent,
 )
 
 %matplotlib inline
@@ -113,13 +112,13 @@ from qutip.solver.heom import (
 
 Let's define some helper functions for calculating correlation function expansions, plotting results and timing how long operations take:
 
-```{code-cell} ipython3
+```{code-cell}
 def cot(x):
     """ Vectorized cotangent of x. """
     return 1. / np.tan(x)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 @contextlib.contextmanager
 def timer(label):
     """ Simple utility for timing functions:
@@ -133,7 +132,7 @@ def timer(label):
     print(f"{label}: {end - start}")
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Solver options:
 
 options = {
@@ -150,19 +149,19 @@ options = {
 
 And let us set up the system Hamiltonian, bath and system measurement operators:
 
-```{code-cell} ipython3
+```{code-cell}
 # Defining the system Hamiltonian
 eps = .0     # Energy of the 2-level system.
 Del = .2     # Tunnelling term
 Hsys = 0.5 * eps * sigmaz() + 0.5 * Del * sigmax()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Initial state of the system.
 rho0 = basis(2, 0) * basis(2, 0).dag()
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # System-bath coupling (Drude-Lorentz spectral density)
 Q = sigmaz()  # coupling operator
 
@@ -185,7 +184,7 @@ NC = 13
 tlist = np.linspace(0, np.pi / Del, 600)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Define some operators with which we will measure the system
 # 1,1 element of density matrix - corresonding to groundstate
 P11p = basis(2, 0) * basis(2, 0).dag()
@@ -198,9 +197,10 @@ P12p = basis(2, 0) * basis(2, 1).dag()
 
 Let us briefly inspect the spectral density.
 
-```{code-cell} ipython3
+```{code-cell}
+bath = DrudeLorentzEnvironment(lam=lam, gamma=gamma, T=T, Nk=500)
 w = np.linspace(0, 5, 1000)
-J = w * 2 * lam * gamma / ((gamma**2 + w**2))
+J = bath.spectral_density(w)
 
 # Plot the results
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 8))
@@ -211,10 +211,10 @@ axes.set_ylabel(r'J', fontsize=28);
 
 ## Simulation 1: Matsubara decomposition, not using Ishizaki-Tanimura terminator
 
-```{code-cell} ipython3
+```{code-cell}
 with timer("RHS construction time"):
-    bath = DrudeLorentzBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
-    HEOMMats = HEOMSolver(Hsys, bath, NC, options=options)
+    matsBath = bath.approximate(method="matsubara", Nk=Nk)
+    HEOMMats = HEOMSolver(Hsys, (matsBath, Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultMats = HEOMMats.run(rho0, tlist)
@@ -222,18 +222,19 @@ with timer("ODE solver time"):
 
 ## Simulation 2: Matsubara decomposition (including terminator)
 
-```{code-cell} ipython3
+```{code-cell}
 with timer("RHS construction time"):
-    bath = DrudeLorentzBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
-    _, terminator = bath.terminator()
+    matsBath, delta = bath.approximate(
+        method="matsubara", Nk=Nk, compute_delta=True)
+    terminator = system_terminator(Q, delta)
     Ltot = liouvillian(Hsys) + terminator
-    HEOMMatsT = HEOMSolver(Ltot, bath, NC, options=options)
+    HEOMMatsT = HEOMSolver(Ltot, (matsBath, Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultMatsT = HEOMMatsT.run(rho0, tlist)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Plot the results
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 8))
 
@@ -256,53 +257,23 @@ axes.legend(loc=0, fontsize=12);
 
 ## Simulation 3: Pade decomposition
 
-```{code-cell} ipython3
+```{code-cell}
 # First, compare Matsubara and Pade decompositions
-matsBath = DrudeLorentzBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
-padeBath = DrudeLorentzPadeBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
-
-# We will compare against a summation of {lmaxmats} Matsubara terms
-lmaxmats = 15000
-exactBath = DrudeLorentzBath(
-    Q, lam=lam, gamma=gamma, T=T, Nk=lmaxmats, combine=False,
-)
-
-
-def CR(bath, t):
-    """ C_R, the real part of the correlation function. """
-    result = 0
-    for exp in bath.exponents:
-        if (
-            exp.type == BathExponent.types['R'] or
-            exp.type == BathExponent.types['RI']
-        ):
-            result += exp.ck * np.exp(-exp.vk * t)
-    return result
-
-
-def CI(bath, t):
-    """ C_I, the imaginary part of the correlation function. """
-    result = 0
-    for exp in bath.exponents:
-        if exp.type == BathExponent.types['I']:
-            result += exp.ck * np.exp(exp.vk * t)
-        if exp.type == BathExponent.types['RI']:
-            result += exp.ck2 * np.exp(exp.vk * t)
-    return result
+padeBath = bath.approximate("pade", Nk=Nk)
 
 
 fig, (ax1, ax2) = plt.subplots(ncols=2, sharey=True, figsize=(16, 8))
 
 ax1.plot(
-    tlist, CR(exactBath, tlist),
-    "r", linewidth=2, label=f"Mats (Nk={lmaxmats})",
+    tlist, np.real(bath.correlation_function(tlist)),
+    "r", linewidth=2, label=f"Exact",
 )
 ax1.plot(
-    tlist, CR(matsBath, tlist),
+    tlist, np.real(matsBath.correlation_function(tlist)),
     "g--", linewidth=2, label=f"Mats (Nk={Nk})",
 )
 ax1.plot(
-    tlist, CR(padeBath, tlist),
+    tlist, np.real(padeBath.correlation_function(tlist)),
     "b--", linewidth=2, label=f"Pade (Nk={Nk})",
 )
 
@@ -312,11 +283,13 @@ ax1.legend(loc=0, fontsize=12)
 
 tlist2 = tlist[0:50]
 ax2.plot(
-    tlist2, np.abs(CR(matsBath, tlist2) - CR(exactBath, tlist2)),
+    tlist2, np.abs(matsBath.correlation_function(tlist2)
+                   - bath.correlation_function(tlist2)),
     "g", linewidth=2, label="Mats Error",
 )
 ax2.plot(
-    tlist2, np.abs(CR(padeBath, tlist2) - CR(exactBath, tlist2)),
+    tlist2, np.abs(padeBath.correlation_function(tlist2)
+                   - bath.correlation_function(tlist2)),
     "b--", linewidth=2, label="Pade Error",
 )
 
@@ -324,16 +297,15 @@ ax2.set_xlabel(r't', fontsize=28)
 ax2.legend(loc=0, fontsize=12);
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 with timer("RHS construction time"):
-    bath = DrudeLorentzPadeBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
-    HEOMPade = HEOMSolver(Hsys, bath, NC, options=options)
+    HEOMPade = HEOMSolver(Hsys, (padeBath, Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultPade = HEOMPade.run(rho0, tlist)
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 # Plot the results
 fig, axes = plt.subplots(figsize=(8, 8))
 
@@ -358,107 +330,73 @@ axes.legend(loc=0, fontsize=12);
 
 ## Simulation 4: Fitting approach
 
-```{code-cell} ipython3
-def wrapper_fit_func(x, N, args):
-    """ Fit function wrapper that unpacks its arguments. """
-    x = np.array(x)
-    a = np.array(args[:N])
-    b = np.array(args[N:2 * N])
-    return fit_func(x, a, b)
+In `HEOM 1a: Spin-Bath model (introduction)` a fit is performed manually, here
+we will use the built-in tools. More details about them can be seen in 
+`HEOM 1d: Spin-Bath model, fitting of spectrum and correlation functions`
 
-
-def fit_func(x, a, b):
-    """ Fit function. Calculates the value of the
-        correlation function at each x, given the
-        fit parameters in a and b.
-    """
-    return np.sum(
-        a[:, None] * np.exp(np.multiply.outer(b, x)),
-        axis=0,
-    )
-
-
-def fitter(ans, tlist, k):
-    """ Compute fit with k exponents. """
-    upper_a = abs(max(ans, key=abs)) * 10
-    # sets initial guesses:
-    guess = (
-        [upper_a / k] * k +  # guesses for a
-        [0] * k  # guesses for b
-    )
-    # sets lower bounds:
-    b_lower = (
-        [-upper_a] * k +  # lower bounds for a
-        [-np.inf] * k  # lower bounds for b
-    )
-    # sets higher bounds:
-    b_higher = (
-        [upper_a] * k +  # upper bounds for a
-        [0] * k  # upper bounds for b
-    )
-    param_bounds = (b_lower, b_higher)
-    p1, p2 = curve_fit(
-        lambda x, *params_0: wrapper_fit_func(x, k, params_0),
-        tlist,
-        ans,
-        p0=guess,
-        sigma=[0.01 for t in tlist],
-        bounds=param_bounds,
-        maxfev=1e8,
-    )
-    a, b = p1[:k], p1[k:]
-    return (a, b)
+```{code-cell}
+tfit = np.linspace(0, 10, 10000)
+lower = [0, -np.inf, -1e-6, -3]
+guess = [np.real(bath.correlation_function(0))/10, -10, 0, 0]
+upper = [5, 0, 1e-6, 0]
+# for better fits increase the first element in upper, or change approximate
+# method that makes the simulation much slower (Larger C(t) as C(0) is fit
+# better)
+envfit, fitinfo = bath.approximate("cf", tlist=tfit, Nr_max=2, Ni_max=1, full_ansatz=True,
+                                   sigma=0.1, maxfev=1e6, target_rmse=None,
+                                   lower=lower, upper=upper, guess=guess)
 ```
 
-```{code-cell} ipython3
-# Fitting the real part of the correlation function:
-
-# Correlation function values to fit:
-tlist_fit = np.linspace(0, 6, 10000)
-corrRana = CR(exactBath, tlist_fit)
-
-# Perform the fit:
-kR = 3  # number of exponents to use for real part
-poptR = []
-with timer("Correlation (real) fitting time"):
-    for i in range(kR):
-        poptR.append(fitter(corrRana, tlist_fit, i + 1))
+```{code-cell}
+print(fitinfo['summary'])
 ```
 
-```{code-cell} ipython3
-plt.plot(tlist_fit, corrRana, label="Analytic")
+We can quickly compare the result of the Fit with the Pade expansion
 
-for i in range(kR):
-    y = fit_func(tlist_fit, *poptR[i])
-    plt.plot(tlist_fit, y, label=f"Fit with {i} terms")
+```{code-cell}
+fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(16, 8))
 
-plt.title("Fit to correlations (real part)")
-plt.legend()
-plt.show()
+ax1.plot(
+    tlist, np.real(bath.correlation_function(tlist)),
+    "r", linewidth=2, label=f"Exact",
+)
+ax1.plot(
+    tlist, np.real(envfit.correlation_function(tlist)),
+    "g--", linewidth=2, label=f"Fit", marker="o", markevery=50
+)
+ax1.plot(
+    tlist, np.real(padeBath.correlation_function(tlist)),
+    "b--", linewidth=2, label=f"Pade (Nk={Nk})",
+)
+
+ax1.set_xlabel(r't', fontsize=28)
+ax1.set_ylabel(r"$C_R(t)$", fontsize=28)
+ax1.legend(loc=0, fontsize=12)
+
+ax2.plot(
+    tlist, np.imag(bath.correlation_function(tlist)),
+    "r", linewidth=2, label=f"Exact",
+)
+ax2.plot(
+    tlist, np.imag(envfit.correlation_function(tlist)),
+    "g--", linewidth=2, label=f"Fit", marker="o", markevery=50
+)
+ax2.plot(
+    tlist, np.imag(padeBath.correlation_function(tlist)),
+    "b--", linewidth=2, label=f"Pade (Nk={Nk})",
+)
+
+ax2.set_xlabel(r't', fontsize=28)
+ax2.set_ylabel(r"$C_I(t)$", fontsize=28)
+ax2.legend(loc=0, fontsize=12)
 ```
 
-```{code-cell} ipython3
-# Set the exponential coefficients from the fit parameters
-
-ckAR1 = poptR[-1][0]
-ckAR = [x + 0j for x in ckAR1]
-
-vkAR1 = poptR[-1][1]
-vkAR = [-x + 0j for x in vkAR1]
-
-# Imaginary part: use analytical value
-
-ckAI = [lam * gamma * (-1.0) + 0j]
-vkAI = [gamma + 0j]
-```
-
-```{code-cell} ipython3
+```{code-cell}
 with timer("RHS construction time"):
-    bath = BosonicBath(Q, ckAR, vkAR, ckAI, vkAI)
     # We reduce NC slightly here for speed of execution because we retain
     # 3 exponents in ckAR instead of 1. Please restore full NC for
     # convergence though:
-    HEOMFit = HEOMSolver(Hsys, bath, int(NC * 0.7), options=options)
+    HEOMFit = HEOMSolver(Hsys, (envfit, Q), int(NC*0.7), options=options)
 
 with timer("ODE solver time"):
     resultFit = HEOMFit.run(rho0, tlist)
@@ -466,17 +404,11 @@ with timer("ODE solver time"):
 
 ## Simulation 5: Bloch-Redfield
 
-```{code-cell} ipython3
-DL = (
-    "2 * pi * 2.0 * {lam} / (pi * {gamma} * {beta}) if (w==0) "
-    "else 2 * pi * (2.0 * {lam} * {gamma} * w / (pi * (w**2 + {gamma}**2))) "
-    "* ((1 / (exp(w * {beta}) - 1)) + 1)"
-).format(gamma=gamma, beta=beta, lam=lam)
-
+```{code-cell}
 with timer("ODE solver time"):
     resultBR = brmesolve(
         Hsys, rho0, tlist,
-        a_ops=[[sigmaz(), DL]], sec_cutoff=0, options=options,
+        a_ops=[[sigmaz(), bath]], sec_cutoff=0, options=options,
     )
 ```
 
@@ -484,7 +416,7 @@ with timer("ODE solver time"):
 
 Finally, let's plot all of our different results to see how they shape up against each other.
 
-```{code-cell} ipython3
+```{code-cell}
 # Calculate expectation values in the bases:
 P11_mats = np.real(expect(resultMats.states, P11p))
 P11_matsT = np.real(expect(resultMatsT.states, P11p))
@@ -493,7 +425,7 @@ P11_fit = np.real(expect(resultFit.states, P11p))
 P11_br = np.real(expect(resultBR.states, P11p))
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 rcParams = {
     "axes.titlesize": 25,
     "axes.labelsize": 30,
@@ -510,7 +442,7 @@ rcParams = {
 }
 ```
 
-```{code-cell} ipython3
+```{code-cell}
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(12, 7))
 
 with plt.rc_context(rcParams):
@@ -550,7 +482,7 @@ with plt.rc_context(rcParams):
 
 ## About
 
-```{code-cell} ipython3
+```{code-cell}
 qutip.about()
 ```
 
@@ -558,7 +490,7 @@ qutip.about()
 
 This section can include some tests to verify that the expected outputs are generated within the notebook. We put this section at the end of the notebook, so it's not interfering with the user experience. Please, define the tests using assert, so that the cell execution fails if a wrong output is generated.
 
-```{code-cell} ipython3
+```{code-cell}
 assert np.allclose(P11_matsT, P11_pade, rtol=1e-3)
 assert np.allclose(P11_matsT, P11_fit, rtol=1e-3)
 ```
