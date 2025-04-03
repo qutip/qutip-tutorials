@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.16.1
+      jupytext_version: 1.16.4
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -38,6 +38,7 @@ import qutip as qt
 from scipy import special, optimize
 from scipy.interpolate import CubicSpline
 
+from collections import Counter
 import os
 ```
 
@@ -203,10 +204,10 @@ We specify some numerical parameters, i.e., the number of trajectories and wheth
 nmmc_options = {"map": "parallel",
                 "norm_steps": 10}  # options specific to nm_mcsolve
 options = {"progress_bar": "enhanced"}  # options shared by all solvers
-ntraj = 5000
+ntraj = 5500
 
 H = 2 * qt.sigmap() * qt.sigmam()
-ops_and_rates = [[qt.sigmam(), Gamma_int]]
+ops_and_rates = [[qt.sigmam(), qt.coefficient(Gamma_int)]]
 psi0 = qt.basis(2, 0)
 e_ops = [H]
 ```
@@ -271,6 +272,49 @@ plt.fill_between(
     MCSol.trace + MCSol.std_trace / np.sqrt(ntraj),
     alpha=0.5,
 )
+
+plt.xlabel(r"$t$")
+plt.ylabel(r"$\langle H \rangle\, /\, 2$")
+plt.legend()
+plt.show()
+```
+
+##### Improved Sampling
+To close this tutorial, we will briefly demonstrate the use of the "improved sampling" option with `nm_mcsolve`.
+For clarity, we consider the same example as before, but with a shorter time interval and fewer trajectories:
+
+```python
+times_is = np.linspace(ti, ti + duration / 2, steps + 1)
+ntraj_is = ntraj / 10
+
+MCSol_is = solver.run(psi0, tlist=times_is, ntraj=ntraj_is, e_ops=e_ops)
+MESol_is = qt.mesolve([H, S], psi0, times_is, d_ops, e_ops, options=options)
+```
+
+If we count the number of collapses per trajectory, we see that around 10% of the trajectories had no collapses:
+
+```python
+print(Counter([len(x) for x in MCSol_is.col_times]))
+```
+
+All these trajectories are identical.
+It would therefore be enough to calculate this trajectory only once.
+This can be done by activating the "improved sampling" option:
+
+```python
+solver.options = {'improved_sampling': True}
+MCSol_is_improved = solver.run(psi0, tlist=times_is, ntraj=ntraj_is, e_ops=e_ops)
+print(Counter([len(x) for x in MCSol_is_improved.col_times]))
+```
+
+```python
+plt.plot(times_is - ti, MESol_is.expect[0] / 2, "k-", label="Exact")
+plt.plot(times_is - ti, MCSol_is.expect[0] / 2, "kx", label="MC")
+plt.plot(times_is - ti, MCSol_is_improved.expect[0] / 2, "rx", label="MC (improved)")
+
+plt.plot(times_is - ti, np.ones_like(times_is), "k-", alpha=0.5)
+plt.plot(times_is - ti, MCSol_is.trace, "kx", alpha=0.5)
+plt.plot(times_is - ti, MCSol_is_improved.trace, "rx", alpha=0.5)
 
 plt.xlabel(r"$t$")
 plt.ylabel(r"$\langle H \rangle\, /\, 2$")
@@ -722,8 +766,8 @@ if results_folder_exists and NUM_BATCHES > 0:
     fit = np.polyfit(np.log(xval), yval, 1)
     print(('Approximate number of trajectories required for convergence until '
            'time t (according to linear fit):\n'
-           f'N = {np.exp(-fit[1] / fit[0]) :.2f} * '
-           f'exp( {1 / fit[0] / times3[-1] :.2f} * t )\n'))
+           f'N = {np.exp(-fit[1] / fit[0]):.2f} * '
+           f'exp( {1 / fit[0] / times3[-1]:.2f} * t )\n'))
 
     plt.semilogx(xval, yval, label='Simulation result')
     plt.semilogx(xval, fit[0] * np.log(xval) + fit[1], '--', label='Fit')

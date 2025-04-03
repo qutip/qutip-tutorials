@@ -21,20 +21,21 @@ jobs:
           - qutip-version: '5'
             qutip-branch: 'master'
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - uses: gaurav-nelson/github-action-markdown-link-check@v1
       with:
         use-quiet-mode: 'yes'
         folder-path: tutorials-v${{ matrix.qutip-version }}
+        #use config file to define 403 and 405 errors as valid links
+        #(APS blocks this link check)
+        config-file: mlc_config.json
 
-    - name: Setup Mambaforge
-      uses: conda-incubator/setup-miniconda@v2
+    - name: Setup Conda
+      uses: conda-incubator/setup-miniconda@v3
       with:
-        miniforge-variant: Mambaforge
         miniforge-version: latest
-        activate-environment: test-environment
-        use-mamba: true
+        activate-environment: test-environment-v${{ matrix.qutip-version }}
 
     - name: Get Date
       id: get-date
@@ -42,7 +43,7 @@ jobs:
       shell: bash
 
     - name: Cache Conda env
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{ env.CONDA }}/envs
         key: conda-${{ runner.os }}--${{ runner.arch }}--${{ steps.get-date.outputs.today }}-${{ hashFiles('test_environment.yml') }}-${{ env.CACHE_NUMBER }}-qutip-${{ matrix.qutip-version }}
@@ -53,7 +54,7 @@ jobs:
 
     - name: Install environment
       if: steps.cache.outputs.cache-hit != 'true'
-      run: mamba env update -n test-environment -f test_environment.yml
+      run: conda env update -n test-environment-v${{ matrix.qutip-version }} -f test_environment-v${{ matrix.qutip-version }}.yml
 
     - name: Install QuTiP
       run: |
@@ -111,7 +112,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.repository == 'qutip/qutip-tutorials' && github.ref == 'refs/heads/main' }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           name: executed-notebooks-v4

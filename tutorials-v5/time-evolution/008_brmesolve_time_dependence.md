@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.13.8
+      jupytext_version: 1.16.4
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -86,8 +86,9 @@ $$ J(\omega, t) = \kappa * e^{-t} \quad \text{for} \; \omega \geq 0$$
 ```python
 # setup dissipation
 kappa = 0.2
-a_ops = [[a + a.dag(), "{kappa}*exp(-t)*(w>=0)".format(kappa=kappa)]]
-
+a_ops = [
+    ([a+a.dag(), f'sqrt({kappa}*exp(-t))'], '(w>=0)')
+]
 # solve
 result_brme_aops = brmesolve(H, psi0, times, a_ops, e_ops=[a.dag() * a])
 
