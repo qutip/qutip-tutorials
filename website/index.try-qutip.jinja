@@ -14,54 +14,70 @@ jupyter:
 
 # {{ title }}
 
+## Contents
 
-## Python Introduction
+  - [Example notebooks](#Example-notebooks)
+    - [Python Introduction](#Python-Introduction)
+    - [Visualization](#Visualization)
+    - [Quantum information processing](#Quantum-information-processing)
+      - [Quantum circuits and algorithms](#Quantum-circuits-and-algorithms)
+      - [Pulse-level circuit simulation](#Pulse-level-circuit-simulation)
+    - [Time evolution](#Time-evolution)
+    - [Hierarchical Equations of Motion](#Hierarchical-Equations-of-Motion)
+    - [Miscellaneous tutorials](#Miscellaneous-tutorials)
+  - [Quantum mechanics lectures with QuTiP](#Quantum-mechanics-lectures-with-QuTiP)
+  - [Contributing](#Contributing)
+
+
+## Example notebooks
+
+### Python Introduction
 
 {% for item in tutorials['python-introduction'] %}
   - [{{ item.title }}]({{ item.try_qutip_url }})
 {% endfor %}
 
 
-## Visualization
+### Visualization
 
 {% for item in tutorials['visualization'] %}
   - [{{ item.title }}]({{ item.try_qutip_url }})
 {% endfor %}
 
 
-## Quantum information processing
+### Quantum information processing
 
 This section requires an additional package [qutip-qip](https://github.com/qutip/qutip-qip),
 which is already installed in the try-qutip environment.
 
-### Quantum circuits and algorithms
+#### Quantum circuits and algorithms
 
 {% for item in tutorials['quantum-circuits'] %}
   - [{{ item.title }}]({{ item.try_qutip_url }})
 {% endfor %}
 
-### Pulse-level circuit simulation
+#### Pulse-level circuit simulation
 
 {% for item in tutorials['pulse-level-circuit-simulation'] %}
   - [{{ item.title }}]({{ item.try_qutip_url }})
 {% endfor %}
 
 
-## Time evolution
+### Time evolution
 
 {% for item in tutorials['time-evolution'] %}
   - [{{ item.title }}]({{ item.try_qutip_url }})
 {% endfor %}
 
 
-## Hierarchical Equations of Motion
+### Hierarchical Equations of Motion
 
 {% for item in tutorials['heom'] %}
   - [{{ item.title }}]({{ item.try_qutip_url }})
 {% endfor %}
 
 
-## Miscellaneous tutorials
+### Miscellaneous tutorials
 
 {% for item in tutorials['miscellaneous'] %}
   - [{{ item.title }}]({{ item.try_qutip_url }})
