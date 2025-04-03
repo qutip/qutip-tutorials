@@ -1,10 +1,8 @@
 """ Script for generating indexes of the notebook. """
 
 import argparse
-import os
 import pathlib
 import re
-import urllib.parse
 
 from jinja2 import (
     Environment,
@@ -37,7 +35,6 @@ class Notebook:
     """ Notebook object for use in rendering templates. """
 
     NBVIEWER_URL_PREFIX = "https://nbviewer.org/urls/qutip.org/qutip-tutorials/"
-    TRY_QUTIP_URL_PREFIX = "https://qutip.org/try-qutip/lab/index.html?"
 
     def __init__(self, title, tutorial_folder, path):
         self.tutorial_folder = tutorial_folder
@@ -52,10 +49,7 @@ class Notebook:
         self.tutorial_ipynb_path = self.tutorial_md_path.with_suffix(".ipynb")
 
         self.nbviewer_url = self.NBVIEWER_URL_PREFIX + self.web_ipynb_path.as_posix()
-        self.try_qutip_url = (
-            self.TRY_QUTIP_URL_PREFIX +
-            urllib.parse.urlencode({"path": "tutorials/" + self.tutorial_ipynb_path.as_posix()})
-        )
+        self.try_qutip_url = "./tutorials/" + self.tutorial_ipynb_path.as_posix()
 
 
 def get_title(path):
