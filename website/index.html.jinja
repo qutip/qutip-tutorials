@@ -112,17 +112,9 @@ useful to have a look at these IPython notebook
 
 <h4 id="optimal-control">Optimal control</h4>
 <ul>
-<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/optimal-control-overview.ipynb">Overview</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-pulseoptim-Hadamard.ipynb">Hadamard</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-pulseoptim-QFT.ipynb">QFT</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-pulseoptim-Lindbladian.ipynb">Lindbladian</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-pulseoptim-symplectic.ipynb">Symplectic</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/control-pulseoptim-CRAB-QFT.ipynb">QFT (CRAB)</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/control-pulseoptim-CRAB-2qubitInerac.ipynb">State to state (CRAB)</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-grape-cnot.ipynb">CNOT</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-grape-iswap.ipynb">iSWAP</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-grape-single-qubit-rotation.ipynb">Single-qubit rotation</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-grape-toffoli.ipynb">Toffoli gate</a> </li>
+{% for item in tutorials['optimal-control'] %}
+    <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+{% endfor %}
 </ul>
 
 <h4 id="tomography">Tomography</h4>
