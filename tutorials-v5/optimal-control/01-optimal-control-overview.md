@@ -82,10 +82,10 @@ The second order differentials of the infidelity with respect to the variables c
 The pulse optimisation is typically far more efficient if the gradients can be calculated exactly, rather than approximated. For simple fidelity measures such as $f_{PSU}$ this is possible. Firstly the propagator gradient for each timeslot with respect to the control amplitudes is calculated. For closed systems, with unitary dynamics, a method using the eigendecomposition is used, which is efficient as it is also used in the propagator calculation (to exponentiate the combined Hamiltonian). More generally (for example open systems and symplectic dynamics) the Frechet derivative (or augmented matrix) method is used, which is described in [4]. For other optimisation goals it may not be possible to calculate analytic gradients. In these cases it is necessary to approximate the gradients, but this can be very expensive, and can lead to other algorithms out-performing GRAPE.
 
 QuTiP examples of GRAPE using second order gradient ascent methods are given in:  
-- [pulseoptim Hadamard](https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/optimal-control/02-cpo-GRAPE-Hadamard.ipynb)
-- [pulseoptim QFT](https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/optimal-control/03-cpo-GRAPE-QFT.ipynb)  
-- Open systems: [pulseoptim - Lindbladian](https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/optimal-control/04-cpo-GRAPE-QFT.ipynb)  
-- Symplectic dynamics: [pulseoptim - symplectic](https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/optimal-control/05-cpo-cpo-symplectic.ipynb)
+- [pulseoptim Hadamard](./optimal-control/02-cpo-GRAPE-Hadamard.ipynb)
+- [pulseoptim QFT](./03-cpo-GRAPE-QFT.ipynb)  
+- Open systems: [pulseoptim - Lindbladian](./04-cpo-GRAPE-QFT.ipynb)  
+- Symplectic dynamics: [pulseoptim - symplectic](./05-cpo-cpo-symplectic.ipynb)
 
 
 
@@ -104,8 +104,8 @@ As mentioned in the GRAPE paragraph, for CRAB local minima arising from algorith
 For some control objectives and/or dynamical quantum descriptions, it is either not possible to derive the gradient for the cost functional with respect to each time slice or it is computationally expensive to do so. The same can apply for the necessary (reverse) propagation of the co-state. All this trouble does not occur within CRAB as those elements are not in use here. CRAB, instead, takes the time evolution as a black-box where the pulse goes as an input and the cost (e.g. infidelity) value will be returned as an output. This concept, on top, allows for direct integration in a closed loop experimental environment where both the preliminarily open loop optimization, as well as the final adoption, and integration to the lab (to account for modeling errors, experimental systematic noise, ...) can be done all in one, using this algorithm.
 
 QuTiP examples of CRAB control are given in:
-- [State-to-state 2 Qubit (CRAB)](https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/optimal-control/06-CRAB-2qubit-state_to_state.ipynb)
-- [QFT (CRAB)](https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/optimal-control/07-CRAB-QFT.ipynb)  
+- [State-to-state 2 Qubit (CRAB)](./06-CRAB-2qubit-state_to_state.ipynb)
+- [QFT (CRAB)](./07-CRAB-QFT.ipynb)  
 
 
 
@@ -155,7 +155,7 @@ The result of a pulse optimisation run is returned as an object with properties 
 ## Using the pulseoptim functions
 The simplest method for optimising a control pulse is to call one of the functions in the pulseoptim module. This automates the creation and configuration of the necessary objects, generation of initial pulses, running the optimisation and returning the result. There are functions specifically for unitary dynamics, and also specifically for the CRAB algorithm (GRAPE is the default). The optimise_pulse function can in fact be used for unitary dynamics and / or the CRAB algorithm, the more specific functions simply have parameter names that are more familiar in that application. 
 
-A semi-automated method is to use the create_optimizer_objects function to generate and configure all the objects, then manually set the initial pulse and call the optimisation. This would be more efficient when repeating runs with different starting conditions. A example of this method is given in [pulseoptim QFT](https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/optimal-control/03-GRAPE-QFT.ipynb)
+A semi-automated method is to use the create_optimizer_objects function to generate and configure all the objects, then manually set the initial pulse and call the optimisation. This would be more efficient when repeating runs with different starting conditions. A example of this method is given in [pulseoptim QFT](./03-GRAPE-QFT.ipynb)
 
 
 
