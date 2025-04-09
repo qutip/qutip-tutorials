@@ -51,7 +51,7 @@ U_target
 
 ```python
 # Drift Hamiltonian
-g = np.pi / (4 * T)
+g = 0
 H_drift = g * (
     qt.tensor(qt.sigmax(), qt.sigmax()) + qt.tensor(qt.sigmay(), qt.sigmay())
 )
