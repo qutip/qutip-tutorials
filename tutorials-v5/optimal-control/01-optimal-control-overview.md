@@ -82,7 +82,7 @@ The second order differentials of the infidelity with respect to the variables c
 The pulse optimisation is typically far more efficient if the gradients can be calculated exactly, rather than approximated. For simple fidelity measures such as $f_{PSU}$ this is possible. Firstly the propagator gradient for each timeslot with respect to the control amplitudes is calculated. For closed systems, with unitary dynamics, a method using the eigendecomposition is used, which is efficient as it is also used in the propagator calculation (to exponentiate the combined Hamiltonian). More generally (for example open systems and symplectic dynamics) the Frechet derivative (or augmented matrix) method is used, which is described in [4]. For other optimisation goals it may not be possible to calculate analytic gradients. In these cases it is necessary to approximate the gradients, but this can be very expensive, and can lead to other algorithms out-performing GRAPE.
 
 QuTiP examples of GRAPE using second order gradient ascent methods are given in:  
-- [pulseoptim Hadamard](./optimal-control/02-cpo-GRAPE-Hadamard.ipynb)
+- [pulseoptim Hadamard](./02-cpo-GRAPE-Hadamard.ipynb)
 - [pulseoptim QFT](./03-cpo-GRAPE-QFT.ipynb)  
 - Open systems: [pulseoptim - Lindbladian](./04-cpo-GRAPE-QFT.ipynb)  
 - Symplectic dynamics: [pulseoptim - symplectic](./05-cpo-cpo-symplectic.ipynb)
@@ -105,7 +105,7 @@ For some control objectives and/or dynamical quantum descriptions, it is either 
 
 QuTiP examples of CRAB control are given in:
 - [State-to-state 2 Qubit (CRAB)](./06-CRAB-2qubit-state_to_state.ipynb)
-- [QFT (CRAB)](./07-CRAB-QFT.ipynb)  
+- [QFT (CRAB)](./07-cpo-CRAB-QFT.ipynb)  
 
 
 
@@ -155,7 +155,7 @@ The result of a pulse optimisation run is returned as an object with properties 
 ## Using the pulseoptim functions
 The simplest method for optimising a control pulse is to call one of the functions in the pulseoptim module. This automates the creation and configuration of the necessary objects, generation of initial pulses, running the optimisation and returning the result. There are functions specifically for unitary dynamics, and also specifically for the CRAB algorithm (GRAPE is the default). The optimise_pulse function can in fact be used for unitary dynamics and / or the CRAB algorithm, the more specific functions simply have parameter names that are more familiar in that application. 
 
-A semi-automated method is to use the create_optimizer_objects function to generate and configure all the objects, then manually set the initial pulse and call the optimisation. This would be more efficient when repeating runs with different starting conditions. A example of this method is given in [pulseoptim QFT](./03-GRAPE-QFT.ipynb)
+A semi-automated method is to use the create_optimizer_objects function to generate and configure all the objects, then manually set the initial pulse and call the optimisation. This would be more efficient when repeating runs with different starting conditions. A example of this method is given in [pulseoptim QFT](./03-cpo-GRAPE-QFT.ipynb)
 
 
 
