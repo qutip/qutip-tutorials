@@ -130,49 +130,36 @@ print(np.shape(result.final_amps))
 ## Plot control fields for cnot gate in the presense of single-qubit tunnelling
 
 ```python
-def plot_control_amplitudes(times, final_amps, labels, uniform_axes=True):
+def plot_control_amplitudes(times, final_amps, labels):
     num_controls = final_amps.shape[1]
 
-    if uniform_axes:
-        y_max = 0.1  # Fixed y-axis scale
-        y_min = -0.1
+    y_max = 0.1  # Fixed y-axis scale
+    y_min = -0.1
 
-        for i in range(num_controls):
-            fig, ax = plt.subplots(figsize=(8, 3))
+    for i in range(num_controls):
+        fig, ax = plt.subplots(figsize=(8, 3))
 
-            for j in range(num_controls):
-                # Highlight the current control
-                color = "black" if i == j else "gray"
-                alpha = 1.0 if i == j else 0.5
-                ax.plot(
-                    times,
-                    final_amps[:, j],
-                    label=labels[j],
-                    color=color,
-                    alpha=alpha
-                )
-            ax.set_title(f"Control Fields Highlighting: {labels[i]}")
-            ax.set_xlabel("Time")
-            ax.set_ylabel(labels[i])
-            ax.set_ylim(y_min, y_max)  # Set fixed y-axis limits
-            ax.grid(True)
-            ax.legend()
-            plt.tight_layout()
-            plt.show()
-    else:
-        for i in range(num_controls):
-            fig, ax = plt.subplots(figsize=(8, 3))
-            ax.plot(times, final_amps[:, i], label=labels[i])
-            ax.set_title(f"Control Field: {labels[i]}")
-            ax.set_xlabel("Time")
-            ax.set_ylabel(labels[i])
-            ax.grid(True)
-            ax.legend()
-            plt.tight_layout()
-            plt.show()
+        for j in range(num_controls):
+            # Highlight the current control
+            color = "black" if i == j else "gray"
+            alpha = 1.0 if i == j else 0.1
+            ax.plot(
+                times,
+                final_amps[:, j],
+                label=labels[j],
+                color=color,
+                alpha=alpha
+            )
+        ax.set_title(f"Control Fields Highlighting: {labels[i]}")
+        ax.set_xlabel("Time")
+        ax.set_ylabel(labels[i])
+        ax.set_ylim(y_min, y_max)  # Set fixed y-axis limits
+        ax.grid(True)
+        ax.legend()
+        plt.tight_layout()
+        plt.show()
 
-
-plot_control_amplitudes(times, result.final_amps / (2 * np.pi), H_labels, True)
+plot_control_amplitudes(times, result.final_amps / (2 * np.pi), H_labels)
 ```
 
 ## Fidelity/overlap
