@@ -179,33 +179,7 @@ U_f
 ```
 
 ```python
-def overlap(U_target, U_f):
-    """
-    Calculate the overlap between the target unitary U_target and
-    the final unitary U_f.
-
-    Parameters:
-    U_target (qutip.Qobj): Target unitary operator.
-    U_f (qutip.Qobj): Final unitary operator.
-
-    Returns:
-    float: Real part of the overlap value.
-    float: Fidelity (absolute square of the overlap).
-    """
-    # dividing over U_target.shape[0] is for normalization
-    overlap_value = (U_target.dag() * U_f).tr() / U_target.shape[0]
-    fidelity = abs(overlap_value) ** 2
-    return overlap_value.real, fidelity
-
-
-# Example usage
-overlap_real, fidelity = overlap(U_target, U_f)
-print(f"Overlap (real part): {overlap_real}")
-print(f"Fidelity: {fidelity}")
-```
-
-```python
-np.shape(U_f)
+print(f"Fidelity: {qt.process_fidelity(U_f, U_target)}")
 ```
 
 ## Proceess tomography
