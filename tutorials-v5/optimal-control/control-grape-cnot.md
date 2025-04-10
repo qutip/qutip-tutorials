@@ -58,10 +58,6 @@ H_drift = g * (
 ```
 
 ```python
-H_drift
-```
-
-```python
 H_ctrl = [
     qt.tensor(qt.sigmax(), qt.identity(2)),
     qt.tensor(qt.sigmay(), qt.identity(2)),
@@ -73,10 +69,6 @@ H_ctrl = [
     qt.tensor(qt.sigmay(), qt.sigmay()),
     qt.tensor(qt.sigmaz(), qt.sigmaz()),
 ]
-```
-
-```python
-H_ctrl
 ```
 
 ```python
@@ -123,7 +115,6 @@ for attr in dir(result):
     if not attr.startswith("_"):
         print(f"{attr}: {getattr(result, attr)}")
 
-# --> array[num_tslots, n_ctrls]
 print(np.shape(result.final_amps))
 ```
 
