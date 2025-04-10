@@ -22,7 +22,6 @@ import numpy as np
 import qutip as qt
 # the library for quantum control
 import qutip_qtrl.pulseoptim as qtrl
-from qutip.ipynbtools import version_table
 ```
 
 ```python
@@ -140,7 +139,7 @@ def plot_control_amplitudes(times, final_amps, labels):
                 label=labels[j],
                 color=color,
                 alpha=alpha
-            )
+                )
         ax.set_title(f"Control Fields Highlighting: {labels[i]}")
         ax.set_xlabel("Time")
         ax.set_ylabel(labels[i])
@@ -150,19 +149,19 @@ def plot_control_amplitudes(times, final_amps, labels):
         plt.tight_layout()
         plt.show()
 
+
 plot_control_amplitudes(times, result.final_amps / (2 * np.pi), H_labels)
 ```
 
 ## Fidelity/overlap
 
 ```python
-
 U_target
 ```
 
 ```python
-U_f=result.evo_full_final
-U_f.dims = [[2,2], [2, 2]]
+U_f = result.evo_full_final
+U_f.dims = [[2, 2], [2, 2]]
 ```
 
 ```python
