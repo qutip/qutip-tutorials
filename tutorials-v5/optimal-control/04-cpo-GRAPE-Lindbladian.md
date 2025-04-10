@@ -32,7 +32,7 @@ Different initial (starting) pulse types can be tried.
 The initial and final pulses are displayed in a plot
 
 For more background on the pulse optimisation see:
-[QuTiP overview - Optimal Control](http://nbviewer.ipython.org/github/qutip/qutip-notebooks/blob/master/examples/example-optimal-control-overview.ipynb)  
+[QuTiP overview - Optimal Control](./01-optimal-control-overview.ipynb)  
 
 ```python
 import datetime
