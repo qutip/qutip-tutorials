@@ -165,17 +165,13 @@ plot_control_amplitudes(times, result.final_amps / (2 * np.pi), H_labels)
 ## Fidelity/overlap
 
 ```python
-# initially its dimensions where [[2,2],[2,2]]
-U_target = qt.Qobj(U_target.data, dims=[[4], [4]])
+
 U_target
 ```
 
 ```python
-np.shape(U_target)
-```
-
-```python
-U_f = result.evo_full_final
+U_f=result.evo_full_final
+U_f.dims = [[2,2], [2, 2]]
 ```
 
 ```python
