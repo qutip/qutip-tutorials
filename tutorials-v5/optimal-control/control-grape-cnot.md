@@ -245,5 +245,5 @@ fig = qt.qpt_plot_combined(chi, op_label, fig=fig, threshold=0.01)
 
 
 ```python
-version_table()
+qt.about()
 ```
