@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import qutip as qt
 # the library for quantum control
-import qutip_qtrl.pulseoptim as qtrl
+import qutip_qtrl.pulseoptim as cpo
 ```
 
 ```python
@@ -87,7 +87,7 @@ H_labels = [
 ## GRAPE
 
 ```python
-result = qtrl.optimize_pulse_unitary(
+result = cpo.optimize_pulse_unitary(
     H_drift,
     H_ctrl,
     U_0,
