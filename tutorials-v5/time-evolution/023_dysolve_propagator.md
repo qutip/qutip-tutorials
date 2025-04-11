@@ -26,7 +26,8 @@ Let's start by importing the necessary packages.
 
 ```python
 from qutip.solver.dysolve_propagator import DysolvePropagator, dysolve_propagator
-from qutip import qeye, sigmax, sigmay, sigmaz, tensor, about
+from qutip.solver.propagator import propagator
+from qutip import qeye, sigmax, sigmay, sigmaz, tensor, CoreOptions, about
 ```
 
 ### One qubit example using `DysolvePropagator`
@@ -39,7 +40,7 @@ X = sigmax()
 omega = 10.0
 ```
 
-Some options can be defined. `max_order` will be the order of approximation used when calculating a propagator. The higher this integer is, the more precise the results will be (at a cost of taking more time to calculate). `a_tol` is simply the absolute tolerance used in the calculations. Finally, a time propagator can be computed using subpropagators of time increment `max_dt`. Let's say `max_dt` is set to 0.25, then the propagator $U(1, 0)$ will come from the multiplication of supropagators $U(0.25, 0)$, $U(0.5, 0.25)$, $U(0.75, 0.5)$ and $U(1, 0.75)$. This allows for more precise results when the evolution is over a long period of time. In our case, let's keep `a_tol` and `max_dt` to their default value, but let's change `max_order`.
+Some options can be defined. `max_order` will be the order of approximation used when calculating a propagator. The higher this integer is, the more precise the results will be (at a cost of taking more time to calculate). `a_tol` is simply the absolute tolerance used in the calculations. Finally, a time propagator can be computed using subpropagators of time increment `max_dt`. Let's say `max_dt` is set to 0.25, then the propagator $U(1, 0)$ will come from the multiplication of the supropagators $U(0.25, 0)$, $U(0.5, 0.25)$, $U(0.75, 0.5)$ and $U(1, 0.75)$. This allows for more precise results when the evolution is over a long period of time. In our case, let's keep `a_tol` and `max_dt` to their default value, but let's change `max_order`.
 
 ```python
 options = {'max_order': 5}
@@ -59,7 +60,23 @@ t_f = 1
 U = dy(t_f, t_i)
 ```
 
-This returns a single time propagator $U(t_f, t_i)$.
+This returns a single time propagator $U(t_f = 1, t_i = -1)$. To verify that the $U$ is correct, let's compare it to what `propagator` would return.
+
+```python
+# Solve using propagator
+def X_coeff(t, omega):
+    return np.cos(omega * t)
+
+H = [H_0, [X, X_coeff]]
+args = {'omega': omega}
+prop = propagator(
+    H, [t_i, t_f], args=args, options={"atol": 1e-10, "rtol": 1e-8}
+)
+
+# Comparison
+with CoreOptions(atol=1e-10, rtol=1e-6):
+    assert U == prop[1]
+```
 
 ### Two qubits example with `dysolve_propagator`
 
@@ -79,6 +96,24 @@ omega = 5.0
 ```python
 times = [-0.1, 0, 0.1]
 Us = dysolve_propagator(H_0, X, omega, times)
+```
+
+Again, let's compare the results with `propagator`.
+
+```python
+# Solve using propagator
+def X_coeff(t, omega):
+    return np.cos(omega * t)
+
+H = [H_0, [X, X_coeff]]
+args = {'omega': omega}
+props = propagator(
+    H, times, args=args, options={"atol": 1e-10, "rtol": 1e-8}
+)
+
+# Comparison
+with CoreOptions(atol=1e-10, rtol=1e-6):
+    assert Us == props
 ```
 
 ### About
