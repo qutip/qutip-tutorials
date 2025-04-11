@@ -28,6 +28,7 @@ Let's start by importing the necessary packages.
 from qutip.solver.dysolve_propagator import DysolvePropagator, dysolve_propagator
 from qutip.solver.propagator import propagator
 from qutip import qeye, sigmax, sigmay, sigmaz, tensor, CoreOptions, about
+import numpy as np
 ```
 
 ### One qubit example using `DysolvePropagator`
