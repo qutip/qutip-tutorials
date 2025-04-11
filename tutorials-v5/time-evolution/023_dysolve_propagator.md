@@ -51,14 +51,13 @@ Everything is now defined to initialize an instance.
 dy = DysolvePropagator(H_0, X, omega, options=options)
 ```
 
-Then, to compute a time propagator, simpy call the instance. An initial time and final time can be given, or only a final time. For the latter, the initial time will be 0.
+Then, to compute a time propagator, simply call the instance with a given initial time and final time. Also, only a final time can be given and, in that case, the initial time is considered to be 0.
 
 ```python
 t_i = -1
 t_f = 1
 U = dy(t_f, t_i)
 ```
-
 
 ### Simulation
 
