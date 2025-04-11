@@ -69,12 +69,12 @@ We proceed like the previous example.
 from qutip.solver.dysolve_propagator import dysolve_propagator
 from qutip import qeye, sigmax, sigmay, sigmaz, tensor
 
-#Define the system
+# Define the system
 H_0 = tensor(sigmax(), sigmaz()) + tensor(qeye(2), sigmay())
 X = tensor(qeye(2), sigmaz())
 omega = 5.0
 
-#Keep options to default
+# Keep options to default
 ```
 
 `dysolve_propagator` can take more than one time value. If a single time is passed, a single propagator $U(t,0)$ is returned. If a list of times is given, the function will return a list of propagator $[U(\text{times}[i], \text{times}[0])]$ for all $i$. 
