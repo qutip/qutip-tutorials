@@ -87,5 +87,6 @@ Us = dysolve_propagator(H_0, X, omega, times)
 ### About
 
 ```python
-qutip.about()
+from qutip import about
+about()
 ```
