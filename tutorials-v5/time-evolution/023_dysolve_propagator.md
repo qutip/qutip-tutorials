@@ -59,47 +59,33 @@ t_f = 1
 U = dy(t_f, t_i)
 ```
 
-### Simulation
+This returns a single time propagator $U(t_f, t_i)$.
 
-Let's define a simple Hamiltonian and use `qutip.sesolve` to solve the
-Schrödinger equation and look at the expectation value of $\sigma_y$. You can
-also use comments in the code section to separate the operations you perform.
+### Two qubits example with `dysolve_propagator`
+
+We proceed like the previous example.
 
 ```python
-# simulate the unitary dynamics
-H = sigmaz()
-times = np.linspace(0, 10, 100)
-result = sesolve(H, psi, times, [sigmay()])
+from qutip.solver.dysolve_propagator import dysolve_propagator
+from qutip import qeye, sigmax, sigmay, sigmaz, tensor
 
-# plot the expectation value
-plt.plot(times, result.expect[0])
-plt.xlabel("Time"), plt.ylabel("<sigma_y>")
-plt.show()
+#Define the system
+H_0 = tensor(sigmax(), sigmaz()) + tensor(qeye(2), sigmay())
+X = tensor(qeye(2), sigmaz())
+omega = 5.0
+
+#Keep options to default
 ```
 
-We created a nice looking plot of the Larmor precision. Every notebook has to
-include the `qutip.about()` call at the end, to show the setup under which the
-notebook was executed and make it reproducible for others.
+`dysolve_propagator` can take more than one time value. If a single time is passed, a single propagator $U(t,0)$ is returned. If a list of times is given, the function will return a list of propagator $[U(\text{times}[i], \text{times}[0])]$ for all $i$. 
+
+```python
+times = [-0.1, 0, 0.1]
+Us = dysolve_propagator(H_0, X, omega, times)
+```
 
 ### About
 
 ```python
 qutip.about()
-```
-
-### Testing
-
-This section can include some tests to verify that the expected outputs are
-generated within the notebook. We put this section at the end of the notebook,
-so it's not interfering with the user experience. Please, define the tests
-using `assert`, so that the cell execution fails if a wrong output is generated.
-
-```python
-assert np.allclose(result.expect[0][0], 0), \
-    "Expectation value does not start at 1"
-assert 1 == 1
-```
-
-```python
-
 ```
