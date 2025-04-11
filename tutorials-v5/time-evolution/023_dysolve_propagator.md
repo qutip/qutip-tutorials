@@ -12,49 +12,53 @@ jupyter:
     name: python3
 ---
 
-# Notebook Title
+# Calculate time propagators with Dysolve
 
 Author: Mathis Beaudoin, 2025
 
 ### Introduction
 
-This notebook serves is a template for new Jupyter Notebooks used as a user
-guides for QuTiP. With this template we want to give you an idea of how a
-user guide can look like. Furthermore, we want to ensure that all notebooks
-have a similar style and that new users can easily understand them. To
-create your own notebook, just copy this template and insert your own
-content. The descriptions in this template should give you an idea of the
-general style.
+This notebook shows how to compute time propagators with Dysolve using QuTiP. Dysolve is a method to compute time propagators for hamiltonians of the form $H(t) = H_0 + \cos(\omega t)X$ where $H_0$ is some base hamiltonian and $X$ a perturbation. It performs better than other general methods for this class of hamiltonians and, later on, should support more complicated oscillating perturbations. It is still in development with more features to come in the future. For more details on Dysolve, see the corresponding guide in the documentation.
 
-In this introductory section, you should explain the goal of this notebook,
-just as I did. We continue now with some steps. It is a good practice (and most
-of the times appreciated by new users) to comment every code cell with one
-markdown cell. Also please update the notebook title and the headings of the
-different section.
+For the moment, Dysolve can be used with the class `DysolvePropagator` and the function `dysolve_propagator` from QuTiP's solvers. They follow a similar structure to the class `Propagator` and the function `propagator`, another solver that also computes time propagators. 
 
-### First Section
+### One qubit example using `DysolvePropagator`
 
-The first thing we do in this notebook (and possibly in any notebook) is that we
-import needed packages.
+Let's start by importing the necessary packages.
 
 ```python
-import matplotlib.pyplot as plt
-import numpy as np
-import qutip
-from qutip import Bloch, basis, sesolve, sigmay, sigmaz
-
-%matplotlib inline
+from qutip.solver.dysolve_propagator import DysolvePropagator
+from qutip import sigmax, sigmaz
 ```
 
-In the next step we setup some qubit state and plot it on the bloch sphere. It's
-always great to give some nice visuals.
+We have to define what $H_0$, $X$ and $\omega$ will be. Let's say $H(t) = \sigma_z + \cos(10t)\sigma_x$.
 
 ```python
-psi = (2.0 * basis(2, 0) + basis(2, 1)).unit()
-b = Bloch()
-b.add_states(psi)
-b.show()
+H_0 = sigmaz()
+X = sigmax()
+omega = 10.0
 ```
+
+Some options can be defined. `max_order` will be the order of approximation used when calculating a propagator. The higher this integer is, the more precise the results will be (at a cost of taking more time to calculate). `a_tol` is simply the absolute tolerance used in the calculations. Finally, a time propagator can be computed using subpropagators of time increment `max_dt`. Let's say `max_dt` is set to 0.25, then the propagator $U(1, 0)$ will come from the multiplication of supropagators $U(0.25, 0)$, $U(0.5, 0.25)$, $U(0.75, 0.5)$ and $U(1, 0.75)$. This allows for more precise results when the evolution is over a long period of time. In our case, let's keep `a_tol` and `max_dt` to their default value, but let's change `max_order`.
+
+```python
+options = {'max_order': 5}
+```
+
+Everything is now defined to initialize an instance.
+
+```python
+dy = DysolvePropagator(H_0, X, omega, options=options)
+```
+
+Then, to compute a time propagator, simpy call the instance. An initial time and final time can be given, or only a final time. For the latter, the initial time will be 0.
+
+```python
+t_i = -1
+t_f = 1
+U = dy(t_f, t_i)
+```
+
 
 ### Simulation
 
