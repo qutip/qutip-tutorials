@@ -22,14 +22,14 @@ This notebook shows how to compute time propagators with Dysolve using QuTiP. Dy
 
 For the moment, Dysolve can be used with the class `DysolvePropagator` and the function `dysolve_propagator` from QuTiP's solvers. They follow a similar structure to the class `Propagator` and the function `propagator`, another solver that also computes time propagators. 
 
-### One qubit example using `DysolvePropagator`
-
 Let's start by importing the necessary packages.
 
 ```python
-from qutip.solver.dysolve_propagator import DysolvePropagator
-from qutip import sigmax, sigmaz
+from qutip.solver.dysolve_propagator import DysolvePropagator, dysolve_propagator
+from qutip import qeye, sigmax, sigmay, sigmaz, tensor, about
 ```
+
+### One qubit example using `DysolvePropagator`
 
 We have to define what $H_0$, $X$ and $\omega$ will be. Let's say $H(t) = \sigma_z + \cos(10t)\sigma_x$.
 
@@ -66,9 +66,6 @@ This returns a single time propagator $U(t_f, t_i)$.
 We proceed like the previous example.
 
 ```python
-from qutip.solver.dysolve_propagator import dysolve_propagator
-from qutip import qeye, sigmax, sigmay, sigmaz, tensor
-
 # Define the system
 H_0 = tensor(sigmax(), sigmaz()) + tensor(qeye(2), sigmay())
 X = tensor(qeye(2), sigmaz())
@@ -87,6 +84,5 @@ Us = dysolve_propagator(H_0, X, omega, times)
 ### About
 
 ```python
-from qutip import about
 about()
 ```
