@@ -18,7 +18,7 @@ TUTORIAL_DIRECTORIES = [
     'python-introduction',
     'quantum-circuits',
     'time-evolution',
-    'optimal-control'
+    'optimal-control',
     'visualization',
     'miscellaneous'
 ]
