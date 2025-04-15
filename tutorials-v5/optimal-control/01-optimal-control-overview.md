@@ -12,6 +12,8 @@ jupyter:
     name: python3
 ---
 
+<!-- markdown-link-check-disable -->
+
 # QuTiP overview - Optimal Control
 
 
@@ -158,7 +160,7 @@ The simplest method for optimising a control pulse is to call one of the functio
 A semi-automated method is to use the create_optimizer_objects function to generate and configure all the objects, then manually set the initial pulse and call the optimisation. This would be more efficient when repeating runs with different starting conditions. A example of this method is given in [pulseoptim QFT](./03-cpo-GRAPE-QFT.ipynb)
 
 
-
+<!-- markdown-link-check-enable -->
 # References
 1. D. d’Alessandro, *Introduction to Quantum Control and Dynamics* (Chapman & Hall/CRC, 2008)
 2. N. Khaneja, T. Reiss, C. Kehlet, T. Schulte-Herbruggen, and S. J. Glaser, J. Magn. Reson. 172, 296 (2005).
