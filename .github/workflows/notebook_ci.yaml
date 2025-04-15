@@ -153,6 +153,7 @@ jobs:
           mkdir images
           cd images
           wget https://raw.githubusercontent.com/qutip/qutip.github.io/master/images/favicon.ico
+          wget https://raw.githubusercontent.com/langhaarzombie/langhaarzombie.github.io/develop/images/logo_small.png
           cd ..
 
           # build the website
