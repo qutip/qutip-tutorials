@@ -112,7 +112,16 @@ def dl_matsubara_params(lam, gamma, T, nk):
     """
     ckAR = [lam * gamma * cot(gamma / (2 * T))]
     ckAR.extend(
-        (8 * lam * gamma * T * np.pi * k * T / ((2 * np.pi * k * T) ** 2 - gamma**2))
+        (
+            8
+            * lam
+            * gamma
+            * T
+            * np.pi
+            * k
+            * T
+            / ((2 * np.pi * k * T) ** 2 - gamma**2)
+        )
         for k in range(1, nk + 1)
     )
     vkAR = [gamma]
@@ -410,10 +419,18 @@ def plot_correlation_expansion_divergence():
 
     fig, ax1 = plt.subplots(figsize=(12, 7))
 
-    ax1.plot(t, np.real(corr_2), color="b", linewidth=3, label=rf"Mats = {Nk} real")
-    ax1.plot(t, np.imag(corr_2), color="r", linewidth=3, label=rf"Mats = {Nk} imag")
-    ax1.plot(t, np.real(corr_100), "b--", linewidth=3, label=r"Mats = 15000 real")
-    ax1.plot(t, np.imag(corr_100), "r--", linewidth=3, label=r"Mats = 15000 imag")
+    ax1.plot(
+        t, np.real(corr_2), color="b", linewidth=3, label=rf"Mats = {Nk} real"
+    )
+    ax1.plot(
+        t, np.imag(corr_2), color="r", linewidth=3, label=rf"Mats = {Nk} imag"
+    )
+    ax1.plot(
+        t, np.real(corr_100), "b--", linewidth=3, label=r"Mats = 15000 real"
+    )
+    ax1.plot(
+        t, np.imag(corr_100), "r--", linewidth=3, label=r"Mats = 15000 imag"
+    )
 
     ax1.set_xlabel("t")
     ax1.set_ylabel(r"$C$")
@@ -500,7 +517,9 @@ We can compare the solution obtained from the QuTiP Bloch-Redfield solver:
 options = {**default_options}
 
 with timer("ODE solver time"):
-    resultBR = brmesolve(Hsys, rho0, tlist, a_ops=[[sigmaz(), dlenv]], options=options)
+    resultBR = brmesolve(
+        Hsys, rho0, tlist, a_ops=[[sigmaz(), dlenv]], options=options
+    )
 ```
 
 ```python
@@ -609,7 +628,12 @@ def pade_corr(tlist, lmax):
     c_tot = []
     for t in tlist:
         c_tot.append(
-            sum([eta_list[ll] * np.exp(-gamma_list[ll] * t) for ll in range(lmax + 1)])
+            sum(
+                [
+                    eta_list[ll] * np.exp(-gamma_list[ll] * t)
+                    for ll in range(lmax + 1)
+                ]
+            )
         )
     return c_tot, eta_list, gamma_list
 
@@ -777,9 +801,13 @@ def fitter(ans, tlist, k):
     # sets initial guesses:
     guess = [upper_a / k] * k + [0] * k  # guesses for a  # guesses for b
     # sets lower bounds:
-    b_lower = [-upper_a] * k + [-np.inf] * k  # lower bounds for a  # lower bounds for b
+    b_lower = [-upper_a] * k + [
+        -np.inf
+    ] * k  # lower bounds for a  # lower bounds for b
     # sets higher bounds:
-    b_higher = [upper_a] * k + [0] * k  # upper bounds for a  # upper bounds for b
+    b_higher = [upper_a] * k + [
+        0
+    ] * k  # upper bounds for a  # upper bounds for b
     param_bounds = (b_lower, b_higher)
     p1, p2 = curve_fit(
         lambda x, *params_0: wrapper_fit_func(x, k, params_0),
@@ -815,7 +843,16 @@ And plot the results of the fits:
 ```python
 # Define line styles and colors
 linestyles = ["-", "--", "-.", ":", (0, (3, 1, 1, 1)), (0, (5, 1))]
-colors = ["blue", "green", "purple", "orange", "red", "brown", "cyan", "magenta"]
+colors = [
+    "blue",
+    "green",
+    "purple",
+    "orange",
+    "red",
+    "brown",
+    "cyan",
+    "magenta",
+]
 
 # Define a larger linewidth
 linewidth = 2.5
@@ -975,7 +1012,10 @@ fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
 ax1.plot(tlist2, corrRana, label="Original", marker="o", markevery=500)
 ax1.plot(tlist2, fit_func(tlist2, *poptR[-1]), color="r", label="Manual Fit")
 ax1.plot(
-    tlist2, np.real(envfit.correlation_function(tlist2)), "k--", label="Built-in fit"
+    tlist2,
+    np.real(envfit.correlation_function(tlist2)),
+    "k--",
+    label="Built-in fit",
 )
 ax1.set_ylabel(r"$C_{R}(t)$")
 ax1.set_xlabel(r"$t$")
@@ -985,7 +1025,10 @@ ax1.legend()
 ax2.plot(tlist2, corrIana, label="Original", marker="o", markevery=500)
 ax2.plot(tlist2, fit_func(tlist2, *poptI[-1]), color="r", label="Manual Fit")
 ax2.plot(
-    tlist2, np.imag(envfit.correlation_function(tlist2)), "k--", label="Built-in fit"
+    tlist2,
+    np.imag(envfit.correlation_function(tlist2)),
+    "k--",
+    label="Built-in fit",
 )
 ax2.set_ylabel(r"$C_{I}(t)$")
 ax2.set_xlabel(r"$t$")

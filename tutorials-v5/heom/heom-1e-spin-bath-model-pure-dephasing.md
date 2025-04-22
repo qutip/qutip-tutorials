@@ -241,7 +241,9 @@ plot_result_expectations(
 
 ```{code-cell} ipython3
 with timer("RHS construction time"):
-    env_mats, delta = env.approximate(method="matsubara", Nk=Nk, compute_delta=True)
+    env_mats, delta = env.approximate(
+        method="matsubara", Nk=Nk, compute_delta=True
+    )
     Ltot = liouvillian(Hsys) + system_terminator(Q, delta)
     HEOMMatsT = HEOMSolver(Ltot, (env_mats, Q), NC, options=options)
 
@@ -377,7 +379,9 @@ vk = [complex(-gamma)]
 vk.extend([complex(-2.0 * np.pi * k * T) for k in range(1, lmaxmats2)])
 
 ck = [complex(lam * gamma * (-1.0j + cot(gamma * beta / 2.0)))]
-ck.extend([complex(4 * lam * gamma * T * (-v) / (v**2 - gamma**2)) for v in vk[1:]])
+ck.extend(
+    [complex(4 * lam * gamma * T * (-v) / (v**2 - gamma**2)) for v in vk[1:]]
+)
 
 P12_ana = 0.5 * pure_dephasing_evolution_analytical(
     tlist, 0, np.asarray(ck), np.asarray(vk)
@@ -401,7 +405,10 @@ def integrand(omega, lamc, omega_c, Temp, t):
 
 
 P12_ana2 = [
-    0.5 * np.exp(scipy.integrate.quad(integrand, 0, np.inf, args=(lam, gamma, T, t))[0])
+    0.5
+    * np.exp(
+        scipy.integrate.quad(integrand, 0, np.inf, args=(lam, gamma, T, t))[0]
+    )
     for t in tlist
 ]
 ```

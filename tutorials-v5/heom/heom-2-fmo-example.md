@@ -181,7 +181,9 @@ Nk = 0
 Q_list = []
 baths = []
 Ltot = liouvillian(Hsys)
-env_approx, delta = env.approximate(method="matsubara", Nk=Nk, compute_delta=True)
+env_approx, delta = env.approximate(
+    method="matsubara", Nk=Nk, compute_delta=True
+)
 for m in range(7):
     Q = basis(7, m) * basis(7, m).dag()
     Q_list.append(Q)
@@ -330,7 +332,8 @@ def get_collapse(H, T, dephasing=1):
         if dephasing:
             for j in range(Nmax):
                 rate = (
-                    np.abs(Q.matrix_element(all_state[j].dag(), all_state[j])) ** 2
+                    np.abs(Q.matrix_element(all_state[j].dag(), all_state[j]))
+                    ** 2
                     * env.power_spectrum(0)
                     / 2
                 )

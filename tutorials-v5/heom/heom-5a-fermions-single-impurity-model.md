@@ -303,7 +303,10 @@ envR_pade = envR.approx_by_pade(Nk=Nk, tag="R")
 
 with timer("RHS construction time"):
     solver_pade = HEOMSolver(
-        H, [(envL_pade, bath_L.Q), (envR_pade, bath_R.Q)], max_depth=2, options=options
+        H,
+        [(envL_pade, bath_L.Q), (envR_pade, bath_R.Q)],
+        max_depth=2,
+        options=options,
     )
 
 with timer("ODE solver time"):
@@ -349,7 +352,10 @@ envR_mats = envR.approx_by_matsubara(Nk=Nk, tag="R")
 
 with timer("RHS construction time"):
     solver_mats = HEOMSolver(
-        H, [(envL_mats, bath_L.Q), (envR_mats, bath_R.Q)], max_depth=2, options=options
+        H,
+        [(envL_mats, bath_L.Q), (envR_mats, bath_R.Q)],
+        max_depth=2,
+        options=options,
     )
 
 with timer("ODE solver time"):

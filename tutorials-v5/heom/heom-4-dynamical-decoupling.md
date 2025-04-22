@@ -336,7 +336,9 @@ def cummulative_delay_fractions(N):
 
     as the cummulative delay after the j'th pulse.
     """
-    return np.array([np.sin((np.pi / 2) * (j / (N + 1))) ** 2 for j in range(0, N + 1)])
+    return np.array(
+        [np.sin((np.pi / 2) * (j / (N + 1))) ** 2 for j in range(0, N + 1)]
+    )
 
 
 def drive_opt(amplitude, avg_delay, integral, N):

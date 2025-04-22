@@ -290,7 +290,10 @@ def Mk(t, k, gamma, w0, beta):
         (-2 * lam**2 * gamma / beta)
         * ek
         * np.exp(-ek * np.abs(t))
-        / (((Om + 1.0j * Gamma) ** 2 + ek**2) * ((Om - 1.0j * Gamma) ** 2 + ek**2))
+        / (
+            ((Om + 1.0j * Gamma) ** 2 + ek**2)
+            * ((Om - 1.0j * Gamma) ** 2 + ek**2)
+        )
     )
 
 
@@ -305,7 +308,9 @@ def c(t, Nk, lam, gamma, w0, beta):
 
     Ci = np.exp(-1.0j * Om * t) - np.exp(1.0j * Om * t)
 
-    return (lam**2 / (4 * Om)) * np.exp(-Gamma * np.abs(t)) * (Cr + Ci) + np.sum(
+    return (lam**2 / (4 * Om)) * np.exp(-Gamma * np.abs(t)) * (
+        Cr + Ci
+    ) + np.sum(
         [Mk(t, k, gamma=gamma, w0=w0, beta=beta) for k in range(1, Nk + 1)], 0
     )
 

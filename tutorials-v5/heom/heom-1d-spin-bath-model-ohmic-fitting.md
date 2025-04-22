@@ -258,7 +258,9 @@ density provided
 
 ```{code-cell} ipython3
 # Here we avoid w=0
-np.allclose(sd_env.power_spectrum(w[1:]), ohmic_power_spectrum(w[1:], alpha, wc, 1 / T))
+np.allclose(
+    sd_env.power_spectrum(w[1:]), ohmic_power_spectrum(w[1:], alpha, wc, 1 / T)
+)
 ```
 
 Specifying the Temperature also gives the `BosonicEnvironment` access to the 
@@ -451,7 +453,13 @@ w0 = fitinfo["params"][:, 2]
 
 
 def _sd_fit_model(wlist, a, b, c):
-    return 2 * a * b * wlist / (((wlist + c) ** 2 + b**2) * ((wlist - c) ** 2 + b**2))
+    return (
+        2
+        * a
+        * b
+        * wlist
+        / (((wlist + c) ** 2 + b**2) * ((wlist - c) ** 2 + b**2))
+    )
 
 
 plot_fit(_sd_fit_model, J, w, lam, gamma, w0)
@@ -497,12 +505,16 @@ def generate_spectrum_results(Q, N, Nk, max_depth):
     # guess = [J_max, wc, wc]
     # upper = [100*J_max, 100*wc, 100*wc]
     # ,lower=lower,upper=upper,guess=guess,sigma=sigma)
-    bath, fitinfo = sd_env.approximate("sd", w, Nmax=N, Nk=Nk, target_rmse=None)
+    bath, fitinfo = sd_env.approximate(
+        "sd", w, Nmax=N, Nk=Nk, target_rmse=None
+    )
     tlist = np.linspace(0, 30 * np.pi / Del, 600)
 
     # This problem is a little stiff, so we use  the BDF method to solve
     # the ODE ^^^
-    print(f"Starting calculations for N={N}, Nk={Nk} and max_depth={max_depth} ... ")
+    print(
+        f"Starting calculations for N={N}, Nk={Nk} and max_depth={max_depth} ... "
+    )
 
     HEOM_spectral_fit = HEOMSolver(
         Hsys,
@@ -560,7 +572,8 @@ Below we generate results for different convergence parameters (number of terms 
 
 
 results_spectral_fit_pk = [
-    generate_spectrum_results(Q, n, Nk=1, max_depth=max_depth) for n in range(1, 5)
+    generate_spectrum_results(Q, n, Nk=1, max_depth=max_depth)
+    for n in range(1, 5)
 ]
 
 plot_result_expectations(
@@ -582,7 +595,8 @@ plot_result_expectations(
 
 Nk_list = range(2, 4)
 results_spectral_fit_nk = [
-    generate_spectrum_results(Q, 4, Nk=Nk, max_depth=max_depth) for Nk in Nk_list
+    generate_spectrum_results(Q, 4, Nk=Nk, max_depth=max_depth)
+    for Nk in Nk_list
 ]
 
 plot_result_expectations(
@@ -848,8 +862,18 @@ plot_result_expectations(
             "k",
             "Correlation Function Fit $k_R=k_I=3$",
         ),
-        (results_spectral_fit_pk[0], P11p, "b", "Spectral Density Fit $k_J=1$"),
-        (results_spectral_fit_pk[3], P11p, "r-.", "Spectral Density Fit $k_J=4$"),
+        (
+            results_spectral_fit_pk[0],
+            P11p,
+            "b",
+            "Spectral Density Fit $k_J=1$",
+        ),
+        (
+            results_spectral_fit_pk[3],
+            P11p,
+            "r-.",
+            "Spectral Density Fit $k_J=4$",
+        ),
     ],
     axes=axes,
 )
@@ -1091,7 +1115,9 @@ ESPIRA-II
 
 ```{code-cell} ipython3
 tlist4 = np.linspace(0, 20, 1000)
-espibath2, fitinfo = obs.approximate("espira-II", tlist4, Nr=4, Ni=4, separate=True)
+espibath2, fitinfo = obs.approximate(
+    "espira-II", tlist4, Nr=4, Ni=4, separate=True
+)
 print(fitinfo["summary"])
 HEOM_ohmic_espira_fit2 = HEOMSolver(
     Hsys,
@@ -1115,9 +1141,19 @@ plot_result_expectations(
             "b",
             "Correlation Function Fit $k_R=k_I=4$",
         ),
-        (results_spectral_fit_pk[3], P11p, "r-.", "Spectral Density Fit $k_J=4$"),
+        (
+            results_spectral_fit_pk[3],
+            P11p,
+            "r-.",
+            "Spectral Density Fit $k_J=4$",
+        ),
         (results_ohmic_corr_fit, P11p, "r", "Correlation Fit Ohmic Bath"),
-        (results_ohmic_sd_fit2, P11p, "g--", "Spectral Density Fit Ohmic Bath"),
+        (
+            results_ohmic_sd_fit2,
+            P11p,
+            "g--",
+            "Spectral Density Fit Ohmic Bath",
+        ),
         (results_ohmic_ps_fit, P11p, "g--", "Power Spectrum Fit Ohmic Bath"),
         (results_ohmic_prony_fit, P11p, "k", " Prony Fit"),
         (results_ohmic_es_fit, P11p, "b-.", "ESPRIT Fit"),

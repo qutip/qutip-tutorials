@@ -212,7 +212,9 @@ with timer("ODE solver time"):
 
 ```{code-cell} ipython3
 with timer("RHS construction time"):
-    matsBath, delta = bath.approximate(method="matsubara", Nk=Nk, compute_delta=True)
+    matsBath, delta = bath.approximate(
+        method="matsubara", Nk=Nk, compute_delta=True
+    )
     terminator = system_terminator(Q, delta)
     Ltot = liouvillian(Hsys) + terminator
     HEOMMatsT = HEOMSolver(Ltot, (matsBath, Q), NC, options=options)
@@ -285,14 +287,20 @@ ax1.legend(loc=0, fontsize=12)
 tlist2 = tlist[0:50]
 ax2.plot(
     tlist2,
-    np.abs(matsBath.correlation_function(tlist2) - bath.correlation_function(tlist2)),
+    np.abs(
+        matsBath.correlation_function(tlist2)
+        - bath.correlation_function(tlist2)
+    ),
     "g",
     linewidth=2,
     label="Mats Error",
 )
 ax2.plot(
     tlist2,
-    np.abs(padeBath.correlation_function(tlist2) - bath.correlation_function(tlist2)),
+    np.abs(
+        padeBath.correlation_function(tlist2)
+        - bath.correlation_function(tlist2)
+    ),
     "b--",
     linewidth=2,
     label="Pade Error",

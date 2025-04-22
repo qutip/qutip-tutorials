@@ -98,13 +98,18 @@ class SystemParams:
         and an interaction term (H12).
         """
         H1 = (
-            self.epsilon / 2 * (qt.tensor(qt.sigmaz() + qt.identity(2), qt.identity(2)))
+            self.epsilon
+            / 2
+            * (qt.tensor(qt.sigmaz() + qt.identity(2), qt.identity(2)))
         )
         H2 = (
-            self.epsilon / 2 * (qt.tensor(qt.identity(2), qt.sigmaz() + qt.identity(2)))
+            self.epsilon
+            / 2
+            * (qt.tensor(qt.identity(2), qt.sigmaz() + qt.identity(2)))
         )
         H12 = self.J12 * (
-            qt.tensor(qt.sigmap(), qt.sigmam()) + qt.tensor(qt.sigmam(), qt.sigmap())
+            qt.tensor(qt.sigmap(), qt.sigmam())
+            + qt.tensor(qt.sigmam(), qt.sigmap())
         )
         return H1 + H2 + H12
 
@@ -140,9 +145,17 @@ class BathParams:
         return qt.tensor(Q)
 
     def bath(self, Nk, tag=None):
-        env = DrudeLorentzEnvironment(lam=self.lam, gamma=self.gamma, T=self.T, tag=tag)
-        env_approx, delta = env.approximate("pade", Nk=Nk, compute_delta=True, tag=tag)
-        return (env_approx, self.Q()), system_terminator(self.Q(), delta), delta
+        env = DrudeLorentzEnvironment(
+            lam=self.lam, gamma=self.gamma, T=self.T, tag=tag
+        )
+        env_approx, delta = env.approximate(
+            "pade", Nk=Nk, compute_delta=True, tag=tag
+        )
+        return (
+            (env_approx, self.Q()),
+            system_terminator(self.Q(), delta),
+            delta,
+        )
 
     def replace(self, **kw):
         return dataclasses.replace(self, **kw)
