@@ -28,25 +28,14 @@ We first show the standard example of equally spaced pulses, and then consider t
 ## Setup
 
 ```{code-cell} ipython3
-import numpy as np
 import matplotlib.pyplot as plt
-
+import numpy as np
 import qutip
-from qutip import (
-    QobjEvo,
-    basis,
-    expect,
-    ket2dm,
-    sigmax,
-    sigmaz,
-    DrudeLorentzEnvironment
-)
-from qutip.solver.heom import (
-    HEOMSolver
-)
-
-from ipywidgets import IntProgress
 from IPython.display import display
+from ipywidgets import IntProgress
+from qutip import (DrudeLorentzEnvironment, QobjEvo, basis, expect, ket2dm,
+                   sigmax, sigmaz)
+from qutip.solver.heom import HEOMSolver
 
 %matplotlib inline
 ```
@@ -124,21 +113,21 @@ Below we define a function that returns the pulse (which is itself a function):
 
 ```{code-cell} ipython3
 def drive(amplitude, delay, integral):
-    """ Coefficient of the drive as a function of time.
+    """Coefficient of the drive as a function of time.
 
-        The drive consists of a series of constant pulses with
-        a fixed delay between them.
+    The drive consists of a series of constant pulses with
+    a fixed delay between them.
 
-        Parameters
-        ----------
-        amplitude : float
-            The amplitude of the drive during the pulse.
-        delay : float
-            The time delay between successive pulses.
-        integral : float
-            The integral of the pulse. This determines
-            the duration of each pulse with the duration
-            equal to the integral divided by the amplitude.
+    Parameters
+    ----------
+    amplitude : float
+        The amplitude of the drive during the pulse.
+    delay : float
+        The time delay between successive pulses.
+    integral : float
+        The integral of the pulse. This determines
+        the duration of each pulse with the duration
+        equal to the integral divided by the amplitude.
     """
     duration = integral / amplitude
     period = duration + delay
@@ -165,11 +154,11 @@ J = env.spectral_density(wlist)
 J_approx = env_approx.spectral_density(wlist)
 
 fig, axes = plt.subplots(1, 1, figsize=(8, 8))
-axes.plot(wlist, J, 'r', linewidth=2)
-axes.plot(wlist, J_approx, 'b--', linewidth=2)
+axes.plot(wlist, J, "r", linewidth=2)
+axes.plot(wlist, J_approx, "b--", linewidth=2)
 
-axes.set_xlabel(r'$\omega$', fontsize=28)
-axes.set_ylabel(r'J', fontsize=28);
+axes.set_xlabel(r"$\omega$", fontsize=28)
+axes.set_ylabel(r"J", fontsize=28);
 ```
 
 ## Dynamic decoupling with fast and slow pulses
@@ -211,7 +200,7 @@ hsolver = HEOMSolver(H_sys, bath, NC, options=options)
 outputnoDDslow = hsolver.run(rho0, tlist)
 
 # with pulses
-drive_slow = drive(amplitude=0.01, delay=20, integral=np.pi/2)
+drive_slow = drive(amplitude=0.01, delay=20, integral=np.pi / 2)
 H_d = QobjEvo([H_sys, [H_drive, drive_slow]])
 
 hsolver = HEOMSolver(H_d, bath, NC, options=options)
@@ -237,20 +226,32 @@ def plot_dd_results(outputnoDD, outputDD, outputDDslow):
     plt.yticks([0, 0.25, 0.5], [0, 0.25, 0.5])
 
     axes[0].plot(
-        tlist, np.real(P12DD),
-        'green', linestyle='-', linewidth=2, label="HEOM with fast DD",
+        tlist,
+        np.real(P12DD),
+        "green",
+        linestyle="-",
+        linewidth=2,
+        label="HEOM with fast DD",
     )
     axes[0].plot(
-        tlist, np.real(P12DDslow),
-        'blue', linestyle='-', linewidth=2, label="HEOM with slow DD",
+        tlist,
+        np.real(P12DDslow),
+        "blue",
+        linestyle="-",
+        linewidth=2,
+        label="HEOM with slow DD",
     )
     axes[0].plot(
-        tlist, np.real(P12noDD),
-        'orange', linestyle='--', linewidth=2, label="HEOM no DD",
+        tlist,
+        np.real(P12noDD),
+        "orange",
+        linestyle="--",
+        linewidth=2,
+        label="HEOM no DD",
     )
 
-    axes[0].locator_params(axis='y', nbins=3)
-    axes[0].locator_params(axis='x', nbins=3)
+    axes[0].locator_params(axis="y", nbins=3)
+    axes[0].locator_params(axis="x", nbins=3)
 
     axes[0].set_ylabel(r"$\rho_{01}$", fontsize=30)
 
@@ -263,22 +264,30 @@ def plot_dd_results(outputnoDD, outputDD, outputDDslow):
     pulseslow = [drive_slow(t) for t in tlist]
 
     plt.sca(axes[1])
-    plt.yticks([0., 0.25, 0.5], [0, 0.25, 0.5])
+    plt.yticks([0.0, 0.25, 0.5], [0, 0.25, 0.5])
 
     axes[1].plot(
-        tlist, pulse,
-        'green', linestyle='-', linewidth=2, label="Drive fast",
+        tlist,
+        pulse,
+        "green",
+        linestyle="-",
+        linewidth=2,
+        label="Drive fast",
     )
     axes[1].plot(
-        tlist, pulseslow,
-        'blue', linestyle='--', linewidth=2, label="Drive slow",
+        tlist,
+        pulseslow,
+        "blue",
+        linestyle="--",
+        linewidth=2,
+        label="Drive slow",
     )
 
-    axes[1].locator_params(axis='y', nbins=3)
-    axes[1].locator_params(axis='x', nbins=3)
+    axes[1].locator_params(axis="y", nbins=3)
+    axes[1].locator_params(axis="x", nbins=3)
 
-    axes[1].set_xlabel(r'$t\bar{V}_{\mathrm{f}}$', fontsize=30)
-    axes[1].set_ylabel(r'Drive amplitude/$\bar{V}_{\mathrm{f}}$', fontsize=30)
+    axes[1].set_xlabel(r"$t\bar{V}_{\mathrm{f}}$", fontsize=30)
+    axes[1].set_ylabel(r"Drive amplitude/$\bar{V}_{\mathrm{f}}$", fontsize=30)
 
     axes[1].legend(loc=1)
     axes[1].text(0, 0.4, "(b)", fontsize=28)
@@ -308,39 +317,36 @@ This is just a convenient way to describe the varying delay. We could have chose
 
 ```{code-cell} ipython3
 def cummulative_delay_fractions(N):
-    """ Return an array of N + 1 cummulative delay
-        fractions.
+    """Return an array of N + 1 cummulative delay
+    fractions.
 
-        The j'th entry in the array should be the sum of
-        all delays before the j'th pulse. The last entry
-        should be 1 (i.e. the entire cummulative delay
-        should have been used once the sequence of pulses
-        is complete).
+    The j'th entry in the array should be the sum of
+    all delays before the j'th pulse. The last entry
+    should be 1 (i.e. the entire cummulative delay
+    should have been used once the sequence of pulses
+    is complete).
 
-        The function should be monotonically increasing,
-        strictly greater than zero and the last value
-        should be 1.
+    The function should be monotonically increasing,
+    strictly greater than zero and the last value
+    should be 1.
 
-        This implementation returns:
+    This implementation returns:
 
-            sin((pi / 2) * (j / (N + 1)))**2
+        sin((pi / 2) * (j / (N + 1)))**2
 
-        as the cummulative delay after the j'th pulse.
+    as the cummulative delay after the j'th pulse.
     """
-    return np.array([
-        np.sin((np.pi / 2) * (j / (N + 1)))**2
-        for j in range(0, N + 1)
-    ])
+    return np.array([np.sin((np.pi / 2) * (j / (N + 1))) ** 2 for j in range(0, N + 1)])
 
 
 def drive_opt(amplitude, avg_delay, integral, N):
-    """ Return an optimized distance pulse function.
+    """Return an optimized distance pulse function.
 
-        Our previous pulses were evenly spaced. Here we
-        instead use a varying delay after the j'th pulse.
+    Our previous pulses were evenly spaced. Here we
+    instead use a varying delay after the j'th pulse.
 
-        The cummulative delay is described by the function
-        ``cummulative_delay_fractions`` above.
+    The cummulative delay is described by the function
+    ``cummulative_delay_fractions`` above.
     """
     duration = integral / amplitude
     cummulative_delays = N * avg_delay * cummulative_delay_fractions(N)
@@ -389,10 +395,14 @@ def plot_even_and_optimally_spaced_pulses():
     pulse_eq = drive(amplitude, delay, integral)
 
     plt.plot(
-        tlist, [pulse_opt(t) for t in tlist], label="opt",
+        tlist,
+        [pulse_opt(t) for t in tlist],
+        label="opt",
     )
     plt.plot(
-        tlist, [pulse_eq(t) for t in tlist], label="eq",
+        tlist,
+        [pulse_eq(t) for t in tlist],
+        label="eq",
     )
     plt.legend(loc=4)
 
@@ -425,10 +435,10 @@ display(progress)
 
 
 def simulate_100_pulses(lam, gamma, T, NC, Nk):
-    """ Simulate the evolution of 100 evenly and optimally spaced pulses.
+    """Simulate the evolution of 100 evenly and optimally spaced pulses.
 
-        Returns the expectation value of P12p from the final state of
-        each evolution.
+    Returns the expectation value of P12p from the final state of
+    each evolution.
     """
     rho0 = (basis(2, 1) + basis(2, 0)).unit()
     rho0 = ket2dm(rho0)
@@ -475,10 +485,14 @@ def simulate_100_pulses(lam, gamma, T, NC, Nk):
 # We use NC=2 and Nk=2 to speed up the simulation:
 
 P12_results = [
-    list(zip(*(
-        simulate_100_pulses(lam=lam_, gamma=gamma_, T=0.5, NC=2, Nk=2)
-        for gamma_ in gammas
-    )))
+    list(
+        zip(
+            *(
+                simulate_100_pulses(lam=lam_, gamma=gamma_, T=0.5, NC=2, Nk=2)
+                for gamma_ in gammas
+            )
+        )
+    )
     for lam_ in lams
 ]
 ```
@@ -492,13 +506,19 @@ colors = ["green", "red", "blue"]
 for i in range(len(lams)):
     color = colors[i % len(colors)]
     axes.plot(
-        gammas, np.real(P12_results[i][0]),
-        color, linestyle='-', linewidth=2,
+        gammas,
+        np.real(P12_results[i][0]),
+        color,
+        linestyle="-",
+        linewidth=2,
         label=f"Optimal DD [$\\lambda={lams[i]}$]",
     )
     axes.plot(
-        gammas, np.real(P12_results[i][1]),
-        color, linestyle='-.', linewidth=2,
+        gammas,
+        np.real(P12_results[i][1]),
+        color,
+        linestyle="-.",
+        linewidth=2,
         label=f"Even DD [$\\lambda={lams[i]}$]",
     )
 

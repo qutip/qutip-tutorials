@@ -81,32 +81,15 @@ import contextlib
 import time
 
 import numpy as np
-from matplotlib import pyplot as plt
-from scipy.optimize import curve_fit
-
 import qutip
-from qutip import (
-    basis,
-    brmesolve,
-    destroy,
-    expect,
-    liouvillian,
-    qeye,
-    sigmax,
-    sigmaz,
-    spost,
-    spre,
-    tensor,
-)
-from qutip.core.environment import (
-    DrudeLorentzEnvironment,
-    ExponentialBosonicEnvironment,
-    system_terminator
-)
-from qutip.solver.heom import (
-    HEOMSolver,
-    HSolverDL,
-)
+from matplotlib import pyplot as plt
+from qutip import (basis, brmesolve, destroy, expect, liouvillian, qeye,
+                   sigmax, sigmaz, spost, spre, tensor)
+from qutip.core.environment import (DrudeLorentzEnvironment,
+                                    ExponentialBosonicEnvironment,
+                                    system_terminator)
+from qutip.solver.heom import HEOMSolver, HSolverDL
+from scipy.optimize import curve_fit
 
 %matplotlib inline
 ```
@@ -129,8 +112,7 @@ def dl_matsubara_params(lam, gamma, T, nk):
     """
     ckAR = [lam * gamma * cot(gamma / (2 * T))]
     ckAR.extend(
-        (8 * lam * gamma * T * np.pi * k * T /
-         ((2 * np.pi * k * T)**2 - gamma**2))
+        (8 * lam * gamma * T * np.pi * k * T / ((2 * np.pi * k * T) ** 2 - gamma**2))
         for k in range(1, nk + 1)
     )
     vkAR = [gamma]
@@ -186,6 +168,7 @@ def timer(label):
 
 ```python
 # Default solver options:
+
 
 default_options = {
     "nsteps": 1500,
@@ -323,7 +306,7 @@ with timer("RHS construction time"):
     HEOM_dlbath = HEOMSolver(Hsys, (dlenv_approx, Q), NC, options=options)
 
 with timer("ODE solver time"):
-    result_dlbath = HEOM_dlbath.run(rho0, tlist)  
+    result_dlbath = HEOM_dlbath.run(rho0, tlist)
 ```
 
 ```python
@@ -344,17 +327,17 @@ w2 = np.linspace(0, 20, 1000)
 fig, axs = plt.subplots(2, 2)
 
 axs[0, 0].plot(w, dlenv.power_spectrum(w))
-axs[0, 0].plot(w, dlenv_approx.power_spectrum(w), '--')
-axs[0, 0].set(xlabel=r'$\omega$', ylabel=r'$S(\omega)$')
+axs[0, 0].plot(w, dlenv_approx.power_spectrum(w), "--")
+axs[0, 0].set(xlabel=r"$\omega$", ylabel=r"$S(\omega)$")
 axs[0, 1].plot(w2, dlenv.spectral_density(w2))
-axs[0, 1].plot(w2, dlenv_approx.spectral_density(w2), '--')
-axs[0, 1].set(xlabel=r'$\omega$', ylabel=r'$J(\omega)$')
+axs[0, 1].plot(w2, dlenv_approx.spectral_density(w2), "--")
+axs[0, 1].set(xlabel=r"$\omega$", ylabel=r"$J(\omega)$")
 axs[1, 0].plot(w2, np.real(dlenv.correlation_function(w2)))
-axs[1, 0].plot(w2, np.real(dlenv_approx.correlation_function(w2)), '--')
-axs[1, 0].set(xlabel=r'$t$', ylabel=r'$C_{R}(t)$')
+axs[1, 0].plot(w2, np.real(dlenv_approx.correlation_function(w2)), "--")
+axs[1, 0].set(xlabel=r"$t$", ylabel=r"$C_{R}(t)$")
 axs[1, 1].plot(w2, np.imag(dlenv.correlation_function(w2)))
-axs[1, 1].plot(w2, np.imag(dlenv_approx.correlation_function(w2)), '--')
-axs[1, 1].set(xlabel=r'$t$', ylabel=r'$C_{I}(t)$')
+axs[1, 1].plot(w2, np.imag(dlenv_approx.correlation_function(w2)), "--")
+axs[1, 1].set(xlabel=r"$t$", ylabel=r"$C_{I}(t)$")
 
 fig.tight_layout()
 plt.show()
@@ -427,18 +410,10 @@ def plot_correlation_expansion_divergence():
 
     fig, ax1 = plt.subplots(figsize=(12, 7))
 
-    ax1.plot(
-        t, np.real(corr_2), color="b", linewidth=3, label=rf"Mats = {Nk} real"
-    )
-    ax1.plot(
-        t, np.imag(corr_2), color="r", linewidth=3, label=rf"Mats = {Nk} imag"
-    )
-    ax1.plot(
-        t, np.real(corr_100), "b--", linewidth=3, label=r"Mats = 15000 real"
-    )
-    ax1.plot(
-        t, np.imag(corr_100), "r--", linewidth=3, label=r"Mats = 15000 imag"
-    )
+    ax1.plot(t, np.real(corr_2), color="b", linewidth=3, label=rf"Mats = {Nk} real")
+    ax1.plot(t, np.imag(corr_2), color="r", linewidth=3, label=rf"Mats = {Nk} imag")
+    ax1.plot(t, np.real(corr_100), "b--", linewidth=3, label=r"Mats = 15000 real")
+    ax1.plot(t, np.imag(corr_100), "r--", linewidth=3, label=r"Mats = 15000 imag")
 
     ax1.set_xlabel("t")
     ax1.set_ylabel(r"$C$")
@@ -525,9 +500,7 @@ We can compare the solution obtained from the QuTiP Bloch-Redfield solver:
 options = {**default_options}
 
 with timer("ODE solver time"):
-    resultBR = brmesolve(
-        Hsys, rho0, tlist, a_ops=[[sigmaz(), dlenv]], options=options
-    )
+    resultBR = brmesolve(Hsys, rho0, tlist, a_ops=[[sigmaz(), dlenv]], options=options)
 ```
 
 ```python
@@ -587,7 +560,7 @@ def pade_chi(lmax):
             )
 
     eigvalsAP = np.linalg.eigvalsh(AlphaP)
-    chi = [-2 / val for val in eigvalsAP[0:lmax - 1]]
+    chi = [-2 / val for val in eigvalsAP[0 : lmax - 1]]
     return chi
 
 
@@ -636,12 +609,7 @@ def pade_corr(tlist, lmax):
     c_tot = []
     for t in tlist:
         c_tot.append(
-            sum(
-                [
-                    eta_list[ll] * np.exp(-gamma_list[ll] * t)
-                    for ll in range(lmax + 1)
-                ]
-            )
+            sum([eta_list[ll] * np.exp(-gamma_list[ll] * t) for ll in range(lmax + 1)])
         )
     return c_tot, eta_list, gamma_list
 
@@ -785,17 +753,17 @@ We then fit this sum with standard least-squares approach:
 
 ```python
 def wrapper_fit_func(x, N, args):
-    """ Fit function wrapper that unpacks its arguments. """
+    """Fit function wrapper that unpacks its arguments."""
     x = np.array(x)
     a = np.array(args[:N])
-    b = np.array(args[N:2 * N])
+    b = np.array(args[N : 2 * N])
     return fit_func(x, a, b)
 
 
 def fit_func(x, a, b):
-    """ Fit function. Calculates the value of the
-        correlation function at each x, given the
-        fit parameters in a and b.
+    """Fit function. Calculates the value of the
+    correlation function at each x, given the
+    fit parameters in a and b.
     """
     return np.sum(
         a[:, None] * np.exp(np.multiply.outer(b, x)),
@@ -804,23 +772,14 @@ def fit_func(x, a, b):
 
 
 def fitter(ans, tlist, k):
-    """ Compute fit with k exponents. """
+    """Compute fit with k exponents."""
     upper_a = abs(max(ans, key=abs)) * 10
     # sets initial guesses:
-    guess = (
-        [upper_a / k] * k +  # guesses for a
-        [0] * k  # guesses for b
-    )
+    guess = [upper_a / k] * k + [0] * k  # guesses for a  # guesses for b
     # sets lower bounds:
-    b_lower = (
-        [-upper_a] * k +  # lower bounds for a
-        [-np.inf] * k  # lower bounds for b
-    )
+    b_lower = [-upper_a] * k + [-np.inf] * k  # lower bounds for a  # lower bounds for b
     # sets higher bounds:
-    b_higher = (
-        [upper_a] * k +  # upper bounds for a
-        [0] * k  # upper bounds for b
-    )
+    b_higher = [upper_a] * k + [0] * k  # upper bounds for a  # upper bounds for b
     param_bounds = (b_lower, b_higher)
     p1, p2 = curve_fit(
         lambda x, *params_0: wrapper_fit_func(x, k, params_0),
@@ -856,8 +815,7 @@ And plot the results of the fits:
 ```python
 # Define line styles and colors
 linestyles = ["-", "--", "-.", ":", (0, (3, 1, 1, 1)), (0, (5, 1))]
-colors = ["blue", "green", "purple", "orange",
-          "red", "brown", "cyan", "magenta"]
+colors = ["blue", "green", "purple", "orange", "red", "brown", "cyan", "magenta"]
 
 # Define a larger linewidth
 linewidth = 2.5
@@ -866,27 +824,57 @@ linewidth = 2.5
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
 
 # Plot the real part on the first subplot (ax1)
-ax1.plot(tlist2, corrRana, label="Analytic",
-         color=colors[0], linestyle=linestyles[0], linewidth=linewidth)
-ax1.plot(tlist2, corrRMats, label="Matsubara",
-         color=colors[1], linestyle=linestyles[1], linewidth=linewidth)
+ax1.plot(
+    tlist2,
+    corrRana,
+    label="Analytic",
+    color=colors[0],
+    linestyle=linestyles[0],
+    linewidth=linewidth,
+)
+ax1.plot(
+    tlist2,
+    corrRMats,
+    label="Matsubara",
+    color=colors[1],
+    linestyle=linestyles[1],
+    linewidth=linewidth,
+)
 
 for i in range(kR):
     y = fit_func(tlist2, *poptR[i])
-    ax1.plot(tlist2, y, label=f"Fit with {i} terms", color=colors[(
-        i + 2) % len(colors)], linestyle=linestyles[(i + 2) % len(linestyles)], linewidth=linewidth)
+    ax1.plot(
+        tlist2,
+        y,
+        label=f"Fit with {i} terms",
+        color=colors[(i + 2) % len(colors)],
+        linestyle=linestyles[(i + 2) % len(linestyles)],
+        linewidth=linewidth,
+    )
 ax1.set_ylabel(r"$C_{R}(t)$")
 ax1.set_xlabel(r"$t$")
 ax1.legend()
 
 # Plot the imaginary part on the second subplot (ax2)
-ax2.plot(tlist2, corrIana, label="Analytic",
-         color=colors[0], linestyle=linestyles[0], linewidth=linewidth)
+ax2.plot(
+    tlist2,
+    corrIana,
+    label="Analytic",
+    color=colors[0],
+    linestyle=linestyles[0],
+    linewidth=linewidth,
+)
 
 for i in range(kI):
     y = fit_func(tlist2, *poptI[i])
-    ax2.plot(tlist2, y, label=f"Fit with {i} terms", color=colors[(
-        i + 3) % len(colors)], linestyle=linestyles[(i + 1) % len(linestyles)], linewidth=linewidth)
+    ax2.plot(
+        tlist2,
+        y,
+        label=f"Fit with {i} terms",
+        color=colors[(i + 3) % len(colors)],
+        linestyle=linestyles[(i + 1) % len(linestyles)],
+        linewidth=linewidth,
+    )
 ax2.set_ylabel(r"$C_{I}(t)$")
 ax2.set_xlabel(r"$t$")
 
@@ -894,7 +882,9 @@ ax2.legend()
 
 # Add overall plot title and show the figure
 fig.suptitle(
-    "Comparison of Analytic and Fit to Correlations (Real and Imaginary Parts)", fontsize=16)
+    "Comparison of Analytic and Fit to Correlations (Real and Imaginary Parts)",
+    fontsize=16,
+)
 plt.show()
 ```
 
@@ -953,9 +943,16 @@ max_val = dlenv.correlation_function(0).real
 guess = [max_val / 3, 0, 0, 0]
 lower = [-max_val, -np.inf, -np.inf, -np.inf]
 upper = [max_val, 0, 0, 0]
-envfit, fitinfo = dlenv.approximate("cf", tlist=tlist2, full_ansatz=True,
-                                    Ni_max=1, Nr_max=3,
-                                    upper=upper, lower=lower, guess=guess)
+envfit, fitinfo = dlenv.approximate(
+    "cf",
+    tlist=tlist2,
+    full_ansatz=True,
+    Ni_max=1,
+    Nr_max=3,
+    upper=upper,
+    lower=lower,
+    guess=guess,
+)
 ```
 
 The approx_by_cf_fit method outputs a `ExponentialBosonicEnvironment` object,
@@ -965,7 +962,7 @@ The dictionary contains a summary of the fir information and the normalized
 root mean squared error, which assesses how good the fit is. 
 
 ```python
-print(fitinfo['summary'])
+print(fitinfo["summary"])
 ```
 
 We can then compare the result of the built-in fit with the manual fit
@@ -977,8 +974,9 @@ fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
 # Plot the real part on the first subplot (ax1)
 ax1.plot(tlist2, corrRana, label="Original", marker="o", markevery=500)
 ax1.plot(tlist2, fit_func(tlist2, *poptR[-1]), color="r", label="Manual Fit")
-ax1.plot(tlist2, np.real(envfit.correlation_function(tlist2)),
-         "k--", label="Built-in fit")
+ax1.plot(
+    tlist2, np.real(envfit.correlation_function(tlist2)), "k--", label="Built-in fit"
+)
 ax1.set_ylabel(r"$C_{R}(t)$")
 ax1.set_xlabel(r"$t$")
 ax1.legend()
@@ -986,8 +984,9 @@ ax1.legend()
 # Plot the imaginary part on the second subplot (ax2)
 ax2.plot(tlist2, corrIana, label="Original", marker="o", markevery=500)
 ax2.plot(tlist2, fit_func(tlist2, *poptI[-1]), color="r", label="Manual Fit")
-ax2.plot(tlist2, np.imag(envfit.correlation_function(tlist2)),
-         "k--", label="Built-in fit")
+ax2.plot(
+    tlist2, np.imag(envfit.correlation_function(tlist2)), "k--", label="Built-in fit"
+)
 ax2.set_ylabel(r"$C_{I}(t)$")
 ax2.set_xlabel(r"$t$")
 ax2.legend()
@@ -1034,9 +1033,7 @@ wa = 2 * np.pi * gamma2 * gamma  # reaction coordinate frequency
 g = np.sqrt(np.pi * wa * lam / 2.0)  # reaction coordinate coupling
 # reaction coordinate coupling factor over 2 because of diff in J(w)
 # (it is 2 lam now):
-g = np.sqrt(
-    np.pi * wa * lam / 4.0
-)  #
+g = np.sqrt(np.pi * wa * lam / 4.0)  #
 
 NRC = 10
 
@@ -1119,7 +1116,8 @@ with plt.rc_context(rcParams):
             (
                 resultRC,
                 P11RC,
-                "--", "Thermal",
+                "--",
+                "Thermal",
                 {"linewidth": 2, "color": "black"},
             ),
         ],

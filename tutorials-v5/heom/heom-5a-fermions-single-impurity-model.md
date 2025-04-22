@@ -74,22 +74,15 @@ import contextlib
 import dataclasses
 import time
 
-import numpy as np
 import matplotlib.pyplot as plt
-from scipy.integrate import quad
-
+import numpy as np
 import qutip
-from qutip import (
-    basis,
-    destroy,
-    expect,
-)
-from qutip.solver.heom import (
-    HEOMSolver,
-)
-from qutip.core.environment import LorentzianEnvironment
-from ipywidgets import IntProgress
 from IPython.display import display
+from ipywidgets import IntProgress
+from qutip import basis, destroy, expect
+from qutip.core.environment import LorentzianEnvironment
+from qutip.solver.heom import HEOMSolver
+from scipy.integrate import quad
 
 %matplotlib inline
 ```
@@ -99,10 +92,10 @@ from IPython.display import display
 ```{code-cell} ipython3
 @contextlib.contextmanager
 def timer(label):
-    """ Simple utility for timing functions:
+    """Simple utility for timing functions:
 
-        with timer("name"):
-            ... code to time ...
+    with timer("name"):
+        ... code to time ...
     """
     start = time.time()
     yield
@@ -117,6 +110,7 @@ def timer(label):
 # use the auxilliary density operators (ADOs)
 # to calculate the current between the leads
 # and the system.
+
 
 options = {
     "nsteps": 1500,
@@ -147,6 +141,7 @@ H = e1 * d1.dag() * d1
 # Each bath is a lead (i.e. a wire held at a potential)
 # with temperature T and chemical potential mu.
 
+
 @dataclasses.dataclass
 class LorentzianBathParameters:
     lead: str
@@ -162,19 +157,19 @@ class LorentzianBathParameters:
         if self.lead == "L":
             self.mu = self.theta / 2.0
         else:
-            self.mu = - self.theta / 2.0
+            self.mu = -self.theta / 2.0
 
     def J(self, w):
-        """ Spectral density. """
-        return self.gamma * self.W**2 / ((w - self.mu)**2 + self.W**2)
+        """Spectral density."""
+        return self.gamma * self.W**2 / ((w - self.mu) ** 2 + self.W**2)
 
     def fF(self, w, sign=1.0):
-        """ Fermi distribution for this bath. """
+        """Fermi distribution for this bath."""
         x = sign * self.beta * (w - self.mu)
         return fF(x)
 
     def lamshift(self, w):
-        """ Return the lamshift. """
+        """Return the lamshift."""
         return 0.5 * (w - self.mu) * self.J(w) / self.W
 
     def replace(self, **kw):
@@ -182,7 +177,7 @@ class LorentzianBathParameters:
 
 
 def fF(x):
-    """ Return the Fermi distribution. """
+    """Return the Fermi distribution."""
     # in units where kB = 1.0
     return 1 / (np.exp(x) + 1)
 
@@ -204,13 +199,17 @@ spec_L = bath_L.J(w_list)
 spec_R = bath_R.J(w_list)
 
 ax.plot(
-    w_list, spec_L,
-    "b--", linewidth=3,
+    w_list,
+    spec_L,
+    "b--",
+    linewidth=3,
     label=r"J_L(w)",
 )
 ax.plot(
-    w_list, spec_R,
-    "r--", linewidth=3,
+    w_list,
+    spec_R,
+    "r--",
+    linewidth=3,
     label=r"J_R(w)",
 )
 
@@ -234,13 +233,17 @@ gam_L_in = bath_L.J(w_list) * bath_L.fF(w_list, sign=1.0)
 gam_L_out = bath_L.J(w_list) * bath_L.fF(w_list, sign=-1.0)
 
 ax.plot(
-    w_list, gam_L_in,
-    "b--", linewidth=3,
+    w_list,
+    gam_L_in,
+    "b--",
+    linewidth=3,
     label=r"S_L(w) input (absorption)",
 )
 ax.plot(
-    w_list, gam_L_out,
-    "r--", linewidth=3,
+    w_list,
+    gam_L_out,
+    "r--",
+    linewidth=3,
     label=r"S_L(w) output (emission)",
 )
 
@@ -250,13 +253,17 @@ gam_R_in = bath_R.J(w_list) * bath_R.fF(w_list, sign=1.0)
 gam_R_out = bath_R.J(w_list) * bath_R.fF(w_list, sign=-1.0)
 
 ax.plot(
-    w_list, gam_R_in,
-    "b", linewidth=3,
+    w_list,
+    gam_R_in,
+    "b",
+    linewidth=3,
     label=r"S_R(w) input (absorption)",
 )
 ax.plot(
-    w_list, gam_R_out,
-    "r", linewidth=3,
+    w_list,
+    gam_R_out,
+    "r",
+    linewidth=3,
     label=r"S_R(w) output (emission)",
 )
 
@@ -279,18 +286,25 @@ rho0 = basis(2, 0) * basis(2, 0).dag()
 Nk = 10  # Number of exponents to retain in the expansion of each bath
 
 envL = LorentzianEnvironment(
-    bath_L.T, bath_L.mu, bath_L.gamma, bath_L.W,
+    bath_L.T,
+    bath_L.mu,
+    bath_L.gamma,
+    bath_L.W,
 )
 envL_pade = envL.approx_by_pade(Nk=Nk, tag="L")
 envR = LorentzianEnvironment(
-    bath_R.T, bath_R.mu, bath_R.gamma, bath_R.W,
+    bath_R.T,
+    bath_R.mu,
+    bath_R.gamma,
+    bath_R.W,
 )
 envR_pade = envR.approx_by_pade(Nk=Nk, tag="R")
 
 
 with timer("RHS construction time"):
     solver_pade = HEOMSolver(
-        H, [(envL_pade, bath_L.Q), (envR_pade, bath_R.Q)], max_depth=2, options=options)
+        H, [(envL_pade, bath_L.Q), (envR_pade, bath_R.Q)], max_depth=2, options=options
+    )
 
 with timer("ODE solver time"):
     result_pade = solver_pade.run(rho0, tlist)
@@ -306,17 +320,21 @@ Now let us plot the result which shows the decay of the initially excited impuri
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 8))
 
 axes.plot(
-    tlist, expect(result_pade.states, rho0),
-    'r--', linewidth=2,
+    tlist,
+    expect(result_pade.states, rho0),
+    "r--",
+    linewidth=2,
     label="P11 (Pade)",
 )
 axes.axhline(
     expect(rho_ss_pade, rho0),
-    color='r', linestyle="dotted", linewidth=1,
+    color="r",
+    linestyle="dotted",
+    linewidth=1,
     label="P11 (Pade steady state)",
 )
 
-axes.set_xlabel('t', fontsize=28)
+axes.set_xlabel("t", fontsize=28)
 axes.legend(fontsize=12);
 ```
 
@@ -331,7 +349,8 @@ envR_mats = envR.approx_by_matsubara(Nk=Nk, tag="R")
 
 with timer("RHS construction time"):
     solver_mats = HEOMSolver(
-        H, [(envL_mats, bath_L.Q), (envR_mats, bath_R.Q)], max_depth=2, options=options)
+        H, [(envL_mats, bath_L.Q), (envR_mats, bath_R.Q)], max_depth=2, options=options
+    )
 
 with timer("ODE solver time"):
     result_mats = solver_mats.run(rho0, tlist)
@@ -347,28 +366,36 @@ We see a marked difference in the Matsubara vs Pade results:
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 8))
 
 axes.plot(
-    tlist, expect(result_pade.states, rho0),
-    'r--', linewidth=2,
+    tlist,
+    expect(result_pade.states, rho0),
+    "r--",
+    linewidth=2,
     label="P11 (Pade)",
 )
 axes.axhline(
     expect(rho_ss_pade, rho0),
-    color='r', linestyle="dotted", linewidth=1,
+    color="r",
+    linestyle="dotted",
+    linewidth=1,
     label="P11 (Pade steady state)",
 )
 
 axes.plot(
-    tlist, expect(result_mats.states, rho0),
-    'b--', linewidth=2,
+    tlist,
+    expect(result_mats.states, rho0),
+    "b--",
+    linewidth=2,
     label="P11 (Mats)",
 )
 axes.axhline(
     expect(rho_ss_mats, rho0),
-    color='b', linestyle="dotted", linewidth=1,
+    color="b",
+    linestyle="dotted",
+    linewidth=1,
     label="P11 (Mats steady state)",
 )
 
-axes.set_xlabel('t', fontsize=28)
+axes.set_xlabel("t", fontsize=28)
 axes.legend(fontsize=12);
 ```
 
@@ -380,14 +407,16 @@ See the [QuTiP-BoFiN paper](https://arxiv.org/abs/2010.10806) for a detailed des
 
 ```{code-cell} ipython3
 def analytical_steady_state_current(bath_L, bath_R, e1):
-    """ Calculate the analytical steady state current. """
+    """Calculate the analytical steady state current."""
 
     def integrand(w):
         return (2 / np.pi) * (
-            bath_L.J(w) * bath_R.J(w) * (bath_L.fF(w) - bath_R.fF(w)) /
-            (
-                (bath_L.J(w) + bath_R.J(w))**2 +
-                4*(w - e1 - bath_L.lamshift(w) - bath_R.lamshift(w))**2
+            bath_L.J(w)
+            * bath_R.J(w)
+            * (bath_L.fF(w) - bath_R.fF(w))
+            / (
+                (bath_L.J(w) + bath_R.J(w)) ** 2
+                + 4 * (w - e1 - bath_L.lamshift(w) - bath_R.lamshift(w)) ** 2
             )
         )
 
@@ -418,8 +447,8 @@ In the function `state_current(...)` below, we extract the first level ADOs for 
 
 ```{code-cell} ipython3
 def state_current(ado_state, bath_tag):
-    """ Determine current from the given bath (either "R" or "L") to
-        the system in the given ADO state.
+    """Determine current from the given bath (either "R" or "L") to
+    the system in the given ADO state.
     """
     level_1_aux = [
         (ado_state.extract(label), ado_state.exps(label)[0])
@@ -433,8 +462,7 @@ def state_current(ado_state, bath_tag):
         return exp.Q if exp.type == exp.types["+"] else exp.Q.dag()
 
     return -1.0j * sum(
-        exp_sign(exp) * (exp_op(exp) * aux).tr()
-        for aux, exp in level_1_aux
+        exp_sign(exp) * (exp_op(exp) * aux).tr() for aux, exp in level_1_aux
     )
 ```
 
@@ -494,7 +522,7 @@ display(progress)
 
 
 def current_analytic_for_theta(e1, bath_L, bath_R, theta):
-    """ Return the analytic current for a given theta. """
+    """Return the analytic current for a given theta."""
     current = analytical_steady_state_current(
         bath_L.replace(theta=theta),
         bath_R.replace(theta=theta),
@@ -505,22 +533,19 @@ def current_analytic_for_theta(e1, bath_L, bath_R, theta):
 
 
 def current_pade_for_theta(H, bath_L, bath_R, theta, Nk):
-    """ Return the steady state current using the Pade approximation. """
+    """Return the steady state current using the Pade approximation."""
     bath_L = bath_L.replace(theta=theta)
     bath_R = bath_R.replace(theta=theta)
 
-    envL = LorentzianEnvironment(
-    bath_L.T, bath_L.mu, bath_L.gamma, bath_L.W
-    )
+    envL = LorentzianEnvironment(bath_L.T, bath_L.mu, bath_L.gamma, bath_L.W)
     bathL = envL.approx_by_pade(Nk=Nk)
-    envR = LorentzianEnvironment(
-    bath_R.T, bath_R.mu, bath_R.gamma, bath_R.W
-    )
+    envR = LorentzianEnvironment(bath_R.T, bath_R.mu, bath_R.gamma, bath_R.W)
 
     bathR = envR.approx_by_pade(Nk=Nk, tag="R")
-    
-    solver_pade = HEOMSolver(H, [(bathL,bath_L.Q), (bathR,bath_R.Q)], 
-                             max_depth=2, options=options)
+
+    solver_pade = HEOMSolver(
+        H, [(bathL, bath_L.Q), (bathR, bath_R.Q)], max_depth=2, options=options
+    )
     rho_ss_pade, ado_ss_pade = solver_pade.steady_state()
     current = state_current(ado_ss_pade, bath_tag="R")
 
@@ -529,15 +554,13 @@ def current_pade_for_theta(H, bath_L, bath_R, theta, Nk):
 
 
 curr_ss_analytic_thetas = [
-    current_analytic_for_theta(e1, bath_L, bath_R, theta)
-    for theta in thetas
+    current_analytic_for_theta(e1, bath_L, bath_R, theta) for theta in thetas
 ]
 
 # The number of expansion terms has been dropped to Nk=6 to speed
 # up notebook execution. Increase to Nk=10 for more accurate results.
 curr_ss_pade_theta = [
-    current_pade_for_theta(H, bath_L, bath_R, theta, Nk=6)
-    for theta in thetas
+    current_pade_for_theta(H, bath_L, bath_R, theta, Nk=6) for theta in thetas
 ]
 ```
 
@@ -547,19 +570,23 @@ Below we plot the results and see that even with `Nk=6`, the HEOM Pade approxima
 fig, ax = plt.subplots(figsize=(12, 7))
 
 ax.plot(
-    thetas, 2.434e-4 * 1e6 * np.array(curr_ss_analytic_thetas),
-    color="black", linewidth=3,
+    thetas,
+    2.434e-4 * 1e6 * np.array(curr_ss_analytic_thetas),
+    color="black",
+    linewidth=3,
     label=r"Analytical",
 )
 ax.plot(
-    thetas, 2.434e-4 * 1e6 * np.array(curr_ss_pade_theta),
-    'r--', linewidth=3,
+    thetas,
+    2.434e-4 * 1e6 * np.array(curr_ss_pade_theta),
+    "r--",
+    linewidth=3,
     label=r"HEOM Pade $N_k=10$, $n_{\mathrm{max}}=2$",
 )
 
 
-ax.locator_params(axis='y', nbins=4)
-ax.locator_params(axis='x', nbins=4)
+ax.locator_params(axis="y", nbins=4)
+ax.locator_params(axis="x", nbins=4)
 
 ax.set_xticks([-2.5, 0, 2.5])
 ax.set_xticklabels([-2.5, 0, 2.5])

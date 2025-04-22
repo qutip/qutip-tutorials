@@ -85,25 +85,12 @@ Note that in the above, and the following, we set $\hbar = k_\mathrm{B} = 1$.
 import contextlib
 import time
 
-import numpy as np
 import matplotlib.pyplot as plt
-
+import numpy as np
 import qutip
-from qutip import (
-    basis,
-    brmesolve,
-    expect,
-    liouvillian,
-    sigmax,
-    sigmaz,
-)
-from qutip.core.environment import (
-    DrudeLorentzEnvironment,
-    system_terminator
-)
-from qutip.solver.heom import (
-    HEOMSolver,
-)
+from qutip import basis, brmesolve, expect, liouvillian, sigmax, sigmaz
+from qutip.core.environment import DrudeLorentzEnvironment, system_terminator
+from qutip.solver.heom import HEOMSolver
 
 %matplotlib inline
 ```
@@ -114,17 +101,17 @@ Let's define some helper functions for calculating correlation function expansio
 
 ```{code-cell} ipython3
 def cot(x):
-    """ Vectorized cotangent of x. """
-    return 1. / np.tan(x)
+    """Vectorized cotangent of x."""
+    return 1.0 / np.tan(x)
 ```
 
 ```{code-cell} ipython3
 @contextlib.contextmanager
 def timer(label):
-    """ Simple utility for timing functions:
+    """Simple utility for timing functions:
 
-        with timer("name"):
-            ... code to time ...
+    with timer("name"):
+        ... code to time ...
     """
     start = time.time()
     yield
@@ -134,6 +121,7 @@ def timer(label):
 
 ```{code-cell} ipython3
 # Solver options:
+
 
 options = {
     "nsteps": 15000,
@@ -151,8 +139,8 @@ And let us set up the system Hamiltonian, bath and system measurement operators:
 
 ```{code-cell} ipython3
 # Defining the system Hamiltonian
-eps = .0     # Energy of the 2-level system.
-Del = .2     # Tunnelling term
+eps = 0.0  # Energy of the 2-level system.
+Del = 0.2  # Tunnelling term
 Hsys = 0.5 * eps * sigmaz() + 0.5 * Del * sigmax()
 ```
 
@@ -166,10 +154,10 @@ rho0 = basis(2, 0) * basis(2, 0).dag()
 Q = sigmaz()  # coupling operator
 
 # Bath properties (see Shi et al., J. Chem. Phys. 130, 084105 (2009)):
-gamma = 1.  # cut off frequency
-lam = 2.5   # coupling strength
-T = 1.      # in units where Boltzmann factor is 1
-beta = 1. / T
+gamma = 1.0  # cut off frequency
+lam = 2.5  # coupling strength
+T = 1.0  # in units where Boltzmann factor is 1
+beta = 1.0 / T
 
 # HEOM parameters:
 
@@ -204,9 +192,9 @@ J = bath.spectral_density(w)
 
 # Plot the results
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 8))
-axes.plot(w, J, 'r', linewidth=2)
-axes.set_xlabel(r'$\omega$', fontsize=28)
-axes.set_ylabel(r'J', fontsize=28);
+axes.plot(w, J, "r", linewidth=2)
+axes.set_xlabel(r"$\omega$", fontsize=28)
+axes.set_ylabel(r"J", fontsize=28);
 ```
 
 ## Simulation 1: Matsubara decomposition, not using Ishizaki-Tanimura terminator
@@ -224,8 +212,7 @@ with timer("ODE solver time"):
 
 ```{code-cell} ipython3
 with timer("RHS construction time"):
-    matsBath, delta = bath.approximate(
-        method="matsubara", Nk=Nk, compute_delta=True)
+    matsBath, delta = bath.approximate(method="matsubara", Nk=Nk, compute_delta=True)
     terminator = system_terminator(Q, delta)
     Ltot = liouvillian(Hsys) + terminator
     HEOMMatsT = HEOMSolver(Ltot, (matsBath, Q), NC, options=options)
@@ -240,18 +227,23 @@ fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 8))
 
 P11_mats = np.real(expect(resultMats.states, P11p))
 axes.plot(
-    tlist, np.real(P11_mats),
-    'b', linewidth=2, label="P11 (Matsubara)",
+    tlist,
+    np.real(P11_mats),
+    "b",
+    linewidth=2,
+    label="P11 (Matsubara)",
 )
 
 P11_matsT = np.real(expect(resultMatsT.states, P11p))
 axes.plot(
-    tlist, np.real(P11_matsT),
-    'b--', linewidth=2,
+    tlist,
+    np.real(P11_matsT),
+    "b--",
+    linewidth=2,
     label="P11 (Matsubara + Terminator)",
 )
 
-axes.set_xlabel(r't', fontsize=28)
+axes.set_xlabel(r"t", fontsize=28)
 axes.legend(loc=0, fontsize=12);
 ```
 
@@ -265,35 +257,48 @@ padeBath = bath.approximate("pade", Nk=Nk)
 fig, (ax1, ax2) = plt.subplots(ncols=2, sharey=True, figsize=(16, 8))
 
 ax1.plot(
-    tlist, np.real(bath.correlation_function(tlist)),
-    "r", linewidth=2, label=f"Exact",
+    tlist,
+    np.real(bath.correlation_function(tlist)),
+    "r",
+    linewidth=2,
+    label=f"Exact",
 )
 ax1.plot(
-    tlist, np.real(matsBath.correlation_function(tlist)),
-    "g--", linewidth=2, label=f"Mats (Nk={Nk})",
+    tlist,
+    np.real(matsBath.correlation_function(tlist)),
+    "g--",
+    linewidth=2,
+    label=f"Mats (Nk={Nk})",
 )
 ax1.plot(
-    tlist, np.real(padeBath.correlation_function(tlist)),
-    "b--", linewidth=2, label=f"Pade (Nk={Nk})",
+    tlist,
+    np.real(padeBath.correlation_function(tlist)),
+    "b--",
+    linewidth=2,
+    label=f"Pade (Nk={Nk})",
 )
 
-ax1.set_xlabel(r't', fontsize=28)
+ax1.set_xlabel(r"t", fontsize=28)
 ax1.set_ylabel(r"$C_R(t)$", fontsize=28)
 ax1.legend(loc=0, fontsize=12)
 
 tlist2 = tlist[0:50]
 ax2.plot(
-    tlist2, np.abs(matsBath.correlation_function(tlist2)
-                   - bath.correlation_function(tlist2)),
-    "g", linewidth=2, label="Mats Error",
+    tlist2,
+    np.abs(matsBath.correlation_function(tlist2) - bath.correlation_function(tlist2)),
+    "g",
+    linewidth=2,
+    label="Mats Error",
 )
 ax2.plot(
-    tlist2, np.abs(padeBath.correlation_function(tlist2)
-                   - bath.correlation_function(tlist2)),
-    "b--", linewidth=2, label="Pade Error",
+    tlist2,
+    np.abs(padeBath.correlation_function(tlist2) - bath.correlation_function(tlist2)),
+    "b--",
+    linewidth=2,
+    label="Pade Error",
 )
 
-ax2.set_xlabel(r't', fontsize=28)
+ax2.set_xlabel(r"t", fontsize=28)
 ax2.legend(loc=0, fontsize=12);
 ```
 
@@ -310,21 +315,30 @@ with timer("ODE solver time"):
 fig, axes = plt.subplots(figsize=(8, 8))
 
 axes.plot(
-    tlist, np.real(P11_mats),
-    'b', linewidth=2, label="P11 (Matsubara)",
+    tlist,
+    np.real(P11_mats),
+    "b",
+    linewidth=2,
+    label="P11 (Matsubara)",
 )
 axes.plot(
-    tlist, np.real(P11_matsT),
-    'b--', linewidth=2, label="P11 (Matsubara + Terminator)",
+    tlist,
+    np.real(P11_matsT),
+    "b--",
+    linewidth=2,
+    label="P11 (Matsubara + Terminator)",
 )
 
 P11_pade = np.real(expect(resultPade.states, P11p))
 axes.plot(
-    tlist, np.real(P11_pade),
-    'r', linewidth=2, label="P11 (Pade)",
+    tlist,
+    np.real(P11_pade),
+    "r",
+    linewidth=2,
+    label="P11 (Pade)",
 )
 
-axes.set_xlabel(r't', fontsize=28)
+axes.set_xlabel(r"t", fontsize=28)
 axes.legend(loc=0, fontsize=12);
 ```
 
@@ -337,18 +351,28 @@ we will use the built-in tools. More details about them can be seen in
 ```{code-cell} ipython3
 tfit = np.linspace(0, 10, 10000)
 lower = [0, -np.inf, -1e-6, -3]
-guess = [np.real(bath.correlation_function(0))/10, -10, 0, 0]
+guess = [np.real(bath.correlation_function(0)) / 10, -10, 0, 0]
 upper = [5, 0, 1e-6, 0]
 # for better fits increase the first element in upper, or change approximate
 # method that makes the simulation much slower (Larger C(t) as C(0) is fit
 # better)
-envfit, fitinfo = bath.approximate("cf", tlist=tfit, Nr_max=2, Ni_max=1, full_ansatz=True,
-                                   sigma=0.1, maxfev=1e6, target_rmse=None,
-                                   lower=lower, upper=upper, guess=guess)
+envfit, fitinfo = bath.approximate(
+    "cf",
+    tlist=tfit,
+    Nr_max=2,
+    Ni_max=1,
+    full_ansatz=True,
+    sigma=0.1,
+    maxfev=1e6,
+    target_rmse=None,
+    lower=lower,
+    upper=upper,
+    guess=guess,
+)
 ```
 
 ```{code-cell} ipython3
-print(fitinfo['summary'])
+print(fitinfo["summary"])
 ```
 
 We can quickly compare the result of the Fit with the Pade expansion
@@ -357,36 +381,58 @@ We can quickly compare the result of the Fit with the Pade expansion
 fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(16, 8))
 
 ax1.plot(
-    tlist, np.real(bath.correlation_function(tlist)),
-    "r", linewidth=2, label=f"Exact",
+    tlist,
+    np.real(bath.correlation_function(tlist)),
+    "r",
+    linewidth=2,
+    label=f"Exact",
 )
 ax1.plot(
-    tlist, np.real(envfit.correlation_function(tlist)),
-    "g--", linewidth=2, label=f"Fit", marker="o", markevery=50
+    tlist,
+    np.real(envfit.correlation_function(tlist)),
+    "g--",
+    linewidth=2,
+    label=f"Fit",
+    marker="o",
+    markevery=50,
 )
 ax1.plot(
-    tlist, np.real(padeBath.correlation_function(tlist)),
-    "b--", linewidth=2, label=f"Pade (Nk={Nk})",
+    tlist,
+    np.real(padeBath.correlation_function(tlist)),
+    "b--",
+    linewidth=2,
+    label=f"Pade (Nk={Nk})",
 )
 
-ax1.set_xlabel(r't', fontsize=28)
+ax1.set_xlabel(r"t", fontsize=28)
 ax1.set_ylabel(r"$C_R(t)$", fontsize=28)
 ax1.legend(loc=0, fontsize=12)
 
 ax2.plot(
-    tlist, np.imag(bath.correlation_function(tlist)),
-    "r", linewidth=2, label=f"Exact",
+    tlist,
+    np.imag(bath.correlation_function(tlist)),
+    "r",
+    linewidth=2,
+    label=f"Exact",
 )
 ax2.plot(
-    tlist, np.imag(envfit.correlation_function(tlist)),
-    "g--", linewidth=2, label=f"Fit", marker="o", markevery=50
+    tlist,
+    np.imag(envfit.correlation_function(tlist)),
+    "g--",
+    linewidth=2,
+    label=f"Fit",
+    marker="o",
+    markevery=50,
 )
 ax2.plot(
-    tlist, np.imag(padeBath.correlation_function(tlist)),
-    "b--", linewidth=2, label=f"Pade (Nk={Nk})",
+    tlist,
+    np.imag(padeBath.correlation_function(tlist)),
+    "b--",
+    linewidth=2,
+    label=f"Pade (Nk={Nk})",
 )
 
-ax2.set_xlabel(r't', fontsize=28)
+ax2.set_xlabel(r"t", fontsize=28)
 ax2.set_ylabel(r"$C_I(t)$", fontsize=28)
 ax2.legend(loc=0, fontsize=12)
 ```
@@ -396,7 +442,7 @@ with timer("RHS construction time"):
     # We reduce NC slightly here for speed of execution because we retain
     # 3 exponents in ckAR instead of 1. Please restore full NC for
     # convergence though:
-    HEOMFit = HEOMSolver(Hsys, (envfit, Q), int(NC*0.7), options=options)
+    HEOMFit = HEOMSolver(Hsys, (envfit, Q), int(NC * 0.7), options=options)
 
 with timer("ODE solver time"):
     resultFit = HEOMFit.run(rho0, tlist)
@@ -407,8 +453,12 @@ with timer("ODE solver time"):
 ```{code-cell} ipython3
 with timer("ODE solver time"):
     resultBR = brmesolve(
-        Hsys, rho0, tlist,
-        a_ops=[[sigmaz(), bath]], sec_cutoff=0, options=options,
+        Hsys,
+        rho0,
+        tlist,
+        a_ops=[[sigmaz(), bath]],
+        sec_cutoff=0,
+        options=options,
     )
 ```
 
@@ -449,32 +499,46 @@ with plt.rc_context(rcParams):
     # Plot the results
     plt.yticks([0.99, 1.0], [0.99, 1])
     axes.plot(
-        tlist, np.real(P11_mats),
-        'b', linewidth=2, label=f"Matsubara $N_k={Nk}$",
+        tlist,
+        np.real(P11_mats),
+        "b",
+        linewidth=2,
+        label=f"Matsubara $N_k={Nk}$",
     )
     axes.plot(
-        tlist, np.real(P11_matsT),
-        'g--', linewidth=3,
+        tlist,
+        np.real(P11_matsT),
+        "g--",
+        linewidth=3,
         label=f"Matsubara $N_k={Nk}$ & terminator",
     )
     axes.plot(
-        tlist, np.real(P11_pade),
-        'y-.', linewidth=2, label=f"Padé $N_k={Nk}$",
+        tlist,
+        np.real(P11_pade),
+        "y-.",
+        linewidth=2,
+        label=f"Padé $N_k={Nk}$",
     )
     axes.plot(
-        tlist, np.real(P11_fit),
-        'r', dashes=[3, 2], linewidth=2,
+        tlist,
+        np.real(P11_fit),
+        "r",
+        dashes=[3, 2],
+        linewidth=2,
         label=r"Fit $N_f = 3$, $N_k=15 \times 10^3$",
     )
     axes.plot(
-        tlist, np.real(P11_br),
-        'b-.', linewidth=1, label="Bloch Redfield",
+        tlist,
+        np.real(P11_br),
+        "b-.",
+        linewidth=1,
+        label="Bloch Redfield",
     )
 
-    axes.locator_params(axis='y', nbins=6)
-    axes.locator_params(axis='x', nbins=6)
-    axes.set_ylabel(r'$\rho_{11}$', fontsize=30)
-    axes.set_xlabel(r'$t\;\gamma$', fontsize=30)
+    axes.locator_params(axis="y", nbins=6)
+    axes.locator_params(axis="x", nbins=6)
+    axes.set_ylabel(r"$\rho_{11}$", fontsize=30)
+    axes.set_xlabel(r"$t\;\gamma$", fontsize=30)
     axes.set_xlim(tlist[0], tlist[-1])
     axes.set_ylim(0.98405, 1.0005)
     axes.legend(loc=0)

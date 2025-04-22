@@ -77,7 +77,6 @@ from matplotlib import pyplot as plt
 from qutip import basis, expect, liouvillian, sigmax, sigmaz
 from qutip.core.environment import DrudeLorentzEnvironment, system_terminator
 from qutip.solver.heom import HEOMSolver
-from scipy.optimize import curve_fit
 
 %matplotlib inline
 ```

@@ -102,20 +102,12 @@ import time
 
 import matplotlib.pyplot as plt
 import numpy as np
-
 import qutip
-from qutip import (
-    destroy,
-    qeye,
-    tensor,
-)
-from qutip.solver.heom import (
-    HEOMSolver,
-)
-from qutip.core.environment import LorentzianEnvironment
-
-from ipywidgets import IntProgress
 from IPython.display import display
+from ipywidgets import IntProgress
+from qutip import destroy, qeye, tensor
+from qutip.core.environment import LorentzianEnvironment
+from qutip.solver.heom import HEOMSolver
 
 %matplotlib inline
 ```
@@ -125,10 +117,10 @@ from IPython.display import display
 ```{code-cell} ipython3
 @contextlib.contextmanager
 def timer(label):
-    """ Simple utility for timing functions:
+    """Simple utility for timing functions:
 
-        with timer("name"):
-            ... code to time ...
+    with timer("name"):
+        ... code to time ...
     """
     start = time.time()
     yield
@@ -138,8 +130,8 @@ def timer(label):
 
 ```{code-cell} ipython3
 def state_current(ado_state, bath_tag):
-    """ Determine current from the given bath (either "R" or "L") to
-        the system in the given ADO state.
+    """Determine current from the given bath (either "R" or "L") to
+    the system in the given ADO state.
     """
     level_1_aux = [
         (ado_state.extract(label), ado_state.exps(label)[0])
@@ -153,8 +145,7 @@ def state_current(ado_state, bath_tag):
         return exp.Q if exp.type == exp.types["+"] else exp.Q.dag()
 
     return -1.0j * sum(
-        exp_sign(exp) * (exp_op(exp) * aux).tr()
-        for aux, exp in level_1_aux
+        exp_sign(exp) * (exp_op(exp) * aux).tr() for aux, exp in level_1_aux
     )
 ```
 
@@ -165,6 +156,7 @@ def state_current(ado_state, bath_tag):
 # use the auxilliary density operators (ADOs)
 # to calculate the current between the leads
 # and the system.
+
 
 options = {
     "nsteps": 1500,
@@ -184,6 +176,7 @@ Let us set up the system Hamiltonian and specify the properties of the two reser
 ```{code-cell} ipython3
 # Define the system Hamiltonian:
 
+
 @dataclasses.dataclass
 class SystemParameters:
     e1: float = 0.3  # fermion mode energy splitting
@@ -195,9 +188,9 @@ class SystemParameters:
         d = tensor(destroy(2), qeye(self.Nbos))
         a = tensor(qeye(2), destroy(self.Nbos))
         self.H = (
-            self.e1 * d.dag() * d +
-            self.Omega * a.dag() * a +
-            self.Lambda * (a + a.dag()) * d.dag() * d
+            self.e1 * d.dag() * d
+            + self.Omega * a.dag() * a
+            + self.Lambda * (a + a.dag()) * d.dag() * d
         )
         self.Q = d
 
@@ -213,6 +206,7 @@ sys_p = SystemParameters()
 # Each bath is a lead (i.e. a wire held at a potential)
 # with temperature T and chemical potential mu.
 
+
 @dataclasses.dataclass
 class LorentzianBathParameters:
     lead: str
@@ -227,19 +221,19 @@ class LorentzianBathParameters:
         if self.lead == "L":
             self.mu = self.theta / 2.0
         else:
-            self.mu = - self.theta / 2.0
+            self.mu = -self.theta / 2.0
 
     def J(self, w):
-        """ Spectral density. """
-        return self.gamma * self.W**2 / ((w - self.mu)**2 + self.W**2)
+        """Spectral density."""
+        return self.gamma * self.W**2 / ((w - self.mu) ** 2 + self.W**2)
 
     def fF(self, w, sign=1.0):
-        """ Fermi distribution for this bath. """
+        """Fermi distribution for this bath."""
         x = sign * self.beta * (w - self.mu)
         return fF(x)
 
     def lamshift(self, w):
-        """ Return the lamshift. """
+        """Return the lamshift."""
         return 0.5 * (w - self.mu) * self.J(w) / self.W
 
     def replace(self, **kw):
@@ -247,7 +241,7 @@ class LorentzianBathParameters:
 
 
 def fF(x):
-    """ Return the Fermi distribution. """
+    """Return the Fermi distribution."""
     # in units where kB = 1.0
     return 1 / (np.exp(x) + 1)
 
@@ -273,13 +267,17 @@ gam_L_in = bath_L.J(w_list) * bath_L.fF(w_list, sign=1.0)
 gam_L_out = bath_L.J(w_list) * bath_L.fF(w_list, sign=-1.0)
 
 ax.plot(
-    w_list, gam_L_in,
-    "b--", linewidth=3,
+    w_list,
+    gam_L_in,
+    "b--",
+    linewidth=3,
     label=r"S_L(w) input (absorption)",
 )
 ax.plot(
-    w_list, gam_L_out,
-    "r--", linewidth=3,
+    w_list,
+    gam_L_out,
+    "r--",
+    linewidth=3,
     label=r"S_L(w) output (emission)",
 )
 
@@ -289,13 +287,17 @@ gam_R_in = bath_R.J(w_list) * bath_R.fF(w_list, sign=1.0)
 gam_R_out = bath_R.J(w_list) * bath_R.fF(w_list, sign=-1.0)
 
 ax.plot(
-    w_list, gam_R_in,
-    "b", linewidth=3,
+    w_list,
+    gam_R_in,
+    "b",
+    linewidth=3,
     label=r"S_R(w) input (absorption)",
 )
 ax.plot(
-    w_list, gam_R_out,
-    "r", linewidth=3,
+    w_list,
+    gam_R_out,
+    "r",
+    linewidth=3,
     label=r"S_R(w) output (emission)",
 )
 
@@ -312,24 +314,22 @@ One note:  for very large problems, this can be slow.
 
 ```{code-cell} ipython3
 def steady_state_pade_for_theta(sys_p, bath_L, bath_R, theta, Nk, Nc, Nbos):
-    """ Return the steady state current using the Pade approximation. """
+    """Return the steady state current using the Pade approximation."""
 
     sys_p = sys_p.replace(Nbos=Nbos)
     bath_L = bath_L.replace(theta=theta)
     bath_R = bath_R.replace(theta=theta)
-    envR = LorentzianEnvironment(
-     bath_R.T, bath_R.mu, bath_R.gamma, bath_R.W
-     )
-    envL = LorentzianEnvironment(
-     bath_L.T, bath_L.mu, bath_L.gamma, bath_L.W
-     )
+    envR = LorentzianEnvironment(bath_R.T, bath_R.mu, bath_R.gamma, bath_R.W)
+    envL = LorentzianEnvironment(bath_L.T, bath_L.mu, bath_L.gamma, bath_L.W)
 
-
-    bathL=envL.approx_by_matsubara(Nk,tag="L")
-    bathR=envR.approx_by_matsubara(Nk,tag="R")
+    bathL = envL.approx_by_matsubara(Nk, tag="L")
+    bathR = envR.approx_by_matsubara(Nk, tag="R")
 
     solver_pade = HEOMSolver(
-        sys_p.H, [(bathL,sys_p.Q), (bathR,sys_p.Q)], max_depth=2, options=options,
+        sys_p.H,
+        [(bathL, sys_p.Q), (bathR, sys_p.Q)],
+        max_depth=2,
+        options=options,
     )
     rho_ss_pade, ado_ss_pade = solver_pade.steady_state()
     current = state_current(ado_ss_pade, bath_tag="R")
@@ -339,6 +339,7 @@ def steady_state_pade_for_theta(sys_p, bath_L, bath_R, theta, Nk, Nc, Nbos):
 
 ```{code-cell} ipython3
 # Parameters:
+
 
 Nk = 6
 Nc = 2
@@ -354,10 +355,17 @@ display(progress)
 currents = []
 
 for theta in thetas:
-    currents.append(steady_state_pade_for_theta(
-        sys_p, bath_L, bath_R, theta,
-        Nk=Nk, Nc=Nc, Nbos=Nbos,
-    ))
+    currents.append(
+        steady_state_pade_for_theta(
+            sys_p,
+            bath_L,
+            bath_R,
+            theta,
+            Nk=Nk,
+            Nc=Nc,
+            Nbos=Nbos,
+        )
+    )
     progress.value += 1
 ```
 
@@ -365,16 +373,19 @@ for theta in thetas:
 fig, ax = plt.subplots(figsize=(12, 10))
 
 ax.plot(
-    thetas, currents,
-    color="green", linestyle='-', linewidth=3,
+    thetas,
+    currents,
+    color="green",
+    linestyle="-",
+    linewidth=3,
     label=f"Nk = {5}, max_depth = {Nc}, Nbos = {Nbos}",
 )
 
 ax.set_yticks([0, 0.5, 1])
 ax.set_yticklabels([0, 0.5, 1])
 
-ax.locator_params(axis='y', nbins=4)
-ax.locator_params(axis='x', nbins=4)
+ax.locator_params(axis="y", nbins=4)
+ax.locator_params(axis="x", nbins=4)
 
 ax.set_xlabel(r"Bias voltage $\Delta \mu$ ($V$)", fontsize=30)
 ax.set_ylabel(r"Current ($\mu A$)", fontsize=30)
