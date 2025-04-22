@@ -21,7 +21,7 @@ Modifications: C. Staufenbiel (2022)
 
 ### Introduction
 
-In this tutorial we demonstrate the *Monte Carlo Solver* functionality implemented in `qutip.mcsolve()`. For more information on the *MC Solver* refer to the [QuTiP documentation](https://qutip.readthedocs.io/en/latest/guide/dynamics/dynamics-monte.html). 
+In this tutorial we demonstrate the *Monte Carlo Solver* functionality implemented in `qutip.mcsolve()`. For more information on the *MC Solver* refer to the [QuTiP documentation](https://qutip.org/docs/latest/guide/dynamics/dynamics-monte.html). 
 
 We aim to reproduce the experimental results from:
 

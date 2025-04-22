@@ -21,7 +21,7 @@ with inspirations from the [`brmesolve notebook`](https://github.com/qutip/qutip
 
 ### Introduction
 
-This notebook does not introduce the usage of the Bloch-Redfield solver `qutip.brmesolve()` in detail. For a more detailed introduction to this solver see the [*Bloch-Redfield Solver: Two Level System* notebook](007_brmesolve_tls.md) and the [documentation of the function](https://qutip.readthedocs.io/en/latest/guide/dynamics/dynamics-bloch-redfield.html).
+This notebook does not introduce the usage of the Bloch-Redfield solver `qutip.brmesolve()` in detail. For a more detailed introduction to this solver see the [*Bloch-Redfield Solver: Two Level System* notebook](007_brmesolve_tls.md) and the [documentation of the function](https://qutip.org/docs/latest/guide/dynamics/dynamics-bloch-redfield.html).
 
 The Lindblad master equation solver, implemented in `qutip.mesolve()`, deals with dissipation using collapse operators which can act on subsystems of the general system. For example, we can define dissipation for the atom-cavity system for the cavity and the atom separately, by the corresponding annihilation operator. In this example, we will see the limitations of this approach when it comes to strong coupling between atom and cavity.
 

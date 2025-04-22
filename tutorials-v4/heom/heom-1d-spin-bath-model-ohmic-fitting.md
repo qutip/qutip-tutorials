@@ -5,9 +5,9 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.16.1
+    jupytext_version: 1.14.5
 kernelspec:
-  display_name: qutip-dev
+  display_name: Python 3 (ipykernel)
   language: python
   name: python3
 ---
@@ -59,7 +59,7 @@ from qutip import (
     spost,
     spre,
 )
-from qutip.solver.heom import (
+from qutip.nonmarkov.heom import (
     HEOMSolver,
     BosonicBath,
 )

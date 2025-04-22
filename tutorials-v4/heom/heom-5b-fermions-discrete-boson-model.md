@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.16.1
+    jupytext_version: 1.14.4
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -60,13 +60,13 @@ $$\gamma_{K,\sigma,0} = W_K - \sigma i\mu_K$$
 
 $$\eta_{K,l\neq 0} = -i\cdot \frac{k_m}{\beta_K} \cdot \frac{\Gamma_K W_K^2}{-\frac{\epsilon^2_m}{\beta_K^2} + W_K^2}$$
 
-$$\gamma_{K,\sigma,l\neq 0}= \frac{\epsilon_m}{\beta_K} - \sigma i \mu_K$$
+$$\gamma_{K,\sigma,l\neq 0}= \frac{\epsilon_m}{\beta_K} - \sigma i \mu_K$$  
 
 +++
 
 ## Differences from Example 5a
 
-+++
++++ {"tags": []}
 
 The system we study here has two big differences from the HEOM 5a example:
 
@@ -95,7 +95,7 @@ The complete setup now consists of four parts:
 
 ## Setup
 
-```{code-cell}
+```{code-cell} ipython3
 import contextlib
 import dataclasses
 import time
@@ -123,7 +123,9 @@ from IPython.display import display
 
 ## Helpers
 
-```{code-cell}
+```{code-cell} ipython3
+:tags: []
+
 @contextlib.contextmanager
 def timer(label):
     """ Simple utility for timing functions:
@@ -137,7 +139,9 @@ def timer(label):
     print(f"{label}: {end - start}")
 ```
 
-```{code-cell}
+```{code-cell} ipython3
+:tags: []
+
 def state_current(ado_state, bath_tag):
     """ Determine current from the given bath (either "R" or "L") to
         the system in the given ADO state.
@@ -163,7 +167,9 @@ def state_current(ado_state, bath_tag):
 
 Let us set up the system Hamiltonian and specify the properties of the two reservoirs.
 
-```{code-cell}
+```{code-cell} ipython3
+:tags: []
+
 # Define the system Hamiltonian:
 
 @dataclasses.dataclass
@@ -190,7 +196,9 @@ class SystemParameters:
 sys_p = SystemParameters()
 ```
 
-```{code-cell}
+```{code-cell} ipython3
+:tags: []
+
 # Define parameters for left and right fermionic baths.
 # Each bath is a lead (i.e. a wire held at a potential)
 # with temperature T and chemical potential mu.
@@ -244,7 +252,9 @@ bath_R = LorentzianBathParameters(W=10**4, lead="R")
 
 Next let's plot the emission and absorption by the leads.
 
-```{code-cell}
+```{code-cell} ipython3
+:tags: []
+
 w_list = np.linspace(-2, 2, 100)
 
 fig, ax = plt.subplots(figsize=(12, 7))
@@ -292,7 +302,7 @@ Here we just give one example of the current as a function of bias voltage, but 
 
 One note:  for very large problems, this can be slow.
 
-```{code-cell}
+```{code-cell} ipython3
 def steady_state_pade_for_theta(sys_p, bath_L, bath_R, theta, Nk, Nc, Nbos):
     """ Return the steady state current using the Pade approximation. """
     options = Options(nsteps=15000, store_states=True, rtol=1e-14, atol=1e-14)
@@ -319,7 +329,7 @@ def steady_state_pade_for_theta(sys_p, bath_L, bath_R, theta, Nk, Nc, Nbos):
     return np.real(2.434e-4 * 1e6 * current)
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 # Parameters:
 
 Nk = 6
@@ -343,7 +353,7 @@ for theta in thetas:
     progress.value += 1
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 fig, ax = plt.subplots(figsize=(12, 10))
 
 ax.plot(
@@ -365,7 +375,9 @@ ax.legend(loc=4);
 
 ## About
 
-```{code-cell}
+```{code-cell} ipython3
+:tags: []
+
 qutip.about()
 ```
 
@@ -373,6 +385,8 @@ qutip.about()
 
 This section can include some tests to verify that the expected outputs are generated within the notebook. We put this section at the end of the notebook, so it's not interfering with the user experience. Please, define the tests using assert, so that the cell execution fails if a wrong output is generated.
 
-```{code-cell}
+```{code-cell} ipython3
+:tags: []
+
 assert 1 == 1
 ```

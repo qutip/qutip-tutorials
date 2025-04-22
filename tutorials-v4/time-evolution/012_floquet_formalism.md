@@ -18,14 +18,14 @@ Author: C. Staufenbiel, 2022
 
 inspirations taken from the [Floquet notebook](https://github.com/qutip/qutip-notebooks/blob/master/examples/floquet-dynamics.ipynb) by P.D. Nation and J.R. Johannson,
 
-and the [qutip documentation](https://qutip.readthedocs.io/en/latest/guide/dynamics/dynamics-floquet.html).
+and the [qutip documentation](https://qutip.org/docs/latest/guide/dynamics/dynamics-floquet.html).
 
 ### Introduction
 In the [floquet_solver notebook](011_floquet_solver.md) we introduced the two functions to solve the Schrödinger and Master equation using the Floquet formalism. In this notebook, we will focus on the internal functions of these solvers, that implement the Floquet formalism in QuTiP. Here, we will focus on the `Floquet modes` and the `quasienergies`.
 
-More information on the implementation of the Floquet Formalism in QuTiP can be found in the [documentation](https://qutip.readthedocs.io/en/latest/guide/dynamics/dynamics-floquet.html).
+More information on the implementation of the Floquet Formalism in QuTiP can be found in the [documentation](https://qutip.org/docs/latest/guide/dynamics/dynamics-floquet.html).
 
-### Imports
+### Imports 
 
 ```python
 import matplotlib.pyplot as plt
@@ -40,7 +40,7 @@ from qutip import (about, expect, floquet_markov_mesolve,
 ```
 
 ### System setup
-For consistency with the documentation we consider the driven system with the following Hamiltonian:
+For consistency with the documentation we consider the driven system with the following Hamiltonian: 
 
 $$ H = - \frac{\Delta}{2} \sigma_x - \frac{\epsilon_0}{2} \sigma_z + \frac{A}{2} \sigma_x sin(\omega t) $$
 
@@ -130,13 +130,13 @@ assert np.allclose(psi_t.full(), psi_t_direct.full())
 
 ### Precomputing and reusing the Floquet modes of one period
 
-The Floquet modes have the same periodicity as the Hamiltonian:
+The Floquet modes have the same periodicity as the Hamiltonian: 
 
 $$ \phi_\alpha(t + T) = \phi_\alpha(t) $$
 
-Hence it is enough to evaluate the modes at times $t \in [0,T]$. From these modes we can extrapolate the system state $\psi(t)$ for any time $t$.
+Hence it is enough to evaluate the modes at times $t \in [0,T]$. From these modes we can extrapolate the system state $\psi(t)$ for any time $t$. 
 
-The function `floquet_modes_table` allows to calculate the Floquet modes for multiple times in the first period.
+The function `floquet_modes_table` allows to calculate the Floquet modes for multiple times in the first period. 
 
 
 ```python
@@ -172,15 +172,14 @@ plt.legend(loc="upper right")
 plt.xlabel("Time"), plt.ylabel("Occupation prob.");
 ```
 
-<!-- markdown-link-check-disable -->
 ### Floquet Markov formalism
 
-We can also solve a master equation using the Floquet formalism. A detailed derivation of the Floquet-Markov formalism used here is given in [Grifoni et al., Physics Reports 304, 299 (1998)](https://www.sciencedirect.com/science/article/pii/S0370157398000222) and in the [QuTiP docs](https://qutip.readthedocs.io/en/latest/guide/dynamics/dynamics-floquet.html). Note that the functionality described here is summarised in the function `fmmesolve` described in the [floquet solver notebook](011_floquet_solver.md).
+We can also solve a master equation using the Floquet formalism. A detailed derivation of the Floquet-Markov formalism used here is given in [Grifoni et al., Physics Reports 304, 299 (1998)](https://www.sciencedirect.com/science/article/abs/pii/S0370157398000222) and in the [QuTiP docs](https://qutip.org/docs/latest/guide/dynamics/dynamics-floquet.html). Note that the functionality described here is summarised in the function `fmmesolve` described in the [floquet solver notebook](011_floquet_solver.md).
 
 The interaction with the bath is described by a noise spectrum, which does not include the temperature dependency. The temperature dependency can be passed to `fmmesolve` using the keyword `w_th` in the `args` parameter: `args[w_th]`. Hence, the definition is slightly different to the one in the Bloch-Redfield formalism. For details see the derivation of the formalism.
-<!-- markdown-link-check-enable -->
 
-Here we define a simple linear noise spectrum:
+
+Here we define a simple linear noise spectrum: 
 
 $$ S(\omega) = \frac{\gamma \cdot \omega}{4 \pi} $$
 
@@ -203,9 +202,9 @@ temp = 10.0
 args = {"w_th": temp}
 ```
 
-The Floquet Markov approach starts by calculating rates, that describe the dissipation process of the system with the given spectrum and temperature of the bath. Especially important is `Amat`, which is later used to calculate the Floquet tensor for the master equation.
+The Floquet Markov approach starts by calculating rates, that describe the dissipation process of the system with the given spectrum and temperature of the bath. Especially important is `Amat`, which is later used to calculate the Floquet tensor for the master equation. 
 
-In theory the matrix is defined as an infinite sum (see [docs](https://qutip.readthedocs.io/en/latest/guide/dynamics/dynamics-floquet.html)). However, in QuTiP the sidebands need to be truncated to create a finite sum. This is done with the `kmax` argument.
+In theory the matrix is defined as an infinite sum (see [docs](https://qutip.org/docs/latest/guide/dynamics/dynamics-floquet.html)). However, in QuTiP the sidebands need to be truncated to create a finite sum. This is done with the `kmax` argument.
 
 ```python
 kmax = 20
@@ -222,7 +221,7 @@ Together with the quasienergies, the tensor for the Floquet master equation can 
 R = floquet_master_equation_tensor(Amat, f_energies)
 ```
 
-We can pass in the tensor, initial state, expectation value and expectation operator into the `floquet_markov_mesolve` function and obtain the time evolution of the system (i.e. expectation operator) using the Floquet formalism.
+We can pass in the tensor, initial state, expectation value and expectation operator into the `floquet_markov_mesolve` function and obtain the time evolution of the system (i.e. expectation operator) using the Floquet formalism. 
 
 ```python
 res_fme_manual = floquet_markov_mesolve(

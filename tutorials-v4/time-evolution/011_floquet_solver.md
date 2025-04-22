@@ -20,7 +20,7 @@ Author: C. Staufenbiel, 2022
 
 The *Floquet formalism* deals with periodic time-dependent systems. The Floquet approach can be more efficient for such problems than using the standard master equation solver `qutip.mesolve()` and it has a broader range of validity for periodic driving.
 
-In this notebook, we will discuss the solver functionality of the Floquet formalism implemented in QuTiP using an example quantum system. A more detailed introduction into the Floquet formalism can be found in the [documentation](https://qutip.readthedocs.io/en/latest/guide/dynamics/dynamics-floquet.html).
+In this notebook, we will discuss the solver functionality of the Floquet formalism implemented in QuTiP using an example quantum system. A more detailed introduction into the Floquet formalism can be found in the [documentation](https://qutip.org/docs/latest/guide/dynamics/dynamics-floquet.html).
 
 A more in depth introduction into the internal functions of the Floquet formalism, used also by the solvers `fsesolve` and `fmmesolve`, is given in the [*floquet formalism notebook*](012_floquet_formalism.md).
 

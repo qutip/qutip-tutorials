@@ -40,7 +40,7 @@ It includes facilities for representing and doing calculations with quantum obje
 It also includes solvers for a time-evolution of quantum systems, according to: Schrodinger equation, von Neuman equation, master equations, Floquet formalism, Monte-Carlo quantum trajectors, experimental implementations of the stochastic Schrodinger/master equations.
 
 For more information see the project web site at [qutip.org](https://qutip.org), and the 
-[QuTiP documentation](https://qutip.readthedocs.io/en/latest/index.html).
+[QuTiP documentation](https://qutip.org/docs/latest/index.html).
 
 ### Installation
 
@@ -51,7 +51,11 @@ You can install QuTiP directly from `pip` by running:
 For further installation details, refer to the [GitHub repository](https://github.com/qutip/qutip).
 
 
-To use QuTiP in a Python program, first include the relevant functionality from the `qutip` module as shown above.
+To use QuTiP in a Python program, first inlude the relevant functionality from the `qutip` module:
+
+```python
+
+```
 
 This will make the functions and classes in QuTiP available in the rest of the program.
 
@@ -148,7 +152,7 @@ H.tr()
 H.eigenenergies()
 ```
 
-For a complete list of methods and properties of the `Qobj` class, see the [QuTiP documentation](https://qutip.readthedocs.io/en/latest/index.html) or try `help(Qobj)` or `dir(Qobj)`.
+For a complete list of methods and properties of the `Qobj` class, see the [QuTiP documentation](https://qutip.org/docs/latest/index.html) or try `help(Qobj)` or `dir(Qobj)`.
 
 
 ## States and operators
