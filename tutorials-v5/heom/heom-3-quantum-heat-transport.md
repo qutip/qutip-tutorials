@@ -60,7 +60,7 @@ from IPython.display import display
 from ipywidgets import IntProgress
 from qutip.core.environment import (CFExponent, DrudeLorentzEnvironment,
                                     system_terminator)
-from qutip.solver.heom import DrudeLorentzPadeBath, HEOMSolver
+from qutip.solver.heom import HEOMSolver
 
 %matplotlib inline
 ```

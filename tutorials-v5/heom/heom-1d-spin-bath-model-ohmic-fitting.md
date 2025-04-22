@@ -184,21 +184,43 @@ options = {
 }
 ```
 
-## Building the HEOM bath by fitting the spectral density
+# Obtaining a decaying Exponential description of the environment
+
+In order to carry out our HEOM simulation, we need to express the correlation 
+function as a sum of decaying exponentials, that is we need to express it as 
+
+$$C(\tau)= \sum_{k=0}^{N-1}c_{k}e^{-\nu_{k}t}$$
+
+As the correlation function of the environment is tied to it's power spectrum via 
+a Fourier transform, such a representation of the correlation function implies a 
+power spectrum of the form
+
+$$S(\omega)= \sum_{k}2 Re\left( \frac{c_{k}}{\nu_{k}- i \omega}\right)$$
+
+There are several ways one can obtain such a decomposition, in this tutorial we 
+will cover the following approaches:
+
+- Non-Linear Least Squares:
+    - On the Spectral Density (`sd`)
+    - On the Correlation function (`cf`)
+    - On the Power spectrum (`ps`)
+- Methods based on the Prony Polynomial
+    - Prony on the correlation function(`prony`)
+    - ESPRIT on the correlation function(`esprit`)
+- Methods based on rational Approximations
+    - The AAA algorithm on the Power Spectrum (`aaa`)
+    - ESPIRA-I on the correlation function and its FFT (`espira-I`)
+    - ESPIRA-II on the correlation function and its FFT (`espira-II`)
 
 +++
 
-We begin by fitting the spectral density, using a series of $k$ underdamped harmonic oscillators case with the Meier-Tannor form (J. Chem. Phys. 111, 3365 (1999); https://doi.org/10.1063/1.479669):
+## Building User defined Bosonic Environments
 
-\begin{equation}
-J_{\mathrm approx}(\omega; a, b, c) = \sum_{i=0}^{k-1} \frac{2 a_i b_i w}{((w + c_i)^2 + b_i^2) ((w - c_i)^2 + b_i^2)}
-\end{equation}
-
-where $a, b$ and $c$ are the fit parameters and each is a vector of length $k$.
-
-+++
-
-With the spectral density approximation $J_{\mathrm approx}(w; a, b, c)$ implemented above, we can now perform the fit and examine the results. This can be done quickly using the `SpectralFitter` class, which takes the target spectral density as an array and fits it to the series of **k** underdamped harmonic oscillators with the Meier-Tannor form
+Before obtaining exponential approximations, we first need to construct a 
+`BosonicEnviroment`, here we will briefly explain how to create an user defined 
+`BosonicEnviroment` by specifying the spectral density, the same can be done 
+using the correlation function and the power spectrum. For this example we will
+use the Ohmic Spectral density we defined above
 
 ```{code-cell} ipython3
 w = np.linspace(0, 25, 20000)
@@ -221,7 +243,7 @@ specified. So the `BosonicEnvironment`  is not fully characterized by the
 parameters provided
 
 ```{code-cell} ipython3
-# sd_env.power_spectrum(w)
+sd_env.power_spectrum(w)
 ```
 
 If we want access to these properties we need to provide the Temperature at Initialization
@@ -272,10 +294,10 @@ plt.legend()
 plt.show()
 ```
 
-One important optional parameter is WMax, when passing arrays to the constructor
+One important optional parameter is wMax, when passing arrays to the constructor
 it defaults to the maximum value of the array, however when passing a function 
 we don't need to specify the values on which it is evaluated, and in this case 
-WMax needs to be specified, Wmax is the cutoff frequency for which the 
+WMax needs to be specified, wMax is the cutoff frequency for which the 
 spectral density, or power spectrum has  effectively decayed to zero, after this value the function can be 
 considered to be essentialy zero
 
@@ -288,8 +310,8 @@ sd_env2 = BosonicEnvironment.from_spectral_density(
 
 ```{code-cell} ipython3
 tlist = np.linspace(0, 10, 500)
-plt.plot(tlist, sd_env2.correlation_function(tlist))
-plt.plot(tlist, ohmic_correlation(tlist, alpha, wc, 1 / T), "--")
+plt.plot(tlist, sd_env2.correlation_function(tlist).real)
+plt.plot(tlist, ohmic_correlation(tlist, alpha, wc, 1 / T).real, "--")
 plt.plot(tlist, np.imag(sd_env2.correlation_function(tlist)))
 plt.plot(tlist, np.imag(ohmic_correlation(tlist, alpha, wc, 1 / T)), "--")
 ```
@@ -298,36 +320,17 @@ In this example we considered how to obtain a `BosonicEnvironment` from the spec
 
 +++
 
-# Obtaining a decaying Exponential description of the environment
+## Building the Exponential environment by fitting the spectral density
 
-In order to carry out our HEOM simulation, we need to express the correlation 
-function as a sum of decaying exponentials, that is we need to express it as 
+We begin by fitting the spectral density, using a series of $k$ underdamped harmonic oscillators case with the Meier-Tannor form (J. Chem. Phys. 111, 3365 (1999); https://doi.org/10.1063/1.479669):
 
-$$C(\tau)= \sum_{k=0}^{N-1}c_{k}e^{-\nu_{k}t}$$
+\begin{equation}
+J_{\mathrm approx}(\omega; a, b, c) = \sum_{i=0}^{k-1} \frac{2 a_i b_i w}{((w + c_i)^2 + b_i^2) ((w - c_i)^2 + b_i^2)}
+\end{equation}
 
-As the correlation function of the environment is tied to it's power spectrum via 
-a Fourier transform, such a representation of the correlation function implies a 
-power spectrum of the form
+where $a, b$ and $c$ are the fit parameters and each is a vector of length $k$.
 
-$$S(\omega)= \sum_{k}2 Re\left( \frac{c_{k}}{\nu_{k}- i \omega}\right)$$
-
-There are several ways one can obtain such a decomposition, in this tutorial we 
-will cover the following approaches:
-
-- Non-Linear Least Squares:
-    - On the Spectral Density (`sd`)
-    - On the Correlation function (`cf`)
-- Methods based on the Prony Polynomial
-    - Prony on the correlation function(`prony`)
-    - The Matrix Pencil method on the correlation function (`mp`)
-    - ESPRIT on the correlation function(`esprit`)
-- Methods based on rational Approximations
-    - The AAA algorithm on the Power Spectrum (`aaa`)
-
-+++
-
-# Non-Linear Least Squares
-## Obtaining an decaying Exponential Description via the spectral density
+With the spectral density approximation $J_{\mathrm approx}(w; a, b, c)$ implemented above, we can now perform the fit and examine the results. This can be done quickly using the `approximate` method, which fits the spectral density to the series of **k** underdamped harmonic oscillators with the Meier-Tannor form
 
 +++
 
@@ -448,7 +451,7 @@ w0 = fitinfo["params"][:, 2]
 
 
 def _sd_fit_model(wlist, a, b, c):
-    return 2 * a * b * wlist / ((wlist + c) ** 2 + b**2) / ((wlist - c) ** 2 + b**2)
+    return 2 * a * b * wlist / (((wlist + c) ** 2 + b**2) * ((wlist - c) ** 2 + b**2))
 
 
 plot_fit(_sd_fit_model, J, w, lam, gamma, w0)
@@ -905,11 +908,19 @@ The methods consider a signal
 
 $$f(t)=\sum_{k=0}^{N-1} c_{k} e^{-\nu_{k} t} =\sum_{k=0}^{N-1} c_{k} z_{k}^{t}  $$
 
-The $z_{k}$ can be seen as the solution of the Prony Polynomial, which we write in terms of Hankel matrices as 
+The $z_{k}$ can be seen as the generalized eigenvalues of the matrix pencil
 
 \begin{align}
-    H_{N,M}=V_{N,M-1}(z) diag((c_k)_{k=1}^{M-1}) V_{M,M-1}(z)^{T}
+z_{j}  {\mathbf H}_{2N-L,L}(0) - {\mathbf H}_{2N-L,L}(1) = {\mathbf V}_{2N-L,M}
+({\mathbf z})   \mathrm{diag}  \Big( \left( (z_{j} - z_{k})\gamma_{k} 
+\right)_{k=1}^{M} \Big) {\mathbf V}_{L,M}({\mathbf z})^{T}
 \end{align}
+
+
+
+The amplitudes ($c_{k}$) can later be obtained by solving the least-squares Vandermonde system given by
+
+$$ V_{N,M}(z)c = f $$
 
 where $V_{N,M}(z)$ is the Vandermonde matrix given by
 
@@ -922,11 +933,7 @@ z_{1}^{2} & z_{2}^{2} &\dots & z_{N}^{2} \\
 z_{1}^{M} & z_{2}^{M} &\dots & z_{N}^{M} \\
 \end{pmatrix}$$
 
-By obtaining the roots of this polynomial one can obtain the damping rate and the frequency of each mode, the amplitude can lated be obtained by solving the least-squares Vandermonde system given by
-
-$$ V_{N,M}(z)c = f $$
-
-Where $M$ is the length, of the signal, and $f=f(t_{sample})$ is the signal evaluated in the sampling points,is a vector $c = (c_{1}, \dots, c_{N})$.
+and $M$ is the length of the signal, and $N$ the number of exponents, and $f=f(t_{sample})$ is the signal evaluated in the sampling points,is a vector $c = (c_{1}, \dots, c_{N})$.
 
 The main difference between the methods is the way one obtains the roots of the polynomial, typically whether this system is solved or a low rank approximation is found for the polynomial, [this article](https://academic.oup.com/imajna/article-abstract/43/2/789/6525860?redirectedFrom=fulltext) is a good reference, the QuTiP implementations are based on it, and the matlab implementations made available by the authors.
 

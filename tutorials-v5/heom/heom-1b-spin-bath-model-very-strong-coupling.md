@@ -261,7 +261,7 @@ ax1.plot(
     np.real(bath.correlation_function(tlist)),
     "r",
     linewidth=2,
-    label=f"Exact",
+    label="Exact",
 )
 ax1.plot(
     tlist,
@@ -385,7 +385,7 @@ ax1.plot(
     np.real(bath.correlation_function(tlist)),
     "r",
     linewidth=2,
-    label=f"Exact",
+    label="Exact",
 )
 ax1.plot(
     tlist,
@@ -413,14 +413,14 @@ ax2.plot(
     np.imag(bath.correlation_function(tlist)),
     "r",
     linewidth=2,
-    label=f"Exact",
+    label="Exact",
 )
 ax2.plot(
     tlist,
     np.imag(envfit.correlation_function(tlist)),
     "g--",
     linewidth=2,
-    label=f"Fit",
+    label="Fit",
     marker="o",
     markevery=50,
 )
