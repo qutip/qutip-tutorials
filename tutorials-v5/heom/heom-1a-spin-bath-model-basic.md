@@ -5,9 +5,9 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.16.1
+      jupytext_version: 1.17.0
   kernelspec:
-    display_name: qutip-dev
+    display_name: qutip-tutorials
     language: python
     name: python3
 ---
@@ -285,7 +285,7 @@ options = {**default_options}
 
 with timer("RHS construction time"):
     env = ExponentialBosonicEnvironment(ckAR, vkAR, ckAI, vkAI)
-    HEOMMats = HEOMSolver(Hsys, (env,Q), NC, options=options)
+    HEOMMats = HEOMSolver(Hsys, (env, Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultMats = HEOMMats.run(rho0, tlist)
@@ -302,22 +302,28 @@ plot_result_expectations(
 
 In practice, one would not perform this laborious expansion for the
 Drude-Lorentz correlation function, because QuTiP already has a class,
-`DrudeLorentzBath`, that can construct this bath for you. Nevertheless,
+`DrudeLorentzEnvironment`, that can construct this bath for you. Nevertheless,
 knowing how to perform this expansion will allow you to construct your own
 baths for other spectral densities.
 
-Below we show how to use this built-in functionality:
+The `DrudeLorentzEnvironment` computes the correlation function using the Pade
+approximation, the number of terms in the correlation function 
+expansion is specified using the $N_{k}$ parameter, it defaults to $10$, when 
+simulating, low temperatures $10$ Pade exponents may noy be enough, more details
+about the Pade approximation are provided below . Next we show how to use this 
+built-in functionality:
 
 ```python
 # Compare to built-in Drude-Lorentz bath:
 
 with timer("RHS construction time"):
-    dlenv = DrudeLorentzEnvironment(lam=lam, gamma=gamma, T=T,Nk=100)
-    dlenv_approx=dlenv.approx_by_matsubara(Nk=Nk)
-    HEOM_dlbath = HEOMSolver(Hsys, (dlenv_approx,Q), NC, options=options)
+    dlenv = DrudeLorentzEnvironment(lam=lam, gamma=gamma, T=T, Nk=100)
+    # 100 Terms in the Pade expansion for the correlation funtion
+    dlenv_approx = dlenv.approximate(method="matsubara", Nk=Nk)
+    HEOM_dlbath = HEOMSolver(Hsys, (dlenv_approx, Q), NC, options=options)
 
 with timer("ODE solver time"):
-    result_dlbath = HEOM_dlbath.run(rho0, tlist)  # normal  115
+    result_dlbath = HEOM_dlbath.run(rho0, tlist)  
 ```
 
 ```python
@@ -334,6 +340,7 @@ The `DrudeLorentzEnvironment` class also allows us to easily obtain the power sp
 ```python
 w = np.linspace(-10, 20, 1000)
 w2 = np.linspace(0, 20, 1000)
+
 fig, axs = plt.subplots(2, 2)
 
 axs[0, 0].plot(w, dlenv.power_spectrum(w))
@@ -405,7 +412,7 @@ Lindblad form.
 
 This is clearer if we plot the correlation function with a large number of
 Matsubara terms. To create the plot, we use the utility function of the
-`DrudeLorentzBath` class mentioned above.
+`DrudeLorentzEnvironment` class mentioned above.
 
 ```python
 def plot_correlation_expansion_divergence():
@@ -414,8 +421,8 @@ def plot_correlation_expansion_divergence():
     """
     t = np.linspace(0, 2, 100)
 
-    # correlation coefficients with 15k and 2 terms
-    corr_15k = dlenv.correlation_function(t)
+    # correlation coefficients with 100 and 2 terms
+    corr_100 = dlenv.correlation_function(t)
     corr_2 = dlenv_approx.correlation_function(t)
 
     fig, ax1 = plt.subplots(figsize=(12, 7))
@@ -427,15 +434,16 @@ def plot_correlation_expansion_divergence():
         t, np.imag(corr_2), color="r", linewidth=3, label=rf"Mats = {Nk} imag"
     )
     ax1.plot(
-        t, np.real(corr_15k), "b--", linewidth=3, label=r"Mats = 15000 real"
+        t, np.real(corr_100), "b--", linewidth=3, label=r"Mats = 15000 real"
     )
     ax1.plot(
-        t, np.imag(corr_15k), "r--", linewidth=3, label=r"Mats = 15000 imag"
+        t, np.imag(corr_100), "r--", linewidth=3, label=r"Mats = 15000 imag"
     )
 
     ax1.set_xlabel("t")
     ax1.set_ylabel(r"$C$")
     ax1.legend()
+
 
 plot_correlation_expansion_divergence()
 ```
@@ -448,8 +456,9 @@ Let us evaluate the result including this Ishizaki-Tanimura terminator:
 # Notes:
 #
 # * when using the built-in DrudeLorentzEnvironment the terminator (L_bnd) is
-#   available from bath.terminator().
-# 
+#   available from by setting the parameter compute_delta to True in the
+#   approximate method
+#
 # * in the legacy HSolverDL function the terminator is included automatically
 #   if the parameter bnd_cut_approx=True is used.
 
@@ -472,7 +481,7 @@ options = {**default_options, "rtol": 1e-14, "atol": 1e-14}
 
 with timer("RHS construction time"):
     bath = ExponentialBosonicEnvironment(ckAR, vkAR, ckAI, vkAI)
-    HEOMMatsT = HEOMSolver(Ltot, (bath,Q), NC, options=options)
+    HEOMMatsT = HEOMSolver(Ltot, (bath, Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultMatsT = HEOMMatsT.run(rho0, tlist)
@@ -493,9 +502,9 @@ Or using the built-in Drude-Lorentz environment we can write simply:
 options = {**default_options, "rtol": 1e-14, "atol": 1e-14}
 
 with timer("RHS construction time"):
-    bath,delta = dlenv.approx_by_matsubara(Nk=Nk,compute_delta=True)
-    Ltot = liouvillian(Hsys) + system_terminator(Q,delta)
-    HEOM_dlbath_T = HEOMSolver(Ltot, (bath,Q), NC, options=options)
+    bath, delta = dlenv.approx_by_matsubara(Nk=Nk, compute_delta=True)
+    Ltot = liouvillian(Hsys) + system_terminator(Q, delta)
+    HEOM_dlbath_T = HEOMSolver(Ltot, (bath, Q), NC, options=options)
 
 with timer("ODE solver time"):
     result_dlbath_T = HEOM_dlbath_T.run(rho0, tlist)
@@ -639,7 +648,7 @@ def pade_corr(tlist, lmax):
 
 tlist_corr = np.linspace(0, 2, 100)
 cppLP, etapLP, gampLP = pade_corr(tlist_corr, 2)
-corr_15k = dlenv.correlation_function(tlist_corr, Nk=15)
+corr_100 = dlenv.correlation_function(tlist_corr, Nk=15)
 corr_2k = dlenv.correlation_function(tlist_corr, Nk=2)
 
 fig, ax1 = plt.subplots(figsize=(12, 7))
@@ -652,7 +661,7 @@ ax1.plot(
 )
 ax1.plot(
     tlist_corr,
-    np.real(corr_15k),
+    np.real(corr_100),
     "r--",
     linewidth=3,
     label=r"real pade 15 terms",
@@ -673,14 +682,14 @@ fig, ax1 = plt.subplots(figsize=(12, 7))
 
 ax1.plot(
     tlist_corr,
-    np.real(cppLP) - np.real(corr_15k),
+    np.real(cppLP) - np.real(corr_100),
     color="b",
     linewidth=3,
     label=r"pade error",
 )
 ax1.plot(
     tlist_corr,
-    np.real(corr_2k) - np.real(corr_15k),
+    np.real(corr_2k) - np.real(corr_100),
     "r--",
     linewidth=3,
     label=r"mats error",
@@ -702,7 +711,7 @@ options = {**default_options, "rtol": 1e-14, "atol": 1e-14}
 
 with timer("RHS construction time"):
     bath = ExponentialBosonicEnvironment(ckAR, vkAR, ckAI, vkAI)
-    HEOMPade = HEOMSolver(Hsys, (bath,Q), NC, options=options)
+    HEOMPade = HEOMSolver(Hsys, (bath, Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultPade = HEOMPade.run(rho0, tlist)
@@ -735,9 +744,9 @@ the correlation function well):
 options = {**default_options, "rtol": 1e-14, "atol": 1e-14}
 
 with timer("RHS construction time"):
-    env_approx,delta = dlenv.approx_by_pade(Nk=2,compute_delta=True)
-    Ltot = liouvillian(Hsys) + system_terminator(Q,delta)
-    HEOM_dlpbath_T = HEOMSolver(Ltot, (env_approx,Q), NC, options=options)
+    env_approx, delta = dlenv.approximate("pade", Nk=2, compute_delta=True)
+    Ltot = liouvillian(Hsys) + system_terminator(Q, delta)
+    HEOM_dlpbath_T = HEOMSolver(Ltot, (env_approx, Q), NC, options=options)
 
 with timer("ODE solver time"):
     result_dlpbath_T = HEOM_dlpbath_T.run(rho0, tlist)
@@ -759,16 +768,17 @@ can be extremely useful in situations where large number of exponents
 are needed (e.g., near zero temperature). We will perform the fitting
 manually below, and then show how to do it with the built-in tools
 
-For the manual fit we First we collect a large sum of Matsubara terms for 
+For the manual fit we First we collect a large sum of Pade terms for 
 many time steps:
 
 ```python
 tlist2 = np.linspace(0, 2, 10000)
 
-corr_15k_t10k = dlenv.correlation_function(tlist2, Nk=100)
+corr_100_t10k = dlenv.correlation_function(tlist2, Nk=100)
+# Nk specifies the number of pade terms to be used for the correlation function
 
-corrRana = np.real(corr_15k_t10k)
-corrIana = np.imag(corr_15k_t10k)
+corrRana = np.real(corr_100_t10k)
+corrIana = np.imag(corr_100_t10k)
 ```
 
 We then fit this sum with standard least-squares approach:
@@ -846,7 +856,8 @@ And plot the results of the fits:
 ```python
 # Define line styles and colors
 linestyles = ["-", "--", "-.", ":", (0, (3, 1, 1, 1)), (0, (5, 1))]
-colors = ["blue", "green", "purple", "orange", "red", "brown", "cyan", "magenta"]
+colors = ["blue", "green", "purple", "orange",
+          "red", "brown", "cyan", "magenta"]
 
 # Define a larger linewidth
 linewidth = 2.5
@@ -855,32 +866,36 @@ linewidth = 2.5
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
 
 # Plot the real part on the first subplot (ax1)
-ax1.plot(tlist2, corrRana, label="Analytic", color=colors[0], linestyle=linestyles[0], linewidth=linewidth)
-ax1.plot(tlist2, corrRMats, label="Matsubara", color=colors[1], linestyle=linestyles[1], linewidth=linewidth)
+ax1.plot(tlist2, corrRana, label="Analytic",
+         color=colors[0], linestyle=linestyles[0], linewidth=linewidth)
+ax1.plot(tlist2, corrRMats, label="Matsubara",
+         color=colors[1], linestyle=linestyles[1], linewidth=linewidth)
 
 for i in range(kR):
     y = fit_func(tlist2, *poptR[i])
-    ax1.plot(tlist2, y, label=f"Fit with {i} terms", color=colors[(i + 2) % len(colors)], linestyle=linestyles[(i + 2) % len(linestyles)], linewidth=linewidth)
+    ax1.plot(tlist2, y, label=f"Fit with {i} terms", color=colors[(
+        i + 2) % len(colors)], linestyle=linestyles[(i + 2) % len(linestyles)], linewidth=linewidth)
 ax1.set_ylabel(r"$C_{R}(t)$")
 ax1.set_xlabel(r"$t$")
 ax1.legend()
 
 # Plot the imaginary part on the second subplot (ax2)
-ax2.plot(tlist2, corrIana, label="Analytic", color=colors[0], linestyle=linestyles[0], linewidth=linewidth)
+ax2.plot(tlist2, corrIana, label="Analytic",
+         color=colors[0], linestyle=linestyles[0], linewidth=linewidth)
 
 for i in range(kI):
     y = fit_func(tlist2, *poptI[i])
-    ax2.plot(tlist2, y, label=f"Fit with {i} terms", color=colors[(i + 3) % len(colors)], linestyle=linestyles[(i + 1) % len(linestyles)], linewidth=linewidth)
+    ax2.plot(tlist2, y, label=f"Fit with {i} terms", color=colors[(
+        i + 3) % len(colors)], linestyle=linestyles[(i + 1) % len(linestyles)], linewidth=linewidth)
 ax2.set_ylabel(r"$C_{I}(t)$")
 ax2.set_xlabel(r"$t$")
 
 ax2.legend()
 
 # Add overall plot title and show the figure
-fig.suptitle("Comparison of Analytic and Fit to Correlations (Real and Imaginary Parts)", fontsize=16)
+fig.suptitle(
+    "Comparison of Analytic and Fit to Correlations (Real and Imaginary Parts)", fontsize=16)
 plt.show()
-
-
 ```
 
 ```python
@@ -914,7 +929,7 @@ NC = 4
 
 with timer("RHS construction time"):
     bath = ExponentialBosonicEnvironment(ckAR, vkAR, ckAI, vkAI)
-    HEOMFit = HEOMSolver(Hsys, (bath,Q), NC, options=options)
+    HEOMFit = HEOMSolver(Hsys, (bath, Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultFit = HEOMFit.run(rho0, tlist)
@@ -934,8 +949,13 @@ method that performs this fit automatically. More information on how the
 built-in functios work can be found in `HEOM 1d: Spin-Bath model, fitting of spectrum and correlation functions`
 
 ```python
-tlist3 = np.linspace(0, 2, 200)
-envfit, fitinfo =dlenv.approximate("cf",tlist=tlist3,full_ansatz=True,maxfev=1e6,Ni_max=1,Nr_max=3)
+max_val = dlenv.correlation_function(0).real
+guess = [max_val / 3, 0, 0, 0]
+lower = [-max_val, -np.inf, -np.inf, -np.inf]
+upper = [max_val, 0, 0, 0]
+envfit, fitinfo = dlenv.approximate("cf", tlist=tlist2, full_ansatz=True,
+                                    Ni_max=1, Nr_max=3,
+                                    upper=upper, lower=lower, guess=guess)
 ```
 
 The approx_by_cf_fit method outputs a `ExponentialBosonicEnvironment` object,
@@ -957,7 +977,8 @@ fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
 # Plot the real part on the first subplot (ax1)
 ax1.plot(tlist2, corrRana, label="Original", marker="o", markevery=500)
 ax1.plot(tlist2, fit_func(tlist2, *poptR[-1]), color="r", label="Manual Fit")
-ax1.plot(tlist2, np.real(envfit.correlation_function(tlist2)), "k--", label="Built-in fit")
+ax1.plot(tlist2, np.real(envfit.correlation_function(tlist2)),
+         "k--", label="Built-in fit")
 ax1.set_ylabel(r"$C_{R}(t)$")
 ax1.set_xlabel(r"$t$")
 ax1.legend()
@@ -965,23 +986,21 @@ ax1.legend()
 # Plot the imaginary part on the second subplot (ax2)
 ax2.plot(tlist2, corrIana, label="Original", marker="o", markevery=500)
 ax2.plot(tlist2, fit_func(tlist2, *poptI[-1]), color="r", label="Manual Fit")
-ax2.plot(tlist2, np.imag(envfit.correlation_function(tlist2)), "k--", label="Built-in fit")
+ax2.plot(tlist2, np.imag(envfit.correlation_function(tlist2)),
+         "k--", label="Built-in fit")
 ax2.set_ylabel(r"$C_{I}(t)$")
 ax2.set_xlabel(r"$t$")
 ax2.legend()
 # Add an overall title and adjust layout
 plt.tight_layout(rect=[0, 0.03, 1, 0.95])
 plt.show()
-
 ```
 
 ```python
 options = {**default_options}
 
-NC = 4
-
 with timer("RHS construction time"):
-    HEOMFit_2 = HEOMSolver(Hsys, (envfit,Q), NC, options=options)
+    HEOMFit_2 = HEOMSolver(Hsys, (envfit, Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultFit_2 = HEOMFit_2.run(rho0, tlist)
@@ -1094,7 +1113,7 @@ with plt.rc_context(rcParams):
                 resultFit,
                 P11p,
                 "r",
-                r"Fit $N_f = 4$, $N_k=15\times 10^3$",
+                r"Fit $N_f = 4$, Pade $N_k=100$",
                 {"dashes": [3, 2]},
             ),
             (
@@ -1131,7 +1150,7 @@ with plt.rc_context(rcParams):
                 resultFit,
                 P12p,
                 "r",
-                r"Fit $N_f = 4$, $N_k=15\times 10^3$",
+                r"Fit $N_f = 4$, Pade $N_k=100$",
                 {"dashes": [3, 2]},
             ),
             (
