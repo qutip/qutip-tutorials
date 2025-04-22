@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.17.0
+      jupytext_version: 1.14.4
   kernelspec:
     display_name: qutip-tutorials
     language: python
