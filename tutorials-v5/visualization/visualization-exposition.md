@@ -19,6 +19,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import qutip as qt
 from qutip import about, basis, identity, sigmax, sigmay, sigmaz
+from scipy.special import sph_harm
 
 %matplotlib inline
 ```
@@ -42,20 +43,25 @@ phi = np.linspace(0, 2 * np.pi, 60)
 ```
 
 ```python
-qt.sphereplot(qt.orbital(theta, phi, basis(3, 0)).T, theta, phi);
+phi_mesh, theta_mesh = np.meshgrid(phi, theta)
+orbital = sph_harm(-1, 2, phi_mesh, theta_mesh).T
+qt.sphereplot(orbital, theta, phi);
 ```
 
 ```python
 fig = plt.figure(figsize=(16, 4))
 
 ax = fig.add_subplot(1, 3, 1, projection="3d")
-qt.sphereplot(qt.orbital(theta, phi, basis(3, 0)).T, theta, phi, ax=ax)
+orbital = sph_harm(-1, 1, phi_mesh, theta_mesh).T
+qt.sphereplot(orbital, theta, phi, ax=ax)
 
 ax = fig.add_subplot(1, 3, 2, projection="3d")
-qt.sphereplot(qt.orbital(theta, phi, basis(3, 1)).T, theta, phi, ax=ax)
+orbital = sph_harm(0, 1, phi_mesh, theta_mesh).T
+qt.sphereplot(orbital, theta, phi, ax=ax)
 
 ax = fig.add_subplot(1, 3, 3, projection="3d")
-qt.sphereplot(qt.orbital(theta, phi, basis(3, 2)).T, theta, phi, ax=ax);
+orbital = sph_harm(1, 1, phi_mesh, theta_mesh).T
+qt.sphereplot(orbital, theta, phi, ax=ax);
 ```
 
 # Matrix histogram

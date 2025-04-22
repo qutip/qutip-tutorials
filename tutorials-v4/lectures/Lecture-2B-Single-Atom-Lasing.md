@@ -55,17 +55,17 @@ In addition to the coherent dynamics the following incoherent processes are also
 
 The Lindblad master equation for the model is:
 
-$\frac{d}{dt}\rho = -i[H, \rho] + \Gamma\left(\sigma_+\rho\sigma_- - \frac{1}{2}\sigma_-\sigma_+\rho - \frac{1}{2}\rho\sigma_-\sigma_+\right)
+$$\frac{d}{dt}\rho = -i[H, \rho] + \Gamma\left(\sigma_+\rho\sigma_- - \frac{1}{2}\sigma_-\sigma_+\rho - \frac{1}{2}\rho\sigma_-\sigma_+\right)
 + \kappa (1 + n_{\rm th}) \left(a\rho a^\dagger - \frac{1}{2}a^\dagger a\rho - \frac{1}{2}\rho a^\dagger a\right)
-+ \kappa n_{\rm th} \left(a^\dagger\rho a - \frac{1}{2}a a^\dagger \rho - \frac{1}{2}\rho a a^\dagger\right)$
++ \kappa n_{\rm th} \left(a^\dagger\rho a - \frac{1}{2}a a^\dagger \rho - \frac{1}{2}\rho a a^\dagger\right)$$
 
 in units where $\hbar = 1$.
 
 References:
 
- * [Yi Mu, C.M. Savage, Phys. Rev. A 46, 5944 (1992)](http://dx.doi.org/10.1103/PhysRevA.46.5944)
+ * [Yi Mu, C.M. Savage, Phys. Rev. A 46, 5944 (1992)](https://journals.aps.org/pra/abstract/10.1103/PhysRevA.46.5944)
 
- * [D.A. Rodrigues, J. Imbers, A.D. Armour, Phys. Rev. Lett. 98, 067204 (2007)](http://dx.doi.org/10.1103/PhysRevLett.98.067204)
+ * [D.A. Rodrigues, J. Imbers, A.D. Armour, Phys. Rev. Lett. 98, 067204 (2007)](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.98.067204)
 
  * [S. Ashhab, J.R. Johansson, A.M. Zagoskin, F. Nori, New J. Phys. 11, 023030 (2009)](http://dx.doi.org/10.1088/1367-2630/11/2/023030)
 
@@ -100,10 +100,6 @@ sx = tensor(qeye(N), sigmax())
 
 # Hamiltonian
 H = w0 * a.dag() * a + wa * sm.dag() * sm + g * (a.dag() + a) * sx
-```
-
-```python
-H
 ```
 
 ### Create a list of collapse operators that describe the dissipation

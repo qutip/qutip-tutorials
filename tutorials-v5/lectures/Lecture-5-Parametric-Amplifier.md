@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.13.8
+      jupytext_version: 1.16.4
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -416,12 +416,12 @@ def plot_covariance_matrix(V, ax):
 
     ax.view_init(azim=-40, elev=60)
     ax.bar3d(xpos, ypos, zpos, dx, dy, dz, color=colors)
-    ax.axes.w_xaxis.set_major_locator(plt.IndexLocator(1, -0.5))
-    ax.axes.w_yaxis.set_major_locator(plt.IndexLocator(1, -0.5))
-    ax.axes.w_xaxis.set_ticklabels(("$q_-$", "$p_-$", "$q_+$", "$p_+$"),
-                                   fontsize=20)
-    ax.axes.w_yaxis.set_ticklabels(("$q_-$", "$p_-$", "$q_+$", "$p_+$"),
-                                   fontsize=20)
+    ax.axes.xaxis.set_major_locator(plt.IndexLocator(1, -0.5))
+    ax.axes.yaxis.set_major_locator(plt.IndexLocator(1, -0.5))
+    ax.axes.xaxis.set_ticklabels(("$q_-$", "$p_-$", "$q_+$", "$p_+$"),
+                                 fontsize=12)
+    ax.axes.yaxis.set_ticklabels(("$q_-$", "$p_-$", "$q_+$", "$p_+$"),
+                                 fontsize=12)
 ```
 
 ```python
@@ -430,7 +430,7 @@ t_idx_vec = [0, 20, 40]
 
 fig, axes = plt.subplots(
     len(t_idx_vec), 1, subplot_kw={"projection": "3d"},
-    figsize=(6, 3 * len(t_idx_vec))
+    figsize=(10, 3 * len(t_idx_vec))
 )
 
 for idx, t_idx in enumerate(t_idx_vec):
