@@ -392,7 +392,7 @@ ax1.plot(
     np.real(envfit.correlation_function(tlist)),
     "g--",
     linewidth=2,
-    label=f"Fit",
+    label="Fit",
     marker="o",
     markevery=50,
 )
