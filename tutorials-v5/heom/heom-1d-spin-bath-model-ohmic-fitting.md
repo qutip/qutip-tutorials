@@ -334,7 +334,6 @@ is reached or the maximum number allowed `Nmax` is reached. The default target
 is a  normalized root mean squared error of $5\times 10^{-6}$, if set to None
 the fit is performed only with the maximum number of exponents specified
 
-
 ```{code-cell} ipython3
 bath, fitinfo = sd_env.approximate("sd",w,Nmax=4)
 ```
@@ -845,7 +844,7 @@ tlist = np.linspace(0, 30 * np.pi / Del, 600)
 
 Just like the other `BosonicEnvironment` we can obtain a decaying exponential 
 representation of the environment via the `approx_by_cf_fit` and 
-`approx_by_sd_fit` methods. 
+`approx_by_sd_fit` methods.
 
 ```{code-cell} ipython3
 tlist = np.linspace(0, 30 * np.pi / Del, 5000)
@@ -954,7 +953,6 @@ gen_plots(mpbath, w, J, t, C, w2, S)
 ## Using the ESPRIT Method on the Correlation Function
 
 ```{code-cell} ipython3
-
 esbath,fitinfo=obs.approximate("esprit",tlist2,Nr=4,separate=False)
 print(fitinfo["summary"])
 HEOM_ohmic_es_fit = HEOMSolver(
@@ -1010,8 +1008,8 @@ results_ohmic_espira_fit = HEOM_ohmic_espira_fit.run(rho0, tlist)
 ```
 
 ```{code-cell} ipython3
-tlist4=np.linspace(0,20,1000)
-espibath2,fitinfo=obs._approx_by_prony("espira-II",tlist4,Nr=4,Ni=4)
+tlist4=np.linspace(0,40,500)
+espibath2,fitinfo=obs._approx_by_prony("espira-II",tlist4,Nr=4,Ni=4,separate=True)
 print(fitinfo["summary"])
 ```
 
@@ -1068,7 +1066,6 @@ qutip.about()
 This section can include some tests to verify that the expected outputs are generated within the notebook. We put this section at the end of the notebook, so it's not interfering with the user experience. Please, define the tests using assert, so that the cell execution fails if a wrong output is generated.
 
 ```{code-cell} ipython3
-
 assert np.allclose(
     expect(P11p, results_spectral_fit_pk[2].states),
     expect(P11p, results_spectral_fit_pk[3].states),
@@ -1105,8 +1102,4 @@ assert np.allclose(
     expect(P11p, results_spectral_fit_pk[3].states),
     rtol=1e-2,
 )
-```
-
-```{code-cell} ipython3
-
 ```

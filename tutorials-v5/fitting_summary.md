@@ -113,7 +113,11 @@ And set the cut-off for the HEOM hierarchy:
 
 # The max_depth defaults to 5 so that the notebook executes more
 # quickly. Change it to 11 to wait longer for more accurate results.
-max_depth = 7
+max_depth = 5 #could not do 11 my laptop rans out of ram
+# I used 7 because I wanted to make sure things were working correctly
+# cf is terribly slow at 7, probably can be done better by changing guess, lower
+# upper, use 5 to play around :)
+
 # options used for the differential equation solver, while default works it 
 # is way slower than using bdf
 options = {
@@ -191,6 +195,7 @@ will cover the following approaches:
     - ESPIRA-I (`espira-I`) :question:
     - ESPIRA-II (`espira-II`)
 
+the ones with a question mark are the ones I think maybe can be deleted.
 Here's a quick high level comparison between the three different families 
 of methods
 
@@ -248,7 +253,8 @@ tlist = np.linspace(0, 30 * np.pi / Del, 600)
 ## Correlation Function
 
 ```{code-cell} ipython3
-Obath, fitinfo = obs.approximate(method="cf",tlist=tlist,Nr_max=3,Ni_max=2,maxfev=1e9,target_rsme=None)
+t=np.linspace(0,20,500)
+Obath, fitinfo = obs.approximate(method="cf",tlist=t,Nr_max=4,Ni_max=4,maxfev=1e9,target_rsme=None)
 print(fitinfo["summary"])
 HEOM_ohmic_corr_fit = HEOMSolver(
     Hsys,
@@ -289,7 +295,7 @@ HEOM_ohmic_ps_fit = HEOMSolver(
 results_ohmic_ps_fit = HEOM_ohmic_ps_fit.run(rho0, tlist)
 ```
 
-# Methods based on the Prony Polinomial 
+# Methods based on the Prony Polinomial
 
 +++
 
@@ -311,7 +317,7 @@ results_ohmic_prony_fit = HEOM_ohmic_prony_fit.run(rho0, tlist)
 ## Matrix Pencil
 
 ```{code-cell} ipython3
-mpbath,fitinfo=obs.approximate(method="mp",tlist=tlist2,Nr=5)
+mpbath,fitinfo=obs.approximate(method="mp",tlist=tlist2,Nr=5,Ni=5,separate=True)
 print(fitinfo["summary"])
 HEOM_ohmic_mp_fit = HEOMSolver(
     Hsys,
@@ -322,10 +328,9 @@ HEOM_ohmic_mp_fit = HEOMSolver(
 results_ohmic_mp_fit = HEOM_ohmic_mp_fit.run(rho0, tlist)
 ```
 
-## ESPRIT 
+## ESPRIT
 
 ```{code-cell} ipython3
-
 esbath,fitinfo=obs.approximate("esprit",tlist2,Nr=4)
 print(fitinfo["summary"])
 HEOM_ohmic_es_fit = HEOMSolver(
