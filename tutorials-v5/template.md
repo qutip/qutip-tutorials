@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.17.0
+      jupytext_version: 1.13.8
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -92,7 +92,8 @@ so it's not interfering with the user experience. Please, define the tests
 using `assert`, so that the cell execution fails if a wrong output is generated.
 
 ```python
-assert np.allclose(result.expect[0][0], 0), "Expectation value does not start at 1"
+assert np.allclose(result.expect[0][0], 0), \
+    "Expectation value does not start at 1"
 assert 1 == 1
 ```
 
