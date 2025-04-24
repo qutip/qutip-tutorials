@@ -1,15 +1,14 @@
 ---
 jupytext:
-  formats: ipynb,md:myst
   text_representation:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.17.0
 kernelspec:
-  display_name: qutip-tutorials
-  language: python
   name: python3
+  display_name: Python 3 (ipykernel)
+  language: python
 ---
 
 # HEOM 4: Dynamical decoupling of a non-Markovian environment
@@ -27,22 +26,23 @@ We first show the standard example of equally spaced pulses, and then consider t
 
 ## Setup
 
-```{code-cell}
-import matplotlib.pyplot as plt
+```{code-cell} ipython3
 import numpy as np
-import qutip
+import matplotlib.pyplot as plt
+
+from qutip import (DrudeLorentzEnvironment, QobjEvo, about,
+                   basis, expect, ket2dm, sigmax, sigmaz)
+from qutip.solver.heom import HEOMSolver
+
 from IPython.display import display
 from ipywidgets import IntProgress
-from qutip import (DrudeLorentzEnvironment, QobjEvo, basis, expect, ket2dm,
-                   sigmax, sigmaz)
-from qutip.solver.heom import HEOMSolver
 
 %matplotlib inline
 ```
 
 ## Solver options
 
-```{code-cell}
+```{code-cell} ipython3
 # Solver options:
 
 # The max_step must be set to a short time than the
@@ -64,7 +64,7 @@ options = {
 
 Now we define the system and bath properties and the HEOM parameters. The system is a single stationary qubit with $H = 0$ and the bath is a bosonic bath with a Drude-Lorentz spectrum.
 
-```{code-cell}
+```{code-cell} ipython3
 # Define the system Hamlitonian.
 #
 # The system isn't evolving by itself, so the Hamiltonian is 0 (with the
@@ -73,7 +73,7 @@ Now we define the system and bath properties and the HEOM parameters. The system
 H_sys = 0 * sigmaz()
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 # Define some operators with which we will measure the system
 # 1,1 element of density matrix - corresponding to groundstate
 P11p = basis(2, 0) * basis(2, 0).dag()
@@ -82,7 +82,7 @@ P22p = basis(2, 1) * basis(2, 1).dag()
 P12p = basis(2, 0) * basis(2, 1).dag()
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 # Properties for the Drude-Lorentz bath
 
 lam = 0.0005
@@ -97,10 +97,9 @@ Nk = 3
 
 env = DrudeLorentzEnvironment(lam=lam, gamma=gamma, T=T)
 env_approx = env.approximate(method="pade", Nk=Nk)
-bath = (env_approx, Q)
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 # HEOM parameters
 
 # number of layers to keep in the hierarchy:
@@ -111,23 +110,23 @@ To perform the dynamic decoupling from the environment, we will drive the system
 
 Below we define a function that returns the pulse (which is itself a function):
 
-```{code-cell}
+```{code-cell} ipython3
 def drive(amplitude, delay, integral):
-    """Coefficient of the drive as a function of time.
+    """ Coefficient of the drive as a function of time.
 
-    The drive consists of a series of constant pulses with
-    a fixed delay between them.
+        The drive consists of a series of constant pulses with
+        a fixed delay between them.
 
-    Parameters
-    ----------
-    amplitude : float
-        The amplitude of the drive during the pulse.
-    delay : float
-        The time delay between successive pulses.
-    integral : float
-        The integral of the pulse. This determines
-        the duration of each pulse with the duration
-        equal to the integral divided by the amplitude.
+        Parameters
+        ----------
+        amplitude : float
+            The amplitude of the drive during the pulse.
+        delay : float
+            The time delay between successive pulses.
+        integral : float
+            The integral of the pulse. This determines
+            the duration of each pulse with the duration
+            equal to the integral divided by the amplitude.
     """
     duration = integral / amplitude
     period = duration + delay
@@ -148,7 +147,7 @@ H_drive = sigmax()
 
 Let's start by plotting the spectral density of our Drude-Lorentz bath:
 
-```{code-cell}
+```{code-cell} ipython3
 wlist = np.linspace(0, 0.5, 1000)
 J = env.spectral_density(wlist)
 J_approx = env_approx.spectral_density(wlist)
@@ -169,7 +168,7 @@ First we will drive the system with fast, large amplitude pulses. Then we will d
 
 Let's start by simulating the fast pulses:
 
-```{code-cell}
+```{code-cell} ipython3
 # Fast driving (quick, large amplitude pulses)
 
 tlist = np.linspace(0, 400, 1000)
@@ -179,37 +178,37 @@ rho0 = (basis(2, 1) + basis(2, 0)).unit()
 rho0 = ket2dm(rho0)
 
 # without pulses
-hsolver = HEOMSolver(H_sys, bath, NC, options=options)
+hsolver = HEOMSolver(H_sys, (env_approx, Q), NC, options=options)
 outputnoDD = hsolver.run(rho0, tlist)
 
 # with pulses
 drive_fast = drive(amplitude=0.5, delay=20, integral=np.pi / 2)
-H_d = qutip.QobjEvo([H_sys, [H_drive, drive_fast]])
+H_d = QobjEvo([H_sys, [H_drive, drive_fast]])
 
-hsolver = HEOMSolver(H_d, bath, NC, options=options)
+hsolver = HEOMSolver(H_d, (env_approx, Q), NC, options=options)
 outputDD = hsolver.run(rho0, tlist)
 ```
 
 And now the longer slower pulses:
 
-```{code-cell}
+```{code-cell} ipython3
 # Slow driving (longer, small amplitude pulses)
 
 # without pulses
-hsolver = HEOMSolver(H_sys, bath, NC, options=options)
+hsolver = HEOMSolver(H_sys, (env_approx, Q), NC, options=options)
 outputnoDDslow = hsolver.run(rho0, tlist)
 
 # with pulses
 drive_slow = drive(amplitude=0.01, delay=20, integral=np.pi / 2)
 H_d = QobjEvo([H_sys, [H_drive, drive_slow]])
 
-hsolver = HEOMSolver(H_d, bath, NC, options=options)
+hsolver = HEOMSolver(H_d, (env_approx, Q), NC, options=options)
 outputDDslow = hsolver.run(rho0, tlist)
 ```
 
 Now let's plot all of the results and the shapes of the pulses:
 
-```{code-cell}
+```{code-cell} ipython3
 def plot_dd_results(outputnoDD, outputDD, outputDDslow):
     fig, axes = plt.subplots(2, 1, sharex=False, figsize=(12, 12))
 
@@ -218,40 +217,28 @@ def plot_dd_results(outputnoDD, outputDD, outputDDslow):
     tlist = outputDD.times
 
     P12 = basis(2, 1) * basis(2, 0).dag()
-    P12DD = qutip.expect(outputDD.states, P12)
-    P12noDD = qutip.expect(outputnoDD.states, P12)
-    P12DDslow = qutip.expect(outputDDslow.states, P12)
+    P12DD = expect(outputDD.states, P12)
+    P12noDD = expect(outputnoDD.states, P12)
+    P12DDslow = expect(outputDDslow.states, P12)
 
     plt.sca(axes[0])
     plt.yticks([0, 0.25, 0.5], [0, 0.25, 0.5])
 
     axes[0].plot(
-        tlist,
-        np.real(P12DD),
-        "green",
-        linestyle="-",
-        linewidth=2,
-        label="HEOM with fast DD",
+        tlist, np.real(P12DD),
+        'green', linestyle='-', linewidth=2, label="HEOM with fast DD",
     )
     axes[0].plot(
-        tlist,
-        np.real(P12DDslow),
-        "blue",
-        linestyle="-",
-        linewidth=2,
-        label="HEOM with slow DD",
+        tlist, np.real(P12DDslow),
+        'blue', linestyle='-', linewidth=2, label="HEOM with slow DD",
     )
     axes[0].plot(
-        tlist,
-        np.real(P12noDD),
-        "orange",
-        linestyle="--",
-        linewidth=2,
-        label="HEOM no DD",
+        tlist, np.real(P12noDD),
+        'orange', linestyle='--', linewidth=2, label="HEOM no DD",
     )
 
-    axes[0].locator_params(axis="y", nbins=3)
-    axes[0].locator_params(axis="x", nbins=3)
+    axes[0].locator_params(axis='y', nbins=3)
+    axes[0].locator_params(axis='x', nbins=3)
 
     axes[0].set_ylabel(r"$\rho_{01}$", fontsize=30)
 
@@ -264,30 +251,22 @@ def plot_dd_results(outputnoDD, outputDD, outputDDslow):
     pulseslow = [drive_slow(t) for t in tlist]
 
     plt.sca(axes[1])
-    plt.yticks([0.0, 0.25, 0.5], [0, 0.25, 0.5])
+    plt.yticks([0, 0.25, 0.5], [0, 0.25, 0.5])
 
     axes[1].plot(
-        tlist,
-        pulse,
-        "green",
-        linestyle="-",
-        linewidth=2,
-        label="Drive fast",
+        tlist, pulse,
+        'green', linestyle='-', linewidth=2, label="Drive fast",
     )
     axes[1].plot(
-        tlist,
-        pulseslow,
-        "blue",
-        linestyle="--",
-        linewidth=2,
-        label="Drive slow",
+        tlist, pulseslow,
+        'blue', linestyle='--', linewidth=2, label="Drive slow",
     )
 
-    axes[1].locator_params(axis="y", nbins=3)
-    axes[1].locator_params(axis="x", nbins=3)
+    axes[1].locator_params(axis='y', nbins=3)
+    axes[1].locator_params(axis='x', nbins=3)
 
-    axes[1].set_xlabel(r"$t\bar{V}_{\mathrm{f}}$", fontsize=30)
-    axes[1].set_ylabel(r"Drive amplitude/$\bar{V}_{\mathrm{f}}$", fontsize=30)
+    axes[1].set_xlabel(r'$t\bar{V}_{\mathrm{f}}$', fontsize=30)
+    axes[1].set_ylabel(r'Drive amplitude/$\bar{V}_{\mathrm{f}}$', fontsize=30)
 
     axes[1].legend(loc=1)
     axes[1].text(0, 0.4, "(b)", fontsize=28)
@@ -295,7 +274,7 @@ def plot_dd_results(outputnoDD, outputDD, outputDDslow):
     fig.tight_layout()
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 plot_dd_results(outputnoDD, outputDD, outputDDslow)
 ```
 
@@ -315,40 +294,40 @@ $$
 
 This is just a convenient way to describe the varying delay. We could have chosen another monotonically increasing function to represent the cummulative delay (although it might not be as effective).
 
-```{code-cell}
+```{code-cell} ipython3
 def cummulative_delay_fractions(N):
-    """Return an array of N + 1 cummulative delay
-    fractions.
+    """ Return an array of N + 1 cummulative delay
+        fractions.
 
-    The j'th entry in the array should be the sum of
-    all delays before the j'th pulse. The last entry
-    should be 1 (i.e. the entire cummulative delay
-    should have been used once the sequence of pulses
-    is complete).
+        The j'th entry in the array should be the sum of
+        all delays before the j'th pulse. The last entry
+        should be 1 (i.e. the entire cummulative delay
+        should have been used once the sequence of pulses
+        is complete).
 
-    The function should be monotonically increasing,
-    strictly greater than zero and the last value
-    should be 1.
+        The function should be monotonically increasing,
+        strictly greater than zero and the last value
+        should be 1.
 
-    This implementation returns:
+        This implementation returns:
 
-        sin((pi / 2) * (j / (N + 1)))**2
+            sin((pi / 2) * (j / (N + 1)))**2
 
-    as the cummulative delay after the j'th pulse.
+        as the cummulative delay after the j'th pulse.
     """
     return np.array(
-        [np.sin((np.pi / 2) * (j / (N + 1))) ** 2 for j in range(0, N + 1)]
+        [np.sin((np.pi / 2) * (j / (N + 1)))**2 for j in range(0, N + 1)]
     )
 
 
 def drive_opt(amplitude, avg_delay, integral, N):
-    """Return an optimized distance pulse function.
+    """ Return an optimized distance pulse function.
 
-    Our previous pulses were evenly spaced. Here we
-    instead use a varying delay after the j'th pulse.
+        Our previous pulses were evenly spaced. Here we
+        instead use a varying delay after the j'th pulse.
 
-    The cummulative delay is described by the function
-    ``cummulative_delay_fractions`` above.
+        The cummulative delay is described by the function
+        ``cummulative_delay_fractions`` above.
     """
     duration = integral / amplitude
     cummulative_delays = N * avg_delay * cummulative_delay_fractions(N)
@@ -368,11 +347,11 @@ Let's plot the cummulative delays and see what they look like. Note that the cum
 
 On the same axes we plot the individual $j^{th}$ delays as a fraction of the average delay.
 
-```{code-cell}
+```{code-cell} ipython3
 def plot_cummulative_delay_fractions(N):
     cummulative = cummulative_delay_fractions(N)
     individual = (cummulative[1:] - cummulative[:-1]) * N
-    plt.plot(np.arange(0, N + 1), cummulative, label="Cummulative delay")
+    plt.plot(np.arange(0, N + 1), cummulative, label="Cumulative delay")
     plt.plot(np.arange(0, N), individual, label="j'th delay")
     plt.xlabel("j")
     plt.ylabel("Fraction of delay")
@@ -384,7 +363,7 @@ plot_cummulative_delay_fractions(100)
 
 And now let us plot the first ten even and optimally spaced pulses together to compare them:
 
-```{code-cell}
+```{code-cell} ipython3
 def plot_even_and_optimally_spaced_pulses():
     amplitude = 10.0
     integral = np.pi / 2
@@ -397,14 +376,10 @@ def plot_even_and_optimally_spaced_pulses():
     pulse_eq = drive(amplitude, delay, integral)
 
     plt.plot(
-        tlist,
-        [pulse_opt(t) for t in tlist],
-        label="opt",
+        tlist, [pulse_opt(t) for t in tlist], label="opt",
     )
     plt.plot(
-        tlist,
-        [pulse_eq(t) for t in tlist],
-        label="eq",
+        tlist, [pulse_eq(t) for t in tlist], label="eq",
     )
     plt.legend(loc=4)
 
@@ -416,7 +391,7 @@ Now let's simulate the effectiveness of the two sets of delays by comparing how 
 
 We'll perform the simulation over a range of lambdas and gammas to show how the non-evenly spaced delays become optimal as the width of the bath spectral function increases.
 
-```{code-cell}
+```{code-cell} ipython3
 # Bath parameters to simulate over:
 
 # We use only two lambdas and two gammas so that the notebook executes
@@ -437,10 +412,10 @@ display(progress)
 
 
 def simulate_100_pulses(lam, gamma, T, NC, Nk):
-    """Simulate the evolution of 100 evenly and optimally spaced pulses.
+    """ Simulate the evolution of 100 evenly and optimally spaced pulses.
 
-    Returns the expectation value of P12p from the final state of
-    each evolution.
+        Returns the expectation value of P12p from the final state of
+        each evolution.
     """
     rho0 = (basis(2, 1) + basis(2, 0)).unit()
     rho0 = ket2dm(rho0)
@@ -457,14 +432,13 @@ def simulate_100_pulses(lam, gamma, T, NC, Nk):
     delay = avg_cycle_time - duration
 
     env = DrudeLorentzEnvironment(lam=lam, gamma=gamma, T=T)
-    env_approx = env.approx_by_pade(Nk=Nk)
-    bath = (env_approx, Q)
+    env_approx = env.approximate("pade", Nk=Nk)
     # Equally spaced pulses:
 
     pulse_eq = drive(amplitude, delay, integral)
     H_d = QobjEvo([H_sys, [H_drive, pulse_eq]])
 
-    hsolver = HEOMSolver(H_d, bath, NC, options=options)
+    hsolver = HEOMSolver(H_d, (env_approx, Q), NC, options=options)
     result = hsolver.run(rho0, tlist)
 
     P12_eq = expect(result.states[-1], P12p)
@@ -475,7 +449,7 @@ def simulate_100_pulses(lam, gamma, T, NC, Nk):
     pulse_opt = drive_opt(amplitude, delay, integral, N)
     H_d = QobjEvo([H_sys, [H_drive, pulse_opt]])
 
-    hsolver = HEOMSolver(H_d, bath, NC, options=options)
+    hsolver = HEOMSolver(H_d, (env_approx, Q), NC, options=options)
     result = hsolver.run(rho0, tlist)
 
     P12_opt = expect(result.states[-1], P12p)
@@ -487,40 +461,30 @@ def simulate_100_pulses(lam, gamma, T, NC, Nk):
 # We use NC=2 and Nk=2 to speed up the simulation:
 
 P12_results = [
-    list(
-        zip(
-            *(
-                simulate_100_pulses(lam=lam_, gamma=gamma_, T=0.5, NC=2, Nk=2)
-                for gamma_ in gammas
-            )
-        )
-    )
+    list(zip(*(
+        simulate_100_pulses(lam=lam_, gamma=gamma_, T=0.5, NC=2, Nk=2)
+        for gamma_ in gammas
+    )))
     for lam_ in lams
 ]
 ```
 
 Now that we have the expectation values of $\rho_{01}$ let's plot them as a function of gamma for each lambda. Note how in each case the non-evenly spaced pulses become optimal once gamma is sufficiently small:
 
-```{code-cell}
+```{code-cell} ipython3
 fig, axes = plt.subplots(1, 1, sharex=False, figsize=(10, 7))
 colors = ["green", "red", "blue"]
 
 for i in range(len(lams)):
     color = colors[i % len(colors)]
     axes.plot(
-        gammas,
-        np.real(P12_results[i][0]),
-        color,
-        linestyle="-",
-        linewidth=2,
+        gammas, np.real(P12_results[i][0]),
+        color, linestyle='-', linewidth=2,
         label=f"Optimal DD [$\\lambda={lams[i]}$]",
     )
     axes.plot(
-        gammas,
-        np.real(P12_results[i][1]),
-        color,
-        linestyle="-.",
-        linewidth=2,
+        gammas, np.real(P12_results[i][1]),
+        color, linestyle='-.', linewidth=2,
         label=f"Even DD [$\\lambda={lams[i]}$]",
     )
 
@@ -537,14 +501,6 @@ And now you know about dynamically decoupling a qubit from its environment!
 
 ## About
 
-```{code-cell}
-qutip.about()
-```
-
-## Testing
-
-This section can include some tests to verify that the expected outputs are generated within the notebook. We put this section at the end of the notebook, so it's not interfering with the user experience. Please, define the tests using assert, so that the cell execution fails if a wrong output is generated.
-
-```{code-cell}
-assert 1 == 1
+```{code-cell} ipython3
+about()
 ```
