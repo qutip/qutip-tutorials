@@ -1,15 +1,14 @@
 ---
 jupytext:
-  formats: ipynb,md:myst
   text_representation:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.17.0
 kernelspec:
-  display_name: qutip-tutorials
-  language: python
   name: python3
+  display_name: Python 3 (ipykernel)
+  language: python
 ---
 
 # HEOM 5b: Discrete boson coupled to an impurity and fermionic leads
@@ -95,32 +94,33 @@ The complete setup now consists of four parts:
 
 ## Setup
 
-```{code-cell}
+```{code-cell} ipython3
 import contextlib
 import dataclasses
 import time
 
-import matplotlib.pyplot as plt
 import numpy as np
-import qutip
-from IPython.display import display
-from ipywidgets import IntProgress
-from qutip import destroy, qeye, tensor
+import matplotlib.pyplot as plt
+
+from qutip import about, destroy, qeye, tensor
 from qutip.core.environment import LorentzianEnvironment
 from qutip.solver.heom import HEOMSolver
+
+from IPython.display import display
+from ipywidgets import IntProgress
 
 %matplotlib inline
 ```
 
 ## Helpers
 
-```{code-cell}
+```{code-cell} ipython3
 @contextlib.contextmanager
 def timer(label):
-    """Simple utility for timing functions:
+    """ Simple utility for timing functions:
 
-    with timer("name"):
-        ... code to time ...
+        with timer("name"):
+            ... code to time ...
     """
     start = time.time()
     yield
@@ -128,10 +128,10 @@ def timer(label):
     print(f"{label}: {end - start}")
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 def state_current(ado_state, bath_tag):
-    """Determine current from the given bath (either "R" or "L") to
-    the system in the given ADO state.
+    """ Determine current from the given bath (either "R" or "L") to
+        the system in the given ADO state.
     """
     level_1_aux = [
         (ado_state.extract(label), ado_state.exps(label)[0])
@@ -149,14 +149,13 @@ def state_current(ado_state, bath_tag):
     )
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 # Solver options:
 
 # We set store_ados to True so that we can
 # use the auxilliary density operators (ADOs)
 # to calculate the current between the leads
 # and the system.
-
 
 options = {
     "nsteps": 1500,
@@ -173,9 +172,8 @@ options = {
 
 Let us set up the system Hamiltonian and specify the properties of the two reservoirs.
 
-```{code-cell}
+```{code-cell} ipython3
 # Define the system Hamiltonian:
-
 
 @dataclasses.dataclass
 class SystemParameters:
@@ -188,9 +186,9 @@ class SystemParameters:
         d = tensor(destroy(2), qeye(self.Nbos))
         a = tensor(qeye(2), destroy(self.Nbos))
         self.H = (
-            self.e1 * d.dag() * d
-            + self.Omega * a.dag() * a
-            + self.Lambda * (a + a.dag()) * d.dag() * d
+            self.e1 * d.dag() * d +
+            self.Omega * a.dag() * a +
+            self.Lambda * (a + a.dag()) * d.dag() * d
         )
         self.Q = d
 
@@ -201,11 +199,10 @@ class SystemParameters:
 sys_p = SystemParameters()
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 # Define parameters for left and right fermionic baths.
 # Each bath is a lead (i.e. a wire held at a potential)
 # with temperature T and chemical potential mu.
-
 
 @dataclasses.dataclass
 class LorentzianBathParameters:
@@ -224,16 +221,16 @@ class LorentzianBathParameters:
             self.mu = -self.theta / 2.0
 
     def J(self, w):
-        """Spectral density."""
-        return self.gamma * self.W**2 / ((w - self.mu) ** 2 + self.W**2)
+        """ Spectral density. """
+        return self.gamma * self.W**2 / ((w - self.mu)**2 + self.W**2)
 
     def fF(self, w, sign=1.0):
-        """Fermi distribution for this bath."""
+        """ Fermi distribution for this bath. """
         x = sign * self.beta * (w - self.mu)
         return fF(x)
 
     def lamshift(self, w):
-        """Return the lamshift."""
+        """ Return the lamb shift. """
         return 0.5 * (w - self.mu) * self.J(w) / self.W
 
     def replace(self, **kw):
@@ -241,7 +238,7 @@ class LorentzianBathParameters:
 
 
 def fF(x):
-    """Return the Fermi distribution."""
+    """ Return the Fermi distribution. """
     # in units where kB = 1.0
     return 1 / (np.exp(x) + 1)
 
@@ -256,7 +253,7 @@ bath_R = LorentzianBathParameters(W=10**4, lead="R")
 
 Next let's plot the emission and absorption by the leads.
 
-```{code-cell}
+```{code-cell} ipython3
 w_list = np.linspace(-2, 2, 100)
 
 fig, ax = plt.subplots(figsize=(12, 7))
@@ -267,17 +264,13 @@ gam_L_in = bath_L.J(w_list) * bath_L.fF(w_list, sign=1.0)
 gam_L_out = bath_L.J(w_list) * bath_L.fF(w_list, sign=-1.0)
 
 ax.plot(
-    w_list,
-    gam_L_in,
-    "b--",
-    linewidth=3,
+    w_list, gam_L_in,
+    "b--", linewidth=3,
     label=r"S_L(w) input (absorption)",
 )
 ax.plot(
-    w_list,
-    gam_L_out,
-    "r--",
-    linewidth=3,
+    w_list, gam_L_out,
+    "r--", linewidth=3,
     label=r"S_L(w) output (emission)",
 )
 
@@ -287,17 +280,13 @@ gam_R_in = bath_R.J(w_list) * bath_R.fF(w_list, sign=1.0)
 gam_R_out = bath_R.J(w_list) * bath_R.fF(w_list, sign=-1.0)
 
 ax.plot(
-    w_list,
-    gam_R_in,
-    "b",
-    linewidth=3,
+    w_list, gam_R_in,
+    "b", linewidth=3,
     label=r"S_R(w) input (absorption)",
 )
 ax.plot(
-    w_list,
-    gam_R_out,
-    "r",
-    linewidth=3,
+    w_list, gam_R_out,
+    "r", linewidth=3,
     label=r"S_R(w) output (emission)",
 )
 
@@ -312,15 +301,16 @@ Here we just give one example of the current as a function of bias voltage, but 
 
 One note:  for very large problems, this can be slow.
 
-```{code-cell}
+```{code-cell} ipython3
 def steady_state_pade_for_theta(sys_p, bath_L, bath_R, theta, Nk, Nc, Nbos):
-    """Return the steady state current using the Pade approximation."""
+    """ Return the steady state current using the Pade approximation. """
 
     sys_p = sys_p.replace(Nbos=Nbos)
     bath_L = bath_L.replace(theta=theta)
     bath_R = bath_R.replace(theta=theta)
-    envR = LorentzianEnvironment(bath_R.T, bath_R.mu, bath_R.gamma, bath_R.W)
+
     envL = LorentzianEnvironment(bath_L.T, bath_L.mu, bath_L.gamma, bath_L.W)
+    envR = LorentzianEnvironment(bath_R.T, bath_R.mu, bath_R.gamma, bath_R.W)
 
     bathL = envL.approx_by_matsubara(Nk, tag="L")
     bathR = envR.approx_by_matsubara(Nk, tag="R")
@@ -337,9 +327,8 @@ def steady_state_pade_for_theta(sys_p, bath_L, bath_R, theta, Nk, Nc, Nbos):
     return np.real(2.434e-4 * 1e6 * current)
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 # Parameters:
-
 
 Nk = 6
 Nc = 2
@@ -355,37 +344,27 @@ display(progress)
 currents = []
 
 for theta in thetas:
-    currents.append(
-        steady_state_pade_for_theta(
-            sys_p,
-            bath_L,
-            bath_R,
-            theta,
-            Nk=Nk,
-            Nc=Nc,
-            Nbos=Nbos,
-        )
-    )
+    currents.append(steady_state_pade_for_theta(
+        sys_p, bath_L, bath_R, theta,
+        Nk=Nk, Nc=Nc, Nbos=Nbos,
+    ))
     progress.value += 1
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 fig, ax = plt.subplots(figsize=(12, 10))
 
 ax.plot(
-    thetas,
-    currents,
-    color="green",
-    linestyle="-",
-    linewidth=3,
+    thetas, currents,
+    color="green", linestyle='-', linewidth=3,
     label=f"Nk = {5}, max_depth = {Nc}, Nbos = {Nbos}",
 )
 
 ax.set_yticks([0, 0.5, 1])
 ax.set_yticklabels([0, 0.5, 1])
 
-ax.locator_params(axis="y", nbins=4)
-ax.locator_params(axis="x", nbins=4)
+ax.locator_params(axis='y', nbins=4)
+ax.locator_params(axis='x', nbins=4)
 
 ax.set_xlabel(r"Bias voltage $\Delta \mu$ ($V$)", fontsize=30)
 ax.set_ylabel(r"Current ($\mu A$)", fontsize=30)
@@ -394,14 +373,6 @@ ax.legend(loc=4);
 
 ## About
 
-```{code-cell}
-qutip.about()
-```
-
-## Testing
-
-This section can include some tests to verify that the expected outputs are generated within the notebook. We put this section at the end of the notebook, so it's not interfering with the user experience. Please, define the tests using assert, so that the cell execution fails if a wrong output is generated.
-
-```{code-cell}
-assert 1 == 1
+```{code-cell} ipython3
+about()
 ```
