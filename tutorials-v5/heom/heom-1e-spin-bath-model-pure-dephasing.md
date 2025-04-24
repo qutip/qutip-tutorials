@@ -1,15 +1,14 @@
 ---
 jupytext:
-  formats: ipynb,md:myst
   text_representation:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.17.0
 kernelspec:
-  display_name: qutip-tutorials
-  language: python
   name: python3
+  display_name: Python 3 (ipykernel)
+  language: python
 ---
 
 # HEOM 1e: Spin-Bath model (pure dephasing)
@@ -24,7 +23,7 @@ In this example we show the evolution of a single two-level system in contact wi
 
 The Bosonic environment is implicitly assumed to obey a particular Hamiltonian (see paper), the parameters of which are encoded in the spectral density, and subsequently the free-bath correlation functions.
 
-In the example below we show how to model the overdamped Drude-Lorentz Spectral Density, commonly used with the HEOM. We show how to do the Matsubara and Pade analytical decompositions, as well as how to fit the latter with a finite set of approximate exponentials.  This differs from examble 1a in that we assume that the system and coupling parts of the Hamiltonian commute, hence giving an analytically solvable ''pure dephasing'' model. This is a useful example to look at when introducing other approximations  (e.g., fitting of correlation functions) to check for validity/convergence against the analytical results.  (Note that, generally, for the fitting examples, the pure dephasing model is the 'worst possible case'.  
+In the example below we show how to model the overdamped Drude-Lorentz Spectral Density, commonly used with the HEOM. We show how to do the Matsubara and Pade analytical decompositions, as well as how to fit the latter with a finite set of approximate exponentials.  This differs from example 1a in that we assume that the system and coupling parts of the Hamiltonian commute, hence giving an analytically solvable ''pure dephasing'' model. This is a useful example to look at when introducing other approximations  (e.g., fitting of correlation functions) to check for validity/convergence against the analytical results.  (Note that, generally, for the fitting examples, the pure dephasing model is the 'worst possible case'.)
 
 ### Drude-Lorentz spectral density
 
@@ -66,15 +65,15 @@ Note that in the above, and the following, we set $\hbar = k_\mathrm{B} = 1$.
 
 ## Setup
 
-```{code-cell}
+```{code-cell} ipython3
 import contextlib
 import time
 
 import numpy as np
-import qutip
 import scipy
 from matplotlib import pyplot as plt
-from qutip import basis, expect, liouvillian, sigmax, sigmaz
+
+from qutip import about, basis, expect, liouvillian, sigmax, sigmaz
 from qutip.core.environment import DrudeLorentzEnvironment, system_terminator
 from qutip.solver.heom import HEOMSolver
 
@@ -85,23 +84,23 @@ from qutip.solver.heom import HEOMSolver
 
 Let's define some helper functions for calculating correlation function expansions, plotting results and timing how long operations take:
 
-```{code-cell}
+```{code-cell} ipython3
 def cot(x):
-    """Vectorized cotangent of x."""
+    """ Vectorized cotangent of x. """
     return 1.0 / np.tan(x)
 
 
 def coth(x):
-    """Vectorized hyperbolic cotangent of x."""
+    """ Vectorized hyperbolic cotangent of x. """
     return 1.0 / np.tanh(x)
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 def plot_result_expectations(plots, axes=None):
-    """Plot the expectation values of operators as functions of time.
+    """ Plot the expectation values of operators as functions of time.
 
-    Each plot in plots consists of (solver_result, measurement_operation,
-    color, label).
+        Each plot in plots consists of (solver_result, measurement_operation,
+        color, label).
     """
     if axes is None:
         fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 8))
@@ -128,13 +127,13 @@ def plot_result_expectations(plots, axes=None):
     return fig
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 @contextlib.contextmanager
 def timer(label):
-    """Simple utility for timing functions:
+    """ Simple utility for timing functions:
 
-    with timer("name"):
-        ... code to time ...
+        with timer("name"):
+            ... code to time ...
     """
     start = time.time()
     yield
@@ -142,9 +141,8 @@ def timer(label):
     print(f"{label}: {end - start}")
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 # Solver options:
-
 
 options = {
     "nsteps": 15000,
@@ -164,14 +162,14 @@ And let us set up the system Hamiltonian, bath and system measurement operators:
 
 Here we set $H_{sys}=0$, which means the interaction Hamiltonian and the system Hamiltonian commute, and we can compare the numerical results to a known analytical one.  We could in principle keep $\epsilon \neq 0$, but it just introduces fast system oscillations, so it is more convenient to set it to zero.
 
-```{code-cell}
+```{code-cell} ipython3
 # Defining the system Hamiltonian
 eps = 0.0  # Energy of the 2-level system.
 Del = 0.0  # Tunnelling term
 Hsys = 0.5 * eps * sigmaz() + 0.5 * Del * sigmax()
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 # System-bath coupling (Drude-Lorentz spectral density)
 Q = sigmaz()  # coupling operator
 
@@ -192,7 +190,7 @@ Nk = 3
 tlist = np.linspace(0, 50, 1000)
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 # Define some operators with which we will measure the system
 # 1,1 element of density matrix - corresponding to groundstate
 P11p = basis(2, 0) * basis(2, 0).dag()
@@ -203,7 +201,7 @@ P12p = basis(2, 0) * basis(2, 1).dag()
 
 To get a non-trivial result we prepare the initial state in a superposition, and see how the bath destroys the coherence.
 
-```{code-cell}
+```{code-cell} ipython3
 # Initial state of the system.
 psi = (basis(2, 0) + basis(2, 1)).unit()
 rho0 = psi * psi.dag()
@@ -212,13 +210,13 @@ rho0 = psi * psi.dag()
 We then define our environment, from which all the different simulations will 
 be obtained
 
-```{code-cell}
+```{code-cell} ipython3
 env = DrudeLorentzEnvironment(lam=lam, gamma=gamma, T=T, Nk=Nk)
 ```
 
 ## Simulation 1: Matsubara decomposition, not using Ishizaki-Tanimura terminator
 
-```{code-cell}
+```{code-cell} ipython3
 with timer("RHS construction time"):
     env_mats = env.approximate(method="matsubara", Nk=Nk)
     HEOMMats = HEOMSolver(Hsys, (env_mats, Q), NC, options=options)
@@ -227,19 +225,17 @@ with timer("ODE solver time"):
     resultMats = HEOMMats.run(rho0, tlist)
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 # Plot the results so far
-plot_result_expectations(
-    [
-        (resultMats, P11p, "b", "P11 Matsubara"),
-        (resultMats, P12p, "r", "P12 Matsubara"),
-    ]
-);
+plot_result_expectations([
+    (resultMats, P11p, 'b', "P11 Matsubara"),
+    (resultMats, P12p, 'r', "P12 Matsubara"),
+]);
 ```
 
 ## Simulation 2: Matsubara decomposition (including terminator)
 
-```{code-cell}
+```{code-cell} ipython3
 with timer("RHS construction time"):
     env_mats, delta = env.approximate(
         method="matsubara", Nk=Nk, compute_delta=True
@@ -251,23 +247,21 @@ with timer("ODE solver time"):
     resultMatsT = HEOMMatsT.run(rho0, tlist)
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 # Plot the results
-plot_result_expectations(
-    [
-        (resultMats, P11p, "b", "P11 Matsubara"),
-        (resultMats, P12p, "r", "P12 Matsubara"),
-        (resultMatsT, P11p, "r--", "P11 Matsubara and terminator"),
-        (resultMatsT, P12p, "b--", "P12 Matsubara and terminator"),
-    ]
-);
+plot_result_expectations([
+    (resultMats, P11p, 'b', "P11 Matsubara"),
+    (resultMats, P12p, 'r', "P12 Matsubara"),
+    (resultMatsT, P11p, 'b--', "P11 Matsubara and terminator"),
+    (resultMatsT, P12p, 'r--', "P12 Matsubara and terminator"),
+]);
 ```
 
 ## Simulation 3: Pade decomposition
 
 As in example 1a, we can compare to Pade and Fitting approaches.
 
-```{code-cell}
+```{code-cell} ipython3
 with timer("RHS construction time"):
     env_pade = env.approximate(method="pade", Nk=Nk)
     HEOMPade = HEOMSolver(Hsys, (env_pade, Q), NC, options=options)
@@ -276,27 +270,25 @@ with timer("ODE solver time"):
     resultPade = HEOMPade.run(rho0, tlist)
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 # Plot the results
-plot_result_expectations(
-    [
-        (resultMatsT, P11p, "b", "P11 Matsubara (+term)"),
-        (resultMatsT, P12p, "r", "P12 Matsubara (+term)"),
-        (resultPade, P11p, "r--", "P11 Pade"),
-        (resultPade, P12p, "b--", "P12 Pade"),
-    ]
-);
+plot_result_expectations([
+    (resultMatsT, P11p, 'b', "P11 Matsubara (+term)"),
+    (resultMatsT, P12p, 'r', "P12 Matsubara (+term)"),
+    (resultPade, P11p, 'b--', "P11 Pade"),
+    (resultPade, P12p, 'r--', "P12 Pade"),
+]);
 ```
 
 ## Simulation 4: Fitting approach
 
-```{code-cell}
+```{code-cell} ipython3
 tfit = np.linspace(0, 10, 1000)
 with timer("RHS construction time"):
-    bath, _ = env.approximate(
+    env_fit, _ = env.approximate(
         method="cf", tlist=tfit, Ni_max=1, Nr_max=3, target_rmse=None
     )
-    HEOMFit = HEOMSolver(Hsys, (bath, Q), NC, options=options)
+    HEOMFit = HEOMSolver(Hsys, (env_fit, Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultFit = HEOMFit.run(rho0, tlist)
@@ -304,7 +296,7 @@ with timer("ODE solver time"):
 
 ## Analytic calculations
 
-```{code-cell}
+```{code-cell} ipython3
 def pure_dephasing_evolution_analytical(tlist, wq, ck, vk):
     """
     Computes the propagating function appearing in the pure dephasing model.
@@ -365,14 +357,14 @@ def correlation_integral(t, ck, vk):
         The value of the integral function at time t.
     """
     t1 = np.sum((ck / vk**2) * (np.exp(vk * t) - 1))
-    t2 = np.sum((ck.conj() / vk.conj() ** 2) * (np.exp(vk.conj() * t) - 1))
+    t2 = np.sum((ck.conj() / vk.conj()**2) * (np.exp(vk.conj() * t) - 1))
     t3 = np.sum((ck / vk + ck.conj() / vk.conj()) * t)
     return 2 * (t1 + t2 - t3)
 ```
 
 For the pure dephasing analytics, we just sum up as many matsubara terms as we can:
 
-```{code-cell}
+```{code-cell} ipython3
 lmaxmats2 = 15000
 
 vk = [complex(-gamma)]
@@ -390,23 +382,21 @@ P12_ana = 0.5 * pure_dephasing_evolution_analytical(
 
 Alternatively, we can just do the integral of the propagator directly, without using the correlation functions at all
 
-```{code-cell}
+```{code-cell} ipython3
 def JDL(omega, lamc, omega_c):
     return 2.0 * lamc * omega * omega_c / (omega_c**2 + omega**2)
 
 
 def integrand(omega, lamc, omega_c, Temp, t):
     return (
-        (-4.0 * JDL(omega, lamc, omega_c) / omega**2)
-        * (1.0 - np.cos(omega * t))
-        * (coth(omega / (2.0 * Temp)))
+        (-4.0 * JDL(omega, lamc, omega_c) / omega**2) *
+        (1.0 - np.cos(omega*t)) * (coth(omega/(2*Temp)))
         / np.pi
     )
 
 
 P12_ana2 = [
-    0.5
-    * np.exp(
+    0.5 * np.exp(
         scipy.integrate.quad(integrand, 0, np.inf, args=(lam, gamma, T, t))[0]
     )
     for t in tlist
@@ -415,69 +405,60 @@ P12_ana2 = [
 
 ## Compare results
 
-```{code-cell}
-plot_result_expectations(
-    [
-        (resultMats, P12p, "r", "P12 Mats"),
-        (resultMatsT, P12p, "r--", "P12 Mats + Term"),
-        (resultPade, P12p, "b--", "P12 Pade"),
-        (resultFit, P12p, "g", "P12 Fit"),
-        ((tlist, np.real(P12_ana)), None, "b", "Analytic 1"),
-        ((tlist, np.real(P12_ana2)), None, "y--", "Analytic 2"),
-    ]
-);
+```{code-cell} ipython3
+plot_result_expectations([
+    (resultMats, P12p, 'r', "P12 Mats"),
+    (resultMatsT, P12p, 'r--', "P12 Mats + Term"),
+    (resultPade, P12p, 'b--', "P12 Pade"),
+    (resultFit, P12p, 'g', "P12 Fit"),
+    ((tlist, np.real(P12_ana)), None, 'b', "Analytic 1"),
+    ((tlist, np.real(P12_ana2)), None, 'y--', "Analytic 2"),
+]);
 ```
 
 We can't see much difference in the plot above, so let's do a log plot instead:
 
-```{code-cell}
+```{code-cell} ipython3
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 8))
 
-plot_result_expectations(
-    [
-        (resultMats, P12p, "r", "P12 Mats"),
-        (resultMatsT, P12p, "r--", "P12 Mats + Term"),
-        (resultPade, P12p, "b-.", "P12 Pade"),
-        (resultFit, P12p, "g", "P12 Fit"),
-        ((tlist, np.real(P12_ana)), None, "b", "Analytic 1"),
-        ((tlist, np.real(P12_ana2)), None, "y--", "Analytic 2"),
-    ],
-    axes,
-)
+plot_result_expectations([
+    (resultMats, P12p, 'r', "P12 Mats"),
+    (resultMatsT, P12p, 'r--', "P12 Mats + Term"),
+    (resultPade, P12p, 'b-.', "P12 Pade"),
+    (resultFit, P12p, 'g', "P12 Fit"),
+    ((tlist, np.real(P12_ana)), None, 'b', "Analytic 1"),
+    ((tlist, np.real(P12_ana2)), None, 'y--', "Analytic 2"),
+], axes)
 
-axes.set_yscale("log")
+axes.set_yscale('log')
 axes.legend(loc=0, fontsize=12);
 ```
 
 ## About
 
-```{code-cell}
-qutip.about()
+```{code-cell} ipython3
+about()
 ```
 
 ## Testing
 
 This section can include some tests to verify that the expected outputs are generated within the notebook. We put this section at the end of the notebook, so it's not interfering with the user experience. Please, define the tests using assert, so that the cell execution fails if a wrong output is generated.
 
-```{code-cell}
+```{code-cell} ipython3
 assert np.allclose(
-    expect(P12p, resultMats.states[:15]),
-    np.real(P12_ana)[:15],
+    expect(P12p, resultMats.states[:15]), np.real(P12_ana)[:15],
     rtol=1e-2,
 )
 assert np.allclose(
-    expect(P12p, resultMatsT.states[:100]),
-    np.real(P12_ana)[:100],
+    expect(P12p, resultMatsT.states[:100]), np.real(P12_ana)[:100],
     rtol=1e-3,
 )
 assert np.allclose(
-    expect(P12p, resultPade.states[:100]),
-    np.real(P12_ana)[:100],
+    expect(P12p, resultPade.states[:100]), np.real(P12_ana)[:100],
     rtol=1e-3,
 )
 assert np.allclose(
-    expect(P12p, resultFit.states[:50]),
-    np.real(P12_ana)[:50],
+    expect(P12p, resultFit.states[:50]), np.real(P12_ana)[:50],
     rtol=1e-3,
 )
 assert np.allclose(P12_ana, P12_ana2, rtol=1e-3)

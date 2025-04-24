@@ -1,15 +1,14 @@
 ---
 jupytext:
-  formats: ipynb,md:myst
   text_representation:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.17.0
 kernelspec:
-  display_name: qutip-tutorials
-  language: python
   name: python3
+  display_name: Python 3 (ipykernel)
+  language: python
 ---
 
 # HEOM 1d: Spin-Bath model, fitting of spectrum and correlation functions
@@ -39,7 +38,7 @@ In each case we will use the fit parameters to determine the correlation functio
 
 ## Setup
 
-```{code-cell}
+```{code-cell} ipython3
 import numpy as np
 import qutip
 from matplotlib import pyplot as plt
@@ -66,7 +65,7 @@ Let us set up the system Hamiltonian, bath and system measurement operators:
 
 ### System Hamiltonian
 
-```{code-cell}
+```{code-cell} ipython3
 # Defining the system Hamiltonian
 eps = 0  # Energy of the 2-level system.
 Del = 0.2  # Tunnelling term
@@ -76,7 +75,7 @@ rho0 = basis(2, 0) * basis(2, 0).dag()
 
 ### System measurement operators
 
-```{code-cell}
+```{code-cell} ipython3
 # Define some operators with which we will measure the system
 # 1,1 element of density matrix - corresonding to groundstate
 P11p = basis(2, 0) * basis(2, 0).dag()
@@ -112,7 +111,7 @@ The corresponding spectral density for the Ohmic case is:
 J(\omega) = \omega \alpha e^{- \frac{\omega}{\omega_c}}
 \end{equation}
 
-```{code-cell}
+```{code-cell} ipython3
 def ohmic_correlation(t, alpha, wc, beta, s=1):
     """The Ohmic bath correlation function as a function of t
     (and the bath parameters).
@@ -132,7 +131,7 @@ def ohmic_correlation(t, alpha, wc, beta, s=1):
     )
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 def ohmic_spectral_density(w, alpha, wc):
     """The Ohmic bath spectral density as a function of w
     (and the bath parameters).
@@ -140,7 +139,7 @@ def ohmic_spectral_density(w, alpha, wc):
     return w * alpha * np.e ** (-w / wc)
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 def ohmic_power_spectrum(w, alpha, wc, beta):
     """The Ohmic bath power spectrum as a function of w
     (and the bath parameters).
@@ -157,7 +156,7 @@ def ohmic_power_spectrum(w, alpha, wc, beta):
 
 Finally, let's set the bath parameters we will work with and write down some measurement operators:
 
-```{code-cell}
+```{code-cell} ipython3
 Q = sigmaz()
 alpha = 3.25
 T = 0.5
@@ -167,7 +166,7 @@ s = 1
 
 And set the cut-off for the HEOM hierarchy:
 
-```{code-cell}
+```{code-cell} ipython3
 # HEOM parameters:
 
 # The max_depth defaults to 5 so that the notebook executes more
@@ -222,7 +221,7 @@ Before obtaining exponential approximations, we first need to construct a
 using the correlation function and the power spectrum. For this example we will
 use the Ohmic Spectral density we defined above
 
-```{code-cell}
+```{code-cell} ipython3
 w = np.linspace(0, 25, 20000)
 J = ohmic_spectral_density(w, alpha, wc)
 ```
@@ -232,7 +231,7 @@ create enviroments from arbitrary spectral densities, correlation functions, or
 power spectrums. Below we show how to construct a `BosonicEnvironment` from a 
 user specified function or array
 
-```{code-cell}
+```{code-cell} ipython3
 # From an array
 sd_env = BosonicEnvironment.from_spectral_density(J=J, wlist=w)
 ```
@@ -242,13 +241,13 @@ correlation function because the temperature of the environment has not been
 specified. So the `BosonicEnvironment`  is not fully characterized by the 
 parameters provided
 
-```{code-cell}
+```{code-cell} ipython3
 sd_env.power_spectrum(w)
 ```
 
 If we want access to these properties we need to provide the Temperature at Initialization
 
-```{code-cell}
+```{code-cell} ipython3
 # From an array
 sd_env = BosonicEnvironment.from_spectral_density(J=J, wlist=w, T=T)
 ```
@@ -256,7 +255,7 @@ sd_env = BosonicEnvironment.from_spectral_density(J=J, wlist=w, T=T)
 Now our bosonic environment can compute the Power Spectrum of the spectral 
 density provided
 
-```{code-cell}
+```{code-cell} ipython3
 # Here we avoid w=0
 np.allclose(
     sd_env.power_spectrum(w[1:]), ohmic_power_spectrum(w[1:], alpha, wc, 1 / T)
@@ -266,7 +265,7 @@ np.allclose(
 Specifying the Temperature also gives the `BosonicEnvironment` access to the 
 correlation function
 
-```{code-cell}
+```{code-cell} ipython3
 tlist = np.linspace(0, 10, 500)
 plt.plot(
     tlist,
@@ -303,14 +302,14 @@ WMax needs to be specified, wMax is the cutoff frequency for which the
 spectral density, or power spectrum has  effectively decayed to zero, after this value the function can be 
 considered to be essentialy zero
 
-```{code-cell}
+```{code-cell} ipython3
 # From a function
 sd_env2 = BosonicEnvironment.from_spectral_density(
     ohmic_spectral_density, T=T, wMax=10 * wc, args={"alpha": alpha, "wc": wc}
 )
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 tlist = np.linspace(0, 10, 500)
 plt.plot(tlist, sd_env2.correlation_function(tlist).real)
 plt.plot(tlist, ohmic_correlation(tlist, alpha, wc, 1 / T).real, "--")
@@ -356,19 +355,19 @@ is reached or the maximum number allowed `Nmax` is reached. The default target
 is a  normalized root mean squared error of $5\times 10^{-6}$, if set to None
 the fit is performed only with the maximum number of exponents specified
 
-```{code-cell}
+```{code-cell} ipython3
 bath, fitinfo = sd_env.approximate("sd", w, Nmax=4)
 ```
 
 To obtain an overview of the results of the fit we may take a look at the summary from the ``fitinfo``
 
-```{code-cell}
+```{code-cell} ipython3
 print(fitinfo["summary"])
 ```
 
 We may see how the number of exponents chosen affects the fit since the approximated functions are available:
 
-```{code-cell}
+```{code-cell} ipython3
 fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(12, 5))
 
 ax1.plot(w, J, label="Original spectral density")
@@ -387,7 +386,7 @@ plt.show()
 
 Here we see a surprisingly large discrepancy in our approximated or effective spectral density. This happens because we are not using enough exponentials from each of the underdamped modes to have an appropiate fit. All modes have the same number of exponents, when not specified it defaults to $1$ which is not enough to model a bath with the temperature considered, let us repeat this with a higher number of exponents.
 
-```{code-cell}
+```{code-cell} ipython3
 bath, fitinfo = sd_env.approximate("sd", w, Nmax=4, Nk=3)
 
 fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(10, 5))
@@ -412,7 +411,7 @@ Since the number of exponents increases simulation time one should go with the l
 
 Let's take a closer look at our last fit by plotting the contribution of each term of the fit:
 
-```{code-cell}
+```{code-cell} ipython3
 # Plot the components of the fit separately:
 plt.rcParams["font.size"] = 25
 plt.rcParams["figure.figsize"] = (10, 5)
@@ -465,13 +464,13 @@ def _sd_fit_model(wlist, a, b, c):
 plot_fit(_sd_fit_model, J, w, lam, gamma, w0)
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 plot_fit_components(_sd_fit_model, J, w, lam, gamma, w0)
 ```
 
 And let's also compare the power spectrum of the fit and the analytical spectral density:
 
-```{code-cell}
+```{code-cell} ipython3
 def plot_power_spectrum(alpha, wc, beta, save=True):
     """Plot the power spectrum of a fit against the actual power spectrum."""
     w = np.linspace(-10, 10, 50000)
@@ -494,7 +493,7 @@ plot_power_spectrum(alpha, wc, 1 / T, save=False)
 
 Now if we want to see the systems's behaviour as we change the number of terms in the fit, we may use this auxiliary function.
 
-```{code-cell}
+```{code-cell} ipython3
 def generate_spectrum_results(Q, N, Nk, max_depth):
     """Run the HEOM with the given bath parameters and
     and return the results of the evolution.
@@ -526,7 +525,7 @@ def generate_spectrum_results(Q, N, Nk, max_depth):
     return results_spectral_fit
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 def plot_result_expectations(plots, axes=None):
     """Plot the expectation values of operators as functions of time.
 
@@ -567,7 +566,7 @@ def plot_result_expectations(plots, axes=None):
 
 Below we generate results for different convergence parameters (number of terms in the fit, number of matsubara terms, and depth of the hierarchy).  For the parameter choices here, we need a relatively large depth of around '11', which can be a little slow.
 
-```{code-cell}
+```{code-cell} ipython3
 # # Generate results for different number of lorentzians in fit:
 
 
@@ -589,7 +588,7 @@ plot_result_expectations(
 );
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 # generate results for different number of Matsubara terms per Lorentzian
 # for max number of Lorentzians:
 
@@ -612,7 +611,7 @@ plot_result_expectations(
 );
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 # Generate results for different depths:
 
 Nc_list = range(2, max_depth)
@@ -635,7 +634,7 @@ plot_result_expectations(
 
 #### We now combine the fitting and correlation function data into one large plot. Here we define a function to plot everything together
 
-```{code-cell}
+```{code-cell} ipython3
 def gen_plots(fs, w, J, t, C, w2, S):
     def plot_cr_fit_vs_actual(t, C, func, axes):
         """Plot the C_R(t) fit."""
@@ -758,7 +757,7 @@ def gen_plots(fs, w, J, t, C, w2, S):
 
 #### And finally plot everything together
 
-```{code-cell}
+```{code-cell} ipython3
 t = np.linspace(0, 15, 1000)
 C = ohmic_correlation(t, alpha, wc, 1 / T)
 w2 = np.concatenate((-np.linspace(10, 1e-2, 100), np.linspace(1e-2, 10, 100)))
@@ -802,7 +801,7 @@ When full_ansatz is True. the ansatz used corresponds to
     \Bigr].
 \end{align}
 
-```{code-cell}
+```{code-cell} ipython3
 def generate_corr_results(N, max_depth):
     tlist = np.linspace(0, 30 * np.pi / Del, 600)
     bath_corr, fitinfo = sd_env.approximate(
@@ -831,7 +830,7 @@ results_corr_fit_pk = [
 ]
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 plot_result_expectations(
     [
         (
@@ -845,7 +844,7 @@ plot_result_expectations(
 );
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(12, 7))
 
 plot_result_expectations(
@@ -888,7 +887,7 @@ axes.legend(loc=0, fontsize=20);
 
  As the ohmic spectrum is popular in the modeling of open quantum systems, it has its own dedicated class, the results above can be reproduced quickly by using the OhmicBath class. This allows for rapid implementation of fitted ohmic baths via the correlation function or spectral density
 
-```{code-cell}
+```{code-cell} ipython3
 obs = OhmicEnvironment(T, alpha, wc, s=1)
 tlist = np.linspace(0, 30 * np.pi / Del, 600)
 ```
@@ -897,7 +896,7 @@ Just like the other `BosonicEnvironment` we can obtain a decaying exponential
 representation of the environment via the `approximate`, let us do the same 
 methods we explored before
 
-```{code-cell}
+```{code-cell} ipython3
 Obath, fitinfo = obs.approximate(
     method="cf", tlist=tlist, Nr_max=4, Ni_max=4, maxfev=1e9, target_rmse=None
 )
@@ -911,7 +910,7 @@ HEOM_ohmic_corr_fit = HEOMSolver(
 results_ohmic_corr_fit = HEOM_ohmic_corr_fit.run(rho0, tlist)
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 Obath2, fitinfo = obs.approximate(method="sd", wlist=w, Nmax=4, Nk=3)
 print(fitinfo["summary"])
 HEOM_ohmic_sd_fit = HEOMSolver(
@@ -976,11 +975,11 @@ we group it with other methods
 
 The method is available via `approximate` passing "prony" as method. Compared to the other approaches showed so far. The Prony based methods, shine on their simplicity no information needs to be known about the function, and one just needs to provide the sampling points, and the Number of Exponents one desires
 
-```{code-cell}
+```{code-cell} ipython3
 tlist2 = np.linspace(0, 40, 100)
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 pbath, fitinfo = obs.approximate("prony", tlist2, Nr=4)
 print(fitinfo["summary"])
 HEOM_ohmic_prony_fit = HEOMSolver(
@@ -995,7 +994,7 @@ results_ohmic_prony_fit = HEOM_ohmic_prony_fit.run(rho0, tlist)
 Similar to how we approximated via prony we can use ESPRIT, the main difference
 between both methods lies in the construction of the pencil matrix
 
-```{code-cell}
+```{code-cell} ipython3
 esbath, fitinfo = obs.approximate("esprit", tlist2, Nr=4, separate=False)
 print(fitinfo["summary"])
 HEOM_ohmic_es_fit = HEOMSolver(
@@ -1036,13 +1035,13 @@ Which allows us to identify
 
 this method works best when the sampling points provided are in the logarithmic scale
 
-```{code-cell}
+```{code-cell} ipython3
 wlist = np.concatenate((-np.logspace(3, -8, 3500), np.logspace(-8, 3, 3500)))
 aaabath, fitinfo = obs.approximate("aaa", wlist, Nmax=8, tol=1e-15)
 print(fitinfo["summary"])
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 HEOM_ohmic_aaa_fit = HEOMSolver(
     Hsys,
     (aaabath, Q),
@@ -1065,12 +1064,12 @@ we fit the power spectrum to a function of the form
 $$S(\omega) = \sum_{k=1}^{N}\frac{2(a_k c_k + b_k (d_k - \omega))}
 {(\omega - d_k)^2 + c_k^2}= 2 \Re \left(\sum_{k} \frac{c_{k}}{\nu_{k}-i \omega} \right)$$
 
-```{code-cell}
+```{code-cell} ipython3
 psbath, fitinfo = obs.approximate("ps", w2, Nmax=4)
 print(fitinfo["summary"])
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 HEOM_ohmic_ps_fit = HEOMSolver(
     Hsys,
     (psbath, Q),
@@ -1098,7 +1097,7 @@ recommended.
 
 ESPIRA I
 
-```{code-cell}
+```{code-cell} ipython3
 tlist4 = np.linspace(0, 20, 1000)
 espibath, fitinfo = obs.approximate("espira-I", tlist4, Nr=4)
 print(fitinfo["summary"])
@@ -1113,7 +1112,7 @@ results_ohmic_espira_fit = HEOM_ohmic_espira_fit.run(rho0, tlist)
 
 ESPIRA-II
 
-```{code-cell}
+```{code-cell} ipython3
 tlist4 = np.linspace(0, 20, 1000)
 espibath2, fitinfo = obs.approximate(
     "espira-II", tlist4, Nr=4, Ni=4, separate=True
@@ -1130,7 +1129,7 @@ results_ohmic_espira2_fit = HEOM_ohmic_espira_fit2.run(rho0, tlist)
 
 Finally we plot the dynamics obtained by the different methods
 
-```{code-cell}
+```{code-cell} ipython3
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(12, 7))
 
 plot_result_expectations(
@@ -1171,7 +1170,7 @@ axes.set_yscale("log")
 
 ## About
 
-```{code-cell}
+```{code-cell} ipython3
 qutip.about()
 ```
 
@@ -1179,7 +1178,7 @@ qutip.about()
 
 This section can include some tests to verify that the expected outputs are generated within the notebook. We put this section at the end of the notebook, so it's not interfering with the user experience. Please, define the tests using assert, so that the cell execution fails if a wrong output is generated.
 
-```{code-cell}
+```{code-cell} ipython3
 assert np.allclose(
     expect(P11p, results_spectral_fit_pk[2].states),
     expect(P11p, results_spectral_fit_pk[3].states),
