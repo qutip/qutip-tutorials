@@ -1,15 +1,14 @@
 ---
 jupytext:
-  formats: ipynb,md:myst
   text_representation:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.17.0
 kernelspec:
-  display_name: qutip-tutorials
-  language: python
   name: python3
+  display_name: Python 3 (ipykernel)
+  language: python
 ---
 
 # HEOM 1b: Spin-Bath model (very strong coupling)
@@ -81,14 +80,14 @@ Note that in the above, and the following, we set $\hbar = k_\mathrm{B} = 1$.
 
 ## Setup
 
-```{code-cell}
+```{code-cell} ipython3
 import contextlib
 import time
 
-import matplotlib.pyplot as plt
 import numpy as np
-import qutip
-from qutip import basis, brmesolve, expect, liouvillian, sigmax, sigmaz
+import matplotlib.pyplot as plt
+
+from qutip import about, basis, brmesolve, expect, liouvillian, sigmax, sigmaz
 from qutip.core.environment import DrudeLorentzEnvironment, system_terminator
 from qutip.solver.heom import HEOMSolver
 
@@ -99,19 +98,19 @@ from qutip.solver.heom import HEOMSolver
 
 Let's define some helper functions for calculating correlation function expansions, plotting results and timing how long operations take:
 
-```{code-cell}
+```{code-cell} ipython3
 def cot(x):
-    """Vectorized cotangent of x."""
+    """ Vectorized cotangent of x. """
     return 1.0 / np.tan(x)
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 @contextlib.contextmanager
 def timer(label):
-    """Simple utility for timing functions:
+    """ Simple utility for timing functions:
 
-    with timer("name"):
-        ... code to time ...
+        with timer("name"):
+            ... code to time ...
     """
     start = time.time()
     yield
@@ -119,9 +118,8 @@ def timer(label):
     print(f"{label}: {end - start}")
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 # Solver options:
-
 
 options = {
     "nsteps": 15000,
@@ -137,26 +135,26 @@ options = {
 
 And let us set up the system Hamiltonian, bath and system measurement operators:
 
-```{code-cell}
+```{code-cell} ipython3
 # Defining the system Hamiltonian
 eps = 0.0  # Energy of the 2-level system.
 Del = 0.2  # Tunnelling term
 Hsys = 0.5 * eps * sigmaz() + 0.5 * Del * sigmax()
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 # Initial state of the system.
 rho0 = basis(2, 0) * basis(2, 0).dag()
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 # System-bath coupling (Drude-Lorentz spectral density)
 Q = sigmaz()  # coupling operator
 
 # Bath properties (see Shi et al., J. Chem. Phys. 130, 084105 (2009)):
 gamma = 1.0  # cut off frequency
-lam = 2.5  # coupling strength
-T = 1.0  # in units where Boltzmann factor is 1
+lam = 2.5    # coupling strength
+T = 1.0      # in units where Boltzmann factor is 1
 beta = 1.0 / T
 
 # HEOM parameters:
@@ -172,7 +170,7 @@ NC = 13
 tlist = np.linspace(0, np.pi / Del, 600)
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 # Define some operators with which we will measure the system
 # 1,1 element of density matrix - corresonding to groundstate
 P11p = basis(2, 0) * basis(2, 0).dag()
@@ -185,24 +183,24 @@ P12p = basis(2, 0) * basis(2, 1).dag()
 
 Let us briefly inspect the spectral density.
 
-```{code-cell}
-bath = DrudeLorentzEnvironment(lam=lam, gamma=gamma, T=T, Nk=500)
+```{code-cell} ipython3
+env = DrudeLorentzEnvironment(lam=lam, gamma=gamma, T=T, Nk=500)
 w = np.linspace(0, 5, 1000)
-J = bath.spectral_density(w)
+J = env.spectral_density(w)
 
 # Plot the results
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 8))
-axes.plot(w, J, "r", linewidth=2)
-axes.set_xlabel(r"$\omega$", fontsize=28)
-axes.set_ylabel(r"J", fontsize=28);
+axes.plot(w, J, 'r', linewidth=2)
+axes.set_xlabel(r'$\omega$', fontsize=28)
+axes.set_ylabel(r'J', fontsize=28);
 ```
 
 ## Simulation 1: Matsubara decomposition, not using Ishizaki-Tanimura terminator
 
-```{code-cell}
+```{code-cell} ipython3
 with timer("RHS construction time"):
-    matsBath = bath.approximate(method="matsubara", Nk=Nk)
-    HEOMMats = HEOMSolver(Hsys, (matsBath, Q), NC, options=options)
+    matsEnv = env.approximate(method="matsubara", Nk=Nk)
+    HEOMMats = HEOMSolver(Hsys, (matsEnv, Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultMats = HEOMMats.run(rho0, tlist)
@@ -210,206 +208,155 @@ with timer("ODE solver time"):
 
 ## Simulation 2: Matsubara decomposition (including terminator)
 
-```{code-cell}
+```{code-cell} ipython3
 with timer("RHS construction time"):
-    matsBath, delta = bath.approximate(
+    matsEnv, delta = env.approximate(
         method="matsubara", Nk=Nk, compute_delta=True
     )
     terminator = system_terminator(Q, delta)
     Ltot = liouvillian(Hsys) + terminator
-    HEOMMatsT = HEOMSolver(Ltot, (matsBath, Q), NC, options=options)
+    HEOMMatsT = HEOMSolver(Ltot, (matsEnv, Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultMatsT = HEOMMatsT.run(rho0, tlist)
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 # Plot the results
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 8))
 
 P11_mats = np.real(expect(resultMats.states, P11p))
 axes.plot(
-    tlist,
-    np.real(P11_mats),
-    "b",
-    linewidth=2,
-    label="P11 (Matsubara)",
+    tlist, np.real(P11_mats),
+    'b', linewidth=2, label="P11 (Matsubara)",
 )
 
 P11_matsT = np.real(expect(resultMatsT.states, P11p))
 axes.plot(
-    tlist,
-    np.real(P11_matsT),
-    "b--",
-    linewidth=2,
+    tlist, np.real(P11_matsT),
+    'b--', linewidth=2,
     label="P11 (Matsubara + Terminator)",
 )
 
-axes.set_xlabel(r"t", fontsize=28)
+axes.set_xlabel(r't', fontsize=28)
 axes.legend(loc=0, fontsize=12);
 ```
 
 ## Simulation 3: Pade decomposition
 
-```{code-cell}
+```{code-cell} ipython3
 # First, compare Matsubara and Pade decompositions
-padeBath = bath.approximate("pade", Nk=Nk)
+padeEnv = env.approximate("pade", Nk=Nk)
 
 
 fig, (ax1, ax2) = plt.subplots(ncols=2, sharey=True, figsize=(16, 8))
 
 ax1.plot(
-    tlist,
-    np.real(bath.correlation_function(tlist)),
-    "r",
-    linewidth=2,
-    label="Exact",
+    tlist, np.real(env.correlation_function(tlist)),
+    "r", linewidth=2, label="Exact",
 )
 ax1.plot(
-    tlist,
-    np.real(matsBath.correlation_function(tlist)),
-    "g--",
-    linewidth=2,
-    label=f"Mats (Nk={Nk})",
+    tlist, np.real(matsEnv.correlation_function(tlist)),
+    "g--", linewidth=2, label=f"Mats (Nk={Nk})",
 )
 ax1.plot(
-    tlist,
-    np.real(padeBath.correlation_function(tlist)),
-    "b--",
-    linewidth=2,
-    label=f"Pade (Nk={Nk})",
+    tlist, np.real(padeEnv.correlation_function(tlist)),
+    "b--", linewidth=2, label=f"Pade (Nk={Nk})",
 )
 
-ax1.set_xlabel(r"t", fontsize=28)
+ax1.set_xlabel(r't', fontsize=28)
 ax1.set_ylabel(r"$C_R(t)$", fontsize=28)
 ax1.legend(loc=0, fontsize=12)
 
 tlist2 = tlist[0:50]
 ax2.plot(
-    tlist2,
-    np.abs(
-        matsBath.correlation_function(tlist2)
-        - bath.correlation_function(tlist2)
-    ),
-    "g",
-    linewidth=2,
-    label="Mats Error",
+    tlist2, np.abs(matsEnv.correlation_function(tlist2)
+                   - env.correlation_function(tlist2)),
+    "g", linewidth=2, label="Mats Error",
 )
 ax2.plot(
-    tlist2,
-    np.abs(
-        padeBath.correlation_function(tlist2)
-        - bath.correlation_function(tlist2)
-    ),
-    "b--",
-    linewidth=2,
-    label="Pade Error",
+    tlist2, np.abs(padeEnv.correlation_function(tlist2)
+                   - env.correlation_function(tlist2)),
+    "b--", linewidth=2, label="Pade Error",
 )
 
-ax2.set_xlabel(r"t", fontsize=28)
+ax2.set_xlabel(r't', fontsize=28)
 ax2.legend(loc=0, fontsize=12);
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 with timer("RHS construction time"):
-    HEOMPade = HEOMSolver(Hsys, (padeBath, Q), NC, options=options)
+    HEOMPade = HEOMSolver(Hsys, (padeEnv, Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultPade = HEOMPade.run(rho0, tlist)
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 # Plot the results
 fig, axes = plt.subplots(figsize=(8, 8))
 
 axes.plot(
-    tlist,
-    np.real(P11_mats),
-    "b",
-    linewidth=2,
-    label="P11 (Matsubara)",
+    tlist, np.real(P11_mats),
+    'b', linewidth=2, label="P11 (Matsubara)",
 )
 axes.plot(
-    tlist,
-    np.real(P11_matsT),
-    "b--",
-    linewidth=2,
-    label="P11 (Matsubara + Terminator)",
+    tlist, np.real(P11_matsT),
+    'b--', linewidth=2, label="P11 (Matsubara + Terminator)",
 )
 
 P11_pade = np.real(expect(resultPade.states, P11p))
 axes.plot(
-    tlist,
-    np.real(P11_pade),
-    "r",
-    linewidth=2,
-    label="P11 (Pade)",
+    tlist, np.real(P11_pade),
+    'r', linewidth=2, label="P11 (Pade)",
 )
 
-axes.set_xlabel(r"t", fontsize=28)
+axes.set_xlabel(r't', fontsize=28)
 axes.legend(loc=0, fontsize=12);
 ```
 
 ## Simulation 4: Fitting approach
 
-In `HEOM 1a: Spin-Bath model (introduction)` a fit is performed manually, here
-we will use the built-in tools. More details about them can be seen in 
+In `HEOM 1a: Spin-Bath model (introduction)` there is an example of a manually performed fit, here
+we will only use the built-in tools. More details about them can be seen in 
 `HEOM 1d: Spin-Bath model, fitting of spectrum and correlation functions`
 
-```{code-cell}
+```{code-cell} ipython3
 tfit = np.linspace(0, 10, 10000)
 lower = [0, -np.inf, -1e-6, -3]
-guess = [np.real(bath.correlation_function(0)) / 10, -10, 0, 0]
+guess = [np.real(env.correlation_function(0)) / 10, -10, 0, 0]
 upper = [5, 0, 1e-6, 0]
 # for better fits increase the first element in upper, or change approximate
 # method that makes the simulation much slower (Larger C(t) as C(0) is fit
 # better)
-envfit, fitinfo = bath.approximate(
-    "cf",
-    tlist=tfit,
-    Nr_max=2,
-    Ni_max=1,
-    full_ansatz=True,
-    sigma=0.1,
-    maxfev=1e6,
-    target_rmse=None,
-    lower=lower,
-    upper=upper,
-    guess=guess,
+
+envfit, fitinfo = env.approximate(
+    "cf", tlist=tfit, Nr_max=2, Ni_max=1, full_ansatz=True,
+    sigma=0.1, maxfev=1e6, target_rmse=None,
+    lower=lower, upper=upper, guess=guess,
 )
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 print(fitinfo["summary"])
 ```
 
-We can quickly compare the result of the Fit with the Pade expansion
+We can quickly compare the result of the fit with the Pade expansion
 
-```{code-cell}
+```{code-cell} ipython3
 fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(16, 8))
 
 ax1.plot(
-    tlist,
-    np.real(bath.correlation_function(tlist)),
-    "r",
-    linewidth=2,
-    label="Exact",
+    tlist, np.real(env.correlation_function(tlist)),
+    "r", linewidth=2, label="Exact",
 )
 ax1.plot(
-    tlist,
-    np.real(envfit.correlation_function(tlist)),
-    "g--",
-    linewidth=2,
-    label="Fit",
-    marker="o",
-    markevery=50,
+    tlist, np.real(envfit.correlation_function(tlist)),
+    "g--", linewidth=2, label="Fit", marker="o", markevery=50,
 )
 ax1.plot(
-    tlist,
-    np.real(padeBath.correlation_function(tlist)),
-    "b--",
-    linewidth=2,
-    label=f"Pade (Nk={Nk})",
+    tlist, np.real(padeEnv.correlation_function(tlist)),
+    "b--", linewidth=2, label=f"Pade (Nk={Nk})",
 )
 
 ax1.set_xlabel(r"t", fontsize=28)
@@ -417,35 +364,25 @@ ax1.set_ylabel(r"$C_R(t)$", fontsize=28)
 ax1.legend(loc=0, fontsize=12)
 
 ax2.plot(
-    tlist,
-    np.imag(bath.correlation_function(tlist)),
-    "r",
-    linewidth=2,
-    label="Exact",
+    tlist, np.imag(env.correlation_function(tlist)),
+    "r", linewidth=2, label="Exact",
 )
 ax2.plot(
-    tlist,
-    np.imag(envfit.correlation_function(tlist)),
-    "g--",
-    linewidth=2,
-    label="Fit",
-    marker="o",
-    markevery=50,
+    tlist, np.imag(envfit.correlation_function(tlist)),
+    "g--", linewidth=2, label="Fit", marker="o", markevery=50,
 )
 ax2.plot(
-    tlist,
-    np.imag(padeBath.correlation_function(tlist)),
-    "b--",
-    linewidth=2,
-    label=f"Pade (Nk={Nk})",
+    tlist, np.imag(padeEnv.correlation_function(tlist)),
+    "b--", linewidth=2, label=f"Pade (Nk={Nk})",
 )
 
 ax2.set_xlabel(r"t", fontsize=28)
 ax2.set_ylabel(r"$C_I(t)$", fontsize=28)
 ax2.legend(loc=0, fontsize=12)
+plt.show()
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 with timer("RHS construction time"):
     # We reduce NC slightly here for speed of execution because we retain
     # 3 exponents in ckAR instead of 1. Please restore full NC for
@@ -458,15 +395,11 @@ with timer("ODE solver time"):
 
 ## Simulation 5: Bloch-Redfield
 
-```{code-cell}
+```{code-cell} ipython3
 with timer("ODE solver time"):
     resultBR = brmesolve(
-        Hsys,
-        rho0,
-        tlist,
-        a_ops=[[sigmaz(), bath]],
-        sec_cutoff=0,
-        options=options,
+        Hsys, rho0, tlist,
+        a_ops=[[sigmaz(), env]], sec_cutoff=0, options=options,
     )
 ```
 
@@ -474,7 +407,7 @@ with timer("ODE solver time"):
 
 Finally, let's plot all of our different results to see how they shape up against each other.
 
-```{code-cell}
+```{code-cell} ipython3
 # Calculate expectation values in the bases:
 P11_mats = np.real(expect(resultMats.states, P11p))
 P11_matsT = np.real(expect(resultMatsT.states, P11p))
@@ -483,7 +416,7 @@ P11_fit = np.real(expect(resultFit.states, P11p))
 P11_br = np.real(expect(resultBR.states, P11p))
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 rcParams = {
     "axes.titlesize": 25,
     "axes.labelsize": 30,
@@ -500,53 +433,39 @@ rcParams = {
 }
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(12, 7))
 
 with plt.rc_context(rcParams):
     # Plot the results
     plt.yticks([0.99, 1.0], [0.99, 1])
     axes.plot(
-        tlist,
-        np.real(P11_mats),
-        "b",
-        linewidth=2,
-        label=f"Matsubara $N_k={Nk}$",
+        tlist, np.real(P11_mats),
+        'b', linewidth=2, label=f"Matsubara $N_k={Nk}$",
     )
     axes.plot(
-        tlist,
-        np.real(P11_matsT),
-        "g--",
-        linewidth=3,
+        tlist, np.real(P11_matsT),
+        'g--', linewidth=3,
         label=f"Matsubara $N_k={Nk}$ & terminator",
     )
     axes.plot(
-        tlist,
-        np.real(P11_pade),
-        "y-.",
-        linewidth=2,
-        label=f"Padé $N_k={Nk}$",
+        tlist, np.real(P11_pade),
+        'y-.', linewidth=2, label=f"Padé $N_k={Nk}$",
     )
     axes.plot(
-        tlist,
-        np.real(P11_fit),
-        "r",
-        dashes=[3, 2],
-        linewidth=2,
+        tlist, np.real(P11_fit),
+        'r', dashes=[3, 2], linewidth=2,
         label=r"Fit $N_f = 3$, $N_k=15 \times 10^3$",
     )
     axes.plot(
-        tlist,
-        np.real(P11_br),
-        "b-.",
-        linewidth=1,
-        label="Bloch Redfield",
+        tlist, np.real(P11_br),
+        'b-.', linewidth=1, label="Bloch Redfield",
     )
 
-    axes.locator_params(axis="y", nbins=6)
-    axes.locator_params(axis="x", nbins=6)
-    axes.set_ylabel(r"$\rho_{11}$", fontsize=30)
-    axes.set_xlabel(r"$t\;\gamma$", fontsize=30)
+    axes.locator_params(axis='y', nbins=6)
+    axes.locator_params(axis='x', nbins=6)
+    axes.set_ylabel(r'$\rho_{11}$', fontsize=30)
+    axes.set_xlabel(r'$t\;\gamma$', fontsize=30)
     axes.set_xlim(tlist[0], tlist[-1])
     axes.set_ylim(0.98405, 1.0005)
     axes.legend(loc=0)
@@ -554,15 +473,15 @@ with plt.rc_context(rcParams):
 
 ## About
 
-```{code-cell}
-qutip.about()
+```{code-cell} ipython3
+about()
 ```
 
 ## Testing
 
 This section can include some tests to verify that the expected outputs are generated within the notebook. We put this section at the end of the notebook, so it's not interfering with the user experience. Please, define the tests using assert, so that the cell execution fails if a wrong output is generated.
 
-```{code-cell}
+```{code-cell} ipython3
 assert np.allclose(P11_matsT, P11_pade, rtol=1e-3)
 assert np.allclose(P11_matsT, P11_fit, rtol=1e-3)
 ```

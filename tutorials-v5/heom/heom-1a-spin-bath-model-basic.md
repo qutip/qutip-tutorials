@@ -787,7 +787,7 @@ We then fit this sum with standard least-squares approach:
 
 ```python
 def wrapper_fit_func(x, N, args):
-    """Fit function wrapper that unpacks its arguments."""
+    """ Fit function wrapper that unpacks its arguments. """
     x = np.array(x)
     a = np.array(args[:N])
     b = np.array(args[N:(2 * N)])
@@ -795,9 +795,9 @@ def wrapper_fit_func(x, N, args):
 
 
 def fit_func(x, a, b):
-    """Fit function. Calculates the value of the
-    correlation function at each x, given the
-    fit parameters in a and b.
+    """ Fit function. Calculates the value of the
+        correlation function at each x, given the
+        fit parameters in a and b.
     """
     return np.sum(
         a[:, None] * np.exp(np.multiply.outer(b, x)),
@@ -806,7 +806,7 @@ def fit_func(x, a, b):
 
 
 def fitter(ans, tlist, k):
-    """Compute fit with k exponents."""
+    """ Compute fit with k exponents. """
     upper_a = abs(max(ans, key=abs)) * 10
     # sets initial guesses:
     guess = (
