@@ -1,19 +1,19 @@
 ---
-jupyter:
-  jupytext:
-    text_representation:
-      extension: .md
-      format_name: markdown
-      format_version: '1.3'
-      jupytext_version: 1.17.0
-  kernelspec:
-    display_name: Python 3 (ipykernel)
-    language: python
-    name: python3
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.17.0
+kernelspec:
+  display_name: Python 3 (ipykernel)
+  language: python
+  name: python3
 ---
 
 # HEOM 1a: Spin-Bath model (introduction)
 
++++
 
 ## Introduction
 
@@ -73,10 +73,11 @@ density is given by:
 
 Note that in the above, and the following, we set $\hbar = k_\mathrm{B} = 1$.
 
++++
 
 ## Setup
 
-```python
+```{code-cell} ipython3
 import contextlib
 import time
 
@@ -96,18 +97,17 @@ from qutip.solver.heom import HEOMSolver, HSolverDL
 %matplotlib inline
 ```
 
-
 ## Helper functions
 
 Let's define some helper functions for calculating correlation function expansions, plotting results and timing how long operations take:
 
-```python
+```{code-cell} ipython3
 def cot(x):
     """Vectorized cotangent of x."""
     return 1.0 / np.tan(x)
 ```
 
-```python
+```{code-cell} ipython3
 def dl_matsubara_params(lam, gamma, T, nk):
     """Calculation of the real and imaginary expansions of the Drude-Lorenz
     correlation functions.
@@ -128,7 +128,7 @@ def dl_matsubara_params(lam, gamma, T, nk):
     return ckAR, vkAR, ckAI, vkAI
 ```
 
-```python
+```{code-cell} ipython3
 def plot_result_expectations(plots, axes=None):
     """Plot the expectation values of operators as functions of time.
 
@@ -156,7 +156,7 @@ def plot_result_expectations(plots, axes=None):
     return fig
 ```
 
-```python
+```{code-cell} ipython3
 @contextlib.contextmanager
 def timer(label):
     """Simple utility for timing functions:
@@ -170,7 +170,7 @@ def timer(label):
     print(f"{label}: {end - start}")
 ```
 
-```python
+```{code-cell} ipython3
 # Default solver options:
 
 default_options = {
@@ -187,19 +187,19 @@ default_options = {
 
 And let us set up the system Hamiltonian, bath and system measurement operators:
 
-```python
+```{code-cell} ipython3
 # Defining the system Hamiltonian
 eps = 0.5  # Energy of the 2-level system.
 Del = 1.0  # Tunnelling term
 Hsys = 0.5 * eps * sigmaz() + 0.5 * Del * sigmax()
 ```
 
-```python
+```{code-cell} ipython3
 # Initial state of the system.
 rho0 = basis(2, 0) * basis(2, 0).dag()
 ```
 
-```python
+```{code-cell} ipython3
 # System-bath coupling (Drude-Lorentz spectral density)
 Q = sigmaz()  # coupling operator
 
@@ -217,7 +217,7 @@ Nk = 2  # terms in the Matsubara expansion of the correlation function
 tlist = np.linspace(0, 50, 1000)
 ```
 
-```python
+```{code-cell} ipython3
 # Define some operators with which we will measure the system
 # 1,1 element of density matrix - corresonding to groundstate
 P11p = basis(2, 0) * basis(2, 0).dag()
@@ -230,7 +230,7 @@ P12p = basis(2, 0) * basis(2, 1).dag()
 
 Now we are ready to begin. Let's look at the shape of the spectral density given the bath parameters we defined above:
 
-```python
+```{code-cell} ipython3
 def plot_spectral_density():
     """Plot the Drude-Lorentz spectral density"""
     w = np.linspace(0, 5, 1000)
@@ -252,7 +252,7 @@ The HEOM code will optimize these, and reduce the number of exponents when
 real and imaginary parts have the same exponent. This is clearly the case
 for the first term in the vkAI and vkAR lists.
 
-```python
+```{code-cell} ipython3
 ckAR, vkAR, ckAI, vkAI = dl_matsubara_params(nk=Nk, lam=lam, gamma=gamma, T=T)
 ```
 
@@ -266,7 +266,7 @@ to solve for dynamics or steady-state.
 Below we create the bath and solver and then solve for the dynamics by
 calling `.run(rho0, tlist)`.
 
-```python
+```{code-cell} ipython3
 options = {**default_options}
 
 with timer("RHS construction time"):
@@ -277,7 +277,7 @@ with timer("ODE solver time"):
     resultMats = HEOMMats.run(rho0, tlist)
 ```
 
-```python
+```{code-cell} ipython3
 plot_result_expectations(
     [
         (resultMats, P11p, "b", "P11 Mats"),
@@ -294,7 +294,7 @@ baths for other spectral densities.
 
 Below we show how to use this built-in functionality:
 
-```python
+```{code-cell} ipython3
 # Compare to built-in Drude-Lorentz bath:
 
 with timer("RHS construction time"):
@@ -308,7 +308,7 @@ with timer("ODE solver time"):
     result_dlbath = HEOM_dlbath.run(rho0, tlist)
 ```
 
-```python
+```{code-cell} ipython3
 plot_result_expectations(
     [
         (result_dlbath, P11p, "b", "P11 (DrudeLorentzEnvironment)"),
@@ -321,7 +321,7 @@ The `DrudeLorentzEnvironment` class also allows us to easily obtain the power sp
 
 The `DrudeLorentzEnvironment` computes the exact correlation function using the Pade approximation. The number of terms to use defaults to $10$, but when simulating low temperatures, $10$ Pade exponents may noy be enough. More details about the Pade approximation are provided below. Next we show how to use this built-in functionality:
 
-```python
+```{code-cell} ipython3
 w = np.linspace(-10, 20, 1000)
 w2 = np.linspace(0, 20, 1000)
 
@@ -348,7 +348,7 @@ We also provide a legacy class, `HSolverDL`, which calculates the
 Drude-Lorentz correlation functions automatically, to be backwards
 compatible with the previous HEOM solver in QuTiP:
 
-```python
+```{code-cell} ipython3
 # Compare to legacy class:
 
 # The legacy class performs the above collation of coefficients automatically,
@@ -361,7 +361,7 @@ with timer("ODE solver time"):
     resultLegacy = HEOMlegacy.run(rho0, tlist)  # normal  115
 ```
 
-```python
+```{code-cell} ipython3
 plot_result_expectations(
     [
         (resultLegacy, P11p, "b", "P11 Legacy"),
@@ -370,7 +370,6 @@ plot_result_expectations(
 );
 ```
 
-<!-- #region -->
 Another legacy class kept for convenience is the `DrudeLorentzBath`. The code
 ```python
 dlenv = DrudeLorentzEnvironment(lam=lam, gamma=gamma, T=T)
@@ -382,7 +381,8 @@ that we used above is equivalent to the following code:
 dlbath = DrudeLorentzBath(Q, lam=lam, gamma=gamma, T=T, Nk=Nk)
 HEOM_dlbath = HEOMSolver(Hsys, dlbath, NC, options=options)
 ```
-<!-- #endregion -->
+
++++
 
 ## Ishizaki-Tanimura Terminator
 
@@ -412,7 +412,7 @@ This is clearer if we plot the correlation function with a large number of
 Matsubara terms. To create the plot, we use the utility function of the
 `DrudeLorentzEnvironment` class mentioned above.
 
-```python
+```{code-cell} ipython3
 def plot_correlation_expansion_divergence():
     """We plot the correlation function with a large number of Matsubara terms
     to show that the real part is slowly diverging at t = 0.
@@ -448,7 +448,7 @@ plot_correlation_expansion_divergence()
 
 Let us evaluate the result including this Ishizaki-Tanimura terminator:
 
-```python
+```{code-cell} ipython3
 # Run HEOM solver including the Ishizaki-Tanimura terminator
 
 # Notes:
@@ -487,7 +487,7 @@ with timer("ODE solver time"):
     resultMatsT = HEOMMatsT.run(rho0, tlist)
 ```
 
-```python
+```{code-cell} ipython3
 plot_result_expectations(
     [
         (resultMatsT, P11p, "b", "P11 Mats + Term"),
@@ -498,7 +498,7 @@ plot_result_expectations(
 
 Or using the built-in Drude-Lorentz environment we can write simply:
 
-```python
+```{code-cell} ipython3
 options = {**default_options, "rtol": 1e-14, "atol": 1e-14}
 
 with timer("RHS construction time"):
@@ -512,7 +512,7 @@ with timer("ODE solver time"):
     result_dlbath_T = HEOM_dlbath_T.run(rho0, tlist)
 ```
 
-```python
+```{code-cell} ipython3
 plot_result_expectations([
     (result_dlbath_T, P11p, "b", "P11 Mats (DrudeLorentzEnvironment + Term)"),
     (result_dlbath_T, P12p, "r", "P12 Mats (DrudeLorentzEnvironment + Term)"),
@@ -521,7 +521,7 @@ plot_result_expectations([
 
 We can compare the solution obtained from the QuTiP Bloch-Redfield solver:
 
-```python
+```{code-cell} ipython3
 options = {**default_options}
 
 with timer("ODE solver time"):
@@ -530,7 +530,7 @@ with timer("ODE solver time"):
     )
 ```
 
-```python
+```{code-cell} ipython3
 plot_result_expectations(
     [
         (resultMats, P11p, "b", "P11 Mats"),
@@ -545,11 +545,12 @@ plot_result_expectations(
 
 ## Padé decomposition
 
++++
 
 The Matsubara decomposition is not the only option.  We can also use the
 faster-converging Pade decomposition.
 
-```python
+```{code-cell} ipython3
 def deltafun(j, k):
     if j == k:
         return 1.0
@@ -700,7 +701,7 @@ ax1.set_ylabel(r"Error")
 ax1.legend();
 ```
 
-```python
+```{code-cell} ipython3
 # put pade parameters in lists for heom solver
 ckAR = [np.real(eta) + 0j for eta in etapLP]
 ckAI = [np.imag(etapLP[0]) + 0j]
@@ -717,7 +718,7 @@ with timer("ODE solver time"):
     resultPade = HEOMPade.run(rho0, tlist)
 ```
 
-```python
+```{code-cell} ipython3
 plot_result_expectations(
     [
         (resultMats, P11p, "b", "P11 Mats"),
@@ -740,7 +741,7 @@ Padé decomposition approximation and its terminator (although the terminator
 does not provide much improvement here,because the Padé expansion already fits 
 the correlation function well):
 
-```python
+```{code-cell} ipython3
 options = {**default_options, "rtol": 1e-14, "atol": 1e-14}
 
 with timer("RHS construction time"):
@@ -752,7 +753,7 @@ with timer("ODE solver time"):
     result_dlpbath_T = HEOM_dlpbath_T.run(rho0, tlist)
 ```
 
-```python
+```{code-cell} ipython3
 plot_result_expectations(
     [
         (result_dlpbath_T, P11p, "b", "P11 Padé + Term"),
@@ -771,7 +772,7 @@ manually below, and then show how to do it with the built-in tools.
 For the manual fit we first we collect a large sum of Pade terms for 
 many time steps:
 
-```python
+```{code-cell} ipython3
 tlist2 = np.linspace(0, 2, 10000)
 
 corr_100_t10k = dlenv.correlation_function(tlist2, Nk=100)
@@ -785,7 +786,7 @@ corrRMats = np.real(dlenv_approx.correlation_function(tlist2))
 
 We then fit this sum with standard least-squares approach:
 
-```python
+```{code-cell} ipython3
 def wrapper_fit_func(x, N, args):
     """ Fit function wrapper that unpacks its arguments. """
     x = np.array(x)
@@ -837,7 +838,7 @@ def fitter(ans, tlist, k):
     return (a, b)
 ```
 
-```python
+```{code-cell} ipython3
 kR = 4  # number of exponents to use for real part
 poptR = []
 with timer("Correlation (real) fitting time"):
@@ -853,7 +854,7 @@ with timer("Correlation (imaginary) fitting time"):
 
 And plot the results of the fits:
 
-```python
+```{code-cell} ipython3
 # Define line styles and colors
 linestyles = ["-", "--", "-.", ":", (0, (3, 1, 1, 1)), (0, (5, 1))]
 colors = ["blue", "green", "purple", "orange", "red", "brown"]
@@ -901,7 +902,7 @@ fig.suptitle(
 plt.show()
 ```
 
-```python
+```{code-cell} ipython3
 # Set the exponential coefficients from the fit parameters
 
 ckAR1 = poptR[-1][0]
@@ -917,7 +918,7 @@ vkAI1 = poptI[-1][1]
 vkAI = [-x + 0j for x in vkAI1]
 ```
 
-```python
+```{code-cell} ipython3
 # overwrite imaginary fit with analytical value (not much reason to use the
 # fit for this)
 
@@ -925,7 +926,7 @@ ckAI = [lam * gamma * (-1.0) + 0.0j]
 vkAI = [gamma + 0.0j]
 ```
 
-```python
+```{code-cell} ipython3
 options = {**default_options}
 
 NC = 4
@@ -938,7 +939,7 @@ with timer("ODE solver time"):
     resultFit = HEOMFit.run(rho0, tlist)
 ```
 
-```python
+```{code-cell} ipython3
 plot_result_expectations(
     [
         (resultFit, P11p, "b", "P11 Fit"),
@@ -951,7 +952,7 @@ Now we use the built-in fitting functions. The `BosonicEnvironment` class includ
 method that performs this fit automatically. More information on how the
 built-in functios work can be found in `HEOM 1d: Spin-Bath model, fitting of spectrum and correlation functions`
 
-```python
+```{code-cell} ipython3
 max_val = dlenv.correlation_function(0).real
 guess = [max_val / 3, 0, 0, 0]
 lower = [-max_val, -np.inf, -np.inf, -np.inf]
@@ -965,15 +966,15 @@ The `approximate("cf", ...)` method outputs an `ExponentialBosonicEnvironment` o
 which contains a decaying exponential representation of the original 
 environment , and a dictionary containing all information related to the fit.
 The dictionary contains a summary of the fir information and the normalized 
-root mean squared error, which assesses how good the fit is. 
+root mean squared error, which assesses how good the fit is.
 
-```python
+```{code-cell} ipython3
 print(fitinfo["summary"])
 ```
 
 We can then compare the result of the built-in fit with the manual fit
 
-```python
+```{code-cell} ipython3
 # Create a single figure with two subplots
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
 
@@ -1000,7 +1001,7 @@ plt.tight_layout(rect=[0, 0.03, 1, 0.95])
 plt.show()
 ```
 
-```python
+```{code-cell} ipython3
 options = {**default_options}
 
 with timer("RHS construction time"):
@@ -1010,7 +1011,7 @@ with timer("ODE solver time"):
     resultFit_2 = HEOMFit_2.run(rho0, tlist)
 ```
 
-```python
+```{code-cell} ipython3
 plot_result_expectations(
     [
         (resultFit, P11p, "b", "P11 Fit"),
@@ -1023,13 +1024,14 @@ plot_result_expectations(
 
 ## A reaction coordinate approach
 
++++
 
 Here we construct a reaction coordinate inspired model to capture the
 steady-state behavior, and compare to the HEOM prediction. This result is
 more accurate for narrow spectral densities.  We will use the population and
 coherence from this cell in our final plot below.
 
-```python
+```{code-cell} ipython3
 dot_energy, dot_state = Hsys.eigenstates()
 deltaE = dot_energy[1] - dot_energy[0]
 
@@ -1076,7 +1078,7 @@ P11RC = tensor(qeye(NRC), basis(2, 0) * basis(2, 0).dag())
 
 Finally, let's plot all of our different results to see how they shape up against each other.
 
-```python
+```{code-cell} ipython3
 rcParams = {
     "axes.titlesize": 25,
     "axes.labelsize": 30,
@@ -1093,7 +1095,7 @@ rcParams = {
 }
 ```
 
-```python
+```{code-cell} ipython3
 fig, axes = plt.subplots(2, 1, sharex=False, figsize=(12, 15))
 
 with plt.rc_context(rcParams):
@@ -1174,10 +1176,11 @@ with plt.rc_context(rcParams):
 
 And that's the end of a detailed first dive into modeling bosonic environments with the HEOM.
 
++++
 
 ## About
 
-```python
+```{code-cell} ipython3
 about()
 ```
 
@@ -1185,7 +1188,7 @@ about()
 
 This section can include some tests to verify that the expected outputs are generated within the notebook. We put this section at the end of the notebook, so it's not interfering with the user experience. Please, define the tests using assert, so that the cell execution fails if a wrong output is generated.
 
-```python
+```{code-cell} ipython3
 # Check P11p
 assert np.allclose(
     expect(P11p, resultMatsT.states),
