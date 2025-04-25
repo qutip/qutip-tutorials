@@ -17,7 +17,7 @@ kernelspec:
 
 ## Introduction
 
-Here we model a single fermion coupled to two electronic leads or reservoirs (e.g.,  this can describe a single quantum dot, a molecular transistor, etc).  Note that in this implementation we primarily follow the definitions used by Christian Schinabeck in his dissertation https://opus4.kobv.de/opus4-fau/files/10984/DissertationChristianSchinabeck.pdf and related publications.
+Here we model a single fermion coupled to two electronic leads or reservoirs (e.g.,  this can describe a single quantum dot, a molecular transistor, etc).  Note that in this implementation we primarily follow the definitions used by Christian Schinabeck in his dissertation https://open.fau.de/items/36fdd708-a467-4b59-bf4e-4a2110fbc431 and related publications.
 
 Notation:
 
