@@ -139,21 +139,21 @@ def create_three_site_jchm(N, omega_c, omega_a, g, J):
     
     # Construct the Hamiltonian
     
-    # 1. Cavity energy terms: ℏωc∑a†a
+    # 1. Cavity energy terms: 
     # These terms represent the energy of photons in each cavity
     H_cavity = omega_c * (c1.dag() * c1 + c2.dag() * c2 + c3.dag() * c3)
     
-    # 2. Atom energy terms: (ℏωa/2)∑σz
+    # 2. Atom energy terms: 
     # These terms represent the energy of each two-level atom
     H_atom = 0.5 * omega_a * (sz1 + sz2 + sz3)
     
-    # 3. Cavity-atom interaction terms: ℏg∑(a†σ- + aσ+)
+    # 3. Cavity-atom interaction terms: 
     # These terms represent the interaction between cavities and atoms (absorption/emission)
     H_interaction = g * ((c1.dag() * sm1 + c1 * sp1) + 
                          (c2.dag() * sm2 + c2 * sp2) + 
                          (c3.dag() * sm3 + c3 * sp3))
     
-    # 4. Photon hopping terms: -J∑(a†_i a_{i+1} + a†_{i+1} a_i)
+    # 4. Photon hopping terms:
     # These terms allow photons to tunnel between adjacent cavities
     H_hopping = -J * ((c1.dag() * c2 + c2.dag() * c1) + 
                       (c2.dag() * c3 + c3.dag() * c2))
@@ -225,7 +225,7 @@ The time evolution of a quantum state is governed by the Schrödinger equation:
 
 $$i\hbar\frac{d|\psi(t)\rangle}{dt} = H|\psi(t)\rangle$$
 
-In QuTiP, we use the `mesolve` function to numerically solve this equation. For a closed quantum system without dissipation, the dynamics will be purely coherent, showing quantum oscillations as photons hop between cavities and interact with atoms.
+In QuTiP, we use the `mesolve` function to numerically solve this equation. For a closed quantum system without dissipation, the dynamics will be purely coherent, showing quantum oscillations as photons hop between cavities and interact with atoms. We usually use `sesolve` for closed quantum system, but here `mesolve` will delegate it to `sesolve`. 
 
 ```python
 # Create initial state: first cavity has one photon, all atoms in ground state
@@ -385,13 +385,15 @@ To better visualize how photons propagate through our three-site chain, we'll cr
 In the JCHM, photons don't simply move from one cavity to the next in a classical way. Instead, they show quantum mechanical wave-like behavior, with interference effects and probability amplitudes spreading across the lattice. The propagation pattern depends on both the hopping strength J and the cavity-atom coupling strength g.
 
 ```python
-# Calculate time evolution with finer time resolution for a longer period
-tlist_long = np.linspace(0, 60, 300)
-result_long = mesolve(H, psi0, tlist_long, [], ops['cavity_n'])
+# Calculate time evolution with finer time resolution
+tlist1 = np.linspace(0, 30, 1000)
+result = mesolve(H, psi0, tlist1, [], e_ops=ops['cavity_n'])
+
+photon_data = np.array([result.expect[0], result.expect[1], result.expect[2]])
 
 # Create a color plot showing photon propagation
 plt.figure(figsize=(10, 6))
-plt.imshow(np.array(result_long.expect).T, aspect='auto', 
+plt.imshow(photon_data, aspect='auto', 
            extent=[0, tlist_long[-1], 0.5, 3.5],
            origin='lower', interpolation='bilinear', cmap='viridis')
 plt.colorbar(label='Photon number')
