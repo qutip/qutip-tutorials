@@ -7,7 +7,7 @@ jupyter:
       format_version: '1.3'
       jupytext_version: 1.16.4
   kernelspec:
-    display_name: qutip-dev
+    display_name: qutip
     language: python
     name: python3
 ---
@@ -65,14 +65,14 @@ We start by importing the necessary packages
 <!-- #endregion -->
 
 ```python
-import numpy as np
 import matplotlib.pyplot as plt
-from qutip import tensor,qeye,spre,operator_to_vector,expect,qeye,fdestroy
-from qutip.solver.heom import HEOMSolver
-from qutip.core import LorentzianEnvironment
-import  scipy.sparse as sp
-from scipy.sparse.linalg import lgmres
+import numpy as np
 import qutip
+import scipy.sparse as sp
+from qutip import expect, fdestroy, spre
+from qutip.core import LorentzianEnvironment
+from qutip.solver.heom import HEOMSolver
+from scipy.sparse.linalg import lgmres
 
 %matplotlib inline
 ```
@@ -84,31 +84,31 @@ our fermionic environment using the `LorentzianEnvironment`  class from `QuTiP`
 # Simulation Parameters
 # Ncc=2 is chosen for speed for more accurate results use Nc=5
 Ncc = 2
-Nk1 = 2 # We choose 2 Pade exponents for the first simulation
-Nk2= 4 # 4 for the second one
+Nk1 = 2  # We choose 2 Pade exponents for the first simulation
+Nk2 = 4  # 4 for the second one
 
-N = 2 # 2 fermionic sites
-d1 = fdestroy(N,0) # first site
-d2 = fdestroy(N,1) # second site
+N = 2  # 2 fermionic sites
+d1 = fdestroy(N, 0)  # first site
+d2 = fdestroy(N, 1)  # second site
 
 # Bath paramters: both system and bath parameters are taken from Cirio et al.
-mu = 0.  #chemical potential
-Gamma  = 1  #coupling strength
-W = 2.5 #bath width
+mu = 0.0  # chemical potential
+Gamma = 1  # coupling strength
+W = 2.5  # bath width
 
-#system params:
-#coulomb repulsion
+# system params:
+# coulomb repulsion
 U = 3 * np.pi * Gamma
-#impurity energy
-w0 = - U / 2.
+# impurity energy
+w0 = -U / 2.0
 
-T = 0.2 * Gamma # Temperature
+T = 0.2 * Gamma  # Temperature
 
 # Hamiltonian of the system
-H = w0 *(d1.dag() * d1 + d2.dag() * d2) + U * d1.dag() * d1 * d2.dag() * d2
+H = w0 * (d1.dag() * d1 + d2.dag() * d2) + U * d1.dag() * d1 * d2.dag() * d2
 
 # Environment
-env = LorentzianEnvironment(W=W,gamma=2*Gamma,T=T,mu=mu)
+env = LorentzianEnvironment(W=W, gamma=2 * Gamma, T=T, mu=mu)
 ```
 
 In our example both leads will be identical environments, we now use the
@@ -117,8 +117,8 @@ representations of our environment which we will use as leads
 
 ```python
 # On qutip master branch this is approx_by_pade instead of approximate
-envL = env.approximate("pade",Nk=Nk1,tag="L") #left lead
-envR = env.approximate("pade",Nk=Nk1,tag="R") #right lead
+envL = env.approximate("pade", Nk=Nk1, tag="L")  # left lead
+envR = env.approximate("pade", Nk=Nk1, tag="R")  # right lead
 ```
 
 ### Simulation
@@ -127,9 +127,9 @@ We now proceed to setup the heom solver, and find the solution for the steady
 state
 
 ```python
-HEOMPade = HEOMSolver(H, [(envL,d1),(envR,d2)], Ncc)  
-rhoss, fullss= HEOMPade.steady_state()
-expect(rhoss, d1.dag()*d1)
+HEOMPade = HEOMSolver(H, [(envL, d1), (envR, d2)], Ncc)
+rhoss, fullss = HEOMPade.steady_state()
+expect(rhoss, d1.dag() * d1)
 ```
 
 <!-- #region -->
@@ -169,7 +169,8 @@ e^{i \omega t} C_{S}^{(-)}(t)+ C_{S}^{(+)}(t) e^{-i \omega t}\right)$
 To obtain this consider 
 
 $C_{S}^{(\pm)}(w) = \int_{0}^{\infty} dt C_{S}^{(\pm)}(t) e^{ \mp i \omega t}
-=\int_{0}^{\infty} dt \langle d_{1}^{(\pm)}(\tau) d_{1}^{\mp}(0) \rangle e^{\mp i \omega t}
+=\int_{0}^{\infty} dt \langle d_{1}^{(\pm)}(\tau) d_{1}^{\mp}(0) \rangle 
+e^{\mp i \omega t}
 =\int_{0}^{\infty} dt \langle \langle d_{1}^{(\pm)} | 
 e^{ (L \mp i \omega) t} |(d_{1}^{\mp})_{ss} \rangle  \rangle
 = - \langle \langle d_{1}^{(\pm)} | 
@@ -192,73 +193,72 @@ from the steady state and the HEOM generator  ($\mathcal{L}$)
 <!-- #endregion -->
 
 ```python
-
-def prepare_matrices(result,fullss):
+def prepare_matrices(result, fullss):
     """Prepares constant matrices to be used
     at each w"""
-    L=sp.csr_matrix(result.rhs(0).full())
-    sup_dim = result._sup_shape # size of vectorized Liouvillian
-    ado_number  = result._n_ados # number of ADOS
-    rhoss = fullss._ado_state.ravel() # flattened steady state 
-    ado_identity = sp.identity(ado_number, format='csr')
-    #d1 in the system+ADO space
-    d1_big = sp.kron(ado_identity, sp.csr_matrix(spre(d1).full())) 
+    L = sp.csr_matrix(result.rhs(0).full())
+    sup_dim = result._sup_shape  # size of vectorized Liouvillian
+    ado_number = result._n_ados  # number of ADOS
+    rhoss = fullss._ado_state.ravel()  # flattened steady state
+    ado_identity = sp.identity(ado_number, format="csr")
+    # d1 in the system+ADO space
+    d1_big = sp.kron(ado_identity, sp.csr_matrix(spre(d1).full()))
     d1ss = np.array(d1_big @ rhoss, dtype=complex)
-    #d1dag in the system+ADO space
+    # d1dag in the system+ADO space
     d1dag_big = sp.kron(ado_identity, sp.csr_matrix(spre(d1.dag()).full()))
-    d1dagss = np.array(d1dag_big @  rhoss, dtype=complex)
+    d1dagss = np.array(d1dag_big @ rhoss, dtype=complex)
     # identity on system and Full space
     Is = sp.csr_matrix(np.eye(int(np.sqrt(sup_dim))).ravel().T)
     I = sp.identity(len(rhoss))
-    return  Is,I,d1dagss,d1ss,L, d1dag_big, d1_big, sup_dim
+    return Is, I, d1dagss, d1ss, L, d1dag_big, d1_big, sup_dim
 
 
-def density_of_states(wlist,result,fullss):
+def density_of_states(wlist, result, fullss):
     r"""
     Calculates $C_{S}^{(\pm)}(w)$
     Returns $2 \Re(C_{S}^{(-)}(w)+\overline{C}_{S}^{(+)}(w)))$
     """
     ddagd = []
     dddag = []
-    Is,I,d1dagss,d1ss,L, d1dag, d1,sup_dim=prepare_matrices(result,fullss)
+    (Is, I, d1dagss, d1ss, 
+     L, d1dag, d1, sup_dim) = prepare_matrices(result, fullss)
     for w in wlist:
         # Linear Problem for C_{s}^{(+)}
-        x, _= lgmres((L-1.0j*w*I), d1ss,atol=1e-8)
-        Cp1 = d1dag  @ x # inner product on ADOS
-        Cp =  (Is @ Cp1[:sup_dim]) # inner product on system
+        x, _ = lgmres((L - 1.0j * w * I), d1ss, atol=1e-8)
+        Cp1 = d1dag @ x  # inner product on ADOS
+        Cp = Is @ Cp1[:sup_dim]  # inner product on system
         ddagd.append(Cp)
         # Linear Problem for C_{s}^{(-)}
-        x, _= lgmres((L+1.0j*w*I),  d1dagss,atol=1e-8)
-        Cm1 = d1 @ x # inner product on ADOS
-        Cm =  (Is @ Cm1[:sup_dim]) # inner product on system
+        x, _ = lgmres((L + 1.0j * w * I), d1dagss, atol=1e-8)
+        Cm1 = d1 @ x  # inner product on ADOS
+        Cm = Is @ Cm1[:sup_dim]  # inner product on system
         dddag.append(Cm)
-        
-    return -2*(np.array(ddagd).flatten()+np.array(dddag).flatten()).real
 
+    return -2 * (np.array(ddagd).flatten() + np.array(dddag).flatten()).real
 ```
 
 We now proceed with the calculation
 
 ```python
-wlist = np.linspace(-10,15,500)
+wlist = np.linspace(-10, 15, 500)
 
-ddos=density_of_states(wlist,HEOMPade,fullss)
+ddos = density_of_states(wlist, HEOMPade, fullss)
 ```
 
 Let us take a look at the density of states, we expect a peak around $w=0$
 as in [Cirio et al](https://journals.aps.org/prresearch/abstract/10.1103/PhysRevResearch.5.033011)
 
 ```python
-plt.plot(wlist,ddos,label=r"$N_k = 2$",linewidth=4)
+plt.plot(wlist, ddos, label=r"$N_k = 2$", linewidth=4)
 
 plt.legend(fontsize=10)
 
-plt.xlim(-10,15)
-plt.yticks([0.,1,2],[0,1,2])
-plt.xlabel(r"$\omega/\Gamma$",fontsize=20,labelpad=-10)
-plt.ylabel(r"$2\pi \Gamma A(\omega)$ ",fontsize=20)
+plt.xlim(-10, 15)
+plt.yticks([0.0, 1, 2], [0, 1, 2])
+plt.xlabel(r"$\omega/\Gamma$", fontsize=20, labelpad=-10)
+plt.ylabel(r"$2\pi \Gamma A(\omega)$ ", fontsize=20)
 
-         
+
 plt.show()
 ```
 
@@ -282,22 +282,22 @@ into account we just set the odd_parity argument to True on the HEOMSolver.
 We now repeat the calculations
 
 ```python
-HEOMPadeOdd = HEOMSolver(H, [(envL,d1),(envR,d2)], Ncc,odd_parity=True)  
-ddosOdd=density_of_states(wlist,HEOMPadeOdd,fullss)
+HEOMPadeOdd = HEOMSolver(H, [(envL, d1), (envR, d2)], Ncc, odd_parity=True)
+ddosOdd = density_of_states(wlist, HEOMPadeOdd, fullss)
 ```
 
 ```python
-plt.plot(wlist,ddosOdd,label=r"$N_k = 2$ Odd Parity",linewidth=4)
-plt.plot(wlist,ddos,"--",label=r"$N_k = 2$",linewidth=4)
+plt.plot(wlist, ddosOdd, label=r"$N_k = 2$ Odd Parity", linewidth=4)
+plt.plot(wlist, ddos, "--", label=r"$N_k = 2$", linewidth=4)
 
 plt.legend(fontsize=12)
 
-plt.xlim(-10,15)
-plt.yticks([0.,1,2],[0,1,2])
-plt.xlabel(r"$\omega/\Gamma$",fontsize=20,labelpad=-10)
-plt.ylabel(r"$2\pi \Gamma A(\omega)$ ",fontsize=20)
+plt.xlim(-10, 15)
+plt.yticks([0.0, 1, 2], [0, 1, 2])
+plt.xlabel(r"$\omega/\Gamma$", fontsize=20, labelpad=-10)
+plt.ylabel(r"$2\pi \Gamma A(\omega)$ ", fontsize=20)
 
-         
+
 plt.show()
 ```
 
@@ -307,38 +307,38 @@ calculation with $N_{k}=4$
 
 ```python
 # On qutip master branch this is approx_by_pade instead of approximate
-envL = env.approximate("pade",Nk=Nk2,tag="L") #left lead
-envR = env.approximate("pade",Nk=Nk2,tag="R") #right lead
+envL = env.approximate("pade", Nk=Nk2, tag="L")  # left lead
+envR = env.approximate("pade", Nk=Nk2, tag="R")  # right lead
 ```
 
 Again we start from the steady state
 
 ```python
-HEOMPade4 = HEOMSolver(H, [(envL,d1),(envR,d2)], Ncc)  
-HEOMPade4Odd = HEOMSolver(H, [(envL,d1),(envR,d2)], Ncc, odd_parity=True)  
-rhoss4, fullss= HEOMPade4.steady_state()
-expect(rhoss, d1.dag()*d1)
+HEOMPade4 = HEOMSolver(H, [(envL, d1), (envR, d2)], Ncc)
+HEOMPade4Odd = HEOMSolver(H, [(envL, d1), (envR, d2)], Ncc, odd_parity=True)
+rhoss4, fullss = HEOMPade4.steady_state()
+expect(rhoss, d1.dag() * d1)
 ```
 
 And repeat for odd parity
 
 ```python
-ddos4Odd=density_of_states(wlist,HEOMPade4Odd,fullss)
+ddos4Odd = density_of_states(wlist, HEOMPade4Odd, fullss)
 ```
 
 Finally we visualize everything
 
 ```python
-plt.plot(wlist,ddos4Odd,label=r"$N_k = 4$ Odd Parity",linewidth=4)
-plt.plot(wlist,ddosOdd,"--",label=r"$N_k = 2$ Odd Parity",linewidth=4)
+plt.plot(wlist, ddos4Odd, label=r"$N_k = 4$ Odd Parity", linewidth=4)
+plt.plot(wlist, ddosOdd, "--", label=r"$N_k = 2$ Odd Parity", linewidth=4)
 plt.legend(fontsize=12)
 
-plt.xlim(-10,15)
-plt.yticks([0.,1,2],[0,1,2])
-plt.xlabel(r"$\omega/\Gamma$",fontsize=20,labelpad=-10)
-plt.ylabel(r"$2\pi \Gamma A(\omega)$ ",fontsize=20)
+plt.xlim(-10, 15)
+plt.yticks([0.0, 1, 2], [0, 1, 2])
+plt.xlabel(r"$\omega/\Gamma$", fontsize=20, labelpad=-10)
+plt.ylabel(r"$2\pi \Gamma A(\omega)$ ", fontsize=20)
 
-         
+
 plt.show()
 ```
 
@@ -359,6 +359,6 @@ so it's not interfering with the user experience. Please, define the tests
 using `assert`, so that the cell execution fails if a wrong output is generated.
 
 ```python
-assert np.allclose(expect(rhoss, d1.dag()*d1), 0.5)
-assert np.allclose(expect(rhoss4, d1.dag()*d1), 0.5)
+assert np.allclose(expect(rhoss, d1.dag() * d1), 0.5)
+assert np.allclose(expect(rhoss4, d1.dag() * d1), 0.5)
 ```
