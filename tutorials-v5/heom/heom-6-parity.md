@@ -116,6 +116,7 @@ In our example both leads will be identical environments, we now use the
 representations of our environment which we will use as leads
 
 ```python
+# On qutip master branch this is approx_by_pade instead of approximate
 envL = env.approximate("pade",Nk=Nk1,tag="L") #left lead
 envR = env.approximate("pade",Nk=Nk1,tag="R") #right lead
 ```
