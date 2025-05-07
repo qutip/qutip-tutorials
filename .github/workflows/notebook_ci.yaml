@@ -110,7 +110,7 @@ jobs:
   publish:
     needs: pytests
     runs-on: ubuntu-latest
-    # if: ${{ github.repository == 'qutip/qutip-tutorials' && github.ref == 'refs/heads/main' }}
+    if: ${{ github.repository == 'qutip/qutip-tutorials' && github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -133,21 +133,15 @@ jobs:
           # Download resources from qutip.github.io repository
           mkdir css
           cd css
-          # wget https://raw.githubusercontent.com/qutip/qutip.github.io/master/css/bootstrap.css
-          # wget https://raw.githubusercontent.com/qutip/qutip.github.io/master/css/site.css
-          wget https://raw.githubusercontent.com/langhaarzombie/langhaarzombie.github.io/develop/css/site.css
+          wget https://raw.githubusercontent.com/qutip/qutip.github.io/master/css/site.css
           cd ..
 
           mkdir _includes
           cd _includes
-          # wget https://raw.githubusercontent.com/qutip/qutip.github.io/master/_includes/head.html
-          # wget https://raw.githubusercontent.com/qutip/qutip.github.io/master/_includes/navbar.html
-          # wget https://raw.githubusercontent.com/qutip/qutip.github.io/master/_includes/footer.html
-          # wget https://raw.githubusercontent.com/qutip/qutip.github.io/master/_includes/scripts.html
-          wget https://raw.githubusercontent.com/langhaarzombie/langhaarzombie.github.io/develop/_includes/head.html
-          wget https://raw.githubusercontent.com/langhaarzombie/langhaarzombie.github.io/develop/_includes/navbar.html
-          wget https://raw.githubusercontent.com/langhaarzombie/langhaarzombie.github.io/develop/_includes/footer.html
-          wget https://raw.githubusercontent.com/langhaarzombie/langhaarzombie.github.io/develop/_includes/scripts.html
+          wget https://raw.githubusercontent.com/qutip/qutip.github.io/master/_includes/head.html
+          wget https://raw.githubusercontent.com/qutip/qutip.github.io/master/_includes/navbar.html
+          wget https://raw.githubusercontent.com/qutip/qutip.github.io/master/_includes/footer.html
+          wget https://raw.githubusercontent.com/qutip/qutip.github.io/master/_includes/scripts.html
           cd ..
 
           mkdir images
