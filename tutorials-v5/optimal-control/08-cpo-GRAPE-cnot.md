@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-### GRAPE calculation of control fields for cnot implementation
+# GRAPE calculation of control fields for cnot implementation
 
 [This is an updated implementation based on the deprecated notebook of GRAPE CNOT implementation by Robert Johansson](https://nbviewer.org/github/qutip/qutip-notebooks/blob/master/examples/control-grape-cnot.ipynb)
 
