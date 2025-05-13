@@ -1,15 +1,14 @@
 ---
 jupytext:
-  formats: ipynb,md:myst
   text_representation:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.17.0
 kernelspec:
+  name: python3
   display_name: Python 3 (ipykernel)
   language: python
-  name: python3
 ---
 
 # HEOM 5b: Discrete boson coupled to an impurity and fermionic leads
@@ -100,22 +99,15 @@ import contextlib
 import dataclasses
 import time
 
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
 
-import qutip
-from qutip import (
-    destroy,
-    qeye,
-    tensor,
-)
-from qutip.solver.heom import (
-    HEOMSolver,
-    LorentzianPadeBath,
-)
+from qutip import about, destroy, qeye, tensor
+from qutip.core.environment import LorentzianEnvironment
+from qutip.solver.heom import HEOMSolver
 
-from ipywidgets import IntProgress
 from IPython.display import display
+from ipywidgets import IntProgress
 
 %matplotlib inline
 ```
@@ -153,8 +145,7 @@ def state_current(ado_state, bath_tag):
         return exp.Q if exp.type == exp.types["+"] else exp.Q.dag()
 
     return -1.0j * sum(
-        exp_sign(exp) * (exp_op(exp) * aux).tr()
-        for aux, exp in level_1_aux
+        exp_sign(exp) * (exp_op(exp) * aux).tr() for aux, exp in level_1_aux
     )
 ```
 
@@ -227,7 +218,7 @@ class LorentzianBathParameters:
         if self.lead == "L":
             self.mu = self.theta / 2.0
         else:
-            self.mu = - self.theta / 2.0
+            self.mu = -self.theta / 2.0
 
     def J(self, w):
         """ Spectral density. """
@@ -239,7 +230,7 @@ class LorentzianBathParameters:
         return fF(x)
 
     def lamshift(self, w):
-        """ Return the lamshift. """
+        """ Return the lamb shift. """
         return 0.5 * (w - self.mu) * self.J(w) / self.W
 
     def replace(self, **kw):
@@ -318,17 +309,17 @@ def steady_state_pade_for_theta(sys_p, bath_L, bath_R, theta, Nk, Nc, Nbos):
     bath_L = bath_L.replace(theta=theta)
     bath_R = bath_R.replace(theta=theta)
 
-    bathL = LorentzianPadeBath(
-        sys_p.Q, bath_L.gamma, bath_L.W, bath_L.mu, bath_L.T,
-        Nk, tag="L",
-    )
-    bathR = LorentzianPadeBath(
-        sys_p.Q, bath_R.gamma, bath_R.W, bath_R.mu, bath_R.T,
-        Nk, tag="R",
-    )
+    envL = LorentzianEnvironment(bath_L.T, bath_L.mu, bath_L.gamma, bath_L.W)
+    envR = LorentzianEnvironment(bath_R.T, bath_R.mu, bath_R.gamma, bath_R.W)
+
+    bathL = envL.approx_by_matsubara(Nk, tag="L")
+    bathR = envR.approx_by_matsubara(Nk, tag="R")
 
     solver_pade = HEOMSolver(
-        sys_p.H, [bathL, bathR], max_depth=2, options=options,
+        sys_p.H,
+        [(bathL, sys_p.Q), (bathR, sys_p.Q)],
+        max_depth=2,
+        options=options,
     )
     rho_ss_pade, ado_ss_pade = solver_pade.steady_state()
     current = state_current(ado_ss_pade, bath_tag="R")
@@ -383,13 +374,5 @@ ax.legend(loc=4);
 ## About
 
 ```{code-cell} ipython3
-qutip.about()
-```
-
-## Testing
-
-This section can include some tests to verify that the expected outputs are generated within the notebook. We put this section at the end of the notebook, so it's not interfering with the user experience. Please, define the tests using assert, so that the cell execution fails if a wrong output is generated.
-
-```{code-cell} ipython3
-assert 1 == 1
+about()
 ```
