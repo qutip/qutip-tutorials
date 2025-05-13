@@ -477,7 +477,7 @@ lambd = np.sqrt(
 
 ```python
 # Create Environment
-bath = UnderDampedEnvironment(lam=lambd, w0=w0, gamma=gamma_heom, T=1e-30)
+bath = UnderDampedEnvironment(lam=lambd, w0=w0, gamma=gamma_heom, T=0)
 fit_times = np.linspace(0, 5, 1000)  # range for correlation function fit
 
 # Fit correlation function with exponentials
@@ -561,7 +561,7 @@ lambd = np.sqrt(
 
 ```python
 # Create Environment
-bath = UnderDampedEnvironment(lam=lambd, w0=w0, gamma=gamma_heom, T=1e-10)
+bath = UnderDampedEnvironment(lam=lambd, w0=w0, gamma=gamma_heom, T=0)
 fit_times = np.linspace(0, 5, 1000)  # range for correlation function fit
 
 # Fit correlation function with exponentials
