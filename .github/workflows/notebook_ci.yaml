@@ -29,7 +29,7 @@ jobs:
         folder-path: tutorials-v${{ matrix.qutip-version }}
         #use config file to define 403 and 405 errors as valid links
         #(APS blocks this link check)
-        config-file: mlc_config.json
+        config-file: mlc_external_config.json
 
     - name: Setup Conda
       uses: conda-incubator/setup-miniconda@v3
@@ -108,6 +108,15 @@ jobs:
         path: |
           notebooks/*.ipynb
           notebooks/**/*.ipynb
+   
+    - uses: gaurav-nelson/github-action-markdown-link-check@v1
+      with:
+        use-quiet-mode: 'yes'
+        folder-path: tutorials-v${{ matrix.qutip-version }}
+        #use config file to define 403 and 405 errors as valid links
+        #(APS blocks this link check)
+        config-file: mlc_config.json
+
   publish:
     needs: pytests
     runs-on: ubuntu-latest
@@ -134,24 +143,26 @@ jobs:
           # Download resources from qutip.github.io repository
           mkdir css
           cd css
-          wget https://raw.githubusercontent.com/qutip/qutip.github.io/master/css/bootstrap.css
           wget https://raw.githubusercontent.com/qutip/qutip.github.io/master/css/site.css
           cd ..
 
           mkdir _includes
           cd _includes
-          wget https://raw.githubusercontent.com/qutip/qutip.github.io/master/_includes/footer.html
-          wget https://raw.githubusercontent.com/qutip/qutip.github.io/master/_includes/header.html
+          wget https://raw.githubusercontent.com/qutip/qutip.github.io/master/_includes/head.html
           wget https://raw.githubusercontent.com/qutip/qutip.github.io/master/_includes/navbar.html
+          wget https://raw.githubusercontent.com/qutip/qutip.github.io/master/_includes/footer.html
+          wget https://raw.githubusercontent.com/qutip/qutip.github.io/master/_includes/scripts.html
           cd ..
 
           mkdir images
           cd images
           wget https://raw.githubusercontent.com/qutip/qutip.github.io/master/images/favicon.ico
+          wget https://raw.githubusercontent.com/langhaarzombie/langhaarzombie.github.io/develop/images/logo_small.png
           cd ..
 
           # build the website
-          python create_index.py
+          python create_index.py v5 html index.html
+          python create_index.py v4 html index-v4.html
           bundle config path .gems
           bundle install
           bundle exec jekyll build

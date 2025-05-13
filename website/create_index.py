@@ -1,6 +1,27 @@
-import os
+""" Script for generating indexes of the notebook. """
+
+import argparse
+import pathlib
 import re
-from jinja2 import Environment, FileSystemLoader, select_autoescape
+
+from jinja2 import (
+    Environment,
+    FileSystemLoader,
+    select_autoescape,
+)
+
+
+TUTORIAL_DIRECTORIES = [
+    'heom',
+    'lectures',
+    'pulse-level-circuit-simulation',
+    'python-introduction',
+    'quantum-circuits',
+    'time-evolution',
+    'optimal-control',
+    'visualization',
+    'miscellaneous'
+]
 
 
 def atoi(text):
@@ -8,21 +29,33 @@ def atoi(text):
 
 
 def natural_keys(text):
-    return [atoi(c) for c in re.split('(\d+)', text)]
+    return [atoi(c) for c in re.split(r'(\d+)', text)]
 
 
-class notebook:
-    def __init__(self, path, title):
-        # remove ../ from path
-        self.path = path.replace('../', '')
+class Notebook:
+    """ Notebook object for use in rendering templates. """
+
+    NBVIEWER_URL_PREFIX = "https://nbviewer.org/urls/qutip.org/qutip-tutorials/"
+
+    def __init__(self, title, tutorial_folder, path):
+        self.tutorial_folder = tutorial_folder
+        self.web_folder = tutorial_folder.parent
+
         self.title = title
-        # set url and update from markdown to ipynb
-        self.url = url_prefix + self.path.replace(".md", ".ipynb")
+
+        self.web_md_path = path.relative_to(self.web_folder)
+        self.web_ipynb_path = self.web_md_path.with_suffix(".ipynb")
+
+        self.tutorial_md_path = path.relative_to(self.tutorial_folder)
+        self.tutorial_ipynb_path = self.tutorial_md_path.with_suffix(".ipynb")
+
+        self.nbviewer_url = self.NBVIEWER_URL_PREFIX + self.web_ipynb_path.as_posix()
+        self.try_qutip_url = "./tutorials/" + self.tutorial_ipynb_path.as_posix()
 
 
-def get_title(filename):
+def get_title(path):
     """ Reads the title from a markdown notebook """
-    with open(filename, 'r') as f:
+    with path.open('r') as f:
         # get first row that starts with "# "
         for line in f.readlines():
             # trim leading/trailing whitespaces
@@ -36,98 +69,128 @@ def get_title(filename):
 def sort_files_titles(files, titles):
     """ Sorts the files and titles either by filenames or titles """
     # identify numbered files and sort them
-    nfiles = [s for s in files if s.split('/')[-1][0].isdigit()]
-    nfiles = sorted(nfiles, key=natural_keys)
+    nfiles = [s for s in files if s.name[0].isdigit()]
+    nfiles = sorted(nfiles, key=lambda s: natural_keys(s.name))
     ntitles = [titles[files.index(s)] for s in nfiles]
+
     # sort the files without numbering by the alphabetic order of the titles
     atitles = [titles[files.index(s)] for s in files if s not in nfiles]
     atitles = sorted(atitles, key=natural_keys)
     afiles = [files[titles.index(s)] for s in atitles]
+
     # merge the numbered and unnumbered sorting
     return nfiles + afiles, ntitles + atitles
 
 
-def get_notebooks(path):
+def get_notebooks(tutorials_folder, subfolder):
     """ Gets a list of all notebooks in a directory """
-    # get list of files and their titles
-    try:
-        files = [path + f for f in os.listdir(path) if f.endswith('.md')]
-    except FileNotFoundError:
-        return {}
+    files = list((tutorials_folder / subfolder).glob("*.md"))
     titles = [get_title(f) for f in files]
-    # sort the files and titles for display
     files_sorted, titles_sorted = sort_files_titles(files, titles)
-    # generate notebook objects from the sorted lists and return
-    notebooks = [notebook(f, t) for f, t in zip(files_sorted, titles_sorted)]
+    notebooks = [
+        Notebook(title, tutorials_folder, path)
+        for title, path in zip(titles_sorted, files_sorted)
+    ]
     return notebooks
 
 
-def generate_index_html(version_directory, tutorial_directories, title,
-                        version_note):
-    """ Generates the index html file from the given data"""
-    # get tutorials from the different directories
+def get_tutorials(tutorials_folder, tutorial_directories):
+    """ Return a dictionary of all tutorials for a particular version. """
     tutorials = {}
-    for dir in tutorial_directories:
-        tutorials[dir] = get_notebooks(version_directory + dir + '/')
+    for subfolder in tutorial_directories:
+        tutorials[subfolder] = get_notebooks(tutorials_folder, subfolder)
+    return tutorials
 
-    # Load environment for Jinja and template
+
+def render_template(template_path, **kw):
+    """ Render a Jinja template """
     env = Environment(
-        loader=FileSystemLoader("../"),
-        autoescape=select_autoescape()
+        loader=FileSystemLoader(str(template_path.parent)),
+        autoescape=select_autoescape(),
     )
-    template = env.get_template("website/index.html.jinja")
-
-    # render template and return
-    html = template.render(tutorials=tutorials, title=title,
-                           version_note=version_note)
-    return html
+    template = env.get_template(template_path.name)
+    return template.render(**kw)
 
 
-# url prefix for the links
-url_prefix = "https://nbviewer.org/urls/qutip.org/qutip-tutorials/"
-# tutorial directories
-tutorial_directories = [
-    'heom',
-    'lectures',
-    'pulse-level-circuit-simulation',
-    'python-introduction',
-    'quantum-circuits',
-    'time-evolution',
-    'visualization',
-    'miscellaneous'
-]
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="""
+            Generate indexes for tutorial notebooks.
 
-# +++ READ PREFIX AND SUFFIX +++
-prefix = ""
-suffix = ""
+            This script is used both by this repository to generate the indexes
+            for the QuTiP tutorial website and by https://github.com/qutip/try-qutip/
+            to generate the notebook indexes for the Try QuTiP site.
+        """,
+    )
+    parser.add_argument(
+        "qutip_version", choices=["v4", "v5"],
+        metavar="QUTIP_VERSION",
+        help="Which QuTiP version to generate the tutorial index for [v4, v5].",
+    )
+    parser.add_argument(
+        "index_type", choices=["html", "try-qutip"],
+        metavar="INDEX_TYPE",
+        help=(
+            "Whether to generate an HTML index for the website or"
+            " a Markdown Jupyter notebook index for the Try QuTiP site"
+            " [html, try-qutip]."
+        ),
+    )
+    parser.add_argument(
+        "output_file",
+        metavar="OUTPUT_FILE",
+        help="File to write the index to.",
+    )
+    return parser.parse_args()
 
-with open('prefix.html', 'r') as f:
-    prefix = f.read()
-with open('suffix.html', 'r') as f:
-    suffix = f.read()
 
-# +++ VERSION 4 INDEX FILE +++
-title = 'Tutorials for QuTiP Version 4'
-version_note = 'This are the tutorials for QuTiP Version 4. You can \
-         find the tutorials for QuTiP Version 5 \
-          <a href="./index.html">here</a>.'
+def main():
+    args = parse_args()
 
-html = generate_index_html('../tutorials-v4/', tutorial_directories, title,
-                           version_note)
-with open('index-v4.html', 'w+') as f:
-    f.write(prefix)
-    f.write(html)
-    f.write(suffix)
+    root_folder = pathlib.Path(__file__).parent.parent
 
-# +++ VERSION 5 INDEX FILE +++
-title = 'Tutorials for QuTiP Version 5'
-version_note = 'This are the tutorials for QuTiP Version 5. You can \
-         find the tutorials for QuTiP Version 4 \
-          <a href="./index-v4.html">here</a>.'
+    if args.qutip_version == "v4":
+        title = "Tutorials for QuTiP Version&nbsp;4"
+        tutorials_folder = root_folder / "tutorials-v4"
+        version_note = """
+            These are the tutorials for QuTiP Version 4. You can
+            find the tutorials for QuTiP Version 5
+            <a href="./index.html">here</a>.
+        """.strip()
+    elif args.qutip_version == "v5":
+        title = "Tutorials for QuTiP Version&nbsp;5"
+        tutorials_folder = root_folder / "tutorials-v5"
+        version_note = """
+            These are the tutorials for QuTiP Version 5. You can
+            find the tutorials for QuTiP Version 4
+            <a href="./index-v4.html">here</a>.
+        """.strip()
+    else:
+        raise ValueError(f"Unsupported qutip_version: {args.qutip_version!r}")
 
-html = generate_index_html('../tutorials-v5/', tutorial_directories, title,
-                           version_note)
-with open('index.html', 'w+') as f:
-    f.write(prefix)
-    f.write(html)
-    f.write(suffix)
+    tutorials = get_tutorials(tutorials_folder, TUTORIAL_DIRECTORIES)
+
+    if args.index_type == "html":
+        template = root_folder / "website" / "index.html.jinja"
+        text = render_template(
+            template,
+            title=title,
+            version_note=version_note,
+            tutorials=tutorials,
+        )
+    elif args.index_type == "try-qutip":
+        template = root_folder / "website" / "index.try-qutip.jinja"
+        text = render_template(
+            template,
+            title=title,
+            tutorials=tutorials,
+        )
+    else:
+       raise ValueError(f"Unsupported index_type: {args.index_type!r}")
+
+    with open(args.output_file, "w") as f:
+        f.write(text)
+
+
+if __name__ == "__main__":
+    main()
