@@ -1,3 +1,16 @@
+---
+title: QuTiP Tutorials
+---
+
+<!DOCTYPE html>
+<html lang="en">
+
+{% raw %} {% include head.html %} {% endraw %}
+
+<body>
+    <header> {% raw %} {% include navbar.html %} {% endraw %} </header>
+
+<main class="my-content">
 <div class="row">
 <div class="col-md-12">
 <h1>{{ title }}</h1><br>
@@ -60,7 +73,7 @@ useful to have a look at these IPython notebook
 <h4 id="python-introduction">Python Introduction</h4>
 <ul>
 {% for item in tutorials['python-introduction'] %}
-    <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+    <li><a href="{{ item.nbviewer_url }}">{{ item.title }}</a></li>
 {% endfor %}
 </ul>
 <p>For a more in depth discussion see: <a href="https://github.com/jrjohansson/scientific-python-lectures">Lectures on scientific computing with Python</a>.</p>
@@ -69,7 +82,7 @@ useful to have a look at these IPython notebook
 <h4 id="visualizations">Visualization</h4>
 <ul>
 {% for item in tutorials['visualization'] %}
-    <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+    <li><a href="{{ item.nbviewer_url }}">{{ item.title }}</a></li>
 {% endfor %}
 </ul>
 
@@ -79,14 +92,14 @@ useful to have a look at these IPython notebook
 <h5 id="qip-circuits">Quantum circuits and algorithms</h5>
 <ul>
 {% for item in tutorials['quantum-circuits'] %}
-    <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+    <li><a href="{{ item.nbviewer_url }}">{{ item.title }}</a></li>
 {% endfor %}
 </ul>
 
 <h5 id="qip-pulse-level">Pulse-level circuit simulation</h5>
 <ul>
 {% for item in tutorials['pulse-level-circuit-simulation'] %}
-    <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+    <li><a href="{{ item.nbviewer_url }}">{{ item.title }}</a></li>
 {% endfor %}
 </ul>
 
@@ -97,24 +110,16 @@ useful to have a look at these IPython notebook
 <h4 id="time-evolution">Time evolution</h4>
 <ul>
 {% for item in tutorials['time-evolution'] %}
-    <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+    <li><a href="{{ item.nbviewer_url }}">{{ item.title }}</a></li>
 {% endfor %}
 </ul>
 
 
 <h4 id="optimal-control">Optimal control</h4>
 <ul>
-<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/optimal-control-overview.ipynb">Overview</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-pulseoptim-Hadamard.ipynb">Hadamard</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-pulseoptim-QFT.ipynb">QFT</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-pulseoptim-Lindbladian.ipynb">Lindbladian</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-pulseoptim-symplectic.ipynb">Symplectic</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/control-pulseoptim-CRAB-QFT.ipynb">QFT (CRAB)</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/control-pulseoptim-CRAB-2qubitInerac.ipynb">State to state (CRAB)</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-grape-cnot.ipynb">CNOT</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-grape-iswap.ipynb">iSWAP</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-grape-single-qubit-rotation.ipynb">Single-qubit rotation</a> </li>
-<li> <a href="https://nbviewer.jupyter.org/urls/raw.github.com/qutip/qutip-notebooks/master/examples/control-grape-toffoli.ipynb">Toffoli gate</a> </li>
+{% for item in tutorials['optimal-control'] %}
+    <li><a href="{{ item.nbviewer_url }}">{{ item.title }}</a></li>
+{% endfor %}
 </ul>
 
 <h4 id="tomography">Tomography</h4>
@@ -137,14 +142,14 @@ useful to have a look at these IPython notebook
 <h4 id="heom">Hierarchical Equations of Motion</h4>
 <ul>
 {% for item in tutorials['heom'] %}
-    <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+    <li><a href="{{ item.nbviewer_url }}">{{ item.title }}</a></li>
 {% endfor %}
 </ul>
 
 <h4 id="miscellaneous">Miscellaneous tutorials</h4>
 <ul>
 {% for item in tutorials['miscellaneous'] %}
-    <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+    <li><a href="{{ item.nbviewer_url }}">{{ item.title }}</a></li>
 {% endfor %}
 </ul>
 
@@ -160,7 +165,7 @@ topics and analyze them numerically using QuTiP (some more detailed than others)
 
 <ul>
 {% for item in tutorials['lectures'] %}
-    <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+    <li><a href="{{ item.nbviewer_url }}">{{ item.title }}</a></li>
 {% endfor %}
 </ul>
 
@@ -182,3 +187,12 @@ a complete archive of older versions of the tutorials is maintained there.
 
 </div>
 </div>
+</main>
+
+{% raw %}
+<footer>{% include footer.html %}</footer>
+{% include scripts.html %}
+{% endraw %}
+
+</body>
+</html>
