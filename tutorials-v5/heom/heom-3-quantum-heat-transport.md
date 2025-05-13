@@ -1,15 +1,14 @@
 ---
 jupytext:
-  formats: ipynb,md:myst
   text_representation:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.17.0
 kernelspec:
+  name: python3
   display_name: Python 3 (ipykernel)
   language: python
-  name: python3
 ---
 
 # HEOM 3: Quantum Heat Transport
@@ -57,11 +56,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 import qutip as qt
-from qutip.solver.heom import (
-    DrudeLorentzPadeBath,
-    BathExponent,
-    HEOMSolver,
-)
+from qutip.core.environment import (CFExponent, DrudeLorentzEnvironment,
+                                    system_terminator)
+from qutip.solver.heom import HEOMSolver
 
 from ipywidgets import IntProgress
 from IPython.display import display
@@ -91,6 +88,7 @@ options = {
 @dataclasses.dataclass
 class SystemParams:
     """ System parameters and Hamiltonian. """
+
     epsilon: float = 1.0
     J12: float = 0.1
 
@@ -143,8 +141,16 @@ class BathParams:
         return qt.tensor(Q)
 
     def bath(self, Nk, tag=None):
-        return DrudeLorentzPadeBath(
-            self.Q(), self.lam, self.gamma, self.T, Nk, tag=tag
+        env = DrudeLorentzEnvironment(
+            lam=self.lam, gamma=self.gamma, T=self.T, tag=tag
+        )
+        env_approx, delta = env.approximate(
+            "pade", Nk=Nk, compute_delta=True, tag=tag
+        )
+        return (
+            (env_approx, self.Q()),
+            system_terminator(self.Q(), delta),
+            delta,
         )
 
     def replace(self, **kw):
@@ -201,9 +207,9 @@ def bath_heat_current(bath_tag, ado_state, hamiltonian, coupling_op, delta=0):
         [exp] = ado_state.exps(label)
         result += exp.vk * (coupling_op * ado_state.extract(label)).tr()
 
-        if exp.type == BathExponent.types['I']:
+        if exp.type == CFExponent.types["I"]:
             cI0 += exp.ck
-        elif exp.type == BathExponent.types['RI']:
+        elif exp.type == CFExponent.types["RI"]:
             cI0 += exp.ck2
 
     result -= 2 * cI0 * (coupling_op * coupling_op * ado_state.rho).tr()
@@ -290,14 +296,12 @@ tlist = np.linspace(0, 50, 250)
 ```{code-cell} ipython3
 H = sys.H()
 
-bath1 = bath_p1.bath(Nk, tag='bath 1')
+bath1, b1term, b1delta = bath_p1.bath(Nk, tag="bath 1")
 Q1 = bath_p1.Q()
 
-bath2 = bath_p2.bath(Nk, tag='bath 2')
+bath2, b2term, b2delta = bath_p2.bath(Nk, tag="bath 2")
 Q2 = bath_p2.Q()
 
-b1delta, b1term = bath1.terminator()
-b2delta, b2term = bath2.terminator()
 solver = HEOMSolver(
     qt.liouvillian(H) + b1term + b2term,
     [bath1, bath2],
@@ -318,7 +322,7 @@ We first plot $\langle \sigma_z^1 \rangle$ to see the time evolution of the syst
 
 ```{code-cell} ipython3
 fig, axes = plt.subplots(figsize=(8, 8))
-axes.plot(tlist, result.expect[0], 'r', linewidth=2)
+axes.plot(tlist, np.real(result.expect[0]), 'r', linewidth=2)
 axes.set_xlabel('t', fontsize=28)
 axes.set_ylabel(r"$\langle \sigma_z^1 \rangle$", fontsize=28);
 ```
@@ -382,14 +386,12 @@ def heat_currents(sys, bath_p1, bath_p2, Nk, NC, options):
     """ Calculate the steady sate heat currents for the given system and
         bath.
     """
-    bath1 = bath_p1.bath(Nk, tag="bath 1")
+
+    bath1, b1term, b1delta = bath_p1.bath(Nk, tag="bath 1")
     Q1 = bath_p1.Q()
 
-    bath2 = bath_p2.bath(Nk, tag="bath 2")
+    bath2, b2term, b2delta = bath_p2.bath(Nk, tag="bath 2")
     Q2 = bath_p2.Q()
-
-    b1delta, b1term = bath1.terminator()
-    b2delta, b2term = bath2.terminator()
 
     solver = HEOMSolver(
         qt.liouvillian(sys.H()) + b1term + b2term,
@@ -445,18 +447,9 @@ def calculate_heat_current(J12, zb, Nk, progress=progress):
 
 # Calculate steady state currents for range of zeta_bars
 # for J12 = 0.01, 0.1 and 0.5:
-j1s = [
-    calculate_heat_current(0.01, zb, Nk)
-    for zb in zeta_bars
-]
-j2s = [
-    calculate_heat_current(0.1, zb, Nk)
-    for zb in zeta_bars
-]
-j3s = [
-    calculate_heat_current(0.5, zb, Nk)
-    for zb in zeta_bars
-]
+j1s = [calculate_heat_current(0.01, zb, Nk) for zb in zeta_bars]
+j2s = [calculate_heat_current(0.1, zb, Nk) for zb in zeta_bars]
+j3s = [calculate_heat_current(0.5, zb, Nk) for zb in zeta_bars]
 ```
 
 ## Create Plot
@@ -494,12 +487,4 @@ axes.legend(loc=0);
 
 ```{code-cell} ipython3
 qt.about()
-```
-
-## Testing
-
-This section can include some tests to verify that the expected outputs are generated within the notebook. We put this section at the end of the notebook, so it's not interfering with the user experience. Please, define the tests using assert, so that the cell execution fails if a wrong output is generated.
-
-```{code-cell} ipython3
-assert 1 == 1
 ```
