@@ -468,7 +468,7 @@ fit_times = np.linspace(0, 5, 1000)  # range for correlation function fit
 
 # Fit correlation function with exponentials
 exp_bath, fit_info = bath.approx_by_cf_fit(
-    fit_times, Ni_max=1, Nr_max=2, target_rsme=None
+    fit_times, Ni_max=1, Nr_max=2, target_rmse=None
 )
 print(fit_info["summary"])
 ```
@@ -537,7 +537,7 @@ HEOM_corr_fit = HEOMSolver(
     max_depth=max_depth,
     options={"nsteps": 15000, "rtol": 1e-12, "atol": 1e-12},
 )
-results_corr_fit = HEOM_corr_fit.run(psi0 * psi0.dag(), tlist, e_ops=e_ops)
+adi_corr_fit_res = HEOM_corr_fit.run(psi0 * psi0.dag(), tlist, e_ops=e_ops)
 ```
 
 ```python
@@ -553,7 +553,7 @@ brme_result = brmesolve(H_adi, psi0, tlist, a_ops=a_ops_non_flat, e_ops=e_ops)
 
 ```python
 plt.plot(tlist, adi_me_res.expect[0], "-", label="mesolve")
-plt.plot(tlist, np.real(results_corr_fit.expect[0]), "--", label=r"heom")
+plt.plot(tlist, np.real(adi_corr_fit_res.expect[0]), "--", label=r"heom")
 plt.plot(tlist, brme_result.expect[0], ":", linewidth=6, label="br non-flat")
 plt.plot(tlist, brme_result2.expect[0], ":", linewidth=6, label="br")
 
@@ -577,5 +577,16 @@ about()
 ## Testing
 
 ```python
-# test sesolve gives the same result as SESolver
+br_exp = br_res.expect[0]
+mg_exp = me_global_res.expect[0]
+np.testing.assert_allclose(br_exp, mg_exp, atol=0.2, rtol=0)
+
+d_exp = driv_res.expect[0]
+dr_exp = driv_RWA_res.expect[0]
+rc_exp = np.real(results_corr_fit.expect[0])
+db_exp = driv_br_res.expect[0]
+np.testing.assert_allclose(d_exp, dr_exp, atol=0.2, rtol=0)
+np.testing.assert_allclose(dr_exp, rc_exp, atol=0.2, rtol=0)
+np.testing.assert_allclose(rc_exp, db_exp, atol=0.2, rtol=0)
+np.testing.assert_allclose(db_exp, d_exp, atol=0.2, rtol=0)
 ```
