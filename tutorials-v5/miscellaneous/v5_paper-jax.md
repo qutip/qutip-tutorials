@@ -241,7 +241,7 @@ ncurr = drhozdz(tf, 0.0) / tf
 nshot = (d2rhozdz(tf, 0.0) - drhozdz(tf, 0.0) ** 2) / tf
 
 print("===== RESULTS =====")
-print("Analytic current", Itest)
+print("Analytical current", Itest)
 print("Numerical current", ncurr)
 print("Analytical shot noise (2nd cumulant)", shottest)
 print("Numerical shot noise (2nd cumulant)", nshot)
@@ -303,8 +303,12 @@ def f(omega):
 ```
 
 ```python
-# Compute gradient of the exc. state population w.r.t. omega
+# Gradient of the excited state population with respect to omega
 grad_f = grad(f)(2.0)
+```
+
+```python
+print(grad_f)
 ```
 
 ## References
