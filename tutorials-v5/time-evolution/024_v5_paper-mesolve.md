@@ -372,7 +372,7 @@ omega_d = Delta  # drive frequency
 A = 0.01 * Delta  # drive amplitude
 
 # Bath parameters
-gamma = 0.05 * Delta / (2 * np.pi)  # dissipation strength
+gamma = 0.005 * Delta / (2 * np.pi)  # dissipation strength
 temp = 0  # temperature
 
 # Simulation parameters
@@ -580,14 +580,14 @@ about()
 ```python
 br_exp = br_res.expect[0]
 mg_exp = me_global_res.expect[0]
-np.testing.assert_allclose(br_exp, mg_exp, atol=0.2, rtol=0)
+np.testing.assert_allclose(br_exp, mg_exp, atol=0.02, rtol=0)
 
 d_exp = driv_res.expect[0]
 dr_exp = driv_RWA_res.expect[0]
 rc_exp = np.real(results_corr_fit.expect[0])
 db_exp = driv_br_res.expect[0]
-np.testing.assert_allclose(d_exp, dr_exp, atol=0.2, rtol=0)
-np.testing.assert_allclose(dr_exp, rc_exp, atol=0.2, rtol=0)
-np.testing.assert_allclose(rc_exp, db_exp, atol=0.2, rtol=0)
-np.testing.assert_allclose(db_exp, d_exp, atol=0.2, rtol=0)
+np.testing.assert_allclose(d_exp, dr_exp, atol=0.01, rtol=0)
+np.testing.assert_allclose(dr_exp, rc_exp, atol=0.02, rtol=0)
+np.testing.assert_allclose(rc_exp, db_exp, atol=0.02, rtol=0)
+np.testing.assert_allclose(db_exp, d_exp, atol=0.01, rtol=0)
 ```
