@@ -372,7 +372,7 @@ omega_d = Delta  # drive frequency
 A = 0.01 * Delta  # drive amplitude
 
 # Bath parameters
-gamma = 0.005 * Delta / (2 * np.pi)  # dissipation strength
+gamma = 0.05 * Delta / (2 * np.pi)  # dissipation strength
 temp = 0  # temperature
 
 # Simulation parameters
@@ -456,14 +456,14 @@ gamma_heom = 1.9 * w0
 lambd = np.sqrt(
     0.5
     * gamma
-    / (gamma_heom * wsamp)
     * ((w0**2 - wsamp**2) ** 2 + (gamma_heom**2) * ((wsamp) ** 2))
+    / (gamma_heom * wsamp)
 )
 ```
 
 ```python
 # Create Environment
-bath = UnderDampedEnvironment(lam=lambd, w0=w0, gamma=gamma_heom, T=1e-10)
+bath = UnderDampedEnvironment(lam=lambd, w0=w0, gamma=gamma_heom, T=1e-30)
 fit_times = np.linspace(0, 5, 1000)  # range for correlation function fit
 
 # Fit correlation function with exponentials
@@ -541,14 +541,15 @@ adi_corr_fit_res = HEOM_corr_fit.run(psi0 * psi0.dag(), tlist, e_ops=e_ops)
 ```
 
 ```python
-# BRSolve
-brme_result2 = brmesolve(H_adi, psi0, tlist, a_ops=a_ops, e_ops=e_ops)
-```
-
-```python
 # BRSolve non-flat power spectrum
 a_ops_non_flat = [[sigmax(), exp_bath]]
 brme_result = brmesolve(H_adi, psi0, tlist, a_ops=a_ops_non_flat, e_ops=e_ops)
+```
+
+```python
+# BRSolve
+a_ops = [[sigmax(), power_spectrum]]
+brme_result2 = brmesolve(H_adi, psi0, tlist, a_ops=a_ops, e_ops=e_ops)
 ```
 
 ```python
