@@ -1,15 +1,14 @@
 ---
 jupytext:
-  formats: ipynb,md:myst
   text_representation:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.17.0
 kernelspec:
+  name: python3
   display_name: Python 3 (ipykernel)
   language: python
-  name: python3
 ---
 
 # HEOM 1c: Spin-Bath model (Underdamped Case)
@@ -83,22 +82,12 @@ import time
 import numpy as np
 from matplotlib import pyplot as plt
 
-import qutip
-from qutip import (
-    basis,
-    brmesolve,
-    destroy,
-    expect,
-    qeye,
-    sigmax,
-    sigmaz,
-    tensor,
+from qutip import (about, basis, brmesolve, destroy, expect, qeye,
+                   sigmax, sigmaz, tensor)
+from qutip.core.environment import (
+    ExponentialBosonicEnvironment, UnderDampedEnvironment
 )
-from qutip.solver.heom import (
-    HEOMSolver,
-    BosonicBath,
-    UnderDampedBath,
-)
+from qutip.solver.heom import HEOMSolver
 
 %matplotlib inline
 ```
@@ -110,13 +99,13 @@ Let's define some helper functions for calculating correlation function expansio
 ```{code-cell} ipython3
 def cot(x):
     """ Vectorized cotangent of x. """
-    return 1. / np.tan(x)
+    return 1.0 / np.tan(x)
 ```
 
 ```{code-cell} ipython3
 def coth(x):
     """ Vectorized hyperbolic cotangent of x. """
-    return 1. / np.tanh(x)
+    return 1.0 / np.tanh(x)
 ```
 
 ```{code-cell} ipython3
@@ -125,8 +114,8 @@ def underdamped_matsubara_params(lam, gamma, T, nk):
         underdamped correlation functions.
     """
     Om = np.sqrt(w0**2 - (gamma / 2)**2)
-    Gamma = gamma / 2.
-    beta = 1. / T
+    Gamma = gamma / 2.0
+    beta = 1.0 / T
 
     ckAR = [
         (lam**2 / (4*Om)) * coth(beta * (Om + 1.0j * Gamma) / 2),
@@ -142,12 +131,9 @@ def underdamped_matsubara_params(lam, gamma, T, nk):
         -1.0j * Om + Gamma,
         1.0j * Om + Gamma,
     ]
-    vkAR.extend(
-        2 * np.pi * k * T + 0.j
-        for k in range(1, nk + 1)
-    )
+    vkAR.extend(2 * np.pi * k * T + 0.0j for k in range(1, nk + 1))
 
-    factor = 1. / 4
+    factor = 1.0 / 4
 
     ckAI = [
         -factor * lam**2 * 1.0j / Om,
@@ -222,8 +208,8 @@ And let us set up the system Hamiltonian, bath and system measurement operators:
 
 ```{code-cell} ipython3
 # Defining the system Hamiltonian
-eps = .5     # Energy of the 2-level system.
-Del = 1.0    # Tunnelling term
+eps = 0.5  # Energy of the 2-level system.
+Del = 1.0  # Tunnelling term
 Hsys = 0.5 * eps * sigmaz() + 0.5 * Del * sigmax()
 ```
 
@@ -237,11 +223,11 @@ rho0 = basis(2, 0) * basis(2, 0).dag()
 Q = sigmaz()  # coupling operator
 
 # Bath properties:
-gamma = .1  # cut off frequency
-lam = .5  # coupling strength
-w0 = 1.  # resonance frequency
-T = 1.
-beta = 1. / T
+gamma = 0.1  # cut off frequency
+lam = 0.5    # coupling strength
+w0 = 1.0     # resonance frequency
+T = 1.0
+beta = 1.0 / T
 
 # HEOM parameters:
 
@@ -292,7 +278,7 @@ The correlation functions are now very oscillatory, because of the Lorentzian pe
 def Mk(t, k, gamma, w0, beta):
     """ Calculate the Matsubara terms for a given t and k. """
     Om = np.sqrt(w0**2 - (gamma / 2)**2)
-    Gamma = gamma / 2.
+    Gamma = gamma / 2.0
     ek = 2 * np.pi * k / beta
 
     return (
@@ -304,7 +290,7 @@ def Mk(t, k, gamma, w0, beta):
 def c(t, Nk, lam, gamma, w0, beta):
     """ Calculate the correlation function for a vector of times, t. """
     Om = np.sqrt(w0**2 - (gamma / 2)**2)
-    Gamma = gamma / 2.
+    Gamma = gamma / 2.0
 
     Cr = (
         coth(beta * (Om + 1.0j * Gamma) / 2) * np.exp(1.0j * Om * t)
@@ -345,15 +331,13 @@ def plot_matsubara_correlation_function_contributions():
     """ Plot the underdamped correlation function. """
     t = np.linspace(0, 20, 1000)
 
-    M_Nk2 = np.sum([
-        Mk(t, k, gamma=gamma, w0=w0, beta=beta)
-        for k in range(1, 2 + 1)
-    ], 0)
+    M_Nk2 = np.sum(
+        [Mk(t, k, gamma=gamma, w0=w0, beta=beta) for k in range(1, 2 + 1)], 0
+    )
 
-    M_Nk100 = np.sum([
-        Mk(t, k, gamma=gamma, w0=w0, beta=beta)
-        for k in range(1, 100 + 1)
-    ], 0)
+    M_Nk100 = np.sum(
+        [Mk(t, k, gamma=gamma, w0=w0, beta=beta) for k in range(1, 100 + 1)], 0
+    )
 
     fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 8))
     axes.plot(t, np.real(M_Nk2), '-', color="black", label="Re[M(t)] Nk=2")
@@ -380,7 +364,7 @@ ckAR, vkAR, ckAI, vkAI = underdamped_matsubara_params(
 )
 ```
 
-Having created the lists which specify the bath correlation functions, we create a `BosonicBath` from them and pass the bath to the `HEOMSolver` class.
+Having created the lists which specify the bath correlation functions, we create an `ExponentialBosonicEnvironment` from them and pass the bath to the `HEOMSolver` class.
 
 The solver constructs the "right hand side" (RHS) determinining how the system and auxiliary density operators evolve in time. This can then be used to solve for dynamics or steady-state.
 
@@ -388,8 +372,8 @@ Below we create the bath and solver and then solve for the dynamics by calling `
 
 ```{code-cell} ipython3
 with timer("RHS construction time"):
-    bath = BosonicBath(Q, ckAR, vkAR, ckAI, vkAI)
-    HEOMMats = HEOMSolver(Hsys, bath, NC, options=options)
+    env = ExponentialBosonicEnvironment(ckAR, vkAR, ckAI, vkAI)
+    HEOMMats = HEOMSolver(Hsys, (env, Q), NC, options=options)
 
 with timer("ODE solver time"):
     resultMats = HEOMMats.run(rho0, tlist)
@@ -403,8 +387,8 @@ plot_result_expectations([
 ```
 
 In practice, one would not perform this laborious expansion for the underdamped correlation function, because
-QuTiP already has a class, `UnderDampedBath`, that can construct this bath for you. Nevertheless, knowing how
-to perform this expansion will allow you to construct your own baths for other spectral densities.
+QuTiP already has a class, `UnderDampedEnvironment`, that can construct this bath for you. Nevertheless, knowing how
+to perform this expansion is an useful skill.
 
 Below we show how to use this built-in functionality:
 
@@ -412,8 +396,9 @@ Below we show how to use this built-in functionality:
 # Compare to built-in under-damped bath:
 
 with timer("RHS construction time"):
-    bath = UnderDampedBath(Q, lam=lam, gamma=gamma, w0=w0, T=T, Nk=Nk)
-    HEOM_udbath = HEOMSolver(Hsys, bath, NC, options=options)
+    env = UnderDampedEnvironment(lam=lam, gamma=gamma, w0=w0, T=T)
+    env_approx = env.approximate("matsubara", Nk=Nk)
+    HEOM_udbath = HEOMSolver(Hsys, (env_approx, Q), NC, options=options)
 
 with timer("ODE solver time"):
     result_udbath = HEOM_udbath.run(rho0, tlist)
@@ -421,9 +406,36 @@ with timer("ODE solver time"):
 
 ```{code-cell} ipython3
 plot_result_expectations([
-    (result_udbath, P11p, 'b', "P11 (UnderDampedBath)"),
-    (result_udbath, P12p, 'r', "P12 (UnderDampedBath)"),
+    (result_udbath, P11p, 'b', "P11 (UnderDampedEnvironment)"),
+    (result_udbath, P12p, 'r', "P12 (UnderDampedEnvironment)"),
 ]);
+```
+
+The `UnderDampedEnvironment` class also allows us to easily evaluate analytical expressions for the power spectrum, correlation function, and spectral density. In the following plots, the solid lines are the exact expressions, and the dashed lines are based on our approximation of the correlation function with a finite number of exponents. In this case, there is an excellent agreement.
+
+```{code-cell} ipython3
+w = np.linspace(-3, 3, 1000)
+w2 = np.linspace(0, 3, 1000)
+t = np.linspace(0, 10, 1000)
+env_cf = env.correlation_function(t)
+
+fig, axs = plt.subplots(2, 2)
+
+axs[0, 0].plot(w, env.power_spectrum(w))
+axs[0, 0].plot(w, env_approx.power_spectrum(w), "--")
+axs[0, 0].set(xlabel=r"$\omega$", ylabel=r"$S(\omega)$")
+axs[0, 1].plot(w2, env.spectral_density(w2))
+axs[0, 1].plot(w2, env_approx.spectral_density(w2), "--")
+axs[0, 1].set(xlabel=r"$\omega$", ylabel=r"$J(\omega)$")
+axs[1, 0].plot(t, np.real(env_cf))
+axs[1, 0].plot(t, np.real(env_approx.correlation_function(t)), "--")
+axs[1, 0].set(xlabel=r"$t$", ylabel=r"$C_{R}(t)$")
+axs[1, 1].plot(t, np.imag(env_cf))
+axs[1, 1].plot(t, np.imag(env_approx.correlation_function(t)), "--")
+axs[1, 1].set(xlabel=r"$t$", ylabel=r"$C_{I}(t)$")
+
+fig.tight_layout()
+plt.show()
 ```
 
 ## Compare the results
@@ -433,17 +445,10 @@ plot_result_expectations([
 ### We can compare these results to those of the Bloch-Redfield solver in QuTiP:
 
 ```{code-cell} ipython3
-UD = (
-    f"2 * {lam}**2 * {gamma} / ( {w0}**4 * {beta}) if (w==0)"
-    " else "
-    f"2 * ({lam}**2 * {gamma} * w / (({w0}**2 - w**2)**2 + {gamma}**2 * w**2))"
-    f" * ((1 / (exp(w * {beta}) - 1)) + 1)"
-)
-
 with timer("ODE solver time"):
     resultBR = brmesolve(
         Hsys, rho0, tlist,
-        a_ops=[[sigmaz(), UD]], options=options,
+        a_ops=[[sigmaz(), env]], options=options,
     )
 ```
 
@@ -478,14 +483,14 @@ a = tensor(destroy(NRC), qeye(2))
 
 H0 = wa * a.dag() * a + Hsys_exp
 # interaction
-H1 = (g * (a.dag() + a) * Q_exp)
+H1 = g * (a.dag() + a) * Q_exp
 
 H = H0 + H1
 
 energies, states = H.eigenstates()
 rhoss = 0 * states[0] * states[0].dag()
 for kk, energ in enumerate(energies):
-    rhoss += (states[kk] * states[kk].dag() * np.exp(-beta * energies[kk]))
+    rhoss += states[kk] * states[kk].dag() * np.exp(-beta * energies[kk])
 rhoss = rhoss / rhoss.norm()
 
 P12RC = tensor(qeye(NRC), basis(2, 0) * basis(2, 1).dag())
@@ -542,7 +547,7 @@ with plt.rc_context(rcParams):
 ## About
 
 ```{code-cell} ipython3
-qutip.about()
+about()
 ```
 
 ## Testing
