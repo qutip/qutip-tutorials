@@ -29,7 +29,7 @@ jobs:
         folder-path: tutorials-v${{ matrix.qutip-version }}
         #use config file to define 403 and 405 errors as valid links
         #(APS blocks this link check)
-        config-file: mlc_config.json
+        config-file: mlc_external_config.json
 
     - name: Setup Conda
       uses: conda-incubator/setup-miniconda@v3
@@ -107,6 +107,15 @@ jobs:
         path: |
           notebooks/*.ipynb
           notebooks/**/*.ipynb
+   
+    - uses: gaurav-nelson/github-action-markdown-link-check@v1
+      with:
+        use-quiet-mode: 'yes'
+        folder-path: tutorials-v${{ matrix.qutip-version }}
+        #use config file to define 403 and 405 errors as valid links
+        #(APS blocks this link check)
+        config-file: mlc_config.json
+
   publish:
     needs: pytests
     runs-on: ubuntu-latest

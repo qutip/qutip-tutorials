@@ -1,15 +1,14 @@
 ---
 jupytext:
-  formats: ipynb,md:myst
   text_representation:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.5
+    jupytext_version: 1.17.0
 kernelspec:
+  name: python3
   display_name: Python 3 (ipykernel)
   language: python
-  name: python3
 ---
 
 # HEOM 5a: Fermionic single impurity model
@@ -18,7 +17,7 @@ kernelspec:
 
 ## Introduction
 
-Here we model a single fermion coupled to two electronic leads or reservoirs (e.g.,  this can describe a single quantum dot, a molecular transistor, etc).  Note that in this implementation we primarily follow the definitions used by Christian Schinabeck in his dissertation https://opus4.kobv.de/opus4-fau/files/10984/DissertationChristianSchinabeck.pdf and related publications.
+Here we model a single fermion coupled to two electronic leads or reservoirs (e.g.,  this can describe a single quantum dot, a molecular transistor, etc).  Note that in this implementation we primarily follow the definitions used by Christian Schinabeck in his dissertation https://open.fau.de/items/36fdd708-a467-4b59-bf4e-4a2110fbc431 and related publications.
 
 Notation:
 
@@ -75,23 +74,15 @@ import dataclasses
 import time
 
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.integrate import quad
+import matplotlib.pyplot as plt
 
-import qutip
-from qutip import (
-    basis,
-    destroy,
-    expect,
-)
-from qutip.solver.heom import (
-    HEOMSolver,
-    LorentzianBath,
-    LorentzianPadeBath,
-)
+from qutip import about, basis, destroy, expect
+from qutip.core.environment import LorentzianEnvironment
+from qutip.solver.heom import HEOMSolver
 
-from ipywidgets import IntProgress
 from IPython.display import display
+from ipywidgets import IntProgress
 
 %matplotlib inline
 ```
@@ -164,7 +155,7 @@ class LorentzianBathParameters:
         if self.lead == "L":
             self.mu = self.theta / 2.0
         else:
-            self.mu = - self.theta / 2.0
+            self.mu = -self.theta / 2.0
 
     def J(self, w):
         """ Spectral density. """
@@ -176,7 +167,7 @@ class LorentzianBathParameters:
         return fF(x)
 
     def lamshift(self, w):
-        """ Return the lamshift. """
+        """ Return the lamb shift. """
         return 0.5 * (w - self.mu) * self.J(w) / self.W
 
     def replace(self, **kw):
@@ -280,17 +271,22 @@ rho0 = basis(2, 0) * basis(2, 0).dag()
 
 Nk = 10  # Number of exponents to retain in the expansion of each bath
 
-bathL = LorentzianPadeBath(
-    bath_L.Q, bath_L.gamma, bath_L.W, bath_L.mu, bath_L.T,
-    Nk, tag="L",
+envL = LorentzianEnvironment(
+    bath_L.T, bath_L.mu, bath_L.gamma, bath_L.W,
 )
-bathR = LorentzianPadeBath(
-    bath_R.Q, bath_R.gamma, bath_R.W, bath_R.mu, bath_R.T,
-    Nk, tag="R",
+envL_pade = envL.approx_by_pade(Nk=Nk, tag="L")
+envR = LorentzianEnvironment(
+    bath_R.T, bath_R.mu, bath_R.gamma, bath_R.W,
 )
+envR_pade = envR.approx_by_pade(Nk=Nk, tag="R")
 
 with timer("RHS construction time"):
-    solver_pade = HEOMSolver(H, [bathL, bathR], max_depth=2, options=options)
+    solver_pade = HEOMSolver(
+        H,
+        [(envL_pade, bath_L.Q), (envR_pade, bath_R.Q)],
+        max_depth=2,
+        options=options,
+    )
 
 with timer("ODE solver time"):
     result_pade = solver_pade.run(rho0, tlist)
@@ -325,17 +321,17 @@ Now let us do the same for the Matsubara expansion:
 ```{code-cell} ipython3
 # HEOM dynamics using the Matsubara approximation:
 
-bathL = LorentzianBath(
-    bath_L.Q, bath_L.gamma, bath_L.W, bath_L.mu, bath_L.T,
-    Nk, tag="L",
-)
-bathR = LorentzianBath(
-    bath_R.Q, bath_R.gamma, bath_R.W, bath_R.mu, bath_R.T,
-    Nk, tag="R",
-)
+envL_mats = envL.approx_by_matsubara(Nk=Nk, tag="L")
+envR_mats = envR.approx_by_matsubara(Nk=Nk, tag="R")
+
 
 with timer("RHS construction time"):
-    solver_mats = HEOMSolver(H, [bathL, bathR], max_depth=2, options=options)
+    solver_mats = HEOMSolver(
+        H,
+        [(envL_mats, bath_L.Q), (envR_mats, bath_R.Q)],
+        max_depth=2,
+        options=options,
+    )
 
 with timer("ODE solver time"):
     result_mats = solver_mats.run(rho0, tlist)
@@ -391,7 +387,7 @@ def analytical_steady_state_current(bath_L, bath_R, e1):
             bath_L.J(w) * bath_R.J(w) * (bath_L.fF(w) - bath_R.fF(w)) /
             (
                 (bath_L.J(w) + bath_R.J(w))**2 +
-                4*(w - e1 - bath_L.lamshift(w) - bath_R.lamshift(w))**2
+                4 * (w - e1 - bath_L.lamshift(w) - bath_R.lamshift(w))**2
             )
         )
 
@@ -437,8 +433,7 @@ def state_current(ado_state, bath_tag):
         return exp.Q if exp.type == exp.types["+"] else exp.Q.dag()
 
     return -1.0j * sum(
-        exp_sign(exp) * (exp_op(exp) * aux).tr()
-        for aux, exp in level_1_aux
+        exp_sign(exp) * (exp_op(exp) * aux).tr() for aux, exp in level_1_aux
     )
 ```
 
@@ -513,16 +508,15 @@ def current_pade_for_theta(H, bath_L, bath_R, theta, Nk):
     bath_L = bath_L.replace(theta=theta)
     bath_R = bath_R.replace(theta=theta)
 
-    bathL = LorentzianPadeBath(
-        bath_L.Q, bath_L.gamma, bath_L.W, bath_L.mu, bath_L.T,
-        Nk, tag="L",
-    )
-    bathR = LorentzianPadeBath(
-        bath_R.Q, bath_R.gamma, bath_R.W, bath_R.mu, bath_R.T,
-        Nk, tag="R",
-    )
+    envL = LorentzianEnvironment(bath_L.T, bath_L.mu, bath_L.gamma, bath_L.W)
+    bathL = envL.approx_by_pade(Nk=Nk)
+    envR = LorentzianEnvironment(bath_R.T, bath_R.mu, bath_R.gamma, bath_R.W)
 
-    solver_pade = HEOMSolver(H, [bathL, bathR], max_depth=2, options=options)
+    bathR = envR.approx_by_pade(Nk=Nk, tag="R")
+
+    solver_pade = HEOMSolver(
+        H, [(bathL, bath_L.Q), (bathR, bath_R.Q)], max_depth=2, options=options
+    )
     rho_ss_pade, ado_ss_pade = solver_pade.steady_state()
     current = state_current(ado_ss_pade, bath_tag="R")
 
@@ -531,15 +525,13 @@ def current_pade_for_theta(H, bath_L, bath_R, theta, Nk):
 
 
 curr_ss_analytic_thetas = [
-    current_analytic_for_theta(e1, bath_L, bath_R, theta)
-    for theta in thetas
+    current_analytic_for_theta(e1, bath_L, bath_R, theta) for theta in thetas
 ]
 
 # The number of expansion terms has been dropped to Nk=6 to speed
 # up notebook execution. Increase to Nk=10 for more accurate results.
 curr_ss_pade_theta = [
-    current_pade_for_theta(H, bath_L, bath_R, theta, Nk=6)
-    for theta in thetas
+    current_pade_for_theta(H, bath_L, bath_R, theta, Nk=6) for theta in thetas
 ]
 ```
 
@@ -573,7 +565,7 @@ ax.legend(fontsize=25);
 ## About
 
 ```{code-cell} ipython3
-qutip.about()
+about()
 ```
 
 ## Testing
