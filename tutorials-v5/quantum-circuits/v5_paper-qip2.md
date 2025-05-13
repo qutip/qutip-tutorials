@@ -120,7 +120,8 @@ In general, QuTiP-QIP supports a great variety of gates and also the option for 
 More information on this is presented in the original paper for QuTiP-QIP [\[1\]](#References).
 
 Of course, the accuracy of our simulation is greatly dependent on the Trotter step size.
-To keep this tutorial at a reasonable execution time, we choose $dt = 4.0$, however it is worth exploring smaller step sizes.
+To keep this tutorial at a reasonable execution time, we choose $dt = 4.0$, so errors can be significant.
+However it is worth exploring smaller step sizes and see the error reducing.
 
 ```python
 # simulation parameters
