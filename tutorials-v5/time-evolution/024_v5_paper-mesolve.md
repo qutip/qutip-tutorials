@@ -34,9 +34,23 @@ In this notebook we will consider several examples illustrating the usage of the
 ```python
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import (QobjEvo, SESolver, UnderDampedEnvironment, about, basis,
-                   brmesolve, fidelity, mesolve, qeye, sigmam, sigmax, sigmaz,
-                   spost, spre, sprepost)
+from qutip import (
+    QobjEvo,
+    SESolver,
+    UnderDampedEnvironment,
+    about,
+    basis,
+    brmesolve,
+    fidelity,
+    mesolve,
+    qeye,
+    sigmam,
+    sigmax,
+    sigmaz,
+    spost,
+    spre,
+    sprepost,
+)
 from qutip.solver.heom import HEOMSolver
 
 %matplotlib inline
@@ -531,14 +545,16 @@ adi_me_res = mesolve(H_adi, psi0, tlist, c_ops=c_ops_me, e_ops=e_ops)
 
 ```python
 # HEOM
-max_depth = 4 # number of hierarchy levels
+max_depth = 4  # number of hierarchy levels
 
 wsamp = 2 * np.pi
 w0 = 5 * 2 * np.pi
 gamma_heom = 1.9 * w0
 
 lambd = np.sqrt(
-    0.5 * gamma / (gamma_heom * wsamp)
+    0.5
+    * gamma
+    / (gamma_heom * wsamp)
     * ((w0**2 - wsamp**2) ** 2 + (gamma_heom**2) * ((wsamp) ** 2))
 )
 ```
@@ -546,7 +562,7 @@ lambd = np.sqrt(
 ```python
 # Create Environment
 bath = UnderDampedEnvironment(lam=lambd, w0=w0, gamma=gamma_heom, T=1e-10)
-fit_times = np.linspace(0, 5, 1000) # range for correlation function fit
+fit_times = np.linspace(0, 5, 1000)  # range for correlation function fit
 
 # Fit correlation function with exponentials
 exp_bath, fit_info = bath.approx_by_cf_fit(
