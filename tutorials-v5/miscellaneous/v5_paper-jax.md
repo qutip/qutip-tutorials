@@ -200,7 +200,7 @@ options = {
 ```
 
 When working with JAX you can choose the type of device / processor to be used.
-In our case, we resort to the CPU since this is a simple Jupyter Notebook.
+In our case, we will resort to the CPU since this is a simple Jupyter Notebook.
 However, when running this on your machine, you can opt for using your GPU by simpy changing the argument below.
 
 ```python
