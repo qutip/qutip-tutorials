@@ -18,7 +18,7 @@ Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com), Paul M
 
 ## Introduction
 
-When a quantum system experiences non-Markovian effects, it can no longer be described using the standard Lindblad formalism.
+When a quantum system experiences non-Markovian effects, it can no longer be described by the standard Lindblad formalism.
 To compute the time evolution of the density matrix, we can however use time-convolutionless (TCL) projection operators that lead to a differential equation in time-local form:
 
 $\dot{\rho} (t) = - \dfrac{i}{\hbar} [H(t), \rho(t)] + \sum_n \gamma_n(t) \mathcal{D}_n(t) [\rho(t)]$
