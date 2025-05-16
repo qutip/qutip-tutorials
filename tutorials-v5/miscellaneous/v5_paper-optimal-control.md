@@ -40,7 +40,7 @@ from qutip_qoc import Objective, optimize_pulses
 
 ## Introduction
 
-In this example we want to implement a Hadamard gate on a single qubit.
+In this example we want to implement the Hadamard gate on a single qubit.
 In general, a qubit might be subject to decoherence which can be captured using the Lindblad formalism with the jump operator $\sigma_{-}$.
 
 For simplicity, we consider a control Hamiltonian parametrized by $\sigma_x$, $\sigma_y$ and $\sigma_z$:
