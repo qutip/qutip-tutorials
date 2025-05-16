@@ -17,15 +17,27 @@ jupyter:
 Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com), Boxi Li (etamin1201@gmail.com), Neill Lambert (nwlambert@gmail.com)
 
 Quantum circuits serve as a standard framework for representing and manipulating quantum algorithms visually and conceptually.
-As a member of the QuTiP family, the QuTiP-QIP [\[1\]](#References) package adds this framework and enables several distinctive capabilities.
+As a member of the QuTiP family, the QuTiP-QIP [\[1\]](#References) package add this framework and enables several distinctive capabilities.
 It allows seamless incorporation of circuit-representing unitaries into QuTiP's ecosystem using the `Qobj` class.
 Moreover, it links QuTiP-QOC and the open-system solvers, enabling pulse-level simulations of circuits with realistic noise effects.
 
 ```python
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import (about, basis, destroy, expect, ket2dm, mesolve, qeye,
-                   sesolve, sigmax, sigmay, sigmaz, tensor)
+from qutip import (
+    about,
+    basis,
+    destroy,
+    expect,
+    ket2dm,
+    mesolve,
+    qeye,
+    sesolve,
+    sigmax,
+    sigmay,
+    sigmaz,
+    tensor,
+)
 from qutip_qip.circuit import QubitCircuit
 from qutip_qip.device import SCQubits
 
@@ -198,7 +210,7 @@ To evaluate the quantum simulation, we compare the final results with the standa
 
 ```python
 # Exact Schrodinger equation
-tlist = np.linspace(0, tf, 100)
+tlist = np.linspace(0, tf, 200)
 states_sesolve = sesolve(H, init_state, tlist).states
 ```
 
@@ -289,7 +301,7 @@ for dd in range(num_steps):
     state_trotter_circ.append(state_system)
 ```
 
-Again, we want to run this trotterized evolution on the suuperconducting hardware backend. Be aware that, due of the increased complexity, this computation can take several minutes depending on your hardware.
+Again, we want to run this trotterized evolution on the superconducting hardware backend. Be aware that, due of the increased complexity, this computation can take several minutes depending on your hardware.
 
 ```python
 processor = SCQubits(num_qubits=4, t1=3.0e4, t2=3.0e4)
@@ -335,14 +347,13 @@ result_me = mesolve(H, init_state, tlist, c_ops, e_ops=[sz1, sz2])
 ```
 
 ```python
-plt.plot(tlist, result_me.expect[0], "-", label=r"Ideal")
-plt.plot(times_circ, expect(sz1, state_trotter_circ), "--d", label="trotter")
-plt.plot(
-    times_circ,
-    expect(sz_qutrit & qeye(3), state_list_proc),
-    "-.o",
-    label=r"noisy hardware",
-)
+expec_mesolve = result_me.expect[0]
+expec_trotter = expect(sz1, state_trotter_circ)
+expec_supcond = expect(sz_qutrit & qeye(3), state_list_proc)
+
+plt.plot(tlist, expec_mesolve, "-", label=r"Ideal")
+plt.plot(times_circ, expec_trotter, "--d", label="trotter")
+plt.plot(times_circ, expec_supcond, "-.o", label=r"noisy hardware")
 plt.xlabel("Time")
 plt.ylabel("Expectation values")
 plt.legend()
@@ -364,4 +375,17 @@ plt.show()
 
 ```python
 about()
+```
+
+### Testing
+
+```python
+np.testing.assert_allclose(expec_trotter, expec_supcond, atol=0.22)
+
+tc1 = np.abs(tlist - times_circ[1]).argmin()
+tc2 = np.abs(tlist - times_circ[2]).argmin()
+np.testing.assert_allclose([expec_mesolve[tc1]], [expec_trotter[1]], atol=0.2, rtol=0.3)
+np.testing.assert_allclose([expec_mesolve[tc1]], [expec_supcond[1]], atol=0.2, rtol=0.3)
+np.testing.assert_allclose([expec_mesolve[tc2]], [expec_trotter[2]], atol=0.2, rtol=0.3)
+np.testing.assert_allclose([expec_mesolve[tc2]], [expec_supcond[2]], atol=0.2, rtol=0.3)
 ```
