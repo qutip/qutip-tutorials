@@ -7,7 +7,7 @@ jupyter:
       format_version: '1.3'
       jupytext_version: 1.13.8
   kernelspec:
-    display_name: Python 3 (ipykernel)
+    display_name: qutip-tutorials-v5
     language: python
     name: python3
 ---
@@ -104,24 +104,6 @@ plt.xlabel("Time")
 plt.ylabel(r"$\langle \sigma_z^{(i)} \rangle$")
 plt.legend()
 plt.show()
-```
-
-### Manual Stepping Interface
-
-A new feature in QuTiP v5 is that time steps can be controlled manually.
-This is specifically useful if the Hamiltonian depends on an external control parameter such as a field strength.
-Such parameters can be updated in each step using the optional parameter `args`.
-In practice, this can look like this:
-
-```python
-t = 0
-dt = 40 / 100
-se_solver2 = SESolver(H)
-se_solver2.start(psi0, t)
-while t < 40:
-    t = t + dt
-    psi = se_solver2.step(t)
-    # process the result psi and calculate next time step
 ```
 
 ### Solver and Integrator Options
