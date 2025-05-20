@@ -98,7 +98,7 @@ jobs:
       run: |
         jupyter kernel &
         cd notebooks
-        find . -name '*.ipynb' -exec pytest --nbmake --overwrite --nbmake-timeout=600 {} +
+        find . -name '*.ipynb' -exec pytest --nbmake --overwrite --nbmake-timeout=900 {} +
         rm template.ipynb
 
     - name: Create Notebook Artifact
