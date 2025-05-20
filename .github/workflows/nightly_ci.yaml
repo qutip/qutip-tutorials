@@ -65,6 +65,7 @@ jobs:
         cd ..
         python -m pip install git+https://github.com/qutip/qutip-qip
         python -m pip install --no-deps git+https://github.com/qutip/qutip-jax
+        python -m pip install --no-deps git+https://github.com/qutip/qutip-qoc
 
         git clone -b master https://github.com/qutip/qutip-qtrl.git
         cd qutip-qtrl
