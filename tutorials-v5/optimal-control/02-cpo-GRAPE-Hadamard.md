@@ -21,19 +21,19 @@ Alexander Pitchford (agp1@aber.ac.uk)
 Example to demonstrate using the control library to determine control
 pulses using the ctrlpulseoptim.optimize_pulse_unitary function.
 The (default) L-BFGS-B algorithm is used to optimise the pulse to
-minimise the fidelity error, which is equivalent maximising the fidelity
+minimise the fidelity error, which is equivalent to maximising the fidelity
 to an optimal value of 1.
 
 The system in this example is a single qubit in a constant field in z
 with a variable control field in x
-The target evolution is the Hadamard gate irrespective of global phase
+The target evolution is the Hadamard gate, irrespective of global phase
 
 The user can experiment with the timeslicing, by means of changing the
 number of timeslots and/or total time for the evolution.
 Different initial (starting) pulse types can be tried.
 The initial and final pulses are displayed in a plot
 
-An in depth discussion of using methods of this type can be found in [1]
+An in-depth discussion of using methods of this type can be found in [1]
 
 ```python
 import datetime
@@ -82,10 +82,10 @@ n_ts = 10
 evo_time = 10
 ```
 
-### Set the conditions which will cause the pulse optimisation to terminate
+### Set the conditions that will cause the pulse optimisation to terminate
 
 
-At each iteration the fidelity of the evolution is tested by comparaing the calculated evolution U(T) with the target U_targ. For unitary systems such as this one this is typically:
+At each iteration, the fidelity of the evolution is tested by comparaing the calculated evolution U(T) with the target U_targ. For unitary systems such as this one this is typically:
 f = normalise(overlap(U(T), U_targ))
 For details of the normalisation see [1] or the source code.
 The maximum fidelity (for a unitary system) calculated this way would be 1, and hence the error is calculated as fid_err = 1 - fidelity. As such the optimisation is considered completed when the fid_err falls below such a target value.
@@ -126,7 +126,7 @@ f_ext = "{}_n_ts{}_ptype{}.txt".format(example_name, n_ts, p_type)
 ### Run the optimisation
 
 
-In this step the L-BFGS-B algorithm is invoked. At each iteration the gradient of the fidelity error w.r.t. each control amplitude in each timeslot is calculated using an exact gradient method (see [1]). Using the gradients the algorithm will determine a set of piecewise control amplitudes that reduce the fidelity error. With repeated iterations an approximation of the Hessian matrix (the 2nd order differentials) is calculated, which enables a quasi 2nd order Newton method for finding a minima.  The algorithm continues until one of the termination conditions defined above has been reached.
+In this step the L-BFGS-B algorithm is invoked. At each iteration the gradient of the fidelity error w.r.t. each control amplitude in each timeslot is calculated using an exact gradient method (see [1]). Using the gradients, the algorithm will determine a set of piecewise control amplitudes that reduce the fidelity error. With repeated iterations, an approximation of the Hessian matrix (the 2nd order differentials) is calculated, which enables a quasi 2nd order Newton method for finding a minima. The algorithm continues until one of the termination conditions defined above has been reached.
 
 ```python
 result = cpo.optimize_pulse_unitary(
@@ -149,11 +149,11 @@ result = cpo.optimize_pulse_unitary(
 ### Report the results
 
 
-Firstly the performace statistics are reported, which gives a breadown of the processing times. The times given are those that are associated with calculating the fidelity and the gradients. Any remaining processing time can be assumed to be used by the optimisation algorithm (L-BFGS-B) itself. In this example it can be seen that the majority of time is spent calculating the propagators, i.e. exponentiating the combined Hamiltonian.
+Firstly the performace statistics are reported, which gives a breakdown of the processing times. The times given are those that are associated with calculating the fidelity and the gradients. Any remaining processing time can be assumed to be used by the optimisation algorithm (L-BFGS-B) itself. In this example, it can be seen that the majority of time is spent calculating the propagators, i.e., exponentiating the combined Hamiltonian.
 
 The optimised U(T) is reported as the 'final evolution', which is essentially the string representation of the Qobj that holds the full time evolution at the point when the optimisation is terminated.
 
-The key information is in the summary (given) last. Here the final fidelity is reported and the reasonn for termination of the algorithm.
+The key information is in the summary (given) last. Here the final fidelity is reported and the reason for termination of the algorithm.
 
 ```python
 result.stats.report()
