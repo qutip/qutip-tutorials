@@ -12,10 +12,10 @@ jupyter:
     name: python3
 ---
 
-# Custimize the pulse-level simulation
+# Customize the pulse-level simulation
 Author: Boxi Li (etamin1201@gmail.com)
 
-In this note, we demonstrate examples of customizing  the pulse-level simulator in qutip-qip.The notebook is divided into three parts:
+In this note, we demonstrate examples of customizing  the pulse-level simulator in qutip-qip. The notebook is divided into three parts:
 1. Customizing the Hamiltonian model
 2. Customizing the compiler
 3. Customizing the noise
@@ -70,14 +70,14 @@ class MyModel(Model):
 
     def get_control(self, label):
         """
-        The mandatory method. It Returns a pair of Qobj and int representing
+        The mandatory method. It returns a pair of Qobj and int representing
         the control Hamiltonian and the target qubit.
         """
         return self.controls[label]
 
     def get_control_labels(self):
         """
-        It returns all the labels of availble controls.
+        It returns all the labels of available controls.
         """
         return self.controls.keys()
 
@@ -95,14 +95,14 @@ class MyModel(Model):
         ]
 ```
 
-This is a quantum system of $n$ qubits arranged in a chain (same as the [spin chain model](https://qutip-qip.readthedocs.io/en/stable/apidoc/qutip_qip.device.html?highlight=spinchain#qutip_qip.device.SpinChainModel)), where we have control over three Hamiltonian: $\sigma_x$, $\sigma_z$ on each qubit, and neighbouring-qubits interaction $\sigma_x\sigma_x+\sigma_y\sigma_y$:
+This is a quantum system of $n$ qubits arranged in a chain (same as the [spin chain model](https://qutip-qip.readthedocs.io/en/stable/apidoc/qutip_qip.device.html?highlight=spinchain#qutip_qip.device.SpinChainModel)), where we have control over three Hamiltonians: $\sigma_x$, $\sigma_z$ on each qubit, and neighbouring-qubits interaction $\sigma_x\sigma_x+\sigma_y\sigma_y$:
 
 $$
 H = \sum_{j=0}^{n-1} c_{1,j}(t) \cdot h_x^{j}\sigma_x^{j} + \sum_{j=0}^{n-1} c_{2,j}(t) \cdot h_z^{j}\sigma_z^{j}
 + \sum_{j=0}^{n-2} c_{3,j}(t)\cdot g^{j}(\sigma_x^{j}\sigma_x^{j+1}+\sigma_y^{j}\sigma_y^{j+1})
 $$
 
-where $h_x$, $h_z$, $g$ are the hardware parameters and $c_{i,j}(t)$ are the time-dependent control pulse coefficients. This Hamiltonian is the same as the one for the linear spin chain model in QuTiP. In general, the hardware parameters will not be identical for each qubit, but here, for simplicity, we represent them by three numbers: $h_x$, $h_z$ and $g$.
+where $h_x$, $h_z$, $g$ are the hardware parameters and $c_{i,j}(t)$ are the time-dependent control pulse coefficients. This Hamiltonian is the same as the one for the linear spin chain model in QuTiP. In general, the hardware parameters will not be identical for each qubit, but here, for simplicity, we represent them by three numbers: $h_x$, $h_z$, and $g$.
 
 To simulate a custom quantum device, we provide the model to `ModelProcessor`, which is used for simulators based on a concrete physics model (in contrast to optimal control for arbitrary Hamiltonians). In this way, we inherit the necessary methods from `ModelProcessor` used in the simulation. 
 
@@ -145,7 +145,7 @@ class MyProcessor(ModelProcessor):
         super(MyProcessor, self).__init__(
             num_qubits, t1=t1, t2=t2
         )  # call the parent class initializer
-        # The control pulse is discrete or continous.
+        # The control pulse is discrete or continuous.
         self.pulse_mode = "discrete"
         self.model.params.update(
             {
@@ -220,9 +220,9 @@ This is a rectangular pulse that starts from time 0 and ends at time 0.25.
 
 #### Note
 
-For discrete pulse, the time sequence is one element shorter than the pulse coefficient because we need to specify the start and the end of the pulse. If two sequences are of the same length, the last element of `coeff` will be neglected. Later, we will see continuous pulse where `coeff` and `tlist` have the same length.
+For a discrete pulse, the time sequence is one element shorter than the pulse coefficient because we need to specify the start and the end of the pulse. If two sequences are of the same length, the last element of `coeff` will be neglected. Later, we will see a continuous pulse where `coeff` and `tlist` have the same length.
 
-To give an intuitive illustration of the control pulses, we give each pulse a latex label by defining a method `get_operators_labels` and then plot the compiled pulses.
+To give an intuitive illustration of the control pulses, we give each pulse a LaTeX label by defining a method `get_operators_labels` and then plot the compiled pulses.
 
 ```python
 processor.plot_pulses()
@@ -231,11 +231,11 @@ plt.show()
 
 ## Customizing the compiler
 
-How the quantum gates are implemented on hardware varies on different quantum systems. Even on the same physical platform, different implementation will yield different performance. The simplest way of implementation is to define a rectangular pulse like the one above. However, in reality, the control signal will have a continuous shape. In the following, we show how to customize the compiler with a gaussian pulse.
+How the quantum gates are implemented on hardware varies on different quantum systems. Even on the same physical platform, different implementations will yield different performance. The simplest way of implementation is to define a rectangular pulse like the one above. However, in reality, the control signal will have a continuous shape. In the following, we show how to customize the compiler with a Gaussian pulse.
 
 A typical gate compiler function looks like the one in the following cell, with the form ``XX_compiler(self, gate, args)``. It takes two arguments, `gate` and `args`: `gate` is the quantum gate to be compiled and `args` is a dictionary for additional parameters, for instance, parameters we defined in `Processor.params`.
 
-For each gate, the function returns the input gate, the time sequence and the pulse coefficients in an `Instruction` object.
+For each gate, the function returns the input gate, the time sequence, and the pulse coefficients in an `Instruction` object.
 
 Below is an example of a rectangular pulse.
 
@@ -405,11 +405,11 @@ plt.show()
 ## Customizing the noise
 Apart from pre-defined noise such as T1, T2 noise and random noise in the control pulse amplitude (see this [guide](https://qutip-qip.readthedocs.io/en/stable/qip-processor.html), one can also define custom noise. Here we will see two examples of customizing noise, one systematic (pulse-independent) noise and one pulse-dependent noise. 
 
-To understand how noise is processed, we briefly introduced the data structure of the simulation framework. The control elements are stored as a list of `Pulse` objects in the Processor. In each Pulse contains the idea pulse, the control noise part and the decoherence part. For systematic noise, it is saved under the `Pulse` representation labelled `"system"`, which represents the intrinsic dynamics of the quantum system. For pulse-dependent noise, we will add them to their corresponding control `Pulse`. 
+To understand how noise is processed, we briefly introduced the data structure of the simulation framework. The control elements are stored as a list of `Pulse` objects in the Processor. Each Pulse contains the idea pulse, the control noise part and the decoherence part. For systematic noise, it is saved under the `Pulse` representation labelled `"system"`, which represents the intrinsic dynamics of the quantum system. For pulse-dependent noise, we will add them to their corresponding control `Pulse`. 
 
 The definition of noise is realized by a subclass of `UserNoise`, including two methods: 
 - the initialization method containing the property of the noise, such as frequency or amplitude.
-- the method `get_noisy_dynamics` that takes all the control pulse `pulses`, a dummy `Pulse` object representing systematic noise and the dimension of the system (here two qubits `[2,2]`).
+- the method `get_noisy_dynamics` that takes all the control pulse `pulses`, a dummy `Pulse` object representing systematic noise, and the dimension of the system (here two qubits `[2,2]`).
 
 
 ```python
@@ -427,7 +427,7 @@ class Extral_decay(Noise):
 We first show an example of systematic noise. Here, we introduce a ZZ crosstalk noise between neighbouring qubits with a constant strength. It is done in three steps:
 
 - Define the noise class.
-- Initialize the noise object with given coupling strength.
+- Initialize the noise object with the given coupling strength.
 - Define the Processor as usual and add the noise to the processor.
 
 In the following example, we check the fidelity of the same circuit of two X gates, but now with this additional noise.
@@ -468,8 +468,8 @@ print(
 )
 ```
 
-### Pulse dependent noise
-In this second example, we demonstrate how to add an additional amplitude damping channel on the qubits. The amplitude of this decay is linearly dependent on the control pulse "sx", i.e. whenever the pulse "sx" is turned on, the decoherence is also turned on. The corresponding annihilation operator has a coefficient proportional to the control pulse amplitude. This noise can be added on top of the default T1, T2 noise.
+### Pulse-dependent noise
+In this second example, we demonstrate how to add an additional amplitude-damping channel on the qubits. The amplitude of this decay is linearly dependent on the control pulse "sx", i.e. whenever the pulse "sx" is turned on, the decoherence is also turned on. The corresponding annihilation operator has a coefficient proportional to the control pulse amplitude. This noise can be added on top of the default T1, T2 noise.
 
 ```python
 class Extral_decay_2(Noise):
@@ -491,7 +491,7 @@ class Extral_decay_2(Noise):
                     coeff=self.ratio * pulse.coeff,
                 )
                 # One can also use add_control_noise here
-                # to add addtional hamiltonian as noise (see next example).
+                # to add additional Hamiltonian as noise (see next example).
 
 
 extral_decay = Extral_decay_2(0.3)
@@ -505,7 +505,7 @@ tlist, coeff = processor.load_circuit(circuit, compiler=gauss_compiler)
 
 result = processor.run_state(init_state=basis([2, 2], [0, 0]))
 print(
-    "Final fidelity with pulse dependent decoherence:",
+    "Final fidelity with pulse-dependent decoherence:",
     fidelity(result.states[-1], basis([2, 2], [1, 1])),
 )
 ```
