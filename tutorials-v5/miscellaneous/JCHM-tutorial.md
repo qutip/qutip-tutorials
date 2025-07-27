@@ -14,7 +14,7 @@ jupyter:
 
 # Introduction to the Jaynes-Cummings-Hubbard Model: Three-Site System
 
-Authors: [Your Name]
+Authors: Vanshaj Bindal (Cardiff University)
 
 ## Introduction
 
@@ -237,7 +237,7 @@ tlist = np.linspace(0, 40, 200)
 
 # Calculate time evolution using the master equation solver
 # For a closed system without dissipation, this solves the Schrödinger equation
-result = mesolve(H, psi0, tlist, [], ops['cavity_n'] + ops['atom_e'])
+result = mesolve(H, psi0, tlist, [], e_ops=(ops['cavity_n'] + ops['atom_e']))
 
 # Plot the results to visualize the dynamics
 plt.figure(figsize=(12, 10))
@@ -375,6 +375,9 @@ plt.legend()
 plt.grid(True)
 plt.show()
 ```
+For a finite-size system (especially a small 3-site system), the ground state preserves certain symmetries that cause the expectation value of the field operator (⟨a⟩) to be exactly zero, even across the phase transition. The photon number fluctuations (blue circles) still increase as expected, showing a precursor to the phase transition.
+
+In larger systems (let's say extremely large), ⟨a⟩ would become non-zero in the superfluid phase, serving as a true order parameter. But in our small system, we need to look at other quantities (like photon number fluctuations) to see signatures of the transition.
 
 ## Photon Propagation in the Chain
 
@@ -440,7 +443,7 @@ for delta in delta_values:
     psi0 = tensor(basis(N, 1), basis(2, 0), basis(N, 0), basis(2, 0), basis(N, 0), basis(2, 0))
     
     # Calculate time evolution
-    result = mesolve(H_detuned, psi0, tlist, [], [ops_detuned['cavity_n'][0]])
+    result = mesolve(H_detuned, psi0, tlist, [], e_ops=[ops_detuned['cavity_n'][0]])
     
     # Plot photon number in first cavity
     plt.plot(tlist, result.expect[0], label=f"Detuning Δ = {delta}")
@@ -485,7 +488,7 @@ for g_val in g_values:
     psi0 = tensor(basis(N, 1), basis(2, 0), basis(N, 0), basis(2, 0), basis(N, 0), basis(2, 0))
     
     # Calculate time evolution
-    result = mesolve(H_g, psi0, tlist, [], [ops_g['cavity_n'][1]])  # Measure photon number in second cavity
+    result = mesolve(H_g, psi0, tlist, [], e_ops=[ops_g['cavity_n'][1]]) # Measure photon number in second cavity
     
     # Plot photon number in second cavity
     plt.plot(tlist, result.expect[0], label=f"Coupling g = {g_val}")
