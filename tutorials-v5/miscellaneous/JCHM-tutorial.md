@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.14.4
+      jupytext_version: 1.17.0
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -55,9 +55,10 @@ The Hamiltonian consists of four terms:
 First, we'll import the necessary libraries. QuTiP (Quantum Toolbox in Python) provides the quantum operators and solvers we need.
 
 ```python
-import numpy as np
 import matplotlib.pyplot as plt
-from qutip import *
+import numpy as np
+from qutip import about, basis, destroy, expect, mesolve, qeye, sigmaz, tensor
+
 %matplotlib inline
 ```
 
@@ -72,11 +73,11 @@ We'll start by defining the system parameters. These determine the physical prop
 
 ```python
 # System parameters
-N = 5               # Number of Fock states per cavity (reduced for computational efficiency)
-omega_c = 1.0       # Cavity frequency (sets the energy scale)
-omega_a = 1.0       # Atomic transition frequency (in resonance with cavities)
-g = 0.3             # Atom-cavity coupling strength
-J = 0.2             # Hopping strength between cavities
+N = 5  # Number of Fock states per cavity (reduced for computational efficiency)
+omega_c = 1.0  # Cavity frequency (sets the energy scale)
+omega_a = 1.0  # Atomic transition frequency (in resonance with cavities)
+g = 0.3  # Atom-cavity coupling strength
+J = 0.2  # Hopping strength between cavities
 ```
 
 ### Creating the Hamiltonian
@@ -89,11 +90,10 @@ The key challenge is to properly represent operators that act on specific subsys
 def create_three_site_jchm(N, omega_c, omega_a, g, J):
     """
     Create the Hamiltonian for a three-site Jaynes-Cummings-Hubbard model.
-    
     In QuTiP, we construct operators for composite systems using tensor products.
     For each operator, we create a tensor product of the desired operator at the
     specific site and identity operators at all other sites.
-    
+
     Parameters:
     -----------
     N : int
@@ -106,7 +106,7 @@ def create_three_site_jchm(N, omega_c, omega_a, g, J):
         Atom-cavity coupling strength.
     J : float
         Hopping strength between cavities.
-        
+
     Returns:
     --------
     H : Qobj
@@ -116,58 +116,73 @@ def create_three_site_jchm(N, omega_c, omega_a, g, J):
     """
     # Define operators for each cavity-atom system using tensor products
     # The full Hilbert space is: (cavity1 ⊗ atom1 ⊗ cavity2 ⊗ atom2 ⊗ cavity3 ⊗ atom3)
-    
+
     # Cavity annihilation operators
     c1 = tensor(destroy(N), qeye(2), qeye(N), qeye(2), qeye(N), qeye(2))  # Cavity 1
     c2 = tensor(qeye(N), qeye(2), destroy(N), qeye(2), qeye(N), qeye(2))  # Cavity 2
     c3 = tensor(qeye(N), qeye(2), qeye(N), qeye(2), destroy(N), qeye(2))  # Cavity 3
-    
+
     # Atomic Pauli operators
-    sz1 = tensor(qeye(N), sigmaz(), qeye(N), qeye(2), qeye(N), qeye(2))   # Atom 1
-    sz2 = tensor(qeye(N), qeye(2), qeye(N), sigmaz(), qeye(N), qeye(2))   # Atom 2
-    sz3 = tensor(qeye(N), qeye(2), qeye(N), qeye(2), qeye(N), sigmaz())   # Atom 3
-    
+    sz1 = tensor(qeye(N), sigmaz(), qeye(N), qeye(2), qeye(N), qeye(2))  # Atom 1
+    sz2 = tensor(qeye(N), qeye(2), qeye(N), sigmaz(), qeye(N), qeye(2))  # Atom 2
+    sz3 = tensor(qeye(N), qeye(2), qeye(N), qeye(2), qeye(N), sigmaz())  # Atom 3
+
     # Atomic lowering operators
-    sm1 = tensor(qeye(N), destroy(2), qeye(N), qeye(2), qeye(N), qeye(2)) # Atom 1 lowering
-    sm2 = tensor(qeye(N), qeye(2), qeye(N), destroy(2), qeye(N), qeye(2)) # Atom 2 lowering
-    sm3 = tensor(qeye(N), qeye(2), qeye(N), qeye(2), qeye(N), destroy(2)) # Atom 3 lowering
-    
+    sm1 = tensor(
+        qeye(N), destroy(2), qeye(N), qeye(2), qeye(N), qeye(2)
+    )  # Atom 1 lowering
+    sm2 = tensor(
+        qeye(N), qeye(2), qeye(N), destroy(2), qeye(N), qeye(2)
+    )  # Atom 2 lowering
+    sm3 = tensor(
+        qeye(N), qeye(2), qeye(N), qeye(2), qeye(N), destroy(2)
+    )  # Atom 3 lowering
+
     # Atomic raising operators (adjoint of lowering)
     sp1 = sm1.dag()
     sp2 = sm2.dag()
     sp3 = sm3.dag()
-    
+
     # Construct the Hamiltonian
-    
-    # 1. Cavity energy terms: 
+
+    # 1. Cavity energy terms:
     # These terms represent the energy of photons in each cavity
     H_cavity = omega_c * (c1.dag() * c1 + c2.dag() * c2 + c3.dag() * c3)
-    
-    # 2. Atom energy terms: 
+
+    # 2. Atom energy terms:
     # These terms represent the energy of each two-level atom
     H_atom = 0.5 * omega_a * (sz1 + sz2 + sz3)
-    
-    # 3. Cavity-atom interaction terms: 
+
+    # 3. Cavity-atom interaction terms:
     # These terms represent the interaction between cavities and atoms (absorption/emission)
-    H_interaction = g * ((c1.dag() * sm1 + c1 * sp1) + 
-                         (c2.dag() * sm2 + c2 * sp2) + 
-                         (c3.dag() * sm3 + c3 * sp3))
-    
+    H_interaction = g * (
+        (c1.dag() * sm1 + c1 * sp1)
+        + (c2.dag() * sm2 + c2 * sp2)
+        + (c3.dag() * sm3 + c3 * sp3)
+    )
+
     # 4. Photon hopping terms:
     # These terms allow photons to tunnel between adjacent cavities
-    H_hopping = -J * ((c1.dag() * c2 + c2.dag() * c1) + 
-                      (c2.dag() * c3 + c3.dag() * c2))
-    
+    H_hopping = -J * ((c1.dag() * c2 + c2.dag() * c1) + (c2.dag() * c3 + c3.dag() * c2))
+
     # Total Hamiltonian
     H = H_cavity + H_atom + H_interaction + H_hopping
-    
+
     # Create dictionary of measurement operators for later use
     ops = {
-        'cavity_n': [c1.dag() * c1, c2.dag() * c2, c3.dag() * c3],  # Photon number operators
-        'atom_e': [sm1.dag() * sm1, sm2.dag() * sm2, sm3.dag() * sm3],  # Atomic excitation operators
-        'cavity_a': [c1, c2, c3]  # Cavity field operators
+        "cavity_n": [
+            c1.dag() * c1,
+            c2.dag() * c2,
+            c3.dag() * c3,
+        ],  # Photon number operators
+        "atom_e": [
+            sm1.dag() * sm1,
+            sm2.dag() * sm2,
+            sm3.dag() * sm3,
+        ],  # Atomic excitation operators
+        "cavity_a": [c1, c2, c3],  # Cavity field operators
     }
-    
+
     return H, ops
 ```
 
@@ -188,12 +203,12 @@ Let's examine the ground state of our system to understand its fundamental prope
 
 ```python
 # Calculate ground state (lowest energy eigenstate)
-evals, evecs = H.eigenstates(eigvals=1, sort='low')
+evals, evecs = H.eigenstates(eigvals=1, sort="low")
 ground_state = evecs[0]
 
 # Calculate expectation values of photon numbers and atomic excitations
-photon_numbers = [expect(ops['cavity_n'][i], ground_state) for i in range(3)]
-atom_excitations = [expect(ops['atom_e'][i], ground_state) for i in range(3)]
+photon_numbers = [expect(ops["cavity_n"][i], ground_state) for i in range(3)]
+atom_excitations = [expect(ops["atom_e"][i], ground_state) for i in range(3)]
 
 # Print the values for detailed inspection
 print("Ground state energy:", evals[0])
@@ -230,14 +245,16 @@ In QuTiP, we use the `mesolve` function to numerically solve this equation. For 
 ```python
 # Create initial state: first cavity has one photon, all atoms in ground state
 # The state is a tensor product: |1⟩₁ ⊗ |g⟩₁ ⊗ |0⟩₂ ⊗ |g⟩₂ ⊗ |0⟩₃ ⊗ |g⟩₃
-psi0 = tensor(basis(N, 1), basis(2, 0), basis(N, 0), basis(2, 0), basis(N, 0), basis(2, 0))
+psi0 = tensor(
+    basis(N, 1), basis(2, 0), basis(N, 0), basis(2, 0), basis(N, 0), basis(2, 0)
+)
 
 # Define time points for the evolution
 tlist = np.linspace(0, 40, 200)
 
 # Calculate time evolution using the master equation solver
 # For a closed system without dissipation, this solves the Schrödinger equation
-result = mesolve(H, psi0, tlist, [], e_ops=(ops['cavity_n'] + ops['atom_e']))
+result = mesolve(H, psi0, tlist, [], e_ops=(ops["cavity_n"] + ops["atom_e"]))
 
 # Plot the results to visualize the dynamics
 plt.figure(figsize=(12, 10))
@@ -255,7 +272,7 @@ plt.grid(True)
 # Plot atomic excitations - shows how atoms interact with photons
 plt.subplot(2, 1, 2)
 for i in range(3):
-    plt.plot(tlist, result.expect[i+3], label=f"Atom {i+1}")
+    plt.plot(tlist, result.expect[i + 3], label=f"Atom {i+1}")
 plt.xlabel("Time")
 plt.ylabel("Excitation probability")
 plt.title("Atomic excitation dynamics")
@@ -292,18 +309,18 @@ To characterize the different phases, we'll use two order parameters:
 def compute_order_parameters(H, ops):
     """
     Compute order parameters for the ground state of the Hamiltonian.
-    
+
     Order parameters help us identify different quantum phases:
     - Photon number fluctuations (delta_n): Larger in the superfluid phase
     - Cavity field amplitude (alpha): Non-zero in the superfluid phase
-    
+
     Parameters:
     -----------
     H : Qobj
         Hamiltonian of the system.
     ops : dict
         Dictionary of operators.
-        
+
     Returns:
     --------
     delta_n : float
@@ -312,30 +329,30 @@ def compute_order_parameters(H, ops):
         Average cavity field amplitude.
     """
     # Find the ground state
-    evals, evecs = H.eigenstates(eigvals=1, sort='low')
+    evals, evecs = H.eigenstates(eigvals=1, sort="low")
     ground_state = evecs[0]
-    
+
     # Calculate photon numbers and fluctuations
     delta_n_values = []
     alpha_values = []
-    
+
     for i in range(3):  # For all three cavities
         # Photon number
-        n_op = ops['cavity_n'][i]
+        n_op = ops["cavity_n"][i]
         n = expect(n_op, ground_state)
-        
+
         # Photon number squared - needed for variance calculation
         n_sq = expect(n_op * n_op, ground_state)
-        
+
         # Photon number fluctuation (standard deviation)
         delta_n = np.sqrt(n_sq - n**2)
         delta_n_values.append(delta_n)
-        
+
         # Field amplitude - a measure of coherence
-        a_op = ops['cavity_a'][i]
+        a_op = ops["cavity_a"][i]
         alpha = abs(expect(a_op, ground_state))
         alpha_values.append(alpha)
-    
+
     # Return average values across all cavities
     return np.mean(delta_n_values), np.mean(alpha_values)
 ```
@@ -351,26 +368,26 @@ alpha_values = []
 for J_val in J_values:
     # Create Hamiltonian with current J value
     H_J, ops_J = create_three_site_jchm(N, omega_c, omega_a, g, J_val)
-    
+
     # Calculate order parameters
     delta_n, alpha = compute_order_parameters(H_J, ops_J)
-    
+
     # Store values
     delta_n_values.append(delta_n)
     alpha_values.append(alpha)
-    
-    print(f"J = {J_val:.3f}: calculated", end='\r')
+
+    print(f"J = {J_val:.3f}: calculated", end="\r")
 
 print("\nCalculations complete!")
 
 # Plot order parameters
 plt.figure(figsize=(10, 6))
-plt.plot(J_values, delta_n_values, 'o-', label='Photon number fluctuations')
-plt.plot(J_values, alpha_values, 's-', label='Cavity field amplitude')
-plt.axvline(x=0.2, color='r', linestyle='--', label='Approximate phase boundary')
-plt.xlabel('Hopping strength (J)')
-plt.ylabel('Order parameter')
-plt.title('Order Parameters vs. Hopping Strength')
+plt.plot(J_values, delta_n_values, "o-", label="Photon number fluctuations")
+plt.plot(J_values, alpha_values, "s-", label="Cavity field amplitude")
+plt.axvline(x=0.2, color="r", linestyle="--", label="Approximate phase boundary")
+plt.xlabel("Hopping strength (J)")
+plt.ylabel("Order parameter")
+plt.title("Order Parameters vs. Hopping Strength")
 plt.legend()
 plt.grid(True)
 plt.show()
@@ -390,20 +407,25 @@ In the JCHM, photons don't simply move from one cavity to the next in a classica
 ```python
 # Calculate time evolution with finer time resolution
 tlist1 = np.linspace(0, 30, 1000)
-result = mesolve(H, psi0, tlist1, [], e_ops=ops['cavity_n'])
+result = mesolve(H, psi0, tlist1, [], e_ops=ops["cavity_n"])
 
 photon_data = np.array([result.expect[0], result.expect[1], result.expect[2]])
 
 # Create a color plot showing photon propagation
 plt.figure(figsize=(10, 6))
-plt.imshow(photon_data, aspect='auto', 
-           extent=[0, tlist_long[-1], 0.5, 3.5],
-           origin='lower', interpolation='bilinear', cmap='viridis')
-plt.colorbar(label='Photon number')
-plt.xlabel('Time')
-plt.ylabel('Cavity site')
+plt.imshow(
+    photon_data,
+    aspect="auto",
+    extent=[0, tlist1[-1], 0.5, 3.5],
+    origin="lower",
+    interpolation="bilinear",
+    cmap="viridis",
+)
+plt.colorbar(label="Photon number")
+plt.xlabel("Time")
+plt.ylabel("Cavity site")
 plt.yticks([1, 2, 3])
-plt.title('Photon propagation through the three-site chain')
+plt.title("Photon propagation through the three-site chain")
 plt.tight_layout()
 plt.show()
 ```
@@ -435,16 +457,20 @@ plt.figure(figsize=(10, 6))
 for delta in delta_values:
     # Calculate new atomic frequency with detuning (Δ = ωa - ωc)
     omega_a_detuned = omega_c + delta
-    
+
     # Create Hamiltonian with detuning
-    H_detuned, ops_detuned = create_three_site_jchm(N, omega_c, omega_a_detuned, g, J_fixed)
-    
+    H_detuned, ops_detuned = create_three_site_jchm(
+        N, omega_c, omega_a_detuned, g, J_fixed
+    )
+
     # Create initial state
-    psi0 = tensor(basis(N, 1), basis(2, 0), basis(N, 0), basis(2, 0), basis(N, 0), basis(2, 0))
-    
+    psi0 = tensor(
+        basis(N, 1), basis(2, 0), basis(N, 0), basis(2, 0), basis(N, 0), basis(2, 0)
+    )
+
     # Calculate time evolution
-    result = mesolve(H_detuned, psi0, tlist, [], e_ops=[ops_detuned['cavity_n'][0]])
-    
+    result = mesolve(H_detuned, psi0, tlist, [], e_ops=[ops_detuned["cavity_n"][0]])
+
     # Plot photon number in first cavity
     plt.plot(tlist, result.expect[0], label=f"Detuning Δ = {delta}")
 
@@ -483,13 +509,17 @@ plt.figure(figsize=(10, 6))
 for g_val in g_values:
     # Create Hamiltonian with specific coupling strength
     H_g, ops_g = create_three_site_jchm(N, omega_c, omega_a, g_val, J_fixed)
-    
+
     # Create initial state
-    psi0 = tensor(basis(N, 1), basis(2, 0), basis(N, 0), basis(2, 0), basis(N, 0), basis(2, 0))
-    
+    psi0 = tensor(
+        basis(N, 1), basis(2, 0), basis(N, 0), basis(2, 0), basis(N, 0), basis(2, 0)
+    )
+
     # Calculate time evolution
-    result = mesolve(H_g, psi0, tlist, [], e_ops=[ops_g['cavity_n'][1]]) # Measure photon number in second cavity
-    
+    result = mesolve(
+        H_g, psi0, tlist, [], e_ops=[ops_g["cavity_n"][1]]
+    )  # Measure photon number in second cavity
+
     # Plot photon number in second cavity
     plt.plot(tlist, result.expect[0], label=f"Coupling g = {g_val}")
 
@@ -521,5 +551,6 @@ The JCHM has important applications in quantum simulation, quantum optics, and q
 
 ```python
 from qutip import about
+
 about()
 ```
