@@ -73,7 +73,7 @@ We'll start by defining the system parameters. These determine the physical prop
 
 ```python
 # System parameters
-N = 5  # Number of Fock states per cavity (reduced for computational efficiency)
+N = 5  # Number of Fock states per cavity(reduced for computational efficiency)
 omega_c = 1.0  # Cavity frequency (sets the energy scale)
 omega_a = 1.0  # Atomic transition frequency (in resonance with cavities)
 g = 0.3  # Atom-cavity coupling strength
@@ -154,7 +154,7 @@ def create_three_site_jchm(N, omega_c, omega_a, g, J):
     H_atom = 0.5 * omega_a * (sz1 + sz2 + sz3)
 
     # 3. Cavity-atom interaction terms:
-    # These terms represent the interaction between cavities and atoms (absorption/emission)
+    # These terms represent the interaction between cavities and atom
     H_interaction = g * (
         (c1.dag() * sm1 + c1 * sp1)
         + (c2.dag() * sm2 + c2 * sp2)
@@ -550,7 +550,5 @@ The JCHM has important applications in quantum simulation, quantum optics, and q
 ## Software version
 
 ```python
-from qutip import about
-
 about()
 ```
