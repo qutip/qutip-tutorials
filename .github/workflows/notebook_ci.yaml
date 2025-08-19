@@ -59,7 +59,7 @@ jobs:
     - name: Install QuTiP
       run: |
         pip install --upgrade pip
-        python -m pip install jax jax[cpu] equinox diffrax
+        python -m pip install "jax<0.7.0" "jax[cpu]<0.7.0" equinox diffrax
         git clone -b ${{ matrix.qutip-branch }} https://github.com/qutip/qutip.git
         cd qutip
         pip install -r requirements.txt
