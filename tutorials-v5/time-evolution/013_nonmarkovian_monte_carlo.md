@@ -5,7 +5,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.3'
-      jupytext_version: 1.16.4
+      jupytext_version: 1.17.0
   kernelspec:
     display_name: Python 3 (ipykernel)
     language: python
@@ -241,7 +241,7 @@ We will compare our results to the following exact `mesolve` simulation:
 
 ```python
 d_ops = [[qt.lindblad_dissipator(qt.sigmam(), qt.sigmam()), Gamma]]
-MESol = qt.mesolve([H, S], psi0, times, d_ops, e_ops, options=options)
+MESol = qt.mesolve([H, S], psi0, times, d_ops, e_ops=e_ops, options=options)
 ```
 
 ##### Results
@@ -285,7 +285,7 @@ For clarity, we consider the same example as before, but with a shorter time int
 
 ```python
 times_is = np.linspace(ti, ti + duration / 2, steps + 1)
-ntraj_is = ntraj / 10
+ntraj_is = int(ntraj / 10)
 
 MCSol_is = solver.run(psi0, tlist=times_is, ntraj=ntraj_is, e_ops=e_ops)
 MESol_is = qt.mesolve([H, S], psi0, times_is, d_ops, e_ops, options=options)
