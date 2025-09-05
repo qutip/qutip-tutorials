@@ -16,7 +16,7 @@ jupyter:
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johansson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
@@ -40,7 +40,7 @@ The Kerr effect describes a self-interaction electromagnetic quantum field which
 
 $\displaystyle H = \frac{1}{2}\chi (a^\dagger)^2a^2$
 
-where $\chi$ is related to the third-order nonlinear suseptibility. The Kerr effect is one of the typical nonlinearities that can occur in quantum optics due to a nonlinear medium.
+where $\chi$ is related to the third-order nonlinear susceptibility. The Kerr effect is one of the typical nonlinearities that can occur in quantum optics due to a nonlinear medium.
 
 In this notebook we'll see how to setup the model in QuTiP and look at some interesting properties of the states that evolve according to this Hamiltonian.
 
@@ -182,12 +182,12 @@ psi0 = coherent(N, 2.0)
 
 ```python
 # and evolve the state under the influence of the hamiltonian.
-# by passing an empty list as expecation value operators argument,
+# by passing an empty list as expectation value operators argument,
 # we get the full state of the system in result.states
 result = mesolve(H, psi0, tlist, [], [])
 ```
 
-First, let's look at how the expecation values and variances of the photon number operator $n$ and the $x$ and $p$ quadratures evolve in time:
+First, let's look at how the expectation values and variances of the photon number operator $n$ and the $x$ and $p$ quadratures evolve in time:
 
 ```python
 plot_expect_with_variance(N, [n, x, p], [r"n", r"x", r"p"], result.states);
@@ -201,7 +201,7 @@ To verify that the photon distribution indeed is time-independent, we can plot t
 plot_fock_distribution_vs_time(tlist, result.states);
 ```
 
-So the fock state distribution is constant, but let's see how the Wigner function of the state evolves in time. To best illustrate the dynamics of the Winger function we make a short movie that show the Wigner function from time $t=0$ to the the final time of the evolution.
+So the fock state distribution is constant, but let's see how the Wigner function of the state evolves in time. To best illustrate the dynamics of the Wigner function we make a short movie that shows the Wigner function from time $t=0$ to the final time of the evolution.
 
 ```python
 fig, ax = plt.subplots(1, 1, figsize=(8, 8))
@@ -226,7 +226,7 @@ display_embedded_video("animation-kerr-coherent-state.mp4")
 
 Isn't that interesting! The dynamics is periodic, and we evolved the state for exactly one period, so that the final state is equal to the initial state.
 
-In between there is interesting stuff going on. For example, after half the period the state ends up in something that look very much like a cat-state superposition of coherent states!
+In between there is interesting stuff going on. For example, after half the period the state ends up in something that looks very much like a cat-state superposition of coherent states!
 
 ```python
 fig, ax = plt.subplots(1, 1, figsize=(8, 8))

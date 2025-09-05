@@ -12,12 +12,12 @@ jupyter:
     name: python3
 ---
 
-# Lecture 13 - Resonance flourescence
+# Lecture 13 - Resonance fluorescence
 
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johansson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 

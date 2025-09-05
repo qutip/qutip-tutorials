@@ -17,7 +17,7 @@ jupyter:
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johansson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
@@ -90,7 +90,7 @@ tlist = np.linspace(0, 150, 101)
 ### Setup the operators, the Hamiltonian and initial state
 
 ```python
-# intial state
+# initial state
 psi0 = tensor(basis(N, 0), basis(2, 0))  # start without excitations
 
 # operators
@@ -237,7 +237,7 @@ References:
  * [S. Ashhab, J.R. Johansson, A.M. Zagoskin, F. Nori, New J. Phys. 11, 023030 (2009)](http://dx.doi.org/10.1088/1367-2630/11/2/023030)
 
 ```python
-def calulcate_avg_photons(N, Gamma):
+def calculate_avg_photons(N, Gamma):
 
     # collapse operators
     c_ops = []
@@ -278,7 +278,7 @@ n_avg_vec = []
 g2_vec = []
 
 for Gamma in Gamma_vec:
-    n_avg, g2 = calulcate_avg_photons(N, Gamma)
+    n_avg, g2 = calculate_avg_photons(N, Gamma)
     n_avg_vec.append(n_avg)
     g2_vec.append(g2)
 ```

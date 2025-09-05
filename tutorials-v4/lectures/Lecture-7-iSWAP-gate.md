@@ -16,7 +16,7 @@ jupyter:
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johansson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
@@ -37,7 +37,7 @@ $\displaystyle H = g \left(\sigma_x\otimes\sigma_x + \sigma_y\otimes\sigma_y\rig
 
 where $g$ is the coupling strength. Under ideal conditions this coupling realizes the $i$-SWAP gate between the two qubit states. 
 
-Here we will solve for the dynamics of the two qubits subject to this Hamiltonian, and look at the deterioating effects of adding decoherence. We will use process tomography to visualize the gate.
+Here we will solve for the dynamics of the two qubits subject to this Hamiltonian, and look at the deteriorating effects of adding decoherence. We will use process tomography to visualize the gate.
 
 
 ### Parameters

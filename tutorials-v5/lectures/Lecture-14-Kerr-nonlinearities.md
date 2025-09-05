@@ -16,7 +16,7 @@ jupyter:
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johansson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
@@ -40,7 +40,7 @@ The Kerr effect describes a self-interaction electromagnetic quantum field which
 
 $\displaystyle H = \frac{1}{2}\chi (a^\dagger)^2a^2$
 
-where $\chi$ is related to the third-order nonlinear suseptibility. The Kerr effect is one of the typical nonlinearities that can occur in quantum optics due to a nonlinear medium.
+where $\chi$ is related to the third-order nonlinear susceptibility. The Kerr effect is one of the typical nonlinearities that can occur in quantum optics due to a nonlinear medium.
 
 In this notebook we'll see how to setup the model in QuTiP and look at some interesting properties of the states that evolve according to this Hamiltonian.
 

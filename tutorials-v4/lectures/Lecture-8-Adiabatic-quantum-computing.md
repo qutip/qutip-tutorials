@@ -16,20 +16,20 @@ jupyter:
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johansson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
 
 ## Introduction
 
-In adiabatic quantum computing, an easy to prepare ground state of a Hamiltonian $H_0$ is prepared, and then the Hamiltonian is gradually transformed into $H_1$, which is constructed in such a way that the groundstate of $H_1$ encodes the solution to a difficult problem. The transformation of $H_0$ to $H_1$ can for example be written on the form
+In adiabatic quantum computing, an easy to prepare ground state of a Hamiltonian $H_0$ is prepared, and then the Hamiltonian is gradually transformed into $H_1$, which is constructed in such a way that the ground state of $H_1$ encodes the solution to a difficult problem. The transformation of $H_0$ to $H_1$ can for example be written on the form
 
 $\displaystyle H(t) = \lambda(t) H_0 + (1 - \lambda(t)) H_1$
 
-where $\lambda(t)$ is a function that goes from goes from $0$ to $1$ when $t$ goes from $0$ to $t_{\rm final}$.
+where $\lambda(t)$ is a function that goes from $0$ to $1$ when $t$ goes from $0$ to $t_{\rm final}$.
 
-If this gradual tranformation is slow enough (satisfying the adiabicity critera), the evolution of the system will remain in its ground state.
+If this gradual transformation is slow enough (satisfying the adiabaticity criteria), the evolution of the system will remain in its ground state.
 
 If the Hamiltonian is transformed from $H_0$ to $H_1$ too quickly, the system will get excited from the ground state the adiabatic computing algorithm fails.
 
@@ -194,7 +194,7 @@ for idx in range(len(taulist) - 1):
 axes[0].set_xlabel(r"$\tau$")
 axes[0].set_ylabel("Eigenenergies")
 axes[0].set_title(
-    "Energyspectrum (%d lowest values) of a chain of %d spins.\n " % (M, N)
+    "Energy spectrum (%d lowest values) of a chain of %d spins.\n " % (M, N)
     + "The occupation probabilities are encoded in the red line widths."
 )
 

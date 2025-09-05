@@ -16,7 +16,7 @@ jupyter:
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johansson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
@@ -95,7 +95,7 @@ for idx, psi in enumerate(output.states):
     nb_e[idx] = expect(nb, psi)
     nb_s[idx] = expect(nb * nb, psi)
 
-# substract the average squared to obtain variances
+# subtract the average squared to obtain variances
 na_s = na_s - na_e**2
 nb_s = nb_s - nb_e**2
 ```
