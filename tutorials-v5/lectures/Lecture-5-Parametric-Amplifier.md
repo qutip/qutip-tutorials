@@ -190,10 +190,16 @@ for idx, psi in enumerate(output.states):
     cs_lhs[idx] = expect(ad_a_bd_b, psi)
     cs_rhs[idx] = expect(ad_ad_a_a, psi)
 
-# normalize the correlation functions
-g2_1 = g2_1 / (na_e**2)
-g2_2 = g2_2 / (nb_e**2)
-g2_12 = g2_12 / (na_e * nb_e)
+# normalize setting inf to nan
+def safe_divide(a, b):
+    with np.errstate(divide='ignore', invalid='ignore'):
+        result = np.true_divide(a, b)
+        result[~np.isfinite(result)] = np.nan
+    return result
+
+g2_1 = safe_divide(g2_1, na_e**2)
+g2_2 = safe_divide(g2_2, nb_e**2)
+g2_12 = safe_divide(g2_12, na_e * nb_e)
 ```
 
 ### Second-order coherence functions: Cauchy-Schwarz inequality
@@ -416,12 +422,11 @@ def plot_covariance_matrix(V, ax):
 
     ax.view_init(azim=-40, elev=60)
     ax.bar3d(xpos, ypos, zpos, dx, dy, dz, color=colors)
-    ax.axes.xaxis.set_major_locator(plt.IndexLocator(1, -0.5))
-    ax.axes.yaxis.set_major_locator(plt.IndexLocator(1, -0.5))
-    ax.axes.xaxis.set_ticklabels(("$q_-$", "$p_-$", "$q_+$", "$p_+$"),
-                                 fontsize=12)
-    ax.axes.yaxis.set_ticklabels(("$q_-$", "$p_-$", "$q_+$", "$p_+$"),
-                                 fontsize=12)
+    # Set tick locations before setting tick labels
+    ax.axes.xaxis.set_ticks([0, 1, 2, 3])
+    ax.axes.yaxis.set_ticks([0, 1, 2, 3])
+    ax.axes.xaxis.set_ticklabels(("$q_-$", "$p_-$", "$q_+$", "$p_+$"), fontsize=12)
+    ax.axes.yaxis.set_ticklabels(("$q_-$", "$p_-$", "$q_+$", "$p_+$"), fontsize=12)
 ```
 
 ```python
@@ -440,7 +445,7 @@ for idx, t_idx in enumerate(t_idx_vec):
 
     plot_covariance_matrix(V, axes[idx])
 
-fig.tight_layout()
+fig.subplots_adjust(left=0.15, right=0.85, top=0.9, bottom=0.1)
 ```
 
 ```python

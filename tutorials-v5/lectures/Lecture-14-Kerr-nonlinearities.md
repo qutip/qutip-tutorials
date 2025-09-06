@@ -123,7 +123,7 @@ def plot_wigner(rho, fig=None, ax=None):
         W,
         100,
         norm=mpl.colors.Normalize(-wlim, wlim),
-        cmap=mpl.cm.get_cmap("RdBu"),
+        cmap=mpl.colormaps["RdBu"],
     )
     ax.set_xlabel(r"$x_1$", fontsize=16)
     ax.set_ylabel(r"$x_2$", fontsize=16)
@@ -148,7 +148,7 @@ def plot_fock_distribution_vs_time(tlist, states, fig=None, ax=None):
         Y,
         Z.T,
         norm=mpl.colors.Normalize(0, 0.5),
-        cmap=mpl.cm.get_cmap("Reds"),
+        cmap=mpl.colormaps["RdBu"],
         edgecolors="k",
     )
     ax.set_xlabel(r"$N$", fontsize=16)
