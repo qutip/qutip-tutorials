@@ -130,7 +130,7 @@ psi0 = coherent(N, 2.0)
 ```
 
 ```python
-result = mesolve(H, psi0, tlist, c_ops, [])
+result = mesolve(H, psi0, tlist, c_ops)
 ```
 
 ```python
@@ -168,7 +168,7 @@ psi0 = squeeze(N, 1.0) * basis(N, 0)
 ```
 
 ```python
-result = mesolve(H, psi0, tlist, c_ops, [])
+result = mesolve(H, psi0, tlist, c_ops)
 ```
 
 ```python
@@ -208,7 +208,7 @@ psi0 = (
 ```
 
 ```python
-result = mesolve(H, psi0, tlist, c_ops, [])
+result = mesolve(H, psi0, tlist, c_ops)
 ```
 
 ```python

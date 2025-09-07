@@ -85,7 +85,7 @@ psi0 = basis(2, 0)
 
 ```python
 tlist = np.linspace(0, 20 / (2 * np.pi), 200)
-result = mesolve(HL, psi0, tlist, c_ops, e_ops)
+result = mesolve(HL, psi0, tlist, c_ops, e_ops=e_ops)
 ```
 
 ```python
@@ -118,7 +118,7 @@ fig, ax = plt.subplots(1, 1, figsize=(12, 6), sharex=True)
 for idx, gamma0 in enumerate([0.1 * Omega, 0.5 * Omega, 1.0 * Omega]):
 
     HL, c_ops = system_spec(Omega, gamma0, N)
-    result = mesolve(HL, psi0, tlist, c_ops, e_ops)
+    result = mesolve(HL, psi0, tlist, c_ops, e_ops=e_ops)
 
     ax.plot(result.times, result.expect[5], "b",
             label=fr"$P_e$ ($\gamma_0={gamma0:.2f}$)")
@@ -136,7 +136,7 @@ fig, ax = plt.subplots(1, 1, figsize=(12, 6), sharex=True)
 for idx, gamma0 in enumerate([0.1 * Omega, 0.5 * Omega, 1.0 * Omega]):
 
     HL, c_ops = system_spec(Omega, gamma0, N)
-    result = mesolve(HL, psi0, tlist, c_ops, e_ops)
+    result = mesolve(HL, psi0, tlist, c_ops, e_ops=e_ops)
 
     ax.plot(
         result.times, np.imag(result.expect[4]),

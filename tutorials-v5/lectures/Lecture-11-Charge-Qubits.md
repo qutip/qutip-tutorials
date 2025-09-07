@@ -304,7 +304,7 @@ psi0 = psi_g
 
 ```python
 tlist = np.linspace(0.0, 100.0, 500)
-result = mesolve(Heff, psi0, tlist, [], [ket2dm(psi_e)], args=args)
+result = mesolve(Heff, psi0, tlist, [], e_ops=[ket2dm(psi_e)], args=args)
 ```
 
 ```python
@@ -362,7 +362,7 @@ psi_e = Qobj(psi_e.full()[keep_states, :])
 
 ```python
 tlist = np.linspace(0.0, 100.0, 500)
-result = mesolve(Heff, psi0, tlist, [], [ket2dm(psi_e)], args=args)
+result = mesolve(Heff, psi0, tlist, [], e_ops=[ket2dm(psi_e)], args=args)
 ```
 
 ```python

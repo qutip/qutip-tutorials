@@ -161,7 +161,7 @@ e_ops = [sigmax(), sigmay(), sigmaz()]
 ```
 
 ```python
-result1 = mesolve(L, psi0, tlist, [], e_ops)
+result1 = mesolve(L, psi0, tlist, [], e_ops=e_ops)
 ```
 
 ```python
@@ -205,7 +205,7 @@ c_ops = [np.sqrt(gamma0) *
 ```
 
 ```python
-result2 = mesolve(H, psi0, tlist, c_ops, e_ops)
+result2 = mesolve(H, psi0, tlist, c_ops, e_ops=e_ops)
 ```
 
 And we can verify that it indeed gives the same results:
@@ -292,7 +292,7 @@ c_ops = [np.sqrt(gamma0) *
 ```
 
 ```python
-result1 = mesolve(H, psi0, tlist, c_ops, e_ops)
+result1 = mesolve(H, psi0, tlist, c_ops, e_ops=e_ops)
 ```
 
 ```python
@@ -304,7 +304,7 @@ c_ops = [np.sqrt(gamma0) *
 ```
 
 ```python
-result2 = mesolve(H, psi0, tlist, c_ops, e_ops)
+result2 = mesolve(H, psi0, tlist, c_ops, e_ops=e_ops)
 ```
 
 ```python

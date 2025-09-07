@@ -76,7 +76,7 @@ e_ops = []
 ```
 
 ```python
-output = mesolve(H, psi0, tlist, c_ops, e_ops)
+output = mesolve(H, psi0, tlist, c_ops, e_ops=e_ops)
 output
 ```
 

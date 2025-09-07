@@ -184,7 +184,7 @@ psi0 = coherent(N, 2.0)
 # and evolve the state under the influence of the hamiltonian.
 # by passing an empty list as expecation value operators argument,
 # we get the full state of the system in result.states
-result = mesolve(H, psi0, tlist, [], [])
+result = mesolve(H, psi0, tlist, [])
 ```
 
 First, let's look at how the expecation values and variances of the photon number operator $n$ and the $x$ and $p$ quadratures evolve in time:

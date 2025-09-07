@@ -111,7 +111,7 @@ if rate > 0.0:
 Here we evolve the system with the Lindblad master equation solver, and we request that the expectation values of the operators $a^\dagger a$ and $\sigma_+\sigma_-$ are returned by the solver by passing the list `[a.dag()*a, sm.dag()*sm]` as the fifth argument to the solver.
 
 ```python
-output = mesolve(H, psi0, tlist, c_ops, [a.dag() * a, sm.dag() * sm])
+output = mesolve(H, psi0, tlist, c_ops, e_ops=[a.dag() * a, sm.dag() * sm])
 ```
 
 ## Visualize the results
@@ -139,7 +139,7 @@ In addition to the cavity's and atom's excitation probabilities, we may also be 
 To calculate the Wigner function in QuTiP, we first recalculte the evolution without specifying any expectation value operators, which will result in that the solver returns a list of density matrices for the system for the given time coordinates.
 
 ```python
-output = mesolve(H, psi0, tlist, c_ops, [])
+output = mesolve(H, psi0, tlist, c_ops)
 ```
 
 Now, `output.states` contains a list of density matrices for the system for the time points specified in the list `tlist`:

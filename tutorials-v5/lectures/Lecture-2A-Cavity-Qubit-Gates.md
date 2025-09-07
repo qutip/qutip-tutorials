@@ -139,7 +139,7 @@ H_t = [[Hc, wc_t], [H1, w1_t], [H2, w2_t], Hc1 + Hc2]
 ### Evolve the system
 
 ```python
-res = mesolve(H_t, psi0, tlist, [], [])
+res = mesolve(H_t, psi0, tlist, [])
 ```
 
 ### Plot the results
@@ -239,7 +239,7 @@ c_ops = [np.sqrt(kappa) * a, np.sqrt(gamma1) * sm1, np.sqrt(gamma2) * sm2]
 ### Evolve the system
 
 ```python
-res = mesolve(H_t, psi0, tlist, c_ops, [])
+res = mesolve(H_t, psi0, tlist, c_ops)
 ```
 
 ### Plot the results
@@ -323,7 +323,7 @@ fig.tight_layout()
 ### Evolve the system
 
 ```python
-res = mesolve(H_t, psi0, tlist, [], [])
+res = mesolve(H_t, psi0, tlist, [])
 ```
 
 ### Plot the results
@@ -408,7 +408,7 @@ fig.tight_layout()
 ### Evolve the system
 
 ```python
-res = mesolve(H_t, psi0, tlist, [], [])
+res = mesolve(H_t, psi0, tlist, [])
 ```
 
 ### Plot the results
@@ -488,7 +488,7 @@ c_ops = [np.sqrt(kappa) * a, np.sqrt(gamma1) * sm1, np.sqrt(gamma2) * sm2]
 ### Evolve the system
 
 ```python
-res = mesolve(H_t, psi0, tlist, c_ops, [])
+res = mesolve(H_t, psi0, tlist, c_ops)
 ```
 
 ### Plot results
@@ -574,7 +574,7 @@ H_t = [[Hc, wc_t], H1 * w1 + H2 * w2 + Hc1 + Hc2]
 ### Evolve the system
 
 ```python
-res = mesolve(H_t, psi0, tlist, c_ops, [])
+res = mesolve(H_t, psi0, tlist, c_ops)
 ```
 
 ### Plot the results

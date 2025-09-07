@@ -115,7 +115,7 @@ tlist = np.linspace(0, 250, 1000)
 ```
 
 ```python
-res = mesolve(H, psi0, tlist, [], [], options=SolverOptions(nsteps=5000))
+res = mesolve(H, psi0, tlist, [], options={'nsteps': 5000})
 ```
 
 ### Excitation numbers

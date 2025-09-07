@@ -206,7 +206,7 @@ psi0 = tensor(basis(N, 1), basis(2, 0))
 
 ```python
 tlist = np.linspace(0, 20, 1000)
-output = mesolve(H, psi0, tlist, [], [a.dag() * a, sm.dag() * sm])
+output = mesolve(H, psi0, tlist, [], e_ops=[a.dag() * a, sm.dag() * sm])
 ```
 
 ```python
@@ -223,7 +223,7 @@ fig.tight_layout()
 
 ```python
 tlist = np.linspace(0, 0.35, 8)
-output = mesolve(H, psi0, tlist, [], [])
+output = mesolve(H, psi0, tlist, [])
 ```
 
 ```python
@@ -269,7 +269,7 @@ kappa = 0.25
 ```python
 tlist = np.linspace(0, 20, 1000)
 output = mesolve(H, psi0, tlist, [np.sqrt(kappa) * a],
-                 [a.dag() * a, sm.dag() * sm])
+                 e_ops=[a.dag() * a, sm.dag() * sm])
 ```
 
 ```python
@@ -281,7 +281,7 @@ axes.legend(loc=0);
 
 ```python
 tlist = np.linspace(0, 10, 8)
-output = mesolve(H, psi0, tlist, [np.sqrt(kappa) * a], [])
+output = mesolve(H, psi0, tlist, [np.sqrt(kappa) * a])
 ```
 
 ```python
@@ -323,7 +323,7 @@ tlist = np.linspace(0, 30, 50)
 
 psi0 = H.groundstate()[1]
 
-output = mesolve(H, psi0, tlist, [np.sqrt(kappa) * a], [])
+output = mesolve(H, psi0, tlist, [np.sqrt(kappa) * a])
 ```
 
 ```python
