@@ -133,10 +133,6 @@ plot_wigner_2d_3d(psi)
 ## Fock states: $\left|n\right>$
 
 ```python
-
-```
-
-```python
 for n in range(6):
     psi = basis(N, n)
     display(plot_wigner_2d_3d(psi))

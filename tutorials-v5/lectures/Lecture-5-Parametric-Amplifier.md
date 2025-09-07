@@ -254,7 +254,9 @@ line1 = axes[0].plot(tlist, cs_lhs, "b", tlist, cs_rhs, "r", linewidth=2)
 axes[0].set_xlabel("$t$", fontsize=18)
 axes[0].set_title(r"Cauchy-Schwarz inequality", fontsize=18)
 
-line1 = axes[1].plot(tlist, cs_lhs / (cs_rhs), "k", linewidth=2)
+cs_ratio = safe_divide(cs_lhs, cs_rhs)
+
+line1 = axes[1].plot(tlist, cs_ratio, "k", linewidth=2)
 axes[1].set_xlabel("$t$", fontsize=18)
 axes[1].set_title(r"Cauchy-Schwarz ratio inequality", fontsize=18)
 
