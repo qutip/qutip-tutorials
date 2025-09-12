@@ -150,7 +150,7 @@ def main():
     root_folder = pathlib.Path(__file__).parent.parent
 
     if args.qutip_version == "v4":
-        title = "Tutorials for QuTiP Version 4"
+        title = "Tutorials for QuTiP Version&nbsp;4"
         tutorials_folder = root_folder / "tutorials-v4"
         version_note = """
             These are the tutorials for QuTiP Version 4. You can
@@ -158,7 +158,7 @@ def main():
             <a href="./index.html">here</a>.
         """.strip()
     elif args.qutip_version == "v5":
-        title = "Tutorials for QuTiP Version 5"
+        title = "Tutorials for QuTiP Version&nbsp;5"
         tutorials_folder = root_folder / "tutorials-v5"
         version_note = """
             These are the tutorials for QuTiP Version 5. You can

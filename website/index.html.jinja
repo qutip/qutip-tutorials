@@ -1,11 +1,16 @@
 ---
 title: QuTiP Tutorials
 ---
-{% raw %}
-{% include header.html %}
-{% include navbar.html %}
-{% endraw %}
 
+<!DOCTYPE html>
+<html lang="en">
+
+{% raw %} {% include head.html %} {% endraw %}
+
+<body>
+    <header> {% raw %} {% include navbar.html %} {% endraw %} </header>
+
+<main class="my-content">
 <div class="row">
 <div class="col-md-12">
 <h1>{{ title }}</h1><br>
@@ -182,7 +187,12 @@ a complete archive of older versions of the tutorials is maintained there.
 
 </div>
 </div>
+</main>
 
 {% raw %}
-{% include footer.html %}
+<footer>{% include footer.html %}</footer>
+{% include scripts.html %}
 {% endraw %}
+
+</body>
+</html>
