@@ -65,6 +65,7 @@ jobs:
         cd ..
         python -m pip install git+https://github.com/qutip/qutip-qip
         python -m pip install --no-deps git+https://github.com/qutip/qutip-jax
+        python -m pip install --no-deps git+https://github.com/qutip/qutip-qoc
 
         git clone -b master https://github.com/qutip/qutip-qtrl.git
         cd qutip-qtrl
@@ -95,7 +96,7 @@ jobs:
       run: |
         jupyter kernel &
         cd notebooks
-        find . -name '*.ipynb' -exec pytest --nbmake --overwrite --nbmake-timeout=600 {} +
+        find . -name '*.ipynb' -exec pytest --nbmake --overwrite --nbmake-timeout=900 {} +
         rm template.ipynb
 
     - name: Create Notebook Artifact

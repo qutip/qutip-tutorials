@@ -66,9 +66,6 @@ def timer(label):
 options = {
     "nsteps": 15000,
     "store_states": True,
-    "rtol": 1e-12,
-    "atol": 1e-12,
-    "min_step": 1e-18,
     "method": "vern9",
     "progress_bar": "enhanced",
 }
@@ -83,9 +80,9 @@ And let us set up the system Hamiltonian and bath parameters:
 #
 # We use the Hamiltonian employed in
 # https://www.pnas.org/content/106/41/17255 and operate
-# in units of Hz:
+# in units of GHz:
 
-Hsys = 3e10 * 2 * np.pi * Qobj([
+Hsys = 30 * 2 * np.pi * Qobj([
     [200, -87.7, 5.5, -5.9, 6.7, -13.7, -9.9],
     [-87.7, 320, 30.8, 8.2, 0.7, 11.8, 4.3],
     [5.5, 30.8, 0, -53.5, -2.2, -9.6, 6.0],
@@ -99,9 +96,9 @@ Hsys = 3e10 * 2 * np.pi * Qobj([
 ```{code-cell} ipython3
 # Bath parameters
 
-lam = 35 * 3e10 * 2 * np.pi
-gamma = 1 / 166e-15
-T = 300 * 0.6949 * 3e10 * 2 * np.pi
+lam = 35 * 30 * 2 * np.pi
+gamma = 1 / 166e-6
+T = 300 * 0.6949 * 30 * 2 * np.pi
 beta = 1 / T
 ```
 
@@ -114,10 +111,10 @@ env = DrudeLorentzEnvironment(T=T, lam=lam, gamma=gamma)
 ```
 
 ```{code-cell} ipython3
-wlist = np.linspace(0, 200 * 3e10 * 2 * np.pi, 100)
-tlist = np.linspace(0, 1e-12, 1000)
+wlist = np.linspace(0, 200 * 30 * 2 * np.pi, 100)
+tlist = np.linspace(0, 1e-3, 1000)
 
-J = env.spectral_density(wlist) / (3e10 * 2 * np.pi)
+J = env.spectral_density(wlist) / (30 * 2 * np.pi)
 
 fig, axes = plt.subplots(1, 2, sharex=False, figsize=(10, 3))
 
@@ -125,7 +122,7 @@ fig.subplots_adjust(hspace=0.1)  # reduce space between plots
 
 # Spectral density plot:
 
-axes[0].plot(wlist / (3e10 * 2 * np.pi), J, color='r', ls='--', label="J(w)")
+axes[0].plot(wlist / (30 * 2 * np.pi), J, color='r', ls='--', label="J(w)")
 axes[0].set_xlabel(r'$\omega$ (cm$^{-1}$)', fontsize=20)
 axes[0].set_ylabel(r"$J(\omega)$ (cm$^{-1}$)", fontsize=16)
 axes[0].legend()
@@ -193,7 +190,7 @@ linestyles = [
 for m in range(7):
     Q = basis(7, m) * basis(7, m).dag()
     axes.plot(
-        np.array(tlist) * 1e15,
+        np.array(tlist) * 1e6,
         np.real(expect(outputFMO_HEOM.states, Q)),
         label=m + 1,
         color=colors[m % len(colors)],
@@ -232,7 +229,7 @@ And now let's plot the Bloch-Redfield solver results:
 fig, axes = plt.subplots(1, 1, figsize=(12, 8))
 
 for m, Q in enumerate(Q_list):
-    axes.plot(tlist * 1e15, expect(outputFMO_BR.states, Q), label=m + 1)
+    axes.plot(tlist * 1e6, expect(outputFMO_BR.states, Q), label=m + 1)
 
 axes.set_xlabel(r'$t$ (fs)', fontsize=30)
 axes.set_ylabel(r"Population", fontsize=30)
@@ -334,7 +331,7 @@ with timer("ME ODE solver"):
 fig, axes = plt.subplots(1, 1, figsize=(12, 8))
 
 for m, Q in enumerate(Q_list):
-    axes.plot(tlist * 1e15, expect(outputFMO_ME.states, Q), label=m + 1)
+    axes.plot(tlist * 1e6, expect(outputFMO_ME.states, Q), label=m + 1)
 
 axes.set_xlabel(r'$t$', fontsize=20)
 axes.set_ylabel(r"Population", fontsize=16)
@@ -363,7 +360,7 @@ with timer("ME ODE solver"):
 fig, axes = plt.subplots(1, 1, figsize=(12, 8))
 for m, Q in enumerate(Q_list):
     axes.plot(
-        tlist * 1e15,
+        tlist * 1e6,
         expect(outputFMO_ME_nodephase.states, Q),
         label=m + 1,
     )
