@@ -105,11 +105,11 @@ axes[0].set_title("Bloch Vector Components vs Time")
 
 axes[1].plot(result.times, result.expect[5], "b", label=r"$P_e$")
 
-axes[1].set_ylabel(r"$P_e$", fontsize=16)
+axes[1].set_ylabel(r"$P_g$", fontsize=16)
 axes[1].set_xlabel("time", fontsize=16)
 axes[1].legend()
 axes[1].set_ylim(0, 1)
-axes[1].set_title("Excited State Population vs Time");
+axes[1].set_title("Ground State Population vs Time");
 ```
 
 ```python
@@ -120,13 +120,15 @@ for idx, gamma0 in enumerate([0.1 * Omega, 0.5 * Omega, 1.0 * Omega]):
     HL, c_ops = system_spec(Omega, gamma0, N)
     result = mesolve(HL, psi0, tlist, c_ops, e_ops=e_ops)
 
-    ax.plot(result.times, result.expect[5], "b",
-            label=fr"$P_e$ ($\gamma_0={gamma0:.2f}$)")
+        ax.plot(
+            result.times, result.expect[5], "b",
+            label=fr"$P_g$ ($\gamma_0={gamma0:.2f}$)"
+        )
 
 ax.set_ylim(0, 1)
 ax.set_xlabel("time", fontsize=16)
-ax.set_ylabel(r"$P_e$", fontsize=16)
-ax.set_title("Excited State Population for Different Decay Rates")
+ax.set_ylabel(r"$P_g$", fontsize=16)
+ax.set_title("Ground State Population for Different Decay Rates")
 ax.legend();
 ```
 

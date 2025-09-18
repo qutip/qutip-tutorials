@@ -130,7 +130,7 @@ if rate > 0.0:
 Here we evolve the system with the Lindblad master equation solver, and we request that the expectation values of the operators $a^\dagger a$ and $\sigma_+\sigma_-$ are returned by the solver by passing the list `[a.dag()*a, sm.dag()*sm]` as the fifth argument to the solver.
 
 ```python
-opt = {'nsteps': 2000} # allow extra time-steps
+opt = {'nsteps': 2000}  # allow extra time-steps
 output = mesolve(H, psi0, tlist, c_ops, e_ops=[a.dag() * a, sm.dag() * sm],
                  options=opt)
 ```

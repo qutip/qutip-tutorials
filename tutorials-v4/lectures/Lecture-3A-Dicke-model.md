@@ -241,7 +241,7 @@ fig, axes = plt.subplots(1, 1, figsize=(12, 6))
 
 for NN in N_vec:
 
-    entropy_cavity, entropy_spin = calculcate_entropy(MM, NN, g_vec)
+    entropy_cavity, entropy_spin = calculate_entropy(MM, NN, g_vec)
 
     axes.plot(g_vec, entropy_cavity, "b", label="N = %d" % NN)
     axes.plot(g_vec, entropy_spin, "r--")
