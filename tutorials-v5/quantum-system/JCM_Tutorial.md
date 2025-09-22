@@ -75,6 +75,8 @@ In realistic systems, both the cavity and atom experience losses:
 
 These effects are modeled using Lindblad collapse operators in the master equation formalism.
 
+**Note:** The use of local Lindblad collapse operators is usually valid only in the weak and strong coupling regime (when the interaction strength is similar to or large than the dissipation rates). However, in the ultra-strong coupling regimes, when the interaction approaches the (bare) cavity and/or atomic frequencies, unphysical effects like loss of energy conservation can occur, it is more appropriate to consider using the Bloch-Redfield solver. This will not be described here, however.
+
 ### Package Imports
 
 Let's start by importing the necessary libraries:
@@ -82,6 +84,7 @@ Let's start by importing the necessary libraries:
 ```python
 import matplotlib.pyplot as plt
 import numpy as np
+from qutip.visualization import plot_energy_levels
 from qutip import (
     about,
     basis,
@@ -100,8 +103,11 @@ from qutip import (
 
 ### Why Build a Quantum System Library?
 
-When working with quantum systems in QuTiP, researchers often find themselves writing repetitive code to construct Hamiltonians and operators. Consider the conventional approach to building a Jaynes-Cummings model,
-refer to the conventional construction [here](https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/lectures/Lecture-1-Jaynes-Cumming-model.ipynb).
+When working with quantum systems in QuTiP, researchers frequently encounter the same challenge: writing repetitive boilerplate code to construct Hamiltonians and operators for well-known models. The conventional approach to building a Jaynes-Cummings system involves manually creating tensor products, carefully ordering operators, and handling dissipation - a process that's both time-consuming and error-prone.
+
+To illustrate this complexity, you can examine the traditional QuTiP construction approach in this [detailed tutorial](https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/lectures/Lecture-1-Jaynes-Cumming-model.ipynb), which demonstrates the many steps required for a complete implementation.
+
+This repetitive workflow motivated us to develop a more efficient solution through standardized factory functions.
 
 
 ### Solution: Factory Functions
@@ -122,7 +128,7 @@ Let's explore how quantum system library simplifies working with the Jaynes-Cumm
 ### Example 1: Basic Resonant System
 
 
-The first example demonstrates the simplest case of the Jaynes-Cummings model: a resonant system where the cavity frequency and atomic transition frequency are identical ($\omega_c = \omega_a = 1.0$). This resonance condition maximizes the coupling efficiency between the atom and cavity field. We choose a moderate coupling strength ($g = 0.1$) relative to the frequencies, placing us in the weak-to-intermediate coupling regime. The cavity Fock space is truncated at 5 photon states, which is sufficient for most dynamics when starting from low-energy initial states. Notice how the `jaynes_cummings` function creates the entire system with a single line, no need to manually construct tensor products or worry about operator ordering.
+The first example demonstrates the simplest case of the Jaynes-Cummings model: a resonant system where the cavity frequency and atomic transition frequency are identical ($\omega_c = \omega_a = 1.0$). This resonance condition maximizes the coupling efficiency between the atom and cavity field. We choose a moderate coupling strength ($g = 0.1$) relative to the frequencies, placing us in the intermediate coupling regime. The cavity Fock space is truncated at 5 photon states, which is sufficient for most dynamics when starting from low-energy initial states. Notice how the `jaynes_cummings` function creates the entire system with a single line, no need to manually construct tensor products or worry about operator ordering.
 
 ```python
 # Example 1: Basic resonant system
@@ -201,6 +207,14 @@ print(f"First few eigenvalues: {eigenvals[:5]}")
 print(f"Ground state energy: {eigenvals[0]:.3f}")
 print(f"First excited energy: {eigenvals[1]:.3f}")
 print(f"Energy gap: {eigenvals[1] - eigenvals[0]:.3f}")
+
+# Visualize energy levels
+fig, ax = plt.subplots(figsize=(8, 6))
+plot_energy_levels([jc_small.hamiltonian], ax=ax)
+plt.title('Jaynes-Cummings Energy Spectrum')
+plt.xlabel('Energy Level Index')
+plt.ylabel('Energy')
+plt.show()
 ```
 
 ## Quantum Dynamics: Rabi Oscillations
@@ -214,7 +228,7 @@ The Rabi frequency depends on:
 - The number of photons in the cavity
 - The detuning between atom and cavity
 
-For an initially excited atom and empty cavity, the Rabi frequency is simply $g$.
+For an initially excited atom and empty cavity on resonance, the Rabi frequency is simply $g$.
 
 ### Integration with QuTiP Solvers
 
@@ -477,7 +491,7 @@ plt.show()
 The thermal analysis demonstrates that increasing temperature leads to higher steady-state cavity occupation, with the system reaching thermal equilibrium with its environment. At high thermal photon numbers ($n_{th} = 1.0$), the steady-state cavity population approaches the thermal value, while atomic excitation remains finite due to thermal activation.
 
 
-## Vacuum Rabi Splitting
+## Rabi Splitting
 
 One of the most important phenomena in cavity QED is vacuum Rabi splitting, the splitting of energy levels due to strong coupling between atom and cavity, even when no photons are present. To observe this phenomenon clearly, we use spectroscopic techniques to examine the power spectrum of cavity emission. We set the system parameters in appropriate units with $\omega_c = \omega_a = 2\pi$ (natural frequency units), moderate coupling $g = 0.05 \times 2\pi$, and include realistic dissipation rates to model experimental conditions. We also add thermal photons ($n_{th} = 0.25$) to simulate finite temperature effects that are always present in real experiments.
 
@@ -497,7 +511,7 @@ jc = quantum_systems.jaynes_cummings(
 )
 
 # Compute Correlation Function and Spectrum
-tlist = np.linspace(0, 100, 5000)
+tlist = np.linspace(0, 1000, 5000)
 corr = correlation_2op_1t(
     jc.hamiltonian, None, tlist, jc.c_ops, jc.operators["a_dag"], jc.operators["a"]
 )
@@ -510,22 +524,22 @@ spec2 = spectrum(
 
 # Plot Power Spectrum
 plt.figure(figsize=(8, 4))
-plt.plot(wlist1 / (2 * np.pi), spec1, "b", lw=2, label="eseries method")
-plt.plot(wlist2 / (2 * np.pi), spec2, "r--", lw=2, label="me+fft method")
+plt.plot(wlist1 / (2 * np.pi), spec1, "b", lw=2, label="me+fft method")
+plt.plot(wlist2 / (2 * np.pi), spec2, "r--", lw=2, label="eseries method")
 plt.xlabel("Frequency (meV)")
 plt.ylabel("Power Spectrum (arb. units)")
-plt.title("Vacuum Rabi Splitting")
+plt.title("Rabi Splitting")
 plt.legend()
-plt.xlim(0, 2)
+plt.xlim(0.75, 1.25)
 plt.show()
 ```
 
-The power spectrum clearly reveals the characteristic double-peak structure of vacuum Rabi splitting, with the two peaks separated by approximately $2g = 0.1 \times 2\pi \approx 0.628$ frequency units. This splitting occurs even at the quantum vacuum level, demonstrating the fundamental quantum nature of light-matter interactions in cavity QED systems.
+The power spectrum clearly reveals the characteristic double-peak structure of Rabi splitting, with the two peaks separated by approximately $2g = 0.1 \times 2\pi \approx 0.628$ frequency units. This splitting occurs even at the quantum vacuum level, demonstrating the fundamental quantum nature of light-matter interactions in cavity QED systems.
 
 
 ## Conclusion
 
-This tutorial has demonstrated the power and versatility of the Jaynes-Cummings model as a foundation for understanding cavity quantum electrodynamics. The quantum system library provides a streamlined approach to exploring this rich physics, from basic Rabi oscillations to advanced phenomena like vacuum Rabi splitting. We've seen how detuning modifies energy exchange efficiency, how dissipation fundamentally alters system dynamics, and how thermal effects establish realistic steady states. The library's integration with QuTiP solvers enables rapid exploration of parameter spaces while maintaining theoretical rigor. These tools and insights form the basis for understanding more complex quantum optical systems and advancing quantum technologies in areas ranging from quantum computing to precision sensing.
+This tutorial has demonstrated the power and versatility of the Jaynes-Cummings model as a foundation for understanding cavity quantum electrodynamics. The quantum system library provides a streamlined approach to exploring this rich physics, from basic Rabi oscillations to advanced phenomena like Rabi splitting. We've seen how detuning modifies energy exchange efficiency, how dissipation fundamentally alters system dynamics, and how thermal effects establish realistic steady states. The library's integration with QuTiP solvers enables rapid exploration of parameter spaces while maintaining theoretical rigor. These tools and insights form the basis for understanding more complex quantum optical systems and advancing quantum technologies in areas ranging from quantum computing to precision sensing.
 
 ```python
 about()
