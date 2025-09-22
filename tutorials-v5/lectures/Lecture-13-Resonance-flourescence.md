@@ -120,10 +120,10 @@ for idx, gamma0 in enumerate([0.1 * Omega, 0.5 * Omega, 1.0 * Omega]):
     HL, c_ops = system_spec(Omega, gamma0, N)
     result = mesolve(HL, psi0, tlist, c_ops, e_ops=e_ops)
 
-        ax.plot(
-            result.times, result.expect[5], "b",
-            label=fr"$P_g$ ($\gamma_0={gamma0:.2f}$)"
-        )
+    ax.plot(
+        result.times, result.expect[5], "b",
+        label=fr"$P_g$ ($\gamma_0={gamma0:.2f}$)"
+    )
 
 ax.set_ylim(0, 1)
 ax.set_xlabel("time", fontsize=16)
