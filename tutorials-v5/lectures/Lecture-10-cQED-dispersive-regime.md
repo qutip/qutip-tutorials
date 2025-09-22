@@ -24,7 +24,7 @@ This is a slightly modified version of the lectures, to work with the current re
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import (SolverOptions, about, basis, coherent, correlation_2op_1t,
+from qutip import (about, basis, coherent, correlation_2op_1t,
                    destroy, expect, mesolve, ptrace, qeye, sigmax, sigmaz,
                    spectrum_correlation_fft, tensor, wigner)
 

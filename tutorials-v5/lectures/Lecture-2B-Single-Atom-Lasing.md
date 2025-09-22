@@ -28,7 +28,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 from IPython.display import Image
-from qutip import (SolverOptions, about, basis, destroy, expect, mesolve,
+from qutip import (about, basis, destroy, expect, mesolve,
                    ptrace, qeye, sigmax, steadystate, tensor, wigner)
 
 %matplotlib inline
