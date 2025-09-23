@@ -17,7 +17,7 @@ jupyter:
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johansson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
@@ -28,7 +28,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 from IPython.display import Image
-from qutip import (SolverOptions, about, basis, destroy, expect, mesolve,
+from qutip import (about, basis, destroy, expect, mesolve,
                    ptrace, qeye, sigmax, steadystate, tensor, wigner)
 
 %matplotlib inline
@@ -90,7 +90,7 @@ tlist = np.linspace(0, 150, 101)
 ### Setup the operators, the Hamiltonian and initial state
 
 ```python
-# intial state
+# initial state
 psi0 = tensor(basis(N, 0), basis(2, 0))  # start without excitations
 
 # operators
@@ -130,8 +130,8 @@ if rate > 0.0:
 Here we evolve the system with the Lindblad master equation solver, and we request that the expectation values of the operators $a^\dagger a$ and $\sigma_+\sigma_-$ are returned by the solver by passing the list `[a.dag()*a, sm.dag()*sm]` as the fifth argument to the solver.
 
 ```python
-opt = SolverOptions(nsteps=2000)  # allow extra time-steps
-output = mesolve(H, psi0, tlist, c_ops, [a.dag() * a, sm.dag() * sm],
+opt = {'nsteps': 2000}  # allow extra time-steps
+output = mesolve(H, psi0, tlist, c_ops, e_ops=[a.dag() * a, sm.dag() * sm],
                  options=opt)
 ```
 
@@ -191,8 +191,8 @@ axes[0].set_ylabel("Occupation probability", fontsize=18);
 
 ```python
 tlist = np.linspace(0, 25, 5)
-output = mesolve(H, psi0, tlist, c_ops, [],
-                 options=SolverOptions(nsteps=5000))
+output = mesolve(H, psi0, tlist, c_ops,
+                 options={'nsteps': 5000})
 ```
 
 ```python

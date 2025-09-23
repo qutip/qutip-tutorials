@@ -17,7 +17,7 @@ jupyter:
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johansson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
@@ -128,13 +128,13 @@ The expectation values of $a^\dagger a$ are now available in array ``mc.expect[i
 
 ## Lindblad master-equation simulation and steady state
 
-For comparison with the averages of single quantum trajectories provided by the Monte-Carlo solver we here also calculate the dynamics of the Lindblad master equation, which should agree with the Monte-Carlo simultions for infinite number of trajectories.
+For comparison with the averages of single quantum trajectories provided by the Monte-Carlo solver we here also calculate the dynamics of the Lindblad master equation, which should agree with the Monte-Carlo simulations for infinite number of trajectories.
 
 ```python
 # run master equation to get ensemble average expectation values
 me = mesolve(H, psi0, tlist, c_op_list, e_ops=[a.dag() * a])
 
-# calulate final state using steadystate solver
+# calculate final state using steadystate solver
 final_state = steadystate(H, c_op_list)  # find steady-state
 # find expectation value for particle number
 fexpt = expect(a.dag() * a, final_state)

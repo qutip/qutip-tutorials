@@ -12,12 +12,12 @@ jupyter:
     name: python3
 ---
 
-# Lecture 13 - Resonance flourescence
+# Lecture 13 - Resonance fluorescence
 
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johansson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
@@ -34,6 +34,10 @@ from qutip import (about, basis, correlation_2op_1t, mesolve, n_thermal, num,
 <!-- #region -->
 ## Introduction
 
+Resonance fluorescence, is the interaction between a two-level quantum system and a coherent driving field.
+
+The Hamiltonian for a two-level system under resonant driving, is given by:
+
 $\displaystyle H_L = -\frac{\Omega}{2}(\sigma_+ + \sigma_-)$
 
 
@@ -44,12 +48,18 @@ $\displaystyle \frac{d}{dt}\rho = -i[H_L, \rho] + \gamma_0(N+1)\left(\sigma_-\rh
 ### Problem definition in QuTiP
 
 ```python
+# Rabi frequency (strength of the driving field)
 Omega = 1.0 * 2 * np.pi
 ```
 
 ```python
+# decay rate of the two-level system
 gamma0 = 0.05
+
+# thermal frequency of the bath
 w_th = 0.0
+
+# thermal occupation number for the bath
 N = n_thermal(Omega, w_th)
 ```
 
@@ -75,7 +85,7 @@ psi0 = basis(2, 0)
 
 ```python
 tlist = np.linspace(0, 20 / (2 * np.pi), 200)
-result = mesolve(HL, psi0, tlist, c_ops, e_ops)
+result = mesolve(HL, psi0, tlist, c_ops, e_ops=e_ops)
 ```
 
 ```python
@@ -90,45 +100,56 @@ axes[0].plot(result.times, result.expect[2], "b",
 axes[0].legend()
 axes[0].set_ylim(-1, 1)
 
+axes[0].set_ylabel(r"$\langle\sigma_{x,y,z}\rangle$", fontsize=16)
+axes[0].set_title("Bloch Vector Components vs Time")
 
 axes[1].plot(result.times, result.expect[5], "b", label=r"$P_e$")
 
-# axes[1].set_ylabel(r'$\langle\sigma_z\rangle$', fontsize=16)
+axes[1].set_ylabel(r"$P_g$", fontsize=16)
 axes[1].set_xlabel("time", fontsize=16)
 axes[1].legend()
-axes[1].set_ylim(0, 1);
+axes[1].set_ylim(0, 1)
+axes[1].set_title("Ground State Population vs Time");
 ```
 
 ```python
 fig, ax = plt.subplots(1, 1, figsize=(12, 6), sharex=True)
 
-
 for idx, gamma0 in enumerate([0.1 * Omega, 0.5 * Omega, 1.0 * Omega]):
 
     HL, c_ops = system_spec(Omega, gamma0, N)
-    result = mesolve(HL, psi0, tlist, c_ops, e_ops)
+    result = mesolve(HL, psi0, tlist, c_ops, e_ops=e_ops)
 
-    ax.plot(result.times, result.expect[5], "b",
-            label=r"$\langle\sigma_z\rangle$")
+    ax.plot(
+        result.times, result.expect[5], "b",
+        label=fr"$P_g$ ($\gamma_0={gamma0:.2f}$)"
+    )
 
-ax.set_ylim(0, 1);
+ax.set_ylim(0, 1)
+ax.set_xlabel("time", fontsize=16)
+ax.set_ylabel(r"$P_g$", fontsize=16)
+ax.set_title("Ground State Population for Different Decay Rates")
+ax.legend();
 ```
 
 ```python
 fig, ax = plt.subplots(1, 1, figsize=(12, 6), sharex=True)
 
-
 for idx, gamma0 in enumerate([0.1 * Omega, 0.5 * Omega, 1.0 * Omega]):
 
     HL, c_ops = system_spec(Omega, gamma0, N)
-    result = mesolve(HL, psi0, tlist, c_ops, e_ops)
+    result = mesolve(HL, psi0, tlist, c_ops, e_ops=e_ops)
 
     ax.plot(
         result.times, np.imag(result.expect[4]),
-        label=r"im $\langle\sigma_+\rangle$"
+        label=fr"Im $\langle\sigma_+\rangle$ ($\gamma_0={gamma0:.2f}$)"
     )
 
-ax.set_ylim(-0.5, 0.5);
+ax.set_ylim(-0.5, 0.5)
+ax.set_xlabel("time", fontsize=16)
+ax.set_ylabel(r"Im $\langle\sigma_+\rangle$", fontsize=16)
+ax.set_title(r"Imaginary Part of $\langle\sigma_+\rangle$ for Different Decay Rates")
+ax.legend();
 ```
 
 ```python
@@ -142,12 +163,21 @@ for idx, gamma0 in enumerate([2 * Omega, 0.5 * Omega, 0.25 * Omega]):
     corr_vec = correlation_2op_1t(HL, None, taulist, c_ops, sigmap(), sigmam())
     w, S = spectrum_correlation_fft(taulist, corr_vec)
 
-    axes[0].plot(taulist, corr_vec, label=r"$<\sigma_+(\tau)\sigma_-(0)>$")
-    axes[1].plot(-w / (gamma0), S, "b", label=r"$S(\omega)$")
-    axes[1].plot(w / (gamma0), S, "b", label=r"$S(\omega)$")
+    axes[0].plot(taulist, corr_vec, label=fr"$\gamma_0={gamma0:.2f}$")
+    axes[1].plot(-w / (gamma0), S, "b", label=fr"$\gamma_0={gamma0:.2f}$")
+    axes[1].plot(w / (gamma0), S, "b")
 
 axes[0].set_xlim(0, 10)
-axes[1].set_xlim(-5, 5);
+axes[0].set_xlabel(r"$\tau$", fontsize=16)
+axes[0].set_ylabel(r"$\langle\sigma_+(\tau)\sigma_-(0)\rangle$", fontsize=16)
+axes[0].set_title("Two-Time Correlation Function")
+axes[0].legend()
+
+axes[1].set_xlim(-5, 5)
+axes[1].set_xlabel(r"$\omega/\gamma_0$", fontsize=16)
+axes[1].set_ylabel(r"$S(\omega)$", fontsize=16)
+axes[1].set_title("Resonance Fluorescence Spectrum")
+axes[1].legend();
 ```
 
 ### Software versions

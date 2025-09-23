@@ -118,7 +118,7 @@ na_expt = expect(na, psi_list)  # qubit  occupation probability
 nc_expt = expect(nc, psi_list)  # cavity occupation probability
 ```
 
-Plot the ground state occupation probabilities of the cavity and the atom as a function of coupling strenght. Note that for large coupling strength (the ultrastrong coupling regime, where $g > \omega_a,\omega_c$), the ground state has both photonic and atomic excitations.
+Plot the ground state occupation probabilities of the cavity and the atom as a function of coupling strength. Note that for large coupling strength (the ultrastrong coupling regime, where $g > \omega_a,\omega_c$), the ground state has both photonic and atomic excitations.
 
 ```python
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 4))
@@ -126,7 +126,7 @@ fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 4))
 axes.plot(g_vec / (2 * np.pi), nc_expt, "r", linewidth=2, label="cavity")
 axes.plot(g_vec / (2 * np.pi), na_expt, "b", linewidth=2, label="atom")
 axes.set_ylabel("Occupation probability", fontsize=16)
-axes.set_xlabel("coupling strenght", fontsize=16)
+axes.set_xlabel("coupling strength", fontsize=16)
 axes.legend(loc=0)
 
 fig.tight_layout()
@@ -206,7 +206,7 @@ psi0 = tensor(basis(N, 1), basis(2, 0))
 
 ```python
 tlist = np.linspace(0, 20, 1000)
-output = mesolve(H, psi0, tlist, [], [a.dag() * a, sm.dag() * sm])
+output = mesolve(H, psi0, tlist, [], e_ops=[a.dag() * a, sm.dag() * sm])
 ```
 
 ```python
@@ -223,7 +223,7 @@ fig.tight_layout()
 
 ```python
 tlist = np.linspace(0, 0.35, 8)
-output = mesolve(H, psi0, tlist, [], [])
+output = mesolve(H, psi0, tlist, [])
 ```
 
 ```python
@@ -269,7 +269,7 @@ kappa = 0.25
 ```python
 tlist = np.linspace(0, 20, 1000)
 output = mesolve(H, psi0, tlist, [np.sqrt(kappa) * a],
-                 [a.dag() * a, sm.dag() * sm])
+                 e_ops=[a.dag() * a, sm.dag() * sm])
 ```
 
 ```python
@@ -281,7 +281,7 @@ axes.legend(loc=0);
 
 ```python
 tlist = np.linspace(0, 10, 8)
-output = mesolve(H, psi0, tlist, [np.sqrt(kappa) * a], [])
+output = mesolve(H, psi0, tlist, [np.sqrt(kappa) * a])
 ```
 
 ```python
@@ -323,7 +323,7 @@ tlist = np.linspace(0, 30, 50)
 
 psi0 = H.groundstate()[1]
 
-output = mesolve(H, psi0, tlist, [np.sqrt(kappa) * a], [])
+output = mesolve(H, psi0, tlist, [np.sqrt(kappa) * a])
 ```
 
 ```python

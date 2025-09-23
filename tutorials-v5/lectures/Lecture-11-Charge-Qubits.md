@@ -16,7 +16,7 @@ jupyter:
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johansson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
@@ -39,7 +39,7 @@ where $E_C$ is the charge energy, $E_J$ is the Josephson energy, and $\left| n\r
 
 #### References
 
- * [J. Koch et al, Phys. Rec. A 76, 042319 (2007)](https://journals.aps.org/pra/abstract/10.1103/PhysRevA.76.042319)
+ * [J. Koch et al, Phys. Rev. A 76, 042319 (2007)](https://journals.aps.org/pra/abstract/10.1103/PhysRevA.76.042319)
  * [Y.A. Pashkin et al, Quantum Inf Process 8, 55 (2009)](http://dx.doi.org/10.1007/s11128-009-0101-5)
 
 
@@ -176,7 +176,7 @@ energies = np.array([hamiltonian(Ec, Ej, N, ng).eigenenergies()
 plot_energies(ng_vec, energies, ymax=(50, 3));
 ```
 
-Note that the energy-level splitting is essentially independent of the gate bias $n_g$, at least for the lowest few states. This device insensitive to charge noise. But at the same time the two lowest energy states are no longer well separated from higher states (it has become more like an harmonic oscillator). But some anharmonicity still remains, and it can still be used as a qubit if the leakage of occupation probability of the higher states can be kept under control.
+Note that the energy-level splitting is essentially independent of the gate bias $n_g$, at least for the lowest few states. This device is insensitive to charge noise. But at the same time the two lowest energy states are no longer well separated from higher states (it has become more like a harmonic oscillator). But some anharmonicity still remains, and it can still be used as a qubit if the leakage of occupation probability to the higher states can be kept under control.
 
 
 ## Focus on the two lowest energy states
@@ -304,7 +304,7 @@ psi0 = psi_g
 
 ```python
 tlist = np.linspace(0.0, 100.0, 500)
-result = mesolve(Heff, psi0, tlist, [], [ket2dm(psi_e)], args=args)
+result = mesolve(Heff, psi0, tlist, [], e_ops=[ket2dm(psi_e)], args=args)
 ```
 
 ```python
@@ -362,7 +362,7 @@ psi_e = Qobj(psi_e.full()[keep_states, :])
 
 ```python
 tlist = np.linspace(0.0, 100.0, 500)
-result = mesolve(Heff, psi0, tlist, [], [ket2dm(psi_e)], args=args)
+result = mesolve(Heff, psi0, tlist, [], e_ops=[ket2dm(psi_e)], args=args)
 ```
 
 ```python

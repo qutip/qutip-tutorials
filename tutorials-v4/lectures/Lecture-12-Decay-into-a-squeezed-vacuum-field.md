@@ -17,7 +17,7 @@ jupyter:
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johansson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
@@ -70,7 +70,7 @@ w_th = 0.0 * 2 * np.pi
 
 ```python
 # the number of average excitations in the
-# environment mode w0 at temperture w_th
+# environment mode w0 at temperature w_th
 Nth = n_thermal(w0, w_th)
 
 Nth
@@ -126,7 +126,7 @@ L0 = liouvillian(H, c_ops)
 L0
 ```
 
-Next we manually construct the Liouvillian for the effect of the squeeing in the environment, which is not on standard form we can therefore not use the `liouvillian` function in QuTiP
+Next we manually construct the Liouvillian for the effect of the squeezing in the environment, which is not in standard form so we can therefore not use the `liouvillian` function in QuTiP
 
 ```python
 Lsq = -gamma0 * M * spre(sp) * spost(sp) - gamma0 * \

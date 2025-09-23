@@ -17,7 +17,7 @@ jupyter:
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johansson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
@@ -70,7 +70,7 @@ w_th = 0.0 * 2 * np.pi
 
 ```python
 # the number of average excitations in the
-# environment mode w0 at temperture w_th
+# environment mode w0 at temperature w_th
 Nth = n_thermal(w0, w_th)
 
 Nth
@@ -161,7 +161,7 @@ e_ops = [sigmax(), sigmay(), sigmaz()]
 ```
 
 ```python
-result1 = mesolve(L, psi0, tlist, [], e_ops)
+result1 = mesolve(L, psi0, tlist, [], e_ops=e_ops)
 ```
 
 ```python
@@ -205,7 +205,7 @@ c_ops = [np.sqrt(gamma0) *
 ```
 
 ```python
-result2 = mesolve(H, psi0, tlist, c_ops, e_ops)
+result2 = mesolve(H, psi0, tlist, c_ops, e_ops=e_ops)
 ```
 
 And we can verify that it indeed gives the same results:
@@ -292,7 +292,7 @@ c_ops = [np.sqrt(gamma0) *
 ```
 
 ```python
-result1 = mesolve(H, psi0, tlist, c_ops, e_ops)
+result1 = mesolve(H, psi0, tlist, c_ops, e_ops=e_ops)
 ```
 
 ```python
@@ -304,7 +304,7 @@ c_ops = [np.sqrt(gamma0) *
 ```
 
 ```python
-result2 = mesolve(H, psi0, tlist, c_ops, e_ops)
+result2 = mesolve(H, psi0, tlist, c_ops, e_ops=e_ops)
 ```
 
 ```python

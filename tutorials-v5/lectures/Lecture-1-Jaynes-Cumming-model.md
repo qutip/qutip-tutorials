@@ -17,7 +17,7 @@ jupyter:
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johansson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
@@ -69,7 +69,7 @@ tlist = np.linspace(0, 25, 101)
 ### Setup the operators, the Hamiltonian and initial state
 
 ```python
-# intial state
+# initial state
 psi0 = tensor(basis(N, 0), basis(2, 1))  # start with an excited atom
 
 # operators
@@ -111,7 +111,7 @@ if rate > 0.0:
 Here we evolve the system with the Lindblad master equation solver, and we request that the expectation values of the operators $a^\dagger a$ and $\sigma_+\sigma_-$ are returned by the solver by passing the list `[a.dag()*a, sm.dag()*sm]` as the fifth argument to the solver.
 
 ```python
-output = mesolve(H, psi0, tlist, c_ops, [a.dag() * a, sm.dag() * sm])
+output = mesolve(H, psi0, tlist, c_ops, e_ops=[a.dag() * a, sm.dag() * sm])
 ```
 
 ## Visualize the results
@@ -136,10 +136,10 @@ axes.set_title("Vacuum Rabi oscillations");
 
 In addition to the cavity's and atom's excitation probabilities, we may also be interested in for example the wigner function as a function of time. The Wigner function can give some valuable insight in the nature of the state of the resonators.
 
-To calculate the Wigner function in QuTiP, we first recalculte the evolution without specifying any expectation value operators, which will result in that the solver return a list of density matrices for the system for the given time coordinates.
+To calculate the Wigner function in QuTiP, we first recalculte the evolution without specifying any expectation value operators, which will result in that the solver returns a list of density matrices for the system for the given time coordinates.
 
 ```python
-output = mesolve(H, psi0, tlist, c_ops, [])
+output = mesolve(H, psi0, tlist, c_ops)
 ```
 
 Now, `output.states` contains a list of density matrices for the system for the time points specified in the list `tlist`:
@@ -167,7 +167,7 @@ For each of these points in time we need to:
 
  1. Find the system density matrix for the points in time that we are interested in.
  2. Trace out the atom and obtain the reduced density matrix for the cavity.
- 3. Calculate and visualize the Wigner function fo the reduced cavity density matrix.
+ 3. Calculate and visualize the Wigner function for the reduced cavity density matrix.
 
 ```python
 # find the indices of the density matrices for the times we are interested in
@@ -210,7 +210,7 @@ for idx, rho in enumerate(rho_list):
     axes[idx].set_title(r"$t = %.1f$" % tlist[t_idx][idx], fontsize=16)
 ```
 
-At $t =0$, the cavity is in it's ground state. At $t = 5, 15, 25$ it reaches it's maxium occupation in this Rabi-vacuum oscillation process. We can note that for $t=5$ and $t=15$ the Wigner function has negative values, indicating a truely quantum mechanical state. At $t=25$, however, the wigner function no longer has negative values and can therefore be considered a classical state.
+At $t =0$, the cavity is in its ground state. At $t = 5, 15, 25$ it reaches its maximum occupation in this Rabi-vacuum oscillation process. We can note that for $t=5$ and $t=15$ the Wigner function has negative values, indicating a truly quantum mechanical state. At $t=25$, however, the Wigner function no longer has negative values and can therefore be considered a classical state.
 
 Also, `qutip.anim_wigner` is useful to visualize the oscillation. It calculates the wigner function inside it so all you need to do is pass the reduced density matrices. You can pass options to it. For example, `projection='3d'` produces a 3d plot. You can see the oscillation easily with the 3d plot.
 

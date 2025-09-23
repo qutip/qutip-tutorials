@@ -17,7 +17,7 @@ jupyter:
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johansson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
@@ -104,7 +104,7 @@ for g in g_vec:
 
     H = H0 + g * H1
 
-    # find the groundstate and its energy
+    # find the ground state and its energy
     gnd_energy, gnd_state = H.groundstate()
 
     # store the ground state
@@ -118,7 +118,7 @@ na_expt = expect(na, psi_list)  # qubit  occupation probability
 nc_expt = expect(nc, psi_list)  # cavity occupation probability
 ```
 
-Plot the ground state occupation probabilities of the cavity and the atom as a function of coupling strenght. Note that for large coupling strength (the ultrastrong coupling regime, where $g > \omega_a,\omega_c$), the ground state has both photonic and atomic excitations.
+Plot the ground state occupation probabilities of the cavity and the atom as a function of coupling strength. Note that for large coupling strength (the ultrastrong coupling regime, where $g > \omega_a,\omega_c$), the ground state has both photonic and atomic excitations.
 
 ```python
 fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 4))
@@ -126,7 +126,7 @@ fig, axes = plt.subplots(1, 1, sharex=True, figsize=(8, 4))
 axes.plot(g_vec / (2 * np.pi), nc_expt, "r", linewidth=2, label="cavity")
 axes.plot(g_vec / (2 * np.pi), na_expt, "b", linewidth=2, label="atom")
 axes.set_ylabel("Occupation probability", fontsize=16)
-axes.set_xlabel("coupling strenght", fontsize=16)
+axes.set_xlabel("coupling strength", fontsize=16)
 axes.legend(loc=0)
 
 fig.tight_layout()

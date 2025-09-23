@@ -16,7 +16,7 @@ jupyter:
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johansson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
@@ -61,7 +61,7 @@ c_ops = [np.sqrt(G1 * (1 + n_th)) * a, np.sqrt(G1 * n_th) * a.dag()]
 rho0 = coherent_dm(N, 2.0)
 
 # first calculate the occupation number as a function of time
-n = mesolve(H, rho0, taulist, c_ops, [a.dag() * a]).expect[0]
+n = mesolve(H, rho0, taulist, c_ops, e_ops=[a.dag() * a]).expect[0]
 n = np.array(n)
 
 # calculate the correlation function G1 and normalize with n to obtain g1
@@ -112,7 +112,7 @@ def correlation_ss_gtt(H, tlist, c_ops, a_op, b_op, c_op, d_op, rho0=None):
         rho0 = steadystate(H, c_ops)
 
     return mesolve(H, d_op * rho0 * a_op, tlist, c_ops,
-                   [b_op * c_op]).expect[0]
+                   e_ops=[b_op * c_op]).expect[0]
 ```
 
 ```python

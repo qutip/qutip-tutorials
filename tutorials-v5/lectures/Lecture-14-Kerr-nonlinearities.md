@@ -16,7 +16,7 @@ jupyter:
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johansson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
@@ -40,7 +40,7 @@ The Kerr effect describes a self-interaction electromagnetic quantum field which
 
 $\displaystyle H = \frac{1}{2}\chi (a^\dagger)^2a^2$
 
-where $\chi$ is related to the third-order nonlinear suseptibility. The Kerr effect is one of the typical nonlinearities that can occur in quantum optics due to a nonlinear medium.
+where $\chi$ is related to the third-order nonlinear susceptibility. The Kerr effect is one of the typical nonlinearities that can occur in quantum optics due to a nonlinear medium.
 
 In this notebook we'll see how to setup the model in QuTiP and look at some interesting properties of the states that evolve according to this Hamiltonian.
 
@@ -123,7 +123,7 @@ def plot_wigner(rho, fig=None, ax=None):
         W,
         100,
         norm=mpl.colors.Normalize(-wlim, wlim),
-        cmap=mpl.cm.get_cmap("RdBu"),
+        cmap=mpl.colormaps["RdBu"],
     )
     ax.set_xlabel(r"$x_1$", fontsize=16)
     ax.set_ylabel(r"$x_2$", fontsize=16)
@@ -148,7 +148,7 @@ def plot_fock_distribution_vs_time(tlist, states, fig=None, ax=None):
         Y,
         Z.T,
         norm=mpl.colors.Normalize(0, 0.5),
-        cmap=mpl.cm.get_cmap("Reds"),
+        cmap=mpl.colormaps["RdBu"],
         edgecolors="k",
     )
     ax.set_xlabel(r"$N$", fontsize=16)
@@ -184,7 +184,7 @@ psi0 = coherent(N, 2.0)
 # and evolve the state under the influence of the hamiltonian.
 # by passing an empty list as expecation value operators argument,
 # we get the full state of the system in result.states
-result = mesolve(H, psi0, tlist, [], [])
+result = mesolve(H, psi0, tlist, [])
 ```
 
 First, let's look at how the expecation values and variances of the photon number operator $n$ and the $x$ and $p$ quadratures evolve in time:

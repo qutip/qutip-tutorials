@@ -16,7 +16,7 @@ jupyter:
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johansson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
@@ -69,7 +69,7 @@ sm1 = tensor(qeye(N), destroy(2), qeye(2))
 sz1 = tensor(qeye(N), sigmaz(), qeye(2))
 n1 = sm1.dag() * sm1
 
-# oeprators for qubit 2
+# operators for qubit 2
 sm2 = tensor(qeye(N), qeye(2), destroy(2))
 sz2 = tensor(qeye(N), qeye(2), sigmaz())
 n2 = sm2.dag() * sm2
@@ -139,7 +139,7 @@ H_t = [[Hc, wc_t], [H1, w1_t], [H2, w2_t], Hc1 + Hc2]
 ### Evolve the system
 
 ```python
-res = mesolve(H_t, psi0, tlist, [], [])
+res = mesolve(H_t, psi0, tlist, [])
 ```
 
 ### Plot the results
@@ -239,7 +239,7 @@ c_ops = [np.sqrt(kappa) * a, np.sqrt(gamma1) * sm1, np.sqrt(gamma2) * sm2]
 ### Evolve the system
 
 ```python
-res = mesolve(H_t, psi0, tlist, c_ops, [])
+res = mesolve(H_t, psi0, tlist, c_ops)
 ```
 
 ### Plot the results
@@ -323,7 +323,7 @@ fig.tight_layout()
 ### Evolve the system
 
 ```python
-res = mesolve(H_t, psi0, tlist, [], [])
+res = mesolve(H_t, psi0, tlist, [])
 ```
 
 ### Plot the results
@@ -408,7 +408,7 @@ fig.tight_layout()
 ### Evolve the system
 
 ```python
-res = mesolve(H_t, psi0, tlist, [], [])
+res = mesolve(H_t, psi0, tlist, [])
 ```
 
 ### Plot the results
@@ -488,7 +488,7 @@ c_ops = [np.sqrt(kappa) * a, np.sqrt(gamma1) * sm1, np.sqrt(gamma2) * sm2]
 ### Evolve the system
 
 ```python
-res = mesolve(H_t, psi0, tlist, c_ops, [])
+res = mesolve(H_t, psi0, tlist, c_ops)
 ```
 
 ### Plot results
@@ -574,7 +574,7 @@ H_t = [[Hc, wc_t], H1 * w1 + H2 * w2 + Hc1 + Hc2]
 ### Evolve the system
 
 ```python
-res = mesolve(H_t, psi0, tlist, c_ops, [])
+res = mesolve(H_t, psi0, tlist, c_ops)
 ```
 
 ### Plot the results

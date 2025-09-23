@@ -16,7 +16,7 @@ jupyter:
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johansson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
@@ -24,7 +24,7 @@ This is a slightly modified version of the lectures, to work with the current re
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import (SolverOptions, about, basis, coherent, correlation_2op_1t,
+from qutip import (about, basis, coherent, correlation_2op_1t,
                    destroy, expect, mesolve, ptrace, qeye, sigmax, sigmaz,
                    spectrum_correlation_fft, tensor, wigner)
 
@@ -115,7 +115,7 @@ tlist = np.linspace(0, 250, 1000)
 ```
 
 ```python
-res = mesolve(H, psi0, tlist, [], [], options=SolverOptions(nsteps=5000))
+res = mesolve(H, psi0, tlist, [], options={'nsteps': 5000})
 ```
 
 ### Excitation numbers

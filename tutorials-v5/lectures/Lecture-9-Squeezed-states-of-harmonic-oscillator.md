@@ -16,7 +16,7 @@ jupyter:
 
 Author: J. R. Johansson (robert@riken.jp), https://jrjohansson.github.io/
 
-This lecture series was developed by J.R. Johannson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
+This lecture series was developed by J.R. Johansson. The original lecture notebooks are available [here](https://github.com/jrjohansson/qutip-lectures).
 
 This is a slightly modified version of the lectures, to work with the current release of QuTiP. You can find these lectures as a part of the [qutip-tutorials repository](https://github.com/qutip/qutip-tutorials). This lecture and other tutorial notebooks are indexed at the [QuTiP Tutorial webpage](https://qutip.org/tutorials.html).
 
@@ -35,19 +35,19 @@ from qutip import (about, basis, coherent, destroy, displace, expect, mesolve,
 
 ## Introduction
 
-In quantum mechanics, each measurement of an observable (corresponding to an Hermitian operator) results in stochastic outcome that follows some probability distribution. The expectation value of the operator is the average of many measurement outcomes, and the standard deviation of the operator describes the uncertainty in the outcomes.
+In quantum mechanics, each measurement of an observable (corresponding to a Hermitian operator) results in stochastic outcome that follows some probability distribution. The expectation value of the operator is the average of many measurement outcomes, and the standard deviation of the operator describes the uncertainty in the outcomes.
 
-This uncertainty is intrinsic in quantum mechanics, and cannot be eliminated. The Heisenberg uncertainty principle describes the minumum uncertainly for pairs of noncommuting operators. For example, the operators such $x$ and $p$, which satisfy the commutation relation $[x, p] = i\hbar$, must always satisfy $(\Delta x) (\Delta p) >= \hbar/2$ .
+This uncertainty is intrinsic in quantum mechanics, and cannot be eliminated. The Heisenberg uncertainty principle describes the minimum uncertainty for pairs of noncommuting operators. For example, the operators such $x$ and $p$, which satisfy the commutation relation $[x, p] = i\hbar$, must always satisfy $(\Delta x) (\Delta p) >= \hbar/2$ .
 
 A state that satisfies
 
 $(\Delta x) (\Delta p) = \hbar/2$
 
-is called a minimum uncertainty state, and a state for which, for example,
+is called a minimum uncertainty state, and a state for which, for example, 
 
-$(\Delta x)^2 < \hbar/2$
+$(\Delta x)^2 < \hbar/2$ 
 
-is called a squeezed state. Note that in this case $(\Delta p)^2$ must be larger than $\hbar/2(\Delta x)^2$ for the Heisenberg relation to hold. Squeezing a quantum state so that the variance of one operator $x$ is reduced below the minimum uncertainty limit therefore necessarily amplify the variance of operators that do not commute with $x$, such as $p$.
+is called a squeezed state. Note that in this case $(\Delta p)^2$ must be larger than $\hbar/2(\Delta x)^2$ for the Heisenberg relation to hold. Squeezing a quantum state so that the variance of one operator $x$ is reduced below the minimum uncertainty limit therefore necessarily amplifies the variance of operators that do not commute with $x$, such as $p$.
 
 For harmonic modes, squeezing of $x$ or $p$ is called quadrature squeezing, and it is probably the most common form of squeezing.
 
@@ -130,7 +130,7 @@ psi0 = coherent(N, 2.0)
 ```
 
 ```python
-result = mesolve(H, psi0, tlist, c_ops, [])
+result = mesolve(H, psi0, tlist, c_ops)
 ```
 
 ```python
@@ -168,7 +168,7 @@ psi0 = squeeze(N, 1.0) * basis(N, 0)
 ```
 
 ```python
-result = mesolve(H, psi0, tlist, c_ops, [])
+result = mesolve(H, psi0, tlist, c_ops)
 ```
 
 ```python
@@ -208,7 +208,7 @@ psi0 = (
 ```
 
 ```python
-result = mesolve(H, psi0, tlist, c_ops, [])
+result = mesolve(H, psi0, tlist, c_ops)
 ```
 
 ```python
