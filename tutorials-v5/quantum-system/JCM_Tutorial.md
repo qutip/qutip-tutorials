@@ -75,7 +75,7 @@ In realistic systems, both the cavity and atom experience losses:
 
 These effects are modeled using Lindblad collapse operators in the master equation formalism.
 
-**Note:** The use of local Lindblad collapse operators is usually valid only in the weak and strong coupling regime (when the interaction strength is similar to or large than the dissipation rates). However, in the ultra-strong coupling regimes, when the interaction approaches the (bare) cavity and/or atomic frequencies, unphysical effects like loss of energy conservation can occur, it is more appropriate to consider using the Bloch-Redfield solver. This will not be described here, however.
+**Note:** The use of local Lindblad collapse operators is usually valid only in the weak and strong coupling regime (when the interaction strength is similar to or larger than the dissipation rates). However, in the ultra-strong coupling regimes, when the interaction approaches the (bare) cavity and/or atomic frequencies, unphysical effects like loss of energy conservation can occur, it is more appropriate to consider using the Bloch-Redfield solver. This will not be described here, however.
 
 ### Package Imports
 
