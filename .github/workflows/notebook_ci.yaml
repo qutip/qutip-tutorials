@@ -19,7 +19,7 @@ jobs:
           - qutip-version: '4'
             qutip-branch: 'qutip-4.7.X'
           - qutip-version: '5'
-            qutip-branch: 'master'
+            qutip-branch: 'dev.qsystem'
     steps:
     - uses: actions/checkout@v4
 
