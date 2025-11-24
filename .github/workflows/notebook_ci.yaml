@@ -101,6 +101,12 @@ jobs:
         find . -name '*.ipynb' -exec pytest --nbmake --overwrite --nbmake-timeout=900 {} +
         rm template.ipynb
 
+    - name: Copy cuQuantum notebook
+      # Without GPU, this notebook can't be ran.
+      # Copy the already executed notebook after the tests.
+      if:  ${{ matrix.qutip-version == '5' }}
+      run: cp ../tutorials-v5/miscellaneous/cuQuantum_backend.ipynb .
+
     - name: Create Notebook Artifact
       uses: actions/upload-artifact@v4
       with:
@@ -108,7 +114,7 @@ jobs:
         path: |
           notebooks/*.ipynb
           notebooks/**/*.ipynb
-   
+
     - uses: gaurav-nelson/github-action-markdown-link-check@v1
       with:
         use-quiet-mode: 'yes'
