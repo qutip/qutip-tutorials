@@ -29,7 +29,7 @@ from qutip import (about, basis, correlation_matrix_quadrature, destroy,
                    expect, logarithmic_negativity, mesolve, num, ptrace, qeye,
                    tensor, wigner, wigner_covariance_matrix)
 
-
+%matplotlib inline
 ```
 
 Parameters

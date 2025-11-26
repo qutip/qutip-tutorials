@@ -26,7 +26,7 @@ import numpy as np
 from qutip import (about, destroy, entropy_vn, expect, hinton, jmat, ptrace,
                    qeye, steadystate, tensor, wigner)
 
-
+%matplotlib inline
 ```
 
 ## Introduction

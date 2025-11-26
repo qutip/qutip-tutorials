@@ -31,7 +31,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from qutip import Bloch, about, basis, mesolve, sigmam, sigmax, sigmay, sigmaz
 
-
+%matplotlib inline
 ```
 
 ### System setup

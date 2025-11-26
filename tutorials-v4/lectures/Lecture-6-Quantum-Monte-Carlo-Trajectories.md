@@ -28,7 +28,7 @@ import numpy as np
 from IPython.display import Image
 from qutip import about, basis, destroy, expect, mcsolve, mesolve, steadystate
 
-
+%matplotlib inline
 ```
 
 ## Introduction to the Quantum Monte-Carlo trajectory method

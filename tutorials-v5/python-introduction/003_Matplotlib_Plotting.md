@@ -18,7 +18,7 @@ import numpy as np
 from IPython.display import HTML, Image
 from scipy.special import airy
 
-
+%matplotlib inline
 ```
 
 ```python

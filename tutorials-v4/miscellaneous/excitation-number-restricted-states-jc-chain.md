@@ -62,7 +62,7 @@ from qutip import (Options, Qobj, about, basis, destroy, enr_destroy, enr_fock,
                    enr_state_dictionaries, identity, liouvillian_ref, mesolve,
                    plot_expectation_values, tensor)
 
-
+%matplotlib inline
 ```
 
 ## The Jaynes-Cumming Chain

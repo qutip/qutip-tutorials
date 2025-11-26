@@ -94,7 +94,7 @@ from qutip.core.environment import (
 )
 from qutip.solver.heom import HEOMSolver, HSolverDL
 
-
+%matplotlib inline
 ```
 
 ## Helper functions

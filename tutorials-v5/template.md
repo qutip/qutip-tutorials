@@ -43,7 +43,7 @@ import numpy as np
 import qutip
 from qutip import Bloch, basis, sesolve, sigmay, sigmaz
 
-
+%matplotlib inline
 ```
 
 In the next step we setup some qubit state and plot it on the bloch sphere. It's

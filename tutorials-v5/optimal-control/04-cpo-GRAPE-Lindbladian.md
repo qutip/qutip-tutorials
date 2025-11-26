@@ -52,7 +52,7 @@ from qutip import (
 
 example_name = "Lindblad"
 
-
+%matplotlib inline
 ```
 
 ### Defining the physics

@@ -27,7 +27,7 @@ from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 from qutip import about, basis, dag, destroy, qfunc, wigner, wigner_cmap
 
-
+%matplotlib inline
 ```
 
 ## Wigner function for superposition of fock states

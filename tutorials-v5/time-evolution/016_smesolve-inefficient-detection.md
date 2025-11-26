@@ -33,7 +33,7 @@ from qutip import (
     smesolve,
 )
 
-
+%matplotlib inline
 
 rcParams["font.family"] = "STIXGeneral"
 rcParams["mathtext.fontset"] = "stix"

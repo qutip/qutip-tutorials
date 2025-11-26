@@ -53,7 +53,7 @@ from qutip import (
 )
 from qutip.solver.heom import HEOMSolver
 
-
+%matplotlib inline
 ```
 
 ## Part 0: Introduction to the New Solver Class

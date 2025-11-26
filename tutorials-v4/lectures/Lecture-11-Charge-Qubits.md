@@ -25,7 +25,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from qutip import Qobj, about, energy_level_diagram, ket2dm, mesolve
 
-
+%matplotlib inline
 ```
 
 ### Introduction

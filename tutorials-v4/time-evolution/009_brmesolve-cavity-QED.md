@@ -42,7 +42,7 @@ import numpy as np
 from qutip import (about, basis, brmesolve, destroy, identity, ket2dm, mesolve,
                    plot_energy_levels, plot_expectation_values, tensor)
 
-
+%matplotlib inline
 ```
 
 <!-- #region -->

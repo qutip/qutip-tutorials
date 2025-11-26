@@ -29,7 +29,7 @@ import numpy as np
 from qutip import (about, fock, parallel_map, sigmam, BRSolver,
                    QobjEvo, coefficient)
 
-
+%matplotlib inline
 %config InlineBackend.figure_format = 'retina'
 ```
 

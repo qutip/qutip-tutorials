@@ -47,7 +47,7 @@ import qutip_qtrl.pulseoptim as cpo
 from qutip import Qobj, identity, sigmax, sigmaz, tensor, about
 
 example_name = "2qubitInteract"
-
+%matplotlib inline
 ```
 
 ### Defining the physics

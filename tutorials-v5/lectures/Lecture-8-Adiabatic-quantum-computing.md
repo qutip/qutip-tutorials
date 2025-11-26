@@ -41,7 +41,7 @@ import numpy as np
 from qutip import (QobjEvo, about, basis, mesolve, qeye, sigmax, sigmay,
                    sigmaz, tensor)
 
-
+%matplotlib inline
 ```
 
 ### Parameters

@@ -27,7 +27,7 @@ from qutip import (Options, about, coherent, destroy, general_stochastic,
                    spre, stochastic_solvers)
 from qutip.expect import expect_rho_vec
 
-
+%matplotlib inline
 ```
 
 ## Introduction

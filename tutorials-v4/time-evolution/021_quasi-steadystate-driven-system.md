@@ -28,7 +28,7 @@ import numpy as np
 from qutip import (about, basis, destroy, expect, mesolve, propagator,
                    propagator_steadystate, sigmax, sigmaz, steadystate_floquet)
 
-
+%matplotlib inline
 ```
 
 ```python

@@ -56,7 +56,7 @@ import numpy as np
 from qutip import (CoreOptions, FloquetBasis, about, basis, expect, qeye,
                    qzero_like, sesolve, sigmax, sigmay, sigmaz, tensor)
 
-
+%matplotlib inline
 ```
 
 ## Two-level system with periodic drive

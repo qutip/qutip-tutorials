@@ -28,7 +28,7 @@ from qutip import (Qobj, about, basis, coherent, coherent_dm, create, destroy,
                    expect, fock, fock_dm, mesolve, qeye, sigmax, sigmay,
                    sigmaz, tensor, thermal_dm)
 
-
+%matplotlib inline
 ```
 
 ## Introduction

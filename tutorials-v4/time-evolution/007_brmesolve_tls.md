@@ -36,7 +36,7 @@ from qutip import (about, basis, bloch_redfield_tensor, brmesolve, expect,
                    hinton, liouvillian, mesolve, plot_expectation_values,
                    sigmam, sigmax, sigmay, sigmaz, steadystate)
 
-
+%matplotlib inline
 ```
 
 

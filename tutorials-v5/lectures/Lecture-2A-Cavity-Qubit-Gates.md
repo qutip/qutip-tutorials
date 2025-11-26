@@ -29,7 +29,7 @@ from qutip import (about, basis, concurrence, destroy, expect, fidelity,
 from qutip_qip.operations import phasegate, sqrtiswap
 from scipy.special import sici
 
-
+%matplotlib inline
 ```
 
 ## Parameters

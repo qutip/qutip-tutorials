@@ -20,7 +20,7 @@ import numpy as np
 import qutip as qt
 from qutip import about, basis, identity, sigmax, sigmay, sigmaz
 
-
+%matplotlib inline
 ```
 
 ## Hinton

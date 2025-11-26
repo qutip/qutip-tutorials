@@ -26,7 +26,7 @@ import numpy as np
 from matplotlib import cm
 from qutip import about, basis, destroy, qfunc, wigner, wigner_cmap
 
-
+%matplotlib inline
 ```
 
 ## Wigner function for superposition of fock states

@@ -44,7 +44,7 @@ import qutip_qtrl.symplectic as sympl
 from qutip import Qobj, identity, about
 
 example_name = "Symplectic"
-
+%matplotlib inline
 ```
 
 ### Defining the physics

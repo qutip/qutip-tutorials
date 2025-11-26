@@ -26,7 +26,7 @@ from qutip import (about, qeye, qpt, qpt_plot_combined, sigmax, sigmay, sigmaz,
 from qutip_qip.operations import (cnot, fredkin, iswap, phasegate, snot,
                                   sqrtiswap, swap, toffoli)
 
-
+%matplotlib inline
 ```
 
 ```python

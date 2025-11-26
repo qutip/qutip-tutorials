@@ -41,7 +41,7 @@ from qutip_qip.operations import (Gate, berkeley, cnot, cphase, csign, fredkin,
                                   snot, sqrtiswap, sqrtnot, sqrtswap, swap,
                                   swapalpha, toffoli)
 
-
+%matplotlib inline
 ```
 
 ## Introduction

@@ -53,7 +53,7 @@ from qutip.nonmarkov.heom import (
     DrudeLorentzBath,
 )
 
-
+%matplotlib inline
 ```
 
 ## Helper functions

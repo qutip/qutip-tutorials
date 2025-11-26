@@ -26,7 +26,7 @@ import numpy as np
 from qutip import (about, coherent_dm, correlation_2op_2t, destroy, fock_dm,
                    mesolve, qeye, steadystate, tensor)
 
-
+%matplotlib inline
 ```
 
 <!-- #region -->

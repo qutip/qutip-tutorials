@@ -28,7 +28,7 @@ from qutip import (Options, about, basis, coherent, correlation, destroy,
                    expect, mesolve, ptrace, qeye, sigmax, sigmaz,
                    spectrum_correlation_fft, tensor, wigner)
 
-
+%matplotlib inline
 ```
 
 # Introduction

@@ -84,7 +84,7 @@ from qutip.solver.heom import HEOMSolver
 from IPython.display import display
 from ipywidgets import IntProgress
 
-
+%matplotlib inline
 ```
 
 ## Helpers

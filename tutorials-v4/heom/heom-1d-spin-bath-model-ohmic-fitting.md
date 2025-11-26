@@ -72,7 +72,7 @@ from mpmath import mp
 mp.dps = 15
 mp.pretty = True
 
-
+%matplotlib inline
 ```
 
 ## Helper functions

@@ -108,7 +108,7 @@ from qutip.nonmarkov.heom import (
     HSolverDL,
 )
 
-
+%matplotlib inline
 ```
 
 

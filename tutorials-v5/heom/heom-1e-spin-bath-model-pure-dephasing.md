@@ -77,7 +77,7 @@ from qutip import about, basis, expect, liouvillian, sigmax, sigmaz
 from qutip.core.environment import DrudeLorentzEnvironment, system_terminator
 from qutip.solver.heom import HEOMSolver
 
-
+%matplotlib inline
 ```
 
 ## Helper functions

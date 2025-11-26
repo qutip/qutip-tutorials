@@ -27,7 +27,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from qutip import about, basis, destroy, mesolve, ptrace, qeye, tensor, wigner
 
-
+%matplotlib inline
 ```
 
 # Introduction

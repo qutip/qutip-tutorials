@@ -28,7 +28,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from qutip import about, destroy, expect, mesolve, qeye, steadystate, tensor
 
-
+%matplotlib inline
 %config InlineBackend.figure_format = 'retina'
 ```
 

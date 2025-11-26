@@ -39,7 +39,7 @@ from qutip import (about, basis, bloch_redfield_tensor, brmesolve, expect,
 from matplotlib import rc
 rc('animation', html='jshtml')
 
-
+%matplotlib inline
 ```
 
 

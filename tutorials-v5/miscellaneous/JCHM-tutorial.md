@@ -59,7 +59,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from qutip import about, basis, destroy, expect, mesolve, qeye, sigmaz, tensor
 
-
+%matplotlib inline
 ```
 
 ## Constructing the Three-Site JCHM Hamiltonian

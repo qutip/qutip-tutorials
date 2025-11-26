@@ -28,7 +28,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from qutip import Options, about, brmesolve, fock, parallel_map, sigmam
 
-
+%matplotlib inline
 %config InlineBackend.figure_format = 'retina'
 ```
 

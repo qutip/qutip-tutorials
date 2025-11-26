@@ -28,7 +28,7 @@ from qutip import (about, basis, correlation_2op_1t, mesolve, n_thermal, num,
                    sigmam, sigmap, sigmax, sigmay, sigmaz,
                    spectrum_correlation_fft)
 
-
+%matplotlib inline
 ```
 
 <!-- #region -->

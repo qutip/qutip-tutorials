@@ -31,7 +31,7 @@ from matplotlib import animation
 from qutip import (about, coherent, destroy, expect, isket, ket2dm, mesolve,
                    num, variance, wigner)
 
-
+%matplotlib inline
 ```
 
 ## Introduction
