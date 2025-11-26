@@ -63,7 +63,7 @@ from qutip import (Qobj, about, basis, destroy, enr_destroy, enr_fock,
                    plot_expectation_values, tensor)
 from qutip.core.energy_restricted import EnrSpace
 
-%matplotlib inline
+
 ```
 
 ## The Jaynes-Cumming Chain

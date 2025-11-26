@@ -46,7 +46,7 @@ from qutip import gates, identity, sigmax, sigmaz, about
 
 example_name = "Hadamard"
 
-%matplotlib inline
+
 ```
 
 ### Defining the physics

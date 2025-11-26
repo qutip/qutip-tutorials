@@ -24,7 +24,7 @@ from matplotlib import rcParams
 from qutip import (Options, about, destroy, fock, identity, mesolve,
                    parallel_map, photocurrent_mesolve, tensor)
 
-%matplotlib inline
+
 rcParams["font.family"] = "STIXGeneral"
 rcParams["mathtext.fontset"] = "stix"
 rcParams["font.size"] = "14"

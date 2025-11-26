@@ -25,7 +25,7 @@ import numpy as np
 from numpy import pi
 from qutip import about, qeye, sigmax, sigmaz, tensor
 
-%matplotlib inline
+
 ```
 
 ## Energy spectrum of three coupled qubits

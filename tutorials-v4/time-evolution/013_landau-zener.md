@@ -27,7 +27,7 @@ import numpy as np
 from qutip import (Odeoptions, about, basis, destroy, expect, mesolve,
                    propagator, propagator_steadystate, sigmax, sigmaz)
 
-%matplotlib inline
+
 ```
 
 ```python

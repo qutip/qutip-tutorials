@@ -91,7 +91,7 @@ from qutip.nonmarkov.heom import (
     DrudeLorentzPadeBath,
 )
 
-%matplotlib inline
+
 ```
 
 ## Helper functions

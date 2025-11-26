@@ -29,7 +29,7 @@ from qutip import (about, correlation_2op_1t, correlation_4op_1t, destroy,
                    plot_wigner_fock_distribution, spectrum_correlation_fft,
                    spost, spre, steadystate, tensor)
 
-%matplotlib inline
+
 ```
 
 ## Introduction

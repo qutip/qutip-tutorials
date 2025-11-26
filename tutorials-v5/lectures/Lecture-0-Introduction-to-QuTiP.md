@@ -32,7 +32,7 @@ from qutip import (Qobj, about, basis, coherent, coherent_dm, create, destroy,
 from matplotlib import rc
 rc('animation', html='jshtml')
 
-%matplotlib inline
+
 ```
 
 ## Introduction

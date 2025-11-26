@@ -19,15 +19,6 @@ jobs:
             qutip-branch: 'qutip-4.7.X'
           - qutip-version: '5'
             qutip-branch: 'master'
-    steps:
-    - uses: actions/checkout@v4
-    - uses: gaurav-nelson/github-action-markdown-link-check@v1
-      with:
-        use-quiet-mode: 'yes'
-        folder-path: tutorials-v${{ matrix.qutip-version }}
-        #use config file to define 403 and 405 errors as valid links
-        #(APS blocks this link check)
-        config-file: mlc_config.json
 
     - name: Setup Conda
       uses: conda-incubator/setup-miniconda@v3
@@ -106,6 +97,19 @@ jobs:
         path: |
           notebooks/*.ipynb
           notebooks/**/*.ipynb
+
+  markdown-link-check:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Run tests
+    - uses: actions/checkout@v4
+    - uses: tcort/github-action-markdown-link-check@v1
+      with:
+        use-quiet-mode: 'yes'
+        folder-path: 'tutorials-v4, tutorials-v4'
+        #use config file to define 403 and 405 errors as valid links
+        #(APS blocks this link check)
+        config-file: mlc_config.json
 
 
   finalise:

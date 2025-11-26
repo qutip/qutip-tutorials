@@ -30,7 +30,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from qutip import Bloch, about, basis, mesolve, sigmam, sigmax, sigmay, sigmaz
 from qutip.ipynbtools import plot_animation
 
-%matplotlib inline
+
 ```
 
 ```python

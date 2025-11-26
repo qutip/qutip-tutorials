@@ -51,7 +51,7 @@ from qutip import about, basis, expect, sigmax, sigmaz
 from qutip.core.environment import BosonicEnvironment, OhmicEnvironment
 from qutip.solver.heom import HEOMSolver
 
-%matplotlib inline
+
 
 mp.dps = 15
 mp.pretty = True

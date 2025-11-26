@@ -107,7 +107,7 @@ from qutip.nonmarkov.heom import (
     BathExponent,
 )
 
-%matplotlib inline
+
 ```
 
 ## Helper functions

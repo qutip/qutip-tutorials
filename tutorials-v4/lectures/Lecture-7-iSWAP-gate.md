@@ -26,7 +26,7 @@ import numpy as np
 from qutip import (about, basis, propagator, qeye, qpt, qpt_plot_combined,
                    sigmam, sigmax, sigmay, sigmaz, spost, spre, tensor)
 
-%matplotlib inline
+
 ```
 
 ### Introduction

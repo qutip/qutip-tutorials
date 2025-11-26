@@ -31,7 +31,7 @@ from qutip import (
     smesolve,
 )
 
-%matplotlib inline
+
 ```
 
 ## Introduction

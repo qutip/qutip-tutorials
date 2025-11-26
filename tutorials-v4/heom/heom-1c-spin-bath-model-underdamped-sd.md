@@ -101,7 +101,7 @@ from qutip.nonmarkov.heom import (
     UnderDampedBath,
 )
 
-%matplotlib inline
+
 ```
 
 ```{code-cell} ipython3

@@ -34,7 +34,7 @@ import numpy as np
 import qutip
 from qutip import Bloch, QobjEvo, basis, sesolve, sigmay, sigmaz
 
-%matplotlib inline
+
 ```
 
 We setup a arbitrary qubit state, which is in a superposition of the two qubit states. We use the `qutip.Bloch` class to visualize the state on the Bloch sphere.

@@ -41,7 +41,7 @@ from qutip import (
 from qutip_qip.circuit import QubitCircuit
 from qutip_qip.device import SCQubits
 
-%matplotlib inline
+
 ```
 
 ## Introduction

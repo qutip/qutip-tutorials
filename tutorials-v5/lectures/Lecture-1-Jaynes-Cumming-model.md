@@ -31,7 +31,7 @@ from qutip import (about, basis, destroy, mesolve, ptrace, qeye,
 from matplotlib import rc
 rc('animation', html='jshtml')
 
-%matplotlib inline
+
 ```
 
 # Introduction

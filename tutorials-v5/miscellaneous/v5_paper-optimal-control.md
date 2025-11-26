@@ -35,7 +35,7 @@ from qutip import (about, gates, liouvillian, qeye, sigmam, sigmax, sigmay,
                    sigmaz)
 from qutip_qoc import Objective, optimize_pulses
 
-%matplotlib inline
+
 ```
 
 ## Introduction

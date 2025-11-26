@@ -28,7 +28,7 @@ from IPython.display import display
 from qutip import (about, basis, coherent, coherent_dm, displace, fock, ket2dm,
                    plot_wigner, squeeze, thermal_dm)
 
-%matplotlib inline
+
 ```
 
 ## Introduction

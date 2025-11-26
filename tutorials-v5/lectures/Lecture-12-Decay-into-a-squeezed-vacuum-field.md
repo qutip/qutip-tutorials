@@ -27,7 +27,7 @@ import numpy as np
 from qutip import (Bloch, about, basis, liouvillian, mesolve, n_thermal,
                    sigmam, sigmap, sigmax, sigmay, sigmaz, spost, spre)
 
-%matplotlib inline
+
 ```
 
 ## Introduction

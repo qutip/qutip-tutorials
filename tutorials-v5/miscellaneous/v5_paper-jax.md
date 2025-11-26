@@ -43,7 +43,7 @@ from qutip import (CoreOptions, about, basis, destroy, lindblad_dissipator,
                    sigmam, sigmax, sigmay, sigmaz, spost, spre, sprepost,
                    steadystate, tensor)
 
-%matplotlib inline
+
 ```
 
 An immediate effect of importing `qutip_jax` is the availability of the data layer formats `jax` and `jax_dia`.

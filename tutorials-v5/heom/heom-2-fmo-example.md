@@ -41,7 +41,7 @@ from qutip import Qobj, about, basis, brmesolve, expect, liouvillian, mesolve
 from qutip.core.environment import DrudeLorentzEnvironment, system_terminator
 from qutip.solver.heom import HEOMSolver
 
-%matplotlib inline
+
 ```
 
 ## Helper functions

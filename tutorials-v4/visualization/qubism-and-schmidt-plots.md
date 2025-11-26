@@ -35,7 +35,7 @@ import numpy as np
 from qutip import (Qobj, about, complex_array_to_rgb, jmat, ket, plot_qubism,
                    plot_schmidt, qeye, sigmax, sigmay, sigmaz, tensor)
 
-%matplotlib inline
+
 ```
 
 ## Colors

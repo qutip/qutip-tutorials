@@ -21,7 +21,7 @@ import qutip as qt
 from qutip import about, basis, identity, sigmax, sigmay, sigmaz
 from scipy.special import sph_harm
 
-%matplotlib inline
+
 ```
 
 ## Hinton

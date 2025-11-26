@@ -51,7 +51,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from qutip import about, coherent, destroy, mesolve, smesolve
 
-%matplotlib inline
+
 ```
 
 ## Problem Parameters

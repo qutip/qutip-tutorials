@@ -32,7 +32,7 @@ import numpy as np
 from qutip import (about, basis, expect, mesolve, qeye, sigmax, sigmay, sigmaz,
                    tensor)
 
-%matplotlib inline
+
 ```
 
 ### Setup System

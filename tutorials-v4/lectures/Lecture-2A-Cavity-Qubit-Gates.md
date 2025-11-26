@@ -28,7 +28,7 @@ from qutip import (about, basis, concurrence, destroy, expect, fidelity,
                    tensor)
 from scipy.special import sici
 
-%matplotlib inline
+
 ```
 
 ## Parameters

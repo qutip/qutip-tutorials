@@ -30,7 +30,7 @@ from matplotlib import animation
 from qutip import (about, basis, coherent, destroy, displace, expect, mesolve,
                    num, plot_wigner_fock_distribution, squeeze, variance)
 
-%matplotlib inline
+
 ```
 
 ## Introduction

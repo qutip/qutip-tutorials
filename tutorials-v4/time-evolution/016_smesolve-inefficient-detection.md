@@ -25,7 +25,7 @@ from qutip import (about, coherent, destroy, fock, general_stochastic, ket2dm,
                    liouvillian, mesolve, parallel_map, photocurrent_mesolve,
                    plot_expectation_values, smesolve, spost, spre)
 from qutip.expect import expect_rho_vec
-%matplotlib inline
+
 
 rcParams["font.family"] = "STIXGeneral"
 rcParams["mathtext.fontset"] = "stix"

@@ -26,7 +26,7 @@ from IPython.display import Image
 from numpy import cos, exp, pi, random, sin, sqrt
 from qutip import Qobj, basis
 
-%matplotlib inline
+
 ```
 
 ### Table of Contents

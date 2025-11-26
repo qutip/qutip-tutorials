@@ -26,7 +26,7 @@ from qutip import (Options, about, destroy, expect, num, propagator,
                    propagator_steadystate, sigmax, sigmaz)
 from qutip.ui.progressbar import TextProgressBar as ProgressBar
 
-%matplotlib inline
+
 ```
 
 Landau-Zener-Stuckelberg interferometry: Steady state of a strongly driven two-level system, using the one-period propagator. 

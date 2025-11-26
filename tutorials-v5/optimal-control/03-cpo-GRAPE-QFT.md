@@ -58,7 +58,7 @@ from qutip_qip.algorithms import qft
 
 example_name = "QFT"
 
-%matplotlib inline
+
 ```
 
 ### Defining the physics

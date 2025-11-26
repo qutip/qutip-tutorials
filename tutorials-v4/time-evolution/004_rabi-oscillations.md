@@ -35,7 +35,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from qutip import about, basis, destroy, mesolve, qeye, sigmaz, tensor
 
-%matplotlib inline
+
 ```
 
 # Introduction

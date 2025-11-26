@@ -26,7 +26,7 @@ from IPython.display import Image
 from qutip import (about, destroy, hinton, ptrace, qdiags, qeye, steadystate,
                    tensor, wigner, wigner_cmap)
 
-%matplotlib inline
+
 ```
 
 ## Optomechanical Hamiltonian

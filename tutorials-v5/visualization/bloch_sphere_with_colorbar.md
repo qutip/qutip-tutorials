@@ -20,7 +20,7 @@ import numpy as np
 from matplotlib import cm
 from qutip import Bloch, about, basis, destroy, sesolve, sigmax, sigmay, sigmaz
 
-%matplotlib inline
+
 ```
 
 ## Do a closed Landau-Zener Evolution

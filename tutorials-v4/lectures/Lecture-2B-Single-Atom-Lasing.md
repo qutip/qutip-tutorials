@@ -31,7 +31,7 @@ from IPython.display import Image
 from qutip import (Options, about, basis, destroy, expect, mesolve, ptrace,
                    qeye, sigmax, steadystate, tensor, wigner)
 
-%matplotlib inline
+
 ```
 
 # Introduction and model

@@ -23,7 +23,7 @@ import numpy as np
 from matplotlib import rcParams
 from qutip import about, destroy, fock, identity, liouvillian, mcsolve, mesolve
 
-%matplotlib inline
+
 rcParams["font.family"] = "STIXGeneral"
 rcParams["mathtext.fontset"] = "stix"
 rcParams["font.size"] = "14"

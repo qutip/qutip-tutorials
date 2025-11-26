@@ -23,14 +23,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - uses: gaurav-nelson/github-action-markdown-link-check@v1
-      with:
-        use-quiet-mode: 'yes'
-        folder-path: tutorials-v${{ matrix.qutip-version }}
-        #use config file to define 403 and 405 errors as valid links
-        #(APS blocks this link check)
-        config-file: mlc_external_config.json
-
     - name: Setup Conda
       uses: conda-incubator/setup-miniconda@v3
       with:
@@ -107,15 +99,20 @@ jobs:
         name: executed-notebooks-v${{ matrix.qutip-version }}
         path: |
           notebooks/*.ipynb
-          notebooks/**/*.ipynb
-   
-    - uses: gaurav-nelson/github-action-markdown-link-check@v1
-      with:
-        use-quiet-mode: 'yes'
-        folder-path: tutorials-v${{ matrix.qutip-version }}
-        #use config file to define 403 and 405 errors as valid links
-        #(APS blocks this link check)
-        config-file: mlc_config.json
+          notebooks/**/*.ipynbo
+
+  markdown-link-check:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Run tests
+    - uses: actions/checkout@v4
+    - uses: tcort/github-action-markdown-link-check@v1
+    with:
+      use-quiet-mode: 'yes'
+      folder-path: 'tutorials-v4, tutorials-v4'
+      #use config file to define 403 and 405 errors as valid links
+      #(APS blocks this link check)
+      config-file: mlc_external_config.json
 
   publish:
     needs: pytests

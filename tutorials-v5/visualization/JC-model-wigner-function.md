@@ -28,7 +28,7 @@ from matplotlib import cm
 from qutip import about, basis, destroy, mesolve, ptrace, qeye, tensor, wigner
 from qutip.ipynbtools import plot_animation
 
-%matplotlib inline
+
 ```
 
 ```python

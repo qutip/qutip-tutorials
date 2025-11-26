@@ -29,7 +29,7 @@ We will discuss time-dependent Hamiltonians and time-dependent dissipations. The
 import numpy as np
 from qutip import about, basis, brmesolve, destroy, plot_expectation_values
 
-%matplotlib inline
+
 ```
 
 For our small example, we setup a system with `N` states and the number operator as Hamiltonian. We can observe that for the constant Hamiltonian and no given `a_ops` the expectation value $\langle n \rangle $ is a constant.

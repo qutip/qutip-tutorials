@@ -28,7 +28,7 @@ import numpy as np
 from qutip import (about, basis, destroy, entropy_vn, expect, mesolve, ptrace,
                    qeye, tensor, wigner)
 
-%matplotlib inline
+
 ```
 
 <!-- #region -->

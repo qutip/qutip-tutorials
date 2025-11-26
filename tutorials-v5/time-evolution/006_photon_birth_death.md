@@ -41,7 +41,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from qutip import about, basis, destroy, mcsolve, mesolve
 
-%matplotlib inline
+
 ```
 
 ## System Setup

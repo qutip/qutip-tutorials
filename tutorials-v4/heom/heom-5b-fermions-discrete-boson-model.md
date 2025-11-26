@@ -118,7 +118,7 @@ from qutip.nonmarkov.heom import (
 from ipywidgets import IntProgress
 from IPython.display import display
 
-%matplotlib inline
+
 ```
 
 ## Helpers
