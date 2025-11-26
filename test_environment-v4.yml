@@ -14,4 +14,4 @@ dependencies:
 - jupytext==1.13.8
 - jupyter==1.0.0
 - ipykernel==6.17.1  # 6.18.0 was yanked but is still present on conda-forge
-- matplotlib-inline==0.2.1
+- matplotlib-inline==0.1.7
