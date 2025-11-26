@@ -72,6 +72,9 @@ jobs:
         sudo apt install ffmpeg
         sudo apt install texlive-latex-extra
 
+    - name: Show environment
+      run: conda list
+
     - name: Convert Notebooks
       run: |
         rm -rf notebooks
