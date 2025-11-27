@@ -108,7 +108,7 @@ jobs:
       - uses: tcort/github-action-markdown-link-check@v1
         with:
           use-quiet-mode: 'yes'
-          folder-path: 'tutorials-v4, tutorials-v4'
+          folder-path: 'tutorials-v4, tutorials-v5'
           #use config file to define 403 and 405 errors as valid links
           #(APS blocks this link check)
           config-file: mlc_config.json
