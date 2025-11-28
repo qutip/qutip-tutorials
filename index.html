@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+
+ <head>
+    <meta charset="utf-8">
+    <meta name="google-site-verification" content="_8nZ7KJx54y7NEnE3tvEmjGutx6mtTMsanWXgnXxjaE" />
+    <title>QuTiP Tutorials</title>
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="P.D. Nation & J.R. Johansson">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"/>
+    <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'/>
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/site.css"/>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7GD9QRNR6E"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-7GD9QRNR6E');
+    </script>
+</head> 
+
+<body>
+    <header>  <div class="container-xxl">
+    <nav class="navbar navbar-expand-md sticky-top side-padding">
+        <div class="navbar-brand m-0">
+        
+        <a href="/" style="margin: 0">
+            <img src="/images/logo_small.png" alt="QuTiP" width="64" height="32">
+        </a>
+        
+        </div>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar_markup" aria-controls="navbar_markup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse" id="navbar_markup">
+            <ul class="navbar-nav ms-auto align-items-md-baseline align-items-center">
+                <li class="nav-item dropdown-center">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Get Started
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/python-introduction/004_link_to_lecture_0.ipynb">Introduction</a></li>
+                        <li><a class="dropdown-item" href="/try-qutip.html">Try QuTiP!</a></li>
+                        <li><a class="dropdown-item" href="https://qutip.org/qutip-virtual-lab/">QuTiP Virtual Lab</a></li>
+                        <li><a class="dropdown-item" href="/features">Features</a></li>
+                        <li class="dropdown-divider"></li>
+                        <li><h6 class="dropdown-header">Other QuTiP Packages</h6></li>
+                        <li><a class="dropdown-item" href="https://qutip-qip.readthedocs.io/en/stable/">Quantum Information Processing</a></li>
+                        <li><a class="dropdown-item" href="https://github.com/qutip/qutip-qoc/">Quantum Optimal Control</a></li>
+                        <li><a class="dropdown-item" href="https://qutip.org/QuantumToolbox.jl/stable/">Quantum Toolbox in Julia</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown-center">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Tutorials
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/qutip-tutorials">All Tutorials</a></li>
+                        <li class="dropdown-divider"></li>
+                        <li><h6 class="dropdown-header">By Category</h6></li>
+                        <li><a class="dropdown-item" href="/qutip-tutorials/#visualizations">Visualizations</a></li>
+                        <li><a class="dropdown-item" href="/qutip-tutorials/#time-evolution">Time Evolutions</a></li>
+                        <li><a class="dropdown-item" href="/qutip-tutorials/#quantum-information-processing">Quantum Information Processing</a></li>
+                        <li><a class="dropdown-item" href="/qutip-tutorials/#optimal-control">Optimal Control</a></li>
+                        <li><a class="dropdown-item" href="/qutip-tutorials/#tomography">Tomography</a></li>
+                        <li><a class="dropdown-item" href="/qutip-tutorials/#piqs">Permutational Invariant Lindblad Dynamics</a></li>
+                        <li><a class="dropdown-item" href="/qutip-tutorials/#heom">Hierachical Equations of Motion</a></li>
+                        <li><a class="dropdown-item" href="/qutip-tutorials/#lectures">Lecture Series</a></li>
+                        <li class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="https://qutip.org/qutip-julia-tutorials/">Quantum Toolbox in Julia</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown-center">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Resources
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="https://qutip.readthedocs.io/en/stable/">User Guide</a></li>
+                        <li><a class="dropdown-item" href="https://qutip.readthedocs.io/en/stable/apidoc/apidoc.html">API</a></li>
+                        <li><a class="dropdown-item" href="https://github.com/qutip/qutip/wiki">Wiki</a></li>
+                        <li><a class="dropdown-item" href="/qutip-benchmark">Benchmarks</a></li>
+                        <li><a class="dropdown-item" href="https://qutip.readthedocs.io/en/latest/changelog.html">Changelog</a></li>
+                        <li class="dropdown-divider"></li>
+                        <li><h6 class="dropdown-header">Previous Versions</h6></li>
+                        <li><a class="dropdown-item" href="https://qutip.readthedocs.io/en/qutip-4.7.x/">QuTiP 4.7.x</a></li>
+                        <li><a class="dropdown-item" href="https://colab.research.google.com/drive/18TcuHNQifYSHdGey7otK8IPDB1YbDZpW?usp=sharing">Migrate to QuTiP v5</a></li>
+                        <li><a class="dropdown-item" href="/documentation">All Versions</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown-center">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Community
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="https://github.com/qutip">GitHub</a></li>
+                        <li><a class="dropdown-item" href="/education">For Educators</a></li>
+                        <li><a class="dropdown-item" href="/research">For Researchers</a></li>
+                        <li><a class="dropdown-item" href="https://groups.google.com/g/qutip">Google Groups</a></li>
+                        <li><a class="dropdown-item" href="/jobs">Jobs</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown-center">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        About
+                    </a>
+                    <ul class="dropdown-menu" style="margin-bottom: 1rem;">
+                        <li><a class="dropdown-item" href="/news">News</a></li>
+                        <li><a class="dropdown-item" href="/devs">Devs</a></li>
+                        <li><a class="dropdown-item" href="/citing">Citing</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="btn btn-primary" href="https://github.com/qutip">
+                        See on GitHub
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>  </header>
+
+<main class="my-content">
+<div class="row">
+<div class="col-md-12">
+<h1>Tutorials for QuTiP Version&nbsp;5</h1><br>
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-12">
+<p>This page contains our collection of <a href="https://jupyter.org/">Jupyter</a> (formerly <a href="https://ipython.org/notebook.html">IPython</a>) notebooks
+for introducing and demonstrating features of QuTiP.
+Going through these notebooks should be a good way to get familiarized with the software.
+If you are new to scientific computing with Python, you might also find it
+useful to have a look at these IPython notebook
+<a href="https://jrjohansson.github.io/">Lectures on scientific computing with Python</a>.
+</p>
+<p> These are the tutorials for QuTiP Version 5. You can
+            find the tutorials for QuTiP Version 4
+            <a href="./index-v4.html">here</a>. </p>
+<p> A guide for transitioning from version 4 to version 5 can be found <a href="https://colab.research.google.com/drive/18TcuHNQifYSHdGey7otK8IPDB1YbDZpW?usp=sharing">here</a>. </p>
+<p>The following are the contents of this page:</p>
+<ul>
+<li><a href="#example-notebooks">Example notebooks</a>
+	<ul>
+	<li><a href="#python-introduction">Python Introduction</a></li>
+	<li><a href="#visualizations">Visualization</a></li>
+	<li><a href="#quantum-information-processing">Quantum information processing</a></li>
+	<ul>
+	<li><a href="#qip-circuits">Quantum circuits and algoritms</a></li>
+	<li><a href="#qip-pulse-level">Pulse-level circuit simulation</a></li>
+	</ul>
+	<li><a href="#time-evolution">Time evolution</a></li>
+	<li><a href="#optimal-control">Optimal control</a></li>
+	<li><a href="#tomography">Tomography</a></li>
+	<li><a href="#piqs">Permutational invariant Lindblad dynamics</a></li>
+	<li><a href="#heom">Hierarchical Equations of Motion</a></li>
+	<li><a href="#miscellaneous">Miscellaneous tutorials</a></li>
+	</ul>
+</li>
+<li><a href="#lectures">Quantum mechanics lectures with QuTiP</a></li>
+<li><a href="#contributing">Contributing</a></li>
+</ul>
+</div>
+</div>
+
+
+<div class="row">
+<div class="col-md-12">
+<h3 id="example-notebooks">Example notebooks</h3>
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-12">
+<p>These notebooks demonstrate and introduce specific functionality in QuTiP.
+</p>
+
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-6">
+<h4 id="python-introduction">Python Introduction</h4>
+<ul>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/python-introduction/001_Beginning_Python.ipynb">Introduction to Python</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/python-introduction/002_NumPy_Array_Basics.ipynb">Introduction to NumPy Arrays</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/python-introduction/003_Matplotlib_Plotting.ipynb">Plotting in Python Using Matplotlib</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/python-introduction/004_link_to_lecture_0.ipynb">Lecture 0 - Introduction to QuTiP</a></li>
+
+</ul>
+<p>For a more in depth discussion see: <a href="https://github.com/jrjohansson/scientific-python-lectures">Lectures on scientific computing with Python</a>.</p>
+
+
+<h4 id="visualizations">Visualization</h4>
+<ul>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/visualization/animation-demo.ipynb">Animation demos</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/visualization/bloch-sphere-animation.ipynb">Bloch Sphere animation</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/visualization/bloch_sphere_with_colorbar.ipynb">Bloch Sphere with colorbar</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/visualization/energy-levels.ipynb">Energy-level diagrams</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/visualization/pseudo-probability-functions.ipynb">Pseudo-probability functions</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/visualization/quantum-process-tomography.ipynb">Quantum Process Tomography</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/visualization/qubism-and-schmidt-plots.ipynb">Qubism visualizations</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/visualization/distributions.ipynb">Using qutip.distributions</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/visualization/visualization-exposition.ipynb">Visualization demos</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/visualization/JC-model-wigner-function.ipynb">Wigner functions</a></li>
+
+</ul>
+
+<h4 id="quantum-information-processing">Quantum information processing</h4>
+<p>This section requires an additional package <a href="https://github.com/qutip/qutip-qip">qutip-qip</a>.</p>
+
+<h5 id="qip-circuits">Quantum circuits and algorithms</h5>
+<ul>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/quantum-circuits/qip-toffoli-cnot.ipynb">Decomposition of the Toffoli gate in terms of CNOT and single-qubit rotations</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/quantum-circuits/qasm.ipynb">Imports and Exports QASM circuit</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/quantum-circuits/matrenderer-plot.ipynb">Plotting and Customizing Quantum Circuits using MatRenderer</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/quantum-circuits/textrenderer-plot.ipynb">Plotting and Customizing Quantum Circuits using TextRenderer</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/quantum-circuits/quantum-gates.ipynb">QuTiP example: Quantum Gates and their usage</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/quantum-circuits/v5_paper-qip2.ipynb">QuTiPv5 Paper - Quantum Circuits with QIP</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/quantum-circuits/teleportation.ipynb">Quantum Teleportation Circuit</a></li>
+
+</ul>
+
+<h5 id="qip-pulse-level">Pulse-level circuit simulation</h5>
+<ul>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/pulse-level-circuit-simulation/qip-10-qubit-QFT-algorithm.ipynb">Compiling and simulating a 10-qubit Quantum Fourier Transform (QFT) algorithm</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/pulse-level-circuit-simulation/qip-customize-device.ipynb">Custimize the pulse-level simulation</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/pulse-level-circuit-simulation/qip-optpulseprocessor.ipynb">Examples for OptPulseProcessor</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/pulse-level-circuit-simulation/qip-scheduler.ipynb">Scheduler for quantum gates and instructions</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/pulse-level-circuit-simulation/qip-randomized-benchmarking.ipynb">Simulating randomized benchmarking</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/pulse-level-circuit-simulation/qip-processor-DJ-algorithm.ipynb">Simulating the Deutsch–Jozsa algorithm at the pulse level</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/pulse-level-circuit-simulation/qip-relaxation-measurement-with-the-idling-gate.ipynb">measuring the relaxation time with the idling gate</a></li>
+
+</ul>
+
+</div>
+
+<div class="col-md-6">
+
+<h4 id="time-evolution">Time evolution</h4>
+<ul>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/time-evolution/001_qobjevo.ipynb"><code>QobjEvo</code>: time-dependent quantum objects</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/time-evolution/002_larmor-precession.ipynb">Schrödinger Equation Solver: Larmor precession</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/time-evolution/003_qubit-dynamics.ipynb">Master Equation Solver: Single-Qubit Dynamics</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/time-evolution/004_rabi-oscillations.ipynb">Master Equation Solver: Vacuum Rabi oscillations</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/time-evolution/005_spin-chain.ipynb">Master Equation Solver: Dynamics of a Spin Chain</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/time-evolution/006_photon_birth_death.ipynb">Monte Carlo Solver: Birth and Death of Photons in a Cavity</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/time-evolution/007_brmesolve_tls.ipynb">Bloch-Redfield Solver: Two Level System</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/time-evolution/008_brmesolve_time_dependence.ipynb">Bloch-Redfield Solver: Time dependent operators</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/time-evolution/009_brmesolve-cavity-QED.ipynb">Bloch-Redfield Solver: Dissipative Atom-Cavity system</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/time-evolution/010_brmesolve_phonon_interaction.ipynb">Bloch-Redfield Solver: Phonon-assisted initialization</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/time-evolution/011_floquet_solver.ipynb">Floquet Solvers</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/time-evolution/012_floquet_formalism.ipynb">Floquet Formalism</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/time-evolution/013_nonmarkovian_monte_carlo.ipynb">Non-Markovian Monte Carlo Solver: Two Physical Examples</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/time-evolution/015_smesolve-heterodyne.ipynb">Stochastic Solver: Heterodyne Detection</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/time-evolution/016_smesolve-inefficient-detection.ipynb">Stochastic Solver: Mixing stochastic and deterministic equations</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/time-evolution/017_smesolve-jc-photocurrent.ipynb">Stochastic Solver: Photo-current detection in a JC model</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/time-evolution/018_measures-trajectories-cats-kerr.ipynb">Stochastic vs. Monte-Carlo Solver: Cat states become coherent</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/time-evolution/019_optomechanical-steadystate.ipynb">Steady-State: Optomechanical System in the Single-Photon Strong-Coupling Regime</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/time-evolution/020_homodyned-Jaynes-Cummings-emission.ipynb">Steady-State: Homodyned Jaynes-Cummings emission</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/time-evolution/021_quasi-steadystate-driven-system.ipynb">Steady-State: Time-dependent (periodic) quantum system</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/time-evolution/022_v5_paper-smesolve.ipynb">QuTiPv5 Paper Example: Stochastic Solver - Homodyne Detection</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/time-evolution/023_dysolve_propagator.ipynb">Calculate time propagators with Dysolve</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/time-evolution/024_v5_paper-mesolve.ipynb">QuTiPv5 Paper Example: `sesolve` and `mesolve` and the new solver class</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/time-evolution/025_v5_paper-floquet-speed-test.ipynb">QuTiPv5 Paper Example: Floquet Speed Test</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/time-evolution/026_v5_paper-nm_mcsolve.ipynb">QuTiPv5 Paper Example: Monte Carlo Solver for non-Markovian Baths</a></li>
+
+</ul>
+
+
+<h4 id="optimal-control">Optimal control</h4>
+<ul>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/optimal-control/01-optimal-control-overview.ipynb">QuTiP overview - Optimal Control</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/optimal-control/02-cpo-GRAPE-Hadamard.ipynb">Calculation of control fields for Hadamard gate on single qubit using L-BFGS-B algorithm</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/optimal-control/03-cpo-GRAPE-QFT.ipynb">Calculation of control fields for QFT gate on two qubits using L-BFGS-B algorithm</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/optimal-control/04-cpo-GRAPE-Lindbladian.ipynb">Calculation of control fields for Lindbladian dynamics using L-BFGS-B algorithm</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/optimal-control/05-cpo-cpo-symplectic.ipynb">Calculation of control fields for symplectic dynamics using L-BFGS-B algorithm</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/optimal-control/06-CRAB-2qubit-state_to_state.ipynb">Calculation of control fields for state-to-state transfer of a 2 qubit system using CRAB algorithm</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/optimal-control/07-CRAB-QFT.ipynb">Calculation of control fields for QFT gate on two qubits using the CRAB algorithm</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/optimal-control/08-cpo-GRAPE-cnot.ipynb">GRAPE calculation of control fields for cnot implementation</a></li>
+
+</ul>
+
+<h4 id="tomography">Tomography</h4>
+<ul>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/tomography-iMLE-photon-counting.ipynb">Density matrix estimation with iterative maximum likelihood estimation</a> </li>
+</ul>
+
+<h4 id="piqs">Permutational invariant Lindblad dynamics</h4>
+<ul>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/piqs-overview.ipynb">Overview</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/piqs-superradiant-light-emission.ipynb">Superradiant light emission</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/piqs-steadystate-superradiance.ipynb">Steady state superradiance</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/piqs-open-dicke-model.ipynb">Open Dicke model</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/piqs-spin-squeezing-noise.ipynb">Spin squeezing with noise</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/piqs-boundary-time-crystals.ipynb">Boundary time crystals</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/piqs-multiple-spin-ensembles.ipynb">Multiple spin ensembles</a> </li>
+<li> <a href="https://nbviewer.jupyter.org/github/qutip/qutip-notebooks/blob/master/examples/piqs-entropy_purity.ipynb">Von Neumann entropy and purity</a> </li>
+</ul>
+
+<h4 id="heom">Hierarchical Equations of Motion</h4>
+<ul>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/heom/heom-1a-spin-bath-model-basic.ipynb">HEOM 1a: Spin-Bath model (introduction)</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/heom/heom-1b-spin-bath-model-very-strong-coupling.ipynb">HEOM 1b: Spin-Bath model (very strong coupling)</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/heom/heom-1c-spin-bath-model-underdamped-sd.ipynb">HEOM 1c: Spin-Bath model (Underdamped Case)</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/heom/heom-1d-spin-bath-model-ohmic-fitting.ipynb">HEOM 1d: Spin-Bath model, fitting of spectrum and correlation functions</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/heom/heom-1e-spin-bath-model-pure-dephasing.ipynb">HEOM 1e: Spin-Bath model (pure dephasing)</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/heom/heom-2-fmo-example.ipynb">HEOM 2: Dynamics in Fenna-Mathews-Olsen complex (FMO)</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/heom/heom-3-quantum-heat-transport.ipynb">HEOM 3: Quantum Heat Transport</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/heom/heom-4-dynamical-decoupling.ipynb">HEOM 4: Dynamical decoupling of a non-Markovian environment</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/heom/heom-5a-fermions-single-impurity-model.ipynb">HEOM 5a: Fermionic single impurity model</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/heom/heom-5b-fermions-discrete-boson-model.ipynb">HEOM 5b: Discrete boson coupled to an impurity and fermionic leads</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/heom/heom-index.ipynb">Hierarchical Equation of Motion Examples</a></li>
+
+</ul>
+
+<h4 id="miscellaneous">Miscellaneous tutorials</h4>
+<ul>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/miscellaneous/excitation-number-restricted-states-jc-chain.ipynb">Excitation-number-restricted states: Jaynes-Cummings Chain</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/miscellaneous/JCHM-tutorial.ipynb">Introduction to the Jaynes-Cummings-Hubbard Model: Three-Site System</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/miscellaneous/single-photon-interference.ipynb">Lecture: Single-photon Interference</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/miscellaneous/v5_paper-jax.ipynb">QuTiPv5 Paper Example: QuTiP-JAX with mesolve and auto-differnetiation</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/miscellaneous/v5_paper-optimal-control.ipynb">QuTiPv5 Paper Example: The Quantum Optimal Control Package</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/miscellaneous/JAX_backend.ipynb">qutip-jax JAX backend for qutip</a></li>
+
+</ul>
+
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-12">
+<h3 id="lectures">Quantum mechanics lectures with QuTiP</h3>
+
+<p>These lecture-style notebooks focus on particular quantum mechanics
+topics and analyze them numerically using QuTiP (some more detailed than others).</p>
+
+<ul>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/lectures/Lecture-0-Introduction-to-QuTiP.ipynb">Lecture 0 - Introduction to QuTiP</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/lectures/Lecture-1-Jaynes-Cumming-model.ipynb">Lecture 1 - Vacuum Rabi oscillations in the Jaynes-Cummings model</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/lectures/Lecture-2A-Cavity-Qubit-Gates.ipynb">Lecture 2A - simulation of a two-qubit gate using a resonator as coupler</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/lectures/Lecture-2B-Single-Atom-Lasing.ipynb">Lecture 2B - Single-Atom-Lasing</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/lectures/Lecture-3A-Dicke-model.ipynb">Lecture 3A - The Dicke model</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/lectures/Lecture-3B-Jaynes-Cumming-model-with-ultrastrong-coupling.ipynb">Lecture 3B - Jaynes-Cummings-like model in the ultrastrong coupling regime</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/lectures/Lecture-4-Correlation-Functions.ipynb">Lecture 4 - Correlation functions</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/lectures/Lecture-5-Parametric-Amplifier.ipynb">Lecture 5 - Evolution and quantum statistics of a quantum parameter amplifier</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/lectures/Lecture-6-Quantum-Monte-Carlo-Trajectories.ipynb">Lecture 6 - Quantum Monte-Carlo Trajectories</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/lectures/Lecture-7-iSWAP-gate.ipynb">Lecture 7 - Two-qubit iSWAP gate and process tomography</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/lectures/Lecture-8-Adiabatic-quantum-computing.ipynb">Lecture 8 - Adiabatic sweep</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/lectures/Lecture-9-Squeezed-states-of-harmonic-oscillator.ipynb">Lecture 9 - Squeezed states of a quantum harmonic oscillator</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/lectures/Lecture-10-cQED-dispersive-regime.ipynb">Lecture 10 - Cavity-QED in the dispersive regime</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/lectures/Lecture-11-Charge-Qubits.ipynb">Lecture 11 - Superconducting Josephson charge qubits</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/lectures/Lecture-12-Decay-into-a-squeezed-vacuum-field.ipynb">Lecture 12 - Decay into a squeezed vacuum field</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/lectures/Lecture-13-Resonance-flourescence.ipynb">Lecture 13 - Resonance fluorescence</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/lectures/Lecture-14-Kerr-nonlinearities.ipynb">Lecture 14 - Kerr nonlinearities</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/lectures/Lecture-15-Nonclassically-driven-atoms.ipynb">Lecture 15 - Nonclassically driven atoms (cascaded quantum systems)</a></li>
+
+    <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/lectures/Lecture-16-Gallery-of-Wigner-functions.ipynb">Lecture 16 - Gallery of Wigner functions</a></li>
+
+</ul>
+
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-12">
+<h3 id="contributing">Contributing</h3>
+<p>If you would like to contribute a notebook or report a bug, you may open
+an issue or pull request in the
+<a href="https://github.com/qutip/qutip-tutorials">qutip-tutorials</a>
+GitHub repository.
+</p>
+<p>A few of the notebooks are still maintained in the repository
+<a href="https://github.com/qutip/qutip-notebooks">qutip-notebooks</a> and
+a complete archive of older versions of the tutorials is maintained there.
+</p>
+
+</div>
+</div>
+</main>
+
+
+<footer><div class="container-xxl">
+    <div class="row footer">
+        <ul class="col-lg-3 col-md-4 col-6 footer-list">
+            <li><a href="/">QuTiP</a></li>
+            <li><a href="https://nbviewer.org/urls/qutip.org/qutip-tutorials/tutorials-v5/python-introduction/004_link_to_lecture_0.ipynb">
+                Get Started
+            </a></li>
+            <li><a href="/try-qutip.html">Try QuTiP!</a></li>
+            <li><a href="https://qutip.org/qutip-virtual-lab/">QuTiP Virtual Lab</a></li>
+            <li><a href="/features">Features</a></li>
+            <li><a href="https://qutip-qip.readthedocs.io/en/stable/">QuTiP QIP</a></li>
+            <li><a href="https://github.com/qutip/qutip-qoc/">QuTiP QOC</a></li>
+            <li><a href="https://qutip.org/QuantumToolbox.jl/stable/">Quantum Toolbox in Julia</a></li>
+        </ul>
+        <ul class="col-lg-3 col-md-4 col-6 footer-list">
+            <li><p>Documentation</p></li>
+            <li><a href="https://qutip.readthedocs.io/en/stable/">User Guide</a></li>
+            <li><a href="/qutip-tutorials">Tutorials</a></li>
+            <li><a href="https://qutip.readthedocs.io/en/stable/apidoc/apidoc.html">API</a></li>
+            <li><a href="https://github.com/qutip/qutip/wiki">Wiki</a></li>
+            <li><a href="https://qutip.readthedocs.io/en/latest/">QuTiP v5 (Latest Release)</a></li>
+            <li><a href="https://qutip.readthedocs.io/en/qutip-4.7.x/">QuTiP v4.7.x</a></li>
+            <li><a href="https://colab.research.google.com/drive/18TcuHNQifYSHdGey7otK8IPDB1YbDZpW?usp=sharing">Migrate to QuTiP v5</a></li>
+            <li><a href="https://qutip.readthedocs.io/en/latest/changelog.html">Changelog</a></li>
+            <li><a href="/qutip-benchmark">Benchmarks</a></li>
+        </ul>
+        <ul class="col-lg-2 col-md-4 col-6 footer-list">
+            <li><p>Community</p></li>
+            <li><a href="https://github.com/qutip">GitHub</a></li>
+            <li><a href="/research">For Researchers</a></li>
+            <li><a href="/education">For Educators</a></li>
+            <li><a href="https://groups.google.com/g/qutip">Google Groups</a></li>
+            <li><a href="/jobs">Jobs</a></li>
+            <li><a href="/news">News</a></li>
+            <li><a href="/devs">Devs</a></li>
+            <li><a href="/citing">Citing</a></li>
+        </ul>
+        <p class="col-lg-4 col-md-12">
+            &copy; 2011 to 2025 inclusive, QuTiP developers and contributors.
+        </p>
+    </div>
+</div></footer>
+    <script src='//cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js'></script>
+    <script src='//cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js' integrity='sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz' crossorigin='anonymous'></script>
+    <script src='//cdn.jsdelivr.net/npm/d3@3.5.3/d3.min.js'></script>
+    <script src='//cdn.jsdelivr.net/npm/topojson@1.6.9/topojson.min.js'></script>
+    <script src='//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js'></script>
+    <script src='/js/datamaps.world.min.js'></script>
+    <script src='/js/map.js'></script>
+    <script src='/js/carousel.js'></script>
+    <script src='/js/show_more.js'></script>
+
+
+</body>
+</html>
