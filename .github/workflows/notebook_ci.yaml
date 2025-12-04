@@ -81,6 +81,7 @@ jobs:
         mkdir notebooks
         cp -r tutorials-v${{ matrix.qutip-version }}/* notebooks
         cd notebooks
+        rm miscellaneous/cuQuantum_backend.ipynb
         find . -name '*.md' -exec jupytext --to notebook {} +
         find . -name '*.md' -delete
 
@@ -100,7 +101,7 @@ jobs:
       # Without GPU, this notebook can't be ran.
       # Copy the already executed notebook after the tests.
       if:  ${{ matrix.qutip-version == '5' }}
-      run: cp ../tutorials-v5/miscellaneous/cuQuantum_backend.ipynb .
+      run: cp ../tutorials-v5/miscellaneous/cuQuantum_backend.ipynb ./miscellaneous/
 
     - name: Create Notebook Artifact
       uses: actions/upload-artifact@v4
