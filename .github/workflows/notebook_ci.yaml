@@ -18,8 +18,10 @@ jobs:
         include:
           - qutip-version: '4'
             qutip-branch: 'qutip-4.7.X'
+            qip-branch: 'qutip-qip-0.4.X'
           - qutip-version: '5'
             qutip-branch: 'master'
+            qip-branch: 'master'
     steps:
     - uses: actions/checkout@v4
 
@@ -57,7 +59,7 @@ jobs:
         pip install -r requirements.txt
         pip install .
         cd ..
-        python -m pip install git+https://github.com/qutip/qutip-qip
+        python -m pip install git+https://github.com/qutip/qutip-qip@${{ matrix.qip-branch }}
         python -m pip install --no-deps git+https://github.com/qutip/qutip-jax
         python -m pip install --no-deps git+https://github.com/qutip/qutip-qoc
 
