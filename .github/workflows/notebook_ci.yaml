@@ -18,18 +18,12 @@ jobs:
         include:
           - qutip-version: '4'
             qutip-branch: 'qutip-4.7.X'
+            qip-branch: 'qutip-qip-0.4.X'
           - qutip-version: '5'
             qutip-branch: 'master'
+            qip-branch: 'master'
     steps:
     - uses: actions/checkout@v4
-
-    - uses: gaurav-nelson/github-action-markdown-link-check@v1
-      with:
-        use-quiet-mode: 'yes'
-        folder-path: tutorials-v${{ matrix.qutip-version }}
-        #use config file to define 403 and 405 errors as valid links
-        #(APS blocks this link check)
-        config-file: mlc_external_config.json
 
     - name: Setup Conda
       uses: conda-incubator/setup-miniconda@v3
@@ -65,7 +59,7 @@ jobs:
         pip install -r requirements.txt
         pip install .
         cd ..
-        python -m pip install git+https://github.com/qutip/qutip-qip
+        python -m pip install git+https://github.com/qutip/qutip-qip@${{ matrix.qip-branch }}
         python -m pip install --no-deps git+https://github.com/qutip/qutip-jax
         python -m pip install --no-deps git+https://github.com/qutip/qutip-qoc
 
@@ -80,6 +74,9 @@ jobs:
         sudo apt install ffmpeg
         sudo apt install texlive-latex-extra
 
+    - name: Show environment
+      run: conda list
+
     - name: Convert Notebooks
       run: |
         rm -rf notebooks
@@ -88,6 +85,11 @@ jobs:
         cd notebooks
         find . -name '*.md' -exec jupytext --to notebook {} +
         find . -name '*.md' -delete
+
+    - name: Remove cuQuantum notebook from tests
+      # Without GPU, this notebook can't be ran.
+      if:  ${{ matrix.qutip-version == '5' }}
+      run: rm notebooks/miscellaneous/cuQuantum_backend.ipynb
 
     - name: Check PEP8 formatting
       run: |
@@ -105,7 +107,7 @@ jobs:
       # Without GPU, this notebook can't be ran.
       # Copy the already executed notebook after the tests.
       if:  ${{ matrix.qutip-version == '5' }}
-      run: cp ../tutorials-v5/miscellaneous/cuQuantum_backend.ipynb .
+      run: cp tutorials-v5/miscellaneous/cuQuantum_backend.ipynb notebooks/miscellaneous/
 
     - name: Create Notebook Artifact
       uses: actions/upload-artifact@v4
@@ -115,13 +117,17 @@ jobs:
           notebooks/*.ipynb
           notebooks/**/*.ipynb
 
-    - uses: gaurav-nelson/github-action-markdown-link-check@v1
-      with:
-        use-quiet-mode: 'yes'
-        folder-path: tutorials-v${{ matrix.qutip-version }}
-        #use config file to define 403 and 405 errors as valid links
-        #(APS blocks this link check)
-        config-file: mlc_config.json
+  markdown-link-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: tcort/github-action-markdown-link-check@v1
+        with:
+          use-quiet-mode: 'yes'
+          folder-path: 'tutorials-v4, tutorials-v5'
+          #use config file to define 403 and 405 errors as valid links
+          #(APS blocks this link check)
+          config-file: mlc_external_config.json
 
   publish:
     needs: pytests
