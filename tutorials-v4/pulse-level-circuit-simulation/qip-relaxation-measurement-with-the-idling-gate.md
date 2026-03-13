@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# measuring the relaxation time with the idling gate
+# Measuring the Relaxation Time with the Idling Gate
 In order to demonstrate the simulation of decoherence noise, we build an example that simulates a Ramsey experiment as a quantum circuit run on a noisy `Processor`.
 The Ramsey experiment consists of a qubit that is initialized in the excited state, undergoes a $\pi/2$ rotation around the $x$ axis, idles for a time $t$, and is finally measured after another $\pi/2$ rotation:
 
