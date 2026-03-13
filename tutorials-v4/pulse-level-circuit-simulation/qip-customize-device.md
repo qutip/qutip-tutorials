@@ -12,7 +12,7 @@ jupyter:
     name: python3
 ---
 
-# Custimize the pulse-level simulation
+# Customize the pulse-level simulation
 Author: Boxi Li (etamin1201@gmail.com)
 
 In this note, we demonstrate examples of customizing  the pulse-level simulator in qutip-qip.The notebook is divided into three parts:
