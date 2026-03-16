@@ -24,7 +24,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from qutip import (Qobj, SolverOptions, about, basis, fock_dm, qeye,
                    sigmax, sigmay, sigmaz, tensor)
-from qutip.ipynbtools import version_table
 from qutip_qip.circuit import QubitCircuit
 from qutip_qip.compiler import GateCompiler, Instruction
 from qutip_qip.device import Model, ModelProcessor

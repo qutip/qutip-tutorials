@@ -34,7 +34,6 @@ from qutip import about, basis, ptrace
 from qutip_qip.circuit import QubitCircuit
 from qutip_qip.device import (LinearSpinChain, OptPulseProcessor, SCQubits,
                               SpinChainModel)
-from qutip.ipynbtools import version_table
 ```
 
 ```python

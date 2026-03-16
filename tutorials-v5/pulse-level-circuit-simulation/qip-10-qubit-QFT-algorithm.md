@@ -23,7 +23,6 @@ The following code defines a 10-qubit QFT algorithm using CNOT and single qubit 
 from qutip import about, basis, fidelity
 from qutip_qip.algorithms import qft_gate_sequence
 from qutip_qip.device import LinearSpinChain
-from qutip.ipynbtools import version_table
 
 num_qubits = 10
 # The QFT circuit

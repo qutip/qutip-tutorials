@@ -23,7 +23,6 @@ import scipy
 from qutip import about, basis, sigmax, sigmaz
 from qutip_qip.circuit import QubitCircuit
 from qutip_qip.device import LinearSpinChain
-from qutip.ipynbtools import version_table
 
 pi = np.pi
 num_samples = 500
