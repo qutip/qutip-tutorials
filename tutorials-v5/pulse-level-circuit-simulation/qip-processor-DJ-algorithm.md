@@ -38,7 +38,7 @@ from qutip.ipynbtools import version_table
 ```
 
 ```python
-qc = QubitCircuit(N=3)
+qc = QubitCircuit(num_qubits=3)
 qc.add_gate("X", targets=2)
 qc.add_gate("SNOT", targets=0)
 qc.add_gate("SNOT", targets=1)
