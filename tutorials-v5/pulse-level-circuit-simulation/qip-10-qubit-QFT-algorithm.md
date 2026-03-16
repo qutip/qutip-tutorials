@@ -20,11 +20,9 @@ It is, for instance, part of the Shor algorithm for integer factorization.
 The following code defines a 10-qubit QFT algorithm using CNOT and single qubit rotations and runs the simulation both at the gate level and at the pulse level.
 
 ```python
-from qutip import basis, fidelity
+from qutip import about, basis, fidelity
 from qutip_qip.algorithms import qft_gate_sequence
 from qutip_qip.device import LinearSpinChain
-from qutip.ipynbtools import version_table
-import qutip_qip
 
 num_qubits = 10
 # The QFT circuit
@@ -67,6 +65,5 @@ axes[-1].set_xlabel("$t$");
 ```
 
 ```python
-print("qutip-qip version:", qutip_qip.version.version)
-version_table()
+about()
 ```

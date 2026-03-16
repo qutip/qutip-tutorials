@@ -19,12 +19,10 @@ Author: Boxi Li (etamin1201@gmail.com)
 
 ```python
 from numpy import pi
-from qutip import basis, fidelity, identity, sigmax, sigmaz, tensor
+from qutip import about, basis, fidelity, identity, sigmax, sigmaz, tensor
 from qutip_qip.circuit import QubitCircuit
 from qutip_qip.device import OptPulseProcessor
 from qutip_qip.operations import expand_operator, toffoli
-from qutip.ipynbtools import version_table
-import qutip_qip
 ```
 
 The `qutip.OptPulseProcessor` is a noisy quantum device simulator integrated with the optimal pulse algorithm from the `qutip.control` module. It is a subclass of `qutip.Processor` and is equipped with a method to find the optimal pulse sequence (hence the name `OptPulseProcessor`) for a `qutip.QubitCircuit` or a list of `qutip.Qobj`. For the user guide of `qutip.Processor`, please refer to [the introductory guide](https://qutip-qip.readthedocs.io/en/stable/qip-processor.html).
@@ -176,6 +174,5 @@ test_processor.plot_pulses(title="Control pulse for a \
 In this figure there are no different stages, the three gates are first merged and then the algorithm finds the optimal pulse for the resulting unitary evolution.
 
 ```python
-print("qutip-qip version:", qutip_qip.version.version)
-version_table()
+about()
 ```

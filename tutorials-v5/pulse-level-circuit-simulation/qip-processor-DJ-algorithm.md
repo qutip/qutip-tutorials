@@ -30,16 +30,14 @@ The following example is implemented for the balanced function $f:\{00,01,10,11\
 
 ```python
 import numpy as np
-from qutip import basis, ptrace
+from qutip import about, basis, ptrace
 from qutip_qip.circuit import QubitCircuit
 from qutip_qip.device import (LinearSpinChain, OptPulseProcessor, SCQubits,
                               SpinChainModel)
-from qutip.ipynbtools import version_table
-import qutip_qip
 ```
 
 ```python
-qc = QubitCircuit(N=3)
+qc = QubitCircuit(num_qubits=3)
 qc.add_gate("X", targets=2)
 qc.add_gate("SNOT", targets=0)
 qc.add_gate("SNOT", targets=1)
@@ -191,7 +189,6 @@ print(np.real((basis00.dag() * ptrace(result.states[-1], [0, 1]) * basis00)))
 ```
 
 ```python
-print("qutip-qip version:", qutip_qip.version.version)
-version_table()
+about()
 ```
 

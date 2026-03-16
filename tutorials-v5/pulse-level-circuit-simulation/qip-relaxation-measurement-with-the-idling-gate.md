@@ -20,11 +20,9 @@ The Ramsey experiment consists of a qubit that is initialized in the excited sta
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy
-from qutip import basis, sigmax, sigmaz
+from qutip import about, basis, sigmax, sigmaz
 from qutip_qip.circuit import QubitCircuit
 from qutip_qip.device import LinearSpinChain
-import qutip_qip
-from qutip.ipynbtools import version_table
 
 pi = np.pi
 num_samples = 500
@@ -96,6 +94,5 @@ Notice that, because $\pi/2$-pulses are simulated as a physical process, the fit
 This demonstrates a way to include state preparation error into the simulation.
 
 ```python
-print("qutip-qip version:", qutip_qip.version.version)
-version_table()
+about()
 ```
