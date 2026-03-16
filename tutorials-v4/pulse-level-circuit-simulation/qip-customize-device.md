@@ -12,10 +12,10 @@ jupyter:
     name: python3
 ---
 
-# Custimize the pulse-level simulation
+# Customize the pulse-level simulation
 Author: Boxi Li (etamin1201@gmail.com)
 
-In this note, we demonstrate examples of customizing  the pulse-level simulator in qutip-qip.The notebook is divided into three parts:
+In this note, we demonstrate examples of customizing  the pulse-level simulator in qutip-qip. The notebook is divided into three parts:
 1. Customizing the Hamiltonian model
 2. Customizing the compiler
 3. Customizing the noise
@@ -145,7 +145,7 @@ class MyProcessor(ModelProcessor):
         super(MyProcessor, self).__init__(
             num_qubits, t1=t1, t2=t2
         )  # call the parent class initializer
-        # The control pulse is discrete or continous.
+        # The control pulse is discrete or continuous.
         self.pulse_mode = "discrete"
         self.model.params.update(
             {
@@ -193,7 +193,7 @@ circuit
 For circuit plotting, see [this notebook](../quantum-circuits/quantum-gates.md).
 
 
-To convert a quantum circuit into the Hamiltonian model, we need a compiler. The custom definition of a compiler will be discussed in details in the next section. Because we used the Hamiltonian model of the spin chain, we here simply "borrow" the compiler of the spin chain model.
+To convert a quantum circuit into the Hamiltonian model, we need a compiler. The custom definition of a compiler will be discussed in detail in the next section. Because we used the Hamiltonian model of the spin chain, we here simply "borrow" the compiler of the spin chain model.
 
 ```python
 processor = ModelProcessor(model=MyModel(num_qubits, h_x=1.0, h_z=1.0, g=0.1))
@@ -468,8 +468,8 @@ print(
 )
 ```
 
-### Pulse dependent noise
-In this second example, we demonstrate how to add an additional amplitude damping channel on the qubits. The amplitude of this decay is linearly dependent on the control pulse "sx", i.e. whenever the pulse "sx" is turned on, the decoherence is also turned on. The corresponding annihilation operator has a coefficient proportional to the control pulse amplitude. This noise can be added on top of the default T1, T2 noise.
+### Pulse-dependent noise
+In this second example, we demonstrate how to add an additional amplitude-damping channel on the qubits. The amplitude of this decay is linearly dependent on the control pulse "sx", i.e. whenever the pulse "sx" is turned on, the decoherence is also turned on. The corresponding annihilation operator has a coefficient proportional to the control pulse amplitude. This noise can be added on top of the default T1, T2 noise.
 
 ```python
 class Extral_decay_2(Noise):
@@ -505,7 +505,7 @@ tlist, coeff = processor.load_circuit(circuit, compiler=gauss_compiler)
 
 result = processor.run_state(init_state=basis([2, 2], [0, 0]))
 print(
-    "Final fidelity with pulse dependent decoherence:",
+    "Final fidelity with pulse-dependent decoherence:",
     fidelity(result.states[-1], basis([2, 2], [1, 1])),
 )
 ```
