@@ -28,7 +28,6 @@ from qutip_qip.circuit import QubitCircuit
 from qutip_qip.compiler import GateCompiler, Instruction, SpinChainCompiler
 from qutip_qip.device import Model, ModelProcessor
 from qutip_qip.noise import Noise
-import qutip_qip
 ```
 
 ## Customizing the Hamiltonian model
@@ -511,6 +510,5 @@ print(
 ```
 
 ```python
-print(qutip_qip.version.version)
 about()
 ```

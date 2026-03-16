@@ -22,9 +22,8 @@ Note: This example is quite computationally expensivem, hence for the full simul
 ```python
 import matplotlib.pyplot as plt
 import numpy as np
-import qutip_qip
-from qutip import (Qobj, SolverOptions, basis, fock_dm, qeye, sigmax, sigmay,
-                   sigmaz, tensor)
+from qutip import (Qobj, SolverOptions, about, basis, fock_dm, qeye,
+                   sigmax, sigmay, sigmaz, tensor)
 from qutip.ipynbtools import version_table
 from qutip_qip.circuit import QubitCircuit
 from qutip_qip.compiler import GateCompiler, Instruction
@@ -354,6 +353,5 @@ ax.set_xlim((0, 1700));
 ```
 
 ```python
-print("qutip-qip version:", qutip_qip.version.version)
-version_table()
+about()
 ```
