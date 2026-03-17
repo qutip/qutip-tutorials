@@ -35,11 +35,35 @@ import numpy as np
 from numpy import pi
 from qutip import Qobj, about
 from qutip_qip.circuit import QubitCircuit
-from qutip_qip.operations import (Gate, berkeley, cnot, cphase, csign, fredkin,
-                                  gate_sequence_product, globalphase, iswap,
-                                  molmer_sorensen, phasegate, qrot, rx, ry, rz,
-                                  snot, sqrtiswap, sqrtnot, sqrtswap, swap,
-                                  swapalpha, toffoli)
+from qutip_qip.operations import (
+    expand_operator,
+    gate_sequence_product,
+    get_controlled_gate,
+    get_unitary_gate,
+)
+from qutip_qip.operations.gates import (
+    BERKELEY,
+    CNOT,
+    CPHASE,
+    CSIGN,
+    FREDKIN,
+    GLOBALPHASE,
+    ISWAP,
+    MS,
+    PHASE,
+    R,
+    RX,
+    RY,
+    RZ,
+    SNOT,
+    SQRTISWAP,
+    SQRTNOT,
+    SQRTSWAP,
+    SWAP,
+    SWAPALPHA,
+    TOFFOLI,
+)
+from qutip_qip.transpiler import to_chain_structure
 
 %matplotlib inline
 ```
@@ -57,195 +81,195 @@ http://en.wikipedia.org/wiki/Quantum_gate
 ### Controlled-PHASE
 
 ```python
-cphase(pi / 2)
+CPHASE(pi / 2).get_qobj()
 ```
 
 ```python
 q = QubitCircuit(2, reverse_states=False)
-q.add_gate("CSIGN", controls=[0], targets=[1])
+q.add_gate(CSIGN, controls=[0], targets=[1])
 q.draw()
 ```
 
 ### Rotation about X-axis
 
 ```python
-rx(pi / 2)
+RX(pi / 2).get_qobj()
 ```
 
 ```python
 q = QubitCircuit(1, reverse_states=False)
-q.add_gate("RX", targets=[0], arg_value=pi / 2, style={"showarg": True})
+q.add_gate(RX(pi / 2), 0, style={"showarg": True})
 q.draw()
 ```
 
 ### Rotation about Y-axis
 
 ```python
-ry(pi / 2)
+RY(pi / 2).get_qobj()
 ```
 
 ```python
 q = QubitCircuit(1, reverse_states=False)
-q.add_gate("RY", targets=[0], arg_value=pi / 2, style={"showarg": True})
+q.add_gate(RY(pi / 2), 0, style={"showarg": True})
 q.draw()
 ```
 
 ### Rotation about Z-axis
 
 ```python
-rz(pi / 2)
+RZ(pi / 2).get_qobj()
 ```
 
 ```python
 q = QubitCircuit(1, reverse_states=False)
-q.add_gate("RZ", targets=[0], arg_value=pi / 2, style={"showarg": True})
+q.add_gate(RZ(pi / 2), 0, style={"showarg": True})
 q.draw()
 ```
 
 ### CNOT
 
 ```python
-cnot()
+CNOT.get_qobj()
 ```
 
 ```python
 q = QubitCircuit(2, reverse_states=False)
-q.add_gate("CNOT", controls=[0], targets=[1])
+q.add_gate(CNOT, controls=[0], targets=[1])
 q.draw()
 ```
 
 ### CSIGN
 
 ```python
-csign()
+CSIGN.get_qobj()
 ```
 
 ```python
 q = QubitCircuit(2, reverse_states=False)
-q.add_gate("CSIGN", controls=[0], targets=[1])
+q.add_gate(CSIGN, controls=[0], targets=[1])
 q.draw()
 ```
 
 ### Berkeley
 
 ```python
-berkeley()
+BERKELEY.get_qobj()
 ```
 
 ```python
 q = QubitCircuit(2, reverse_states=False)
-q.add_gate("BERKELEY", targets=[0, 1])
+q.add_gate(BERKELEY, [0, 1])
 q.draw()
 ```
 
 ### SWAPalpha
 
 ```python
-swapalpha(pi / 2)
+SWAPALPHA(pi / 2).get_qobj()
 ```
 
 ### FREDKIN
 
 ```python
-fredkin()
+FREDKIN.get_qobj()
 ```
 
 ### TOFFOLI
 
 ```python
-toffoli()
+TOFFOLI.get_qobj()
 ```
 
 ### SWAP
 
 ```python
-swap()
+SWAP.get_qobj()
 q = QubitCircuit(2, reverse_states=False)
-q.add_gate("SWAP", targets=[0, 1])
+q.add_gate(SWAP, [0, 1])
 q.draw()
 ```
 
 ### ISWAP
 
 ```python
-iswap()
+ISWAP.get_qobj()
 q = QubitCircuit(2, reverse_states=False)
-q.add_gate("ISWAP", targets=[0, 1])
+q.add_gate(ISWAP, [0, 1])
 q.draw()
 ```
 
 ### SQRTiSWAP
 
 ```python
-sqrtiswap()
+SQRTISWAP.get_qobj()
 ```
 
 ### SQRTSWAP
 
 ```python
-sqrtswap()
+SQRTSWAP.get_qobj()
 ```
 
 ### SQRTNOT
 
 ```python
-sqrtnot()
+SQRTNOT.get_qobj()
 ```
 
 ### HADAMARD
 
 ```python
-snot()
+SNOT.get_qobj()
 ```
 
 ### PHASEGATE
 
 ```python
-phasegate(pi / 2)
+PHASE(pi / 2).get_qobj()
 ```
 
 ### GLOBALPHASE
 
 ```python
-globalphase(pi / 2)
+GLOBALPHASE(pi / 2).get_qobj()
 ```
 
 ### Mølmer–Sørensen gate
 
 ```python
-molmer_sorensen(pi / 2)
+MS(pi / 2, 0).get_qobj()
 ```
 
 ### Qubit rotation gate
 
 ```python
-qrot(pi / 2, pi / 4)
+R(pi / 4, pi / 2).get_qobj()
 ```
 
 ### Expanding gates to larger qubit registers
 
 
-The example above show how to generate matrice representations of the gates implemented in QuTiP, in their minimal qubit requirements. If the same gates is to be represented in a qubit register of size $N$, the optional keywork argument `N` can be specified when calling the gate function. For example, to generate the matrix for the CNOT gate for a $N=3$ bit register:
+The example above show how to generate matrix representations of gates in their minimal qubit requirements. To represent a gate in a larger qubit register, use `expand_operator`. For example, to generate a CNOT matrix on a 3-qubit register:
 
 ```python
-cnot(N=3)
+expand_operator(CNOT.get_qobj(), dims=[2, 2, 2], targets=[0, 1])
 ```
 
 ```python
 q = QubitCircuit(3, reverse_states=False)
-q.add_gate("CNOT", controls=[1], targets=[2])
+q.add_gate(CNOT, controls=[1], targets=[2])
 q.draw()
 ```
 
-Furthermore, the control and target qubits (when applicable) can also be similarly specified using keyword arguments `control` and `target` (or in some cases `controls` or `targets`):
+You can also choose different control-target positions with `targets=[control, target]` in the `expand_operator` function:
 
 ```python
-cnot(N=3, control=2, target=0)
+expand_operator(CNOT.get_qobj(), dims=[2, 2, 2], targets=[2, 0])
 ```
 
 ```python
 q = QubitCircuit(3, reverse_states=False)
-q.add_gate("CNOT", controls=[0], targets=[2])
+q.add_gate(CNOT, controls=[0], targets=[2])
 q.draw()
 ```
 
@@ -260,7 +284,7 @@ In the following example, we take a SWAP gate. It is known that a swap gate is e
 ```python
 N = 2
 qc0 = QubitCircuit(N)
-qc0.add_gate("ISWAP", [0, 1], None)
+qc0.add_gate(ISWAP, [0, 1])
 qc0.draw()
 ```
 
@@ -272,9 +296,9 @@ U0
 
 ```python
 qc1 = QubitCircuit(N)
-qc1.add_gate("CNOT", 0, 1)
-qc1.add_gate("CNOT", 1, 0)
-qc1.add_gate("CNOT", 0, 1)
+qc1.add_gate(CNOT, controls=[0], targets=[1])
+qc1.add_gate(CNOT, controls=[1], targets=[0])
+qc1.add_gate(CNOT, controls=[0], targets=[1])
 qc1.draw()
 ```
 
@@ -297,22 +321,15 @@ U2 = gate_sequence_product(U_list2)
 U2
 ```
 
-From QuTiP 4.4, we can also add gate at arbitrary position in a circuit.
-
-```python
-qc1.add_gate("CSIGN", index=[1], targets=[0], controls=[1])
-qc1.draw()
-```
-
 ## Example of basis transformation
 
 ```python
 qc3 = QubitCircuit(3)
-qc3.add_gate("CNOT", 1, 0)
-qc3.add_gate("RX", 0, None, pi / 2, r"\pi/2")
-qc3.add_gate("RY", 1, None, pi / 2, r"\pi/2")
-qc3.add_gate("RZ", 2, None, pi / 2, r"\pi/2")
-qc3.add_gate("ISWAP", [1, 2])
+qc3.add_gate(CNOT, controls=[1], targets=[0])
+qc3.add_gate(RX(pi / 2), 0)
+qc3.add_gate(RY(pi / 2), 1)
+qc3.add_gate(RZ(pi / 2), 2)
+qc3.add_gate(ISWAP, [1, 2])
 qc3.draw()
 ```
 
@@ -372,7 +389,7 @@ Interactions between non-adjacent qubits can be resolved by QubitCircuit to a se
 
 ```python
 qc8 = QubitCircuit(3)
-qc8.add_gate("CNOT", 2, 0)
+qc8.add_gate(CNOT, controls=[2], targets=[0])
 qc8.draw()
 ```
 
@@ -382,8 +399,8 @@ U8
 ```
 
 ```python
-qc9 = qc8.adjacent_gates()
-qc9.gates
+qc9 = to_chain_structure(qc8, setup="linear")
+qc9.draw()
 ```
 
 ```python
@@ -401,52 +418,41 @@ U10 = gate_sequence_product(qc10.propagators())
 U10
 ```
 
-## Adding gate in the middle of a circuit
-From QuTiP 4.4 one can add a gate at an arbitrary position of a circuit. All one needs to do is to specify the parameter index. With this, we can also add the same gate at multiple positions at the same time.
+`QubitCircuit.gates` has been replaced by `QubitCircuit.instructions`.
 
 ```python
-qc = QubitCircuit(1)
-qc.add_gate("RX", targets=1, arg_value=np.pi / 2)
-qc.add_gate("RX", targets=1, arg_value=np.pi / 2)
-qc.add_gate("RY", targets=1, arg_value=np.pi / 2, index=[0])
-qc.gates
+qc.instructions
 ```
 
 ## User defined gates
-From QuTiP 4.4 on, user defined gates can be defined by a python function that takes at most one parameter and return a `Qobj`, the dimension of the `Qobj` has to match the qubit system.
+In `qutip-qip`v0.5, define parameterized controlled gates with `get_controlled_gate`, and fixed custom unitaries with `get_unitary_gate`.
 
 ```python
-def user_gate1(arg_value):
-    # controlled rotation X
-    mat = np.zeros((4, 4), dtype=complex)
-    mat[0, 0] = mat[1, 1] = 1.0
-    mat[2:4, 2:4] = rx(arg_value).full()
-    return Qobj(mat, dims=[[2, 2], [2, 2]])
-
-
 def user_gate2():
     # S gate
     mat = np.array([[1.0, 0], [0.0, 1.0j]])
     return Qobj(mat, dims=[[2], [2]])
 ```
 
-To let the `QubitCircuit` process those gates, we need to modify its attribute `QubitCircuit.user_gates`, which is a python dictionary in the form `{name: gate_function}`.
+Then create gate classes:
+
+```python
+# parameterized controlled-RX gate class
+CTRLRX = get_controlled_gate(RX, n_ctrl_qubits=1, gate_name="CTRLRX")
+# fixed one-qubit custom gate class
+S_USER = get_unitary_gate("S_USER", user_gate2())
+```
+
+Use these gate classes in `QubitCircuit.add_gate(...)`:
 
 ```python
 qc = QubitCircuit(2)
-qc.user_gates = {"CTRLRX": user_gate1, "S": user_gate2}
-```
-
-When calling the `add_gate` method, the target qubits and the argument need to be given.
-
-```python
 # qubit 0 controls qubit 1
-qc.add_gate("CTRLRX", targets=[0, 1], arg_value=pi / 2)
+qc.add_gate(CTRLRX(pi / 2), controls=0, targets=1)
 # qubit 1 controls qubit 0
-qc.add_gate("CTRLRX", targets=[1, 0], arg_value=pi / 2)
-# a gate can also be added using the Gate class
-g_T = Gate("S", targets=[1])
-qc.add_gate("S", targets=[1])
+qc.add_gate(CTRLRX(pi / 2), controls=1, targets=0)
+# one-qubit custom gate
+qc.add_gate(S_USER, 1)
 props = qc.propagators()
 ```
 
