@@ -1,0 +1,199 @@
+﻿---
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .md
+      format_name: markdown
+      format_version: '1.3'
+      jupytext_version: 1.13.8
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
+---
+
+# 可视化演示
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+import qutip as qt
+from qutip import about, basis, identity, sigmax, sigmay, sigmaz
+from scipy.special import sph_harm_y
+
+%matplotlib inline
+```
+
+## Hinton 图
+
+```python
+rho = qt.rand_dm(5)
+```
+
+```python
+fig, ax = qt.hinton(rho)
+ax.set_title('hinton');
+```
+
+## Sphereplot（球面绘图）
+
+```python
+theta = np.linspace(0, np.pi, 90)
+phi = np.linspace(0, 2 * np.pi, 60)
+```
+
+```python
+phi_mesh, theta_mesh = np.meshgrid(phi, theta)
+orbital = sph_harm_y(-1, 2, phi_mesh, theta_mesh).T
+qt.sphereplot(orbital, theta, phi);
+```
+
+```python
+fig = plt.figure(figsize=(16, 4))
+
+ax = fig.add_subplot(1, 3, 1, projection="3d")
+orbital = sph_harm_y(-1, 1, phi_mesh, theta_mesh).T
+qt.sphereplot(orbital, theta, phi, ax=ax)
+
+ax = fig.add_subplot(1, 3, 2, projection="3d")
+orbital = sph_harm_y(0, 1, phi_mesh, theta_mesh).T
+qt.sphereplot(orbital, theta, phi, ax=ax)
+
+ax = fig.add_subplot(1, 3, 3, projection="3d")
+orbital = sph_harm_y(1, 1, phi_mesh, theta_mesh).T
+qt.sphereplot(orbital, theta, phi, ax=ax);
+```
+
+# 矩阵直方图
+
+```python
+qt.matrix_histogram(rho.full().real);
+```
+
+```python
+qt.matrix_histogram(rho.full(), limits=[0, 1],
+                    bar_style='abs', color_style='phase');
+```
+
+# 绘制能级
+
+```python
+H0 = qt.tensor(sigmaz(), identity(2)) + qt.tensor(identity(2), sigmaz())
+Hint = 0.1 * qt.tensor(sigmax(), sigmax())
+fig = plt.figure(figsize=(8, 4))
+qt.plot_energy_levels([H0, Hint], h_labels=['H0', 'H0+Hint'], fig=fig);
+```
+
+# 绘制 Fock 分布
+
+```python
+rho = (qt.coherent(15, 1.5) + qt.coherent(15, -1.5)).unit()
+```
+
+```python
+qt.plot_fock_distribution(rho);
+```
+
+# 同时绘制 Wigner 函数与 Fock 分布
+
+```python
+fig, axes = plt.subplots(1, 2, figsize=(8, 4))
+qt.plot_fock_distribution(rho, fig=fig, ax=axes[0])
+qt.plot_wigner(rho, fig=fig, ax=axes[1]);
+```
+
+# 绘制 Wigner 函数
+
+```python
+qt.plot_wigner(rho);
+```
+
+# 绘制期望值
+
+```python
+H = sigmaz() + 0.3 * sigmay()
+e_ops = [sigmax(), sigmay(), sigmaz()]
+times = np.linspace(0, 10, 100)
+psi0 = (basis(2, 0) + basis(2, 1)).unit()
+result = qt.mesolve(H, psi0, times, [], e_ops)
+```
+
+```python
+qt.plot_expectation_values(result);
+```
+
+# Bloch 球
+
+```python
+b = qt.Bloch()
+b.add_vectors(qt.expect(H.unit(), e_ops))
+b.add_points(result.expect, meth="l")
+b.make_sphere()
+```
+
+# 绘制自旋 Q 函数
+
+```python
+j = 5
+psi = qt.spin_state(j, -j)
+psi = qt.spin_coherent(j, np.random.rand() * np.pi,
+                       np.random.rand() * 2 * np.pi)
+rho = qt.ket2dm(psi)
+```
+
+```python
+theta = np.linspace(0, np.pi, 50)
+phi = np.linspace(0, 2 * np.pi, 50)
+```
+
+```python
+Q, THETA, PHI = qt.spin_q_function(psi, theta, phi)
+```
+
+## 2D
+
+```python
+qt.plot_spin_distribution(Q, THETA, PHI);
+```
+
+## 3D
+
+```python
+fig, ax = qt.plot_spin_distribution(Q, THETA, PHI, projection='3d')
+
+ax.view_init(15, 30);
+```
+
+## 2D + 3D 组合
+
+```python
+fig = plt.figure(figsize=(14, 6))
+
+ax = fig.add_subplot(1, 2, 1)
+f1, a1 = qt.plot_spin_distribution(Q, THETA, PHI, fig=fig, ax=ax)
+
+ax = fig.add_subplot(1, 2, 2, projection="3d")
+f2, a2 = qt.plot_spin_distribution(Q, THETA, PHI, projection='3d', ax=ax);
+```
+
+# 绘制自旋 Wigner 函数
+
+```python
+W, THETA, PHI = qt.spin_wigner(psi, theta, phi)
+```
+
+```python
+fig = plt.figure(figsize=(14, 6))
+
+ax = fig.add_subplot(1, 2, 1)
+f1, a1 = qt.plot_spin_distribution(W.real, THETA, PHI, fig=fig, ax=ax)
+
+ax = fig.add_subplot(1, 2, 2, projection="3d")
+f2, a2 = qt.plot_spin_distribution(W.real, THETA, PHI, projection='3d', ax=ax);
+```
+
+# 版本信息
+
+```python
+about()
+```
