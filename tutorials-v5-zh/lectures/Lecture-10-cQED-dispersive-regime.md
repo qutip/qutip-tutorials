@@ -160,7 +160,7 @@ ax.legend()
 fig.tight_layout()
 ```
 
-### 谐振器相关函数
+### 谐振器关联函数
 
 ```python
 tlist = np.linspace(0, 100, 1000)
@@ -203,7 +203,7 @@ ax.set_xlabel(r"$(\omega-\omega_r)/\chi$", fontsize=18)
 ax.set_xlim(-2, 2);
 ```
 
-### 量子比特相关函数
+### 量子比特关联函数
 
 ```python
 corr_vec = correlation_2op_1t(H, psi0, tlist, [], sx, sx)

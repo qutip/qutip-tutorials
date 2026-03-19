@@ -53,7 +53,7 @@ a1, a2, a3, a4 = enr_destroy([5, 5, 5, 5], excitations=2)
 QuTiP 中许多默认函数对这种方法构造的态和算符会失效。
 另外，在该形式下，不同子系统的湮灭/产生算符不再对易。
 因此构造哈密顿量时，必须把湮灭算符写在右侧、产生算符写在左侧（更多细节见 QuTiP v5 官方论文）。
-可用的 ENR 相关函数请参考官方文档：[Energy Restricted Operators in the official documentation](https://qutip.readthedocs.io/en/qutip-5.0.x/apidoc/functions.html#module-qutip.core.energy_restricted)。
+可用的 ENR 关联函数请参考官方文档：[Energy Restricted Operators in the official documentation](https://qutip.readthedocs.io/en/qutip-5.0.x/apidoc/functions.html#module-qutip.core.energy_restricted)。
 <!-- #endregion -->
 
 ```python

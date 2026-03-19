@@ -18,13 +18,13 @@ kernelspec:
 ## 引言
 
 本示例笔记展示如何使用 HEOM 求解 FMO 光合作用复合体的动力学。
-solve the FMO photosynthetic complex dynamics.
+（即求解 FMO 光合作用复合体动力学）。
 
 我们的目标是复现实验参考文献中的结果 [https://www.pnas.org/content/106/41/17255](https://pubmed.ncbi.nlm.nih.gov/19815512/)
 并将其与 Bloch-Redfield（微扰）解进行对比。
 
 这既展示了如何在多热浴场景下使用求解器，也说明了量子环境如何减弱纯退相干效应。
-quantum environment reduces the effect of pure dephasing.
+量子环境可减弱纯退相干效应。
 
 +++
 
