@@ -69,7 +69,7 @@ from qutip import (Options, Qobj, about, basis, destroy, enr_destroy, enr_fock,
 
 The general Jaynes-Cumming model describes a single two-level atom interacting with a single electromagnetic cavity mode.
 For this example, we put multiple of these systems in a chain and let them interact with neighbouring systems via their cavities.
-We use $a_i$ ($a^\dag_i$) as annihilation (creation) operators for the cavity $i$ and $s_i$ ($s^\dag_i$) for the atoms.
+We use $a_i$ ($a^\dagger_i$) as annihilation (creation) operators for the cavity $i$ and $s_i$ ($s^\dagger_i$) for the atoms.
 We then model the complete Hamiltonian by splitting it into the individual systems:
 
 $H_0 = \sum_{i=0}^{N} a_i^\dagger a_i + s_i^\dagger s_i$,
