@@ -20,7 +20,7 @@ jobs:
             qip-branch: 'qutip-qip-0.4.X'
           - qutip-version: '5'
             qutip-branch: 'master'
-            qip-branch: 'master'
+            qip-branch: 'qutip-qip-0.4.X'
 
     steps:
     - uses: actions/checkout@v4
