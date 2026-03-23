@@ -167,7 +167,7 @@ qc.draw()
 ```python
 def user_gate1(arg_value):
     # controlled rotation X
-    mat = np.zeros((4, 4), dtype=np.complex)
+    mat = np.zeros((4, 4), dtype=complex)
     mat[0, 0] = mat[1, 1] = 1.0
     mat[2:4, 2:4] = rx(arg_value).full()
     return Qobj(mat, dims=[[2, 2], [2, 2]])
@@ -202,30 +202,30 @@ qc.draw()
 ```python
 trotter_simulation_noisey = QubitCircuit(4)
 
-trotter_simulation_noisey.add_gate("RZ", targets=[0])
-trotter_simulation_noisey.add_gate("RZ", targets=[1])
+trotter_simulation_noisey.add_gate("RZ", targets=[0], arg_value=np.pi / 2)
+trotter_simulation_noisey.add_gate("RZ", targets=[1], arg_value=np.pi / 2)
 
 trotter_simulation_noisey.add_gate("CNOT", controls=0, targets=1)
-trotter_simulation_noisey.add_gate("RX", targets=[0])
+trotter_simulation_noisey.add_gate("RX", targets=[0], arg_value=np.pi / 2)
 trotter_simulation_noisey.add_gate("CNOT", controls=0, targets=1)
 
 trotter_simulation_noisey.add_gate("CNOT", controls=0, targets=2)
-trotter_simulation_noisey.add_gate("RX", targets=[0])
+trotter_simulation_noisey.add_gate("RX", targets=[0], arg_value=np.pi / 2)
 trotter_simulation_noisey.add_gate("CNOT", controls=0, targets=2)
 
 trotter_simulation_noisey.add_gate("RZ", targets=[2], arg_value=-np.pi / 2)
 trotter_simulation_noisey.add_gate("CNOT", controls=0, targets=2)
-trotter_simulation_noisey.add_gate("RY", targets=[0])
+trotter_simulation_noisey.add_gate("RY", targets=[0], arg_value=np.pi / 2)
 trotter_simulation_noisey.add_gate("CNOT", controls=0, targets=2)
 trotter_simulation_noisey.add_gate("RZ", targets=[2], arg_value=np.pi / 2)
 
 trotter_simulation_noisey.add_gate("CNOT", controls=1, targets=3)
-trotter_simulation_noisey.add_gate("RX", targets=[1])
+trotter_simulation_noisey.add_gate("RX", targets=[1], arg_value=np.pi / 2)
 trotter_simulation_noisey.add_gate("CNOT", controls=1, targets=3)
 
 trotter_simulation_noisey.add_gate("RZ", targets=[3], arg_value=-np.pi / 2)
 trotter_simulation_noisey.add_gate("CNOT", controls=1, targets=3)
-trotter_simulation_noisey.add_gate("RY", targets=[1])
+trotter_simulation_noisey.add_gate("RY", targets=[1], arg_value=np.pi / 2)
 trotter_simulation_noisey.add_gate("CNOT", controls=1, targets=3)
 trotter_simulation_noisey.add_gate("RZ", targets=[3], arg_value=np.pi / 2)
 

@@ -32,7 +32,7 @@ from qutip_qip.operations import Gate
 from scipy.optimize import curve_fit
 ```
 
-We build a two-qubit Processor, where the second qubit is detuned from the first one by $\delta= 1.852$MHz. A sequence of $\pi$-pulses with Rabi frequency of $\Omega= 20$KHz and random phases are applied to the first qubit. We define noise such that the same pulse also applies to the second qubit. Because of the detuning, this pulse does not flip the second qubit but subjects it to a diffusive behaviour, so that the average fidelity of the second qubit with respect to the initial state decreases.
+We build a two-qubit Processor, where the second qubit is detuned from the first one by $\delta= 1.852$MHz. A sequence of $\pi$-pulses with Rabi frequency of $\Omega= 20$KHz and random axes/signs ($\pm X, \pm Y$) are applied to the first qubit. We define noise such that the same pulse also applies to the second qubit. Because of the detuning, this pulse does not flip the second qubit but subjects it to a diffusive behaviour, so that the average fidelity of the second qubit with respect to the initial state decreases.
 
 Here, we reproduce these results with a two-qubit `Processor`.
 We start with an initial state of fidelity 0.975 and simulate the Hamiltonian
@@ -46,8 +46,7 @@ where $\lambda$ is the ratio between the cross-talk pulse's amplitudes.
 In the cell below, we first build a Hamiltonian model called `MyModel`.
 For simplicity, we only include two single-qubit control Hamiltonians: $\sigma_x$ and $\sigma_y$.
 We then define the compiling routines for the two types of rotation gates RX and RY.
-In addition, we also define a rotation gate with mixed X and Y quadrature, parameterized by a phase $\phi$, $\cos(\phi)\sigma_x+\sin(\phi)\sigma_y$.
-This will be used later in the example of custom noise.
+This custom setup will be used later in the example of custom noise.
 
 We then initialize a `ModelProcessor` with this model.
 In the `ModelProcessor`, the default simulation workflow is already defined, such as the `load_circuit` method.
@@ -97,7 +96,6 @@ class MyCompiler(GateCompiler):
         super().__init__(num_qubits, params=params)
         self.params = params
         self.gate_compiler = {
-            "ROT": self.rotation_with_phase_compiler,
             "RX": self.single_qubit_gate_compiler,
             "RY": self.single_qubit_gate_compiler,
         }
@@ -139,22 +137,6 @@ class MyCompiler(GateCompiler):
             return self.generate_pulse(gate, tlist, coeff, phase=0.0)
         elif gate.name == "RY":
             return self.generate_pulse(gate, tlist, coeff, phase=np.pi / 2)
-
-    def rotation_with_phase_compiler(self, gate, args):
-        """Compiles gates with a phase term.
-
-        Args:
-            gate (qutip_qip.circuit.Gate): A qutip Gate object.
-
-        Returns:
-            Instruction (qutip_qip.compiler.instruction.Instruction):
-            An instruction to implement a gate containing the control pulses.
-        """
-        # gate.arg_value is the pulse phase
-        tlist = self.params["duration"]
-        coeff = self.params["pulse_amplitude"]
-        return self.generate_pulse(gate, tlist, coeff, phase=gate.arg_value)
-
 
 # Define a circuit and run the simulation
 num_qubits = 1
@@ -225,7 +207,7 @@ class ClassicalCrossTalk(Noise):
         return pulses, systematic_noise
 ```
 
-Lastly, we define a random circuit consisting of a sequence of $\pi$ rotation pulses with random phases.
+Lastly, we define a random circuit consisting of a sequence of $\pi$ rotation pulses with random axes/signs.
 The driving pulse is a $\pi$ pulse with a duration of $25 \, \mu\rm{s}$ and Rabi frequency $20$ KHz.
 This randomized benchmarking protocol allows one to study the classical cross-talk induced decoherence on the neighbouring qubits.
 The two qubits are initialized in the $|00\rangle$ state with a fidelity of 0.975.
@@ -258,15 +240,16 @@ def single_crosstalk_simulation(num_gates):
                             {"pulse_amplitude": 0.02, "duration": 25})
     myprocessor.add_noise(ClassicalCrossTalk(1.0))
     # Define a randome circuit.
-    gates_set = [
-        Gate("ROT", 0, arg_value=0),
-        Gate("ROT", 0, arg_value=np.pi / 2),
-        Gate("ROT", 0, arg_value=np.pi),
-        Gate("ROT", 0, arg_value=np.pi / 2 * 3),
+    randomized_pi_rotations = [
+        ("RX", np.pi/4),
+        ("RY", np.pi/4),
+        ("RX", -np.pi/4),
+        ("RY", -np.pi/4),
     ]
     circuit = QubitCircuit(num_qubits)
     for ind in np.random.randint(0, 4, num_gates):
-        circuit.add_gate(gates_set[ind])
+        gate_name, angle = randomized_pi_rotations[ind]
+        circuit.add_gate(gate_name, targets=0, arg_value=angle)
     # Simulate the circuit.
     myprocessor.load_circuit(circuit, compiler=mycompiler)
     init_state = tensor(
@@ -274,7 +257,7 @@ def single_crosstalk_simulation(num_gates):
          Qobj([[init_fid, 0], [0, 0.025]])]
     )
     # increase the maximal allowed steps
-    options = SolverOptions(nsteps=10000)
+    options = SolverOptions(nsteps=200000)
     e_ops = [tensor([qeye(2), fock_dm(2)])]  # observable
 
     # compute results of the run using a solver of choice
