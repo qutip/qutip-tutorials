@@ -11,17 +11,28 @@ defaults:
 
 jobs:
   pytests:
+    name: pytests (${{ matrix.label }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         include:
-          - qutip-version: '4'
-            qutip-branch: 'qutip-4.7.X'
-            qip-branch: 'qutip-qip-0.4.X'
-          - qutip-version: '5'
-            qutip-branch: 'master'
-            qip-branch: 'master'
+          - label: 'v4-release'
+            qutip-version: '4'
+            qutip-env-branch: 'qutip-4.7.X'
+            qutip-install-spec: 'qutip==4.*'
+            qip-install-spec: 'qutip-qip==0.4.*'
+          - label: 'v5-release'
+            qutip-version: '5'
+            qutip-env-branch: 'master'
+            qutip-install-spec: 'qutip'
+            qip-install-spec: 'qutip-qip'
+          - label: 'v5-master'
+            qutip-version: '5'
+            qutip-env-branch: 'master'
+            qutip-install-spec: 'git+https://github.com/qutip/qutip@master'
+            qip-install-spec: 'git+https://github.com/qutip/qutip-qip@master'
+
     steps:
     - uses: actions/checkout@v4
 
@@ -54,19 +65,15 @@ jobs:
       run: |
         pip install --upgrade pip
         python -m pip install "jax<0.7.0" "jax[cpu]<0.7.0" equinox diffrax
-        git clone -b ${{ matrix.qutip-branch }} https://github.com/qutip/qutip.git
+        git clone -b ${{ matrix.qutip-env-branch }} https://github.com/qutip/qutip.git
         cd qutip
         pip install -r requirements.txt
-        pip install .
         cd ..
-        python -m pip install git+https://github.com/qutip/qutip-qip@${{ matrix.qip-branch }}
+        python -m pip install "${{ matrix.qutip-install-spec }}"
+        python -m pip install "${{ matrix.qip-install-spec }}"
         python -m pip install --no-deps git+https://github.com/qutip/qutip-jax
+        python -m pip install --no-deps git+https://github.com/qutip/qutip-qtrl
         python -m pip install --no-deps git+https://github.com/qutip/qutip-qoc
-
-        git clone -b master https://github.com/qutip/qutip-qtrl.git
-        cd qutip-qtrl
-        # install qutip-qtrl without deps because it requires qutip 5.0.0a1
-        pip install --no-deps -e .
 
     - name: Install ffmpeg & LaTeX
       run: |
@@ -112,7 +119,7 @@ jobs:
     - name: Create Notebook Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: executed-notebooks-v${{ matrix.qutip-version }}
+        name: executed-notebooks-${{ matrix.label }}
         path: |
           notebooks/*.ipynb
           notebooks/**/*.ipynb
@@ -137,12 +144,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
-          name: executed-notebooks-v4
+          name: executed-notebooks-v4-release
           path: publish/tutorials-v4
 
       - uses: actions/download-artifact@v4
         with:
-          name: executed-notebooks-v5
+          name: executed-notebooks-v5-release
           path: publish/tutorials-v5
 
 
