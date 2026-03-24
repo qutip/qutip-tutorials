@@ -84,9 +84,9 @@ qc.draw("text")
 #### With User Custom Gates
 
 ```python
-def user_gate1(arg_value):
+def user_gate1(arg_value=np.pi / 2):
     # controlled rotation X
-    mat = np.zeros((4, 4), dtype=np.complex)
+    mat = np.zeros((4, 4), dtype=complex)
     mat[0, 0] = mat[1, 1] = 1.0
     mat[2:4, 2:4] = rx(arg_value).full()
     return Qobj(mat, dims=[[2, 2], [2, 2]])
