@@ -257,7 +257,7 @@ def single_crosstalk_simulation(num_gates):
          Qobj([[init_fid, 0], [0, 0.025]])]
     )
     # increase the maximal allowed steps
-    options = SolverOptions(nsteps=200000)
+    options = SolverOptions(nsteps=10000)
     e_ops = [tensor([qeye(2), fock_dm(2)])]  # observable
 
     # compute results of the run using a solver of choice
