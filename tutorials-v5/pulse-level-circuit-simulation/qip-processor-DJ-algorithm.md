@@ -37,7 +37,7 @@ from qutip_qip.device import (LinearSpinChain, OptPulseProcessor, SCQubits,
 ```
 
 ```python
-qc = QubitCircuit(num_qubits=3)
+qc = QubitCircuit(3)
 qc.add_gate("X", targets=2)
 qc.add_gate("SNOT", targets=0)
 qc.add_gate("SNOT", targets=1)
