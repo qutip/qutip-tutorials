@@ -22,7 +22,7 @@ from numpy import pi
 from qutip import about, basis, fidelity, identity, sigmax, sigmaz, tensor
 from qutip_qip.circuit import QubitCircuit
 from qutip_qip.device import OptPulseProcessor
-from qutip_qip.operations import expand_operator, toffoli
+from qutip_qip.operations import toffoli
 ```
 
 The `qutip.OptPulseProcessor` is a noisy quantum device simulator integrated with the optimal pulse algorithm from the `qutip.control` module. It is a subclass of `qutip.Processor` and is equipped with a method to find the optimal pulse sequence (hence the name `OptPulseProcessor`) for a `qutip.QubitCircuit` or a list of `qutip.Qobj`. For the user guide of `qutip.Processor`, please refer to [the introductory guide](https://qutip-qip.readthedocs.io/en/stable/qip-processor.html).

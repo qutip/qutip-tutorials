@@ -28,7 +28,6 @@ from qutip_qip.circuit import QubitCircuit
 from qutip_qip.compiler import GateCompiler, Instruction
 from qutip_qip.device import Model, ModelProcessor
 from qutip_qip.noise import Noise
-from qutip_qip.operations import Gate
 from scipy.optimize import curve_fit
 ```
 

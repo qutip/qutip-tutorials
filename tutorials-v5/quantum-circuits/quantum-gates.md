@@ -35,7 +35,7 @@ import numpy as np
 from numpy import pi
 from qutip import Qobj, about
 from qutip_qip.circuit import QubitCircuit
-from qutip_qip.operations import (Gate, berkeley, cnot, cphase, csign, fredkin,
+from qutip_qip.operations import (berkeley, cnot, cphase, csign, fredkin,
                                   gate_sequence_product, globalphase, iswap,
                                   molmer_sorensen, phasegate, qrot, rx, ry, rz,
                                   snot, sqrtiswap, sqrtnot, sqrtswap, swap,
