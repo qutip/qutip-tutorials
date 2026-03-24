@@ -395,17 +395,6 @@ U10 = gate_sequence_product(qc10.propagators())
 U10
 ```
 
-## Adding gate to a circuit
-Additional gates can be appended to the circuit as needed.
-
-```python
-qc = QubitCircuit(2)
-qc.add_gate("RX", targets=1, arg_value=np.pi / 2)
-qc.add_gate("RX", targets=1, arg_value=np.pi / 2)
-qc.add_gate("RY", targets=1, arg_value=np.pi / 2)
-qc.gates
-```
-
 ## User defined gates
 From QuTiP 4.4 on, user defined gates can be defined by a python function that takes at most one parameter and return a `Qobj`, the dimension of the `Qobj` has to match the qubit system.
 
@@ -419,7 +408,7 @@ def user_gate1(arg_value=pi / 2):
 
 
 def user_gate2():
-    # S gate
+    # Custom S gate
     mat = np.array([[1.0, 0], [0.0, 1.0j]])
     return Qobj(mat, dims=[[2], [2]])
 ```
@@ -428,7 +417,7 @@ To let the `QubitCircuit` process those gates, we need to modify its attribute `
 
 ```python
 qc = QubitCircuit(2)
-qc.user_gates = {"CTRLRX": user_gate1, "S": user_gate2}
+qc.user_gates = {"CTRLRX": user_gate1, "CUSTOM_S": user_gate2}
 ```
 
 When calling the `add_gate` method, the target qubits and the argument need to be given.
@@ -438,7 +427,7 @@ When calling the `add_gate` method, the target qubits and the argument need to b
 qc.add_gate("CTRLRX", targets=[0, 1], arg_value=pi / 2)
 # qubit 1 controls qubit 0
 qc.add_gate("CTRLRX", targets=[1, 0], arg_value=pi / 2)
-qc.add_gate("S", targets=[1])
+qc.add_gate("CUSTOM_S", targets=[1])
 props = qc.propagators()
 ```
 
