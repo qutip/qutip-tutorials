@@ -106,11 +106,3 @@ If the notebook is in the MarkDown format saved via Jupytext, you can format it 
 ```shell
 nbqa black notebook.md
 ```
-
-## LaTeX and ImageMagick installation
-
-Some functions of the notebooks (e.g. plotting QCircuits) require a working
-installation of [*ImageMagick*](https://imagemagick.org/) and *LaTeX*. If
-you used `conda` to install the requirements, *ImageMagick* is already
-installed. Otherwise, follow the instruction on their website.
-
