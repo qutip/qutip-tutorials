@@ -23,7 +23,7 @@ This notebook introduces the [OpenQASM](https://github.com/Qiskit/openqasm) impo
 import numpy as np
 from qutip import about, basis, rand_ket, tensor
 from qutip_qip.operations import Measurement
-from qutip_qip.operations.gates import gate_sequence_product
+from qutip_qip.operations import gate_sequence_product
 from qutip_qip.qasm import read_qasm, print_qasm
 ```
 

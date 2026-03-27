@@ -344,7 +344,7 @@ plt.show()
 The number of predefined gates in qutip is limited, hence you are encouraged to define your own gate. Here we show how to define a parametrized gate. First, you will need to define a gate function:
 
 ```python
-def mygate(theta=None):
+def mygate(theta=0.):
     # We just call the Molmer Sorensen gate as an example.
     # If you do not want to run the circuit at the gate matrix level
     # (circuit.run), no need for this function,

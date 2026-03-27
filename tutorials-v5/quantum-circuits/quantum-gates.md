@@ -1,4 +1,4 @@
----
+﻿---
 jupyter:
   jupytext:
     text_representation:
@@ -35,11 +35,12 @@ import numpy as np
 from numpy import pi
 from qutip import Qobj, about
 from qutip_qip.circuit import QubitCircuit
-from qutip_qip.operations import (Gate, berkeley, cnot, cphase, csign, fredkin,
+from qutip_qip.operations import (berkeley, cnot, cphase, csign, fredkin,
                                   gate_sequence_product, globalphase, iswap,
                                   molmer_sorensen, phasegate, qrot, rx, ry, rz,
                                   snot, sqrtiswap, sqrtnot, sqrtswap, swap,
                                   swapalpha, toffoli)
+from qutip_qip.transpiler import to_chain_structure
 
 %matplotlib inline
 ```
@@ -260,7 +261,7 @@ In the following example, we take a SWAP gate. It is known that a swap gate is e
 ```python
 N = 2
 qc0 = QubitCircuit(N)
-qc0.add_gate("ISWAP", [0, 1], None)
+qc0.add_gate("ISWAP", targets=[0, 1])
 qc0.draw()
 ```
 
@@ -272,9 +273,9 @@ U0
 
 ```python
 qc1 = QubitCircuit(N)
-qc1.add_gate("CNOT", 0, 1)
-qc1.add_gate("CNOT", 1, 0)
-qc1.add_gate("CNOT", 0, 1)
+qc1.add_gate("CNOT", targets=1, controls=0)
+qc1.add_gate("CNOT", targets=0, controls=1)
+qc1.add_gate("CNOT", targets=1, controls=0)
 qc1.draw()
 ```
 
@@ -297,22 +298,15 @@ U2 = gate_sequence_product(U_list2)
 U2
 ```
 
-From QuTiP 4.4, we can also add gate at arbitrary position in a circuit.
-
-```python
-qc1.add_gate("CSIGN", index=[1], targets=[0], controls=[1])
-qc1.draw()
-```
-
 ## Example of basis transformation
 
 ```python
 qc3 = QubitCircuit(3)
-qc3.add_gate("CNOT", 1, 0)
-qc3.add_gate("RX", 0, None, pi / 2, r"\pi/2")
-qc3.add_gate("RY", 1, None, pi / 2, r"\pi/2")
-qc3.add_gate("RZ", 2, None, pi / 2, r"\pi/2")
-qc3.add_gate("ISWAP", [1, 2])
+qc3.add_gate("CNOT", targets=1, controls=0)
+qc3.add_gate("RX", targets=[0], arg_value=pi / 2, arg_label=r"\pi/2")
+qc3.add_gate("RY", targets=[1], arg_value=pi / 2, arg_label=r"\pi/2")
+qc3.add_gate("RZ", targets=[2], arg_value=pi / 2, arg_label=r"\pi/2")
+qc3.add_gate("ISWAP", targets=[1, 2])
 qc3.draw()
 ```
 
@@ -372,7 +366,7 @@ Interactions between non-adjacent qubits can be resolved by QubitCircuit to a se
 
 ```python
 qc8 = QubitCircuit(3)
-qc8.add_gate("CNOT", 2, 0)
+qc8.add_gate("CNOT", targets=2, controls=0)
 qc8.draw()
 ```
 
@@ -382,7 +376,7 @@ U8
 ```
 
 ```python
-qc9 = qc8.adjacent_gates()
+qc9 = to_chain_structure(qc8)
 qc9.gates
 ```
 
@@ -401,22 +395,11 @@ U10 = gate_sequence_product(qc10.propagators())
 U10
 ```
 
-## Adding gate in the middle of a circuit
-From QuTiP 4.4 one can add a gate at an arbitrary position of a circuit. All one needs to do is to specify the parameter index. With this, we can also add the same gate at multiple positions at the same time.
-
-```python
-qc = QubitCircuit(1)
-qc.add_gate("RX", targets=1, arg_value=np.pi / 2)
-qc.add_gate("RX", targets=1, arg_value=np.pi / 2)
-qc.add_gate("RY", targets=1, arg_value=np.pi / 2, index=[0])
-qc.gates
-```
-
 ## User defined gates
 From QuTiP 4.4 on, user defined gates can be defined by a python function that takes at most one parameter and return a `Qobj`, the dimension of the `Qobj` has to match the qubit system.
 
 ```python
-def user_gate1(arg_value):
+def user_gate1(arg_value=pi / 2):
     # controlled rotation X
     mat = np.zeros((4, 4), dtype=complex)
     mat[0, 0] = mat[1, 1] = 1.0
@@ -425,7 +408,7 @@ def user_gate1(arg_value):
 
 
 def user_gate2():
-    # S gate
+    # Custom S gate
     mat = np.array([[1.0, 0], [0.0, 1.0j]])
     return Qobj(mat, dims=[[2], [2]])
 ```
@@ -434,7 +417,7 @@ To let the `QubitCircuit` process those gates, we need to modify its attribute `
 
 ```python
 qc = QubitCircuit(2)
-qc.user_gates = {"CTRLRX": user_gate1, "S": user_gate2}
+qc.user_gates = {"CTRLRX": user_gate1, "CUSTOM_S": user_gate2}
 ```
 
 When calling the `add_gate` method, the target qubits and the argument need to be given.
@@ -444,9 +427,7 @@ When calling the `add_gate` method, the target qubits and the argument need to b
 qc.add_gate("CTRLRX", targets=[0, 1], arg_value=pi / 2)
 # qubit 1 controls qubit 0
 qc.add_gate("CTRLRX", targets=[1, 0], arg_value=pi / 2)
-# a gate can also be added using the Gate class
-g_T = Gate("S", targets=[1])
-qc.add_gate("S", targets=[1])
+qc.add_gate("CUSTOM_S", targets=[1])
 props = qc.propagators()
 ```
 
