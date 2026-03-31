@@ -69,18 +69,18 @@ from qutip import (Options, Qobj, about, basis, destroy, enr_destroy, enr_fock,
 
 The general Jaynes-Cumming model describes a single two-level atom interacting with a single electromagnetic cavity mode.
 For this example, we put multiple of these systems in a chain and let them interact with neighbouring systems via their cavities.
-We use $a_i$ ($a^\dag_i$) as annihilation (creation) operators for the cavity $i$ and $s_i$ ($s^\dag_i$) for the atoms.
+We use $a_i$ ($a^\dagger_i$) as annihilation (creation) operators for the cavity $i$ and $s_i$ ($s^\dagger_i$) for the atoms.
 We then model the complete Hamiltonian by splitting it into the individual systems:
 
-$H_0 = \sum_{i=0}^{N} a_i^\dag a_i + s_i^\dag s_i$,
+$H_0 = \sum_{i=0}^{N} a_i^\dagger a_i + s_i^\dagger s_i$,
 
 the atom-cavity interactions:
 
-$H_{int,AC} = \sum_{i=0}^{N} = \frac{1}{2} (a_i^\dag s_i + s_i^\dag a_i)$,
+$H_{int,AC} = \sum_{i=0}^{N} = \frac{1}{2} (a_i^\dagger s_i + s_i^\dagger a_i)$,
 
 and the cavity-cavity interactions:
 
-$H_{int,CC} = \sum_{i=0}^{N-1} 0.9 \cdot (a_i^\dag a_{i+1} + a_{i+1}^\dag a_{i})$,
+$H_{int,CC} = \sum_{i=0}^{N-1} 0.9 \cdot (a_i^\dagger a_{i+1} + a_{i+1}^\dagger a_{i})$,
 
 where the interaction strength of $0.9$ was chosen arbitrarily.
 
