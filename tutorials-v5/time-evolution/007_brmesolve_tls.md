@@ -69,7 +69,7 @@ psi0 = (2 * basis(2, 0) + basis(2, 1)).unit()
 # Setup the master equation solver
 c_ops = [np.sqrt(gamma) * sigmam()]
 e_ops = [sigmax(), sigmay(), sigmaz()]
-result_me = mesolve(H, psi0, times, c_ops, e_ops)
+result_me = mesolve(H, psi0, times, c_ops, e_ops=e_ops)
 ```
 
 For the `qutip.brmesolve` function we have to give the interaction of the system with the bath as a hermitian operator together with a noise power spectrum, which defines the strength of the interaction per frequency. Here we define a constant interaction whenever the frequency is positive and no dissipation for negative frequencies. This allows us to use `sigmax()` ( a hermitian operator) instead of the non-hermitian operator `sigmam` used above.
@@ -83,7 +83,7 @@ a_op = [sigmax(), lambda w: gamma * (w > 0.0)]
 Instead of the `c_ops` we now pass the `a_ops` to the Bloch-Redfield solver.
 
 ```python
-result_brme = brmesolve(H, psi0, times, [a_op], e_ops)
+result_brme = brmesolve(H, psi0, times, [a_op], e_ops=e_ops)
 ```
 
 We can now compare the expectation values for every operator we passed to the solvers in `e_ops`. As expected both solvers, `mesolve` and `brmesolve`, produce similar results.

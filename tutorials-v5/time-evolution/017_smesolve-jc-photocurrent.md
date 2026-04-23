@@ -65,7 +65,7 @@ sc_ops = [np.sqrt(kappa) * a]  # stochastic collapse for resonator
 ```
 
 ```python
-result_ref = mesolve(H, rho0, times, c_ops + sc_ops, e_ops)
+result_ref = mesolve(H, rho0, times, c_ops + sc_ops, e_ops=e_ops)
 ```
 
 ```python

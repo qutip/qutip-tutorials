@@ -93,8 +93,8 @@ We now solve the dynamics of the atom-cavity interaction using `qutip.mesolve` a
 # times for simulation
 times = np.linspace(0, 10 * 2 * np.pi / g_weak, 1000)
 # simulation
-result_me_weak = mesolve(H_weak, psi0, times, c_ops, e_ops)
-result_brme_weak = brmesolve(H_weak, psi0, times, a_ops, e_ops)
+result_me_weak = mesolve(H_weak, psi0, times, c_ops, e_ops=e_ops)
+result_brme_weak = brmesolve(H_weak, psi0, times, a_ops, e_ops=e_ops)
 fig, axes = plot_expectation_values(
     [result_me_weak, result_brme_weak], ylabels=["<n_cav>", "<n_atom>"]
 )
@@ -110,8 +110,8 @@ For the weak coupling strength between atom and cavity we obtain similar results
 # times for simulation
 times = np.linspace(0, 10 * 2 * np.pi / g_strong, 1000)
 # simulation
-result_me_strong = mesolve(H_strong, psi0, times, c_ops, e_ops)
-result_brme_strong = brmesolve(H_strong, psi0, times, a_ops, e_ops)
+result_me_strong = mesolve(H_strong, psi0, times, c_ops, e_ops=e_ops)
+result_brme_strong = brmesolve(H_strong, psi0, times, a_ops, e_ops=e_ops)
 fig, axes = plot_expectation_values(
     [result_me_strong, result_brme_strong], ylabels=["<n_cav>", "<n_atom>"]
 )

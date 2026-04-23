@@ -288,7 +288,7 @@ times_is = np.linspace(ti, ti + duration / 2, steps + 1)
 ntraj_is = int(ntraj / 10)
 
 MCSol_is = solver.run(psi0, tlist=times_is, ntraj=ntraj_is, e_ops=e_ops)
-MESol_is = qt.mesolve([H, S], psi0, times_is, d_ops, e_ops, options=options)
+MESol_is = qt.mesolve([H, S], psi0, times_is, d_ops, e_ops=e_ops, options=options)
 ```
 
 If we count the number of collapses per trajectory, we see that around 10% of the trajectories had no collapses:

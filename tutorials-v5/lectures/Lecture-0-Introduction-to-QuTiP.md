@@ -513,7 +513,7 @@ tlist = np.linspace(0, 50, 100)
 
 # request that the solver return the expectation value
 # of the photon number state operator a.dag() * a
-result = mesolve(H, rho0, tlist, c_ops, [a.dag() * a],
+result = mesolve(H, rho0, tlist, c_ops, e_ops=[a.dag() * a],
                  options={"store_states": True})
 ```
 

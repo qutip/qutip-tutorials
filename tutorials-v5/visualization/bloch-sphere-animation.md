@@ -54,7 +54,7 @@ def qubit_integrate(w, theta, gamma1, gamma2, psi0, tlist):
         c_op_list.append(np.sqrt(rate) * sz)
 
     # evolve and calculate expectation values
-    output = mesolve(H, psi0, tlist, c_op_list, [sx, sy, sz])
+    output = mesolve(H, psi0, tlist, c_op_list, e_ops=[sx, sy, sz])
     return output
 ```
 

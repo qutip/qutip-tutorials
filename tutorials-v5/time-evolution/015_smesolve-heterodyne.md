@@ -64,7 +64,7 @@ e_ops = [a.dag() * a, x, y]
 ```
 
 ```python
-result_ref = mesolve(H, rho0, times, c_ops, e_ops)
+result_ref = mesolve(H, rho0, times, c_ops, e_ops=e_ops)
 ```
 
 ```python

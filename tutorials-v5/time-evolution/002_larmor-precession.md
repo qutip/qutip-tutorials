@@ -61,7 +61,7 @@ Here, we are for example interested in the time evolution of the expectation val
 # simulate the unitary dynamics
 H = sigmaz()
 times = np.linspace(0, 10, 100)
-result = sesolve(H, psi, times, [sigmay()])
+result = sesolve(H, psi, times, e_ops=[sigmay()])
 ```
 
 `result.expect` holds the expecation values for the times that we passed to `sesolve`. `result.expect` is a two dimensional array, where the first dimension refers to the different expectation operators that we passed to `sesolve` before. 
@@ -77,7 +77,7 @@ plt.show()
 Above we gave `sigmay()` as an operator to `sesolve` to directly calculate it's expectation value. If we pass an empty list at this argument to `sesolve` it will return the quantum state of the system for each time step in `times`. We can access the states by `result.states` and use them for example to plot the states on the Bloch sphere to see the precession. If the solver take a long time to run, it is also a good idea to return the states, so you can calculate different things, without specifying before the calculation.
 
 ```python
-res = sesolve(H, psi, times, [])
+res = sesolve(H, psi, times, e_ops=[])
 b = Bloch()
 b.add_states(res.states[1:30])
 b.show()
@@ -108,8 +108,8 @@ H_per = QobjEvo([[sigmaz(), periodic]], tlist=times)
 We can now continue as in the previous section and use `sesolve` to solve the Schrödinger equation.
 
 ```python
-result_lin = sesolve(H_lin, psi, times, [sigmay()])
-result_per = sesolve(H_per, psi, times, [sigmay()])
+result_lin = sesolve(H_lin, psi, times, e_ops=[sigmay()])
+result_per = sesolve(H_per, psi, times, e_ops=[sigmay()])
 
 
 # Plot <sigma_y> for linear increasing field strength

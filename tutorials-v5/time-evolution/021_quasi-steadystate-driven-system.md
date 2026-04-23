@@ -118,7 +118,7 @@ psi_1 = basis(2, 1)
 
 ```python
 # Solve with the Master equation
-output = mesolve(H, psi_0, t_list, c_op_list, [psi_1 * psi_1.dag()], args)
+output = mesolve(H, psi_0, t_list, c_op_list, e_ops=[psi_1 * psi_1.dag()], args=args)
 prob_me = output.expect[0]
 ```
 

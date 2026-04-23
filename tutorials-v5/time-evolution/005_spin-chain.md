@@ -92,7 +92,7 @@ We can simulate the system using the `qutip.mesolve` function. Here, we don't pa
 
 ```python
 times = np.linspace(0, 100, 200)
-result = mesolve(H, psi0, times, [], [])
+result = mesolve(H, psi0, times, [], e_ops=[])
 # Convert states to density matrices
 states = [s * s.dag() for s in result.states]
 ```
@@ -127,7 +127,7 @@ gamma = 0.02 * np.ones(N)
 c_ops = [np.sqrt(gamma[i]) * sz_list[i] for i in range(N)]
 
 # evolution
-result = result = mesolve(H, psi0, times, c_ops, [])
+result = result = mesolve(H, psi0, times, c_ops, e_ops=[])
 
 # Expectation value
 exp_sz_dephase = expect(sz_list, result.states)

@@ -22,7 +22,7 @@ Note: This example is quite computationally expensivem, hence for the full simul
 ```python
 import matplotlib.pyplot as plt
 import numpy as np
-from qutip import (Qobj, SolverOptions, about, basis, fock_dm, qeye,
+from qutip import (Qobj, about, basis, fock_dm, qeye,
                    sigmax, sigmay, sigmaz, tensor)
 from qutip_qip.circuit import QubitCircuit
 from qutip_qip.compiler import GateCompiler, Instruction
@@ -256,7 +256,7 @@ def single_crosstalk_simulation(num_gates):
          Qobj([[init_fid, 0], [0, 0.025]])]
     )
     # increase the maximal allowed steps
-    options = SolverOptions(nsteps=10000)
+    options = {"nsteps": 10000}
     e_ops = [tensor([qeye(2), fock_dm(2)])]  # observable
 
     # compute results of the run using a solver of choice

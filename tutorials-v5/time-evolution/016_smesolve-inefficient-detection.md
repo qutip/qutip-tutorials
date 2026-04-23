@@ -106,7 +106,7 @@ sc_ops = [np.sqrt(eta) * np.sqrt(gamma) * a]  # stochastic collapse operator A
 ```
 
 ```python
-result_ref = mesolve(H, rho0, times, c_ops + sc_ops, e_ops)
+result_ref = mesolve(H, rho0, times, c_ops + sc_ops, e_ops=e_ops)
 ```
 
 ```python
@@ -169,7 +169,7 @@ sc_ops = [np.sqrt(eta) * np.sqrt(gamma) * a]  # stochastic collapse operator A
 ```
 
 ```python
-result_ref = mesolve(H, rho0, times, c_ops + sc_ops, e_ops)
+result_ref = mesolve(H, rho0, times, c_ops + sc_ops, e_ops=e_ops)
 ```
 
 ```python
@@ -251,7 +251,7 @@ sc_ops = [np.sqrt(eta) * np.sqrt(gamma) * a]  # stochastic collapse operator A
 ```
 
 ```python
-result_ref = mesolve(H, rho0, times, c_ops + sc_ops, e_ops)
+result_ref = mesolve(H, rho0, times, c_ops + sc_ops, e_ops=e_ops)
 ```
 
 ```python
