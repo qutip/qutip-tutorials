@@ -86,7 +86,7 @@ tlist = np.linspace(0, 0.8, 100)
 
 # Solve using MCSolve for different ntraj
 for n in ntraj:
-  result = mcsolve(H, psi0, tlist, c_ops, e_ops=[a.dag() * a], ntraj=n)
+    result = mcsolve(H, psi0, tlist, c_ops, e_ops=[a.dag() * a], ntraj=n)
     mc.append(result)
 me = mesolve(H, psi0, tlist, c_ops, e_ops=[a.dag() * a])
 ```
