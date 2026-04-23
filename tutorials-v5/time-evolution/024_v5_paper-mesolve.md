@@ -464,7 +464,7 @@ fit_times = np.linspace(0, 5, 1000)  # range for correlation function fit
 
 # Fit correlation function with exponentials
 exp_bath, fit_info = bath.approximate(
-    fit_times, Ni_max=1, Nr_max=2, target_rmse=None
+    "cf", fit_times, Ni_max=1, Nr_max=2, target_rmse=None
 )
 print(fit_info["summary"])
 ```
@@ -548,7 +548,7 @@ fit_times = np.linspace(0, 5, 1000)  # range for correlation function fit
 
 # Fit correlation function with exponentials
 exp_bath, fit_info = bath.approximate(
-    fit_times, Ni_max=1, Nr_max=2, target_rmse=None
+    "cf", fit_times, Ni_max=1, Nr_max=2, target_rmse=None
 )
 print(fit_info["summary"])
 ```
