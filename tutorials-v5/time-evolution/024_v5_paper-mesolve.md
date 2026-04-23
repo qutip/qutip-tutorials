@@ -463,7 +463,7 @@ bath = UnderDampedEnvironment(lam=lambd, w0=w0, gamma=gamma_heom, T=0)
 fit_times = np.linspace(0, 5, 1000)  # range for correlation function fit
 
 # Fit correlation function with exponentials
-exp_bath, fit_info = bath.approx_by_cf_fit(
+exp_bath, fit_info = bath.approximate(
     fit_times, Ni_max=1, Nr_max=2, target_rmse=None
 )
 print(fit_info["summary"])
@@ -547,7 +547,7 @@ bath = UnderDampedEnvironment(lam=lambd, w0=w0, gamma=gamma_heom, T=0)
 fit_times = np.linspace(0, 5, 1000)  # range for correlation function fit
 
 # Fit correlation function with exponentials
-exp_bath, fit_info = bath.approx_by_cf_fit(
+exp_bath, fit_info = bath.approximate(
     fit_times, Ni_max=1, Nr_max=2, target_rmse=None
 )
 print(fit_info["summary"])
