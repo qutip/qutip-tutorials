@@ -413,7 +413,13 @@ c_ops_TLS = [sm_TLS * np.sqrt(effective_gamma)]
 rho0_TLS = steadystate(H_TLS, c_ops_TLS)
 corr_vec_TLS = expect(
     sm_TLS.dag() * sm_TLS,
-    mesolve(H_TLS, sm_TLS * rho0_TLS * sm_TLS.dag(), taulist, c_ops_TLS, e_ops=[]).states,
+    mesolve(
+        H_TLS,
+        sm_TLS * rho0_TLS * sm_TLS.dag(),
+        taulist,
+        c_ops_TLS,
+        e_ops=[],
+    ).states,
 )
 n_TLS = expect(rho0_TLS, sm_TLS.dag() * sm_TLS)
 ```
