@@ -387,7 +387,7 @@ corr_vec_int = expect(
         (a + alpha) * rho0 * (a.dag() + alpha.conjugate()),
         taulist,
         c_op,
-        [],
+        e_ops=[],
         options={"atol": 1e-13, "rtol": 1e-11},
     ).states,
 )
@@ -401,7 +401,7 @@ corr_vec = expect(
         a * rho0 * a.dag(),
         taulist,
         c_op,
-        [],
+        e_ops=[],
         options={"atol": 1e-12, "rtol": 1e-10},
     ).states,
 )
@@ -413,7 +413,7 @@ c_ops_TLS = [sm_TLS * np.sqrt(effective_gamma)]
 rho0_TLS = steadystate(H_TLS, c_ops_TLS)
 corr_vec_TLS = expect(
     sm_TLS.dag() * sm_TLS,
-    mesolve(H_TLS, sm_TLS * rho0_TLS * sm_TLS.dag(), taulist, c_ops_TLS, []).states,
+    mesolve(H_TLS, sm_TLS * rho0_TLS * sm_TLS.dag(), taulist, c_ops_TLS).states,
 )
 n_TLS = expect(rho0_TLS, sm_TLS.dag() * sm_TLS)
 ```

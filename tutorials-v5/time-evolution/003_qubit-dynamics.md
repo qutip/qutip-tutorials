@@ -68,7 +68,7 @@ tlist = np.linspace(0, 5, 100)
 We pass these definition to the `qutip.mesolve` function. The collapse operators need to be passed in a list (even if there is only one collapse operator). As the fifth argument we pass a list of operators, for which the solver will return the expectation value at the given times in `tlist`. In this example we want to obtain the expectation value for $\sigma_z$.
 
 ```python
-res = mesolve(H, psi0, tlist, c_ops, [sigmaz()])
+res = mesolve(H, psi0, tlist, c_ops, e_ops=[sigmaz()])
 ```
 
 For this particular Hamiltonian and dissipation process we can derive the analytical solution for the expectation value of $\sigma_z$.
@@ -108,7 +108,7 @@ H = delta * (np.cos(theta) * sigmaz() + np.sin(theta) * sigmax())
 
 # Obtain Time Evolution
 tlist = np.linspace(0, 5, 1000)
-result = mesolve(H, psi0, tlist, [], [sigmax(), sigmay(), sigmaz()])
+result = mesolve(H, psi0, tlist, [], e_ops=[sigmax(), sigmay(), sigmaz()])
 ```
 
 We can visualise the state on the Bloch sphere by using the `qutip.Bloch` class. We can add points to the Bloch sphere and also vectors representing states.
@@ -142,7 +142,7 @@ gamma_phase = 0.5
 c_ops = [np.sqrt(gamma_phase) * sigmaz()]
 
 # solve dynamics
-result = mesolve(H, psi0, tlist, c_ops, [sigmax(), sigmay(), sigmaz()])
+result = mesolve(H, psi0, tlist, c_ops, e_ops=[sigmax(), sigmay(), sigmaz()])
 exp_sx_dephase, exp_sy_dephase, exp_sz_dephase = result.expect
 exp_sx_dephase, exp_sy_dephase, exp_sz_dephase = (
     np.array(exp_sx_dephase),
@@ -172,7 +172,7 @@ gamma_relax = 0.5
 c_ops = [np.sqrt(gamma_relax) * sigmam()]
 
 # solve dynamics
-result = mesolve(H, psi0, tlist, c_ops, [sigmax(), sigmay(), sigmaz()])
+result = mesolve(H, psi0, tlist, c_ops, e_ops=[sigmax(), sigmay(), sigmaz()])
 exp_sx_relax, exp_sy_relax, exp_sz_relax = result.expect
 
 # Create Bloch sphere plot

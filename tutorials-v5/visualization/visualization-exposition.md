@@ -115,7 +115,7 @@ H = sigmaz() + 0.3 * sigmay()
 e_ops = [sigmax(), sigmay(), sigmaz()]
 times = np.linspace(0, 10, 100)
 psi0 = (basis(2, 0) + basis(2, 1)).unit()
-result = qt.mesolve(H, psi0, times, [], e_ops)
+result = qt.mesolve(H, psi0, times, [], e_ops=e_ops)
 ```
 
 ```python

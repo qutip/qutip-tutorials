@@ -67,7 +67,7 @@ def jc_integrate(N, wc, wa, g, kappa, gamma, psi0, use_rwa, tlist):
         c_op_list.append(np.sqrt(rate) * sm)
 
     # evolve and calculate return state vectors
-    result = mesolve(H, psi0, tlist, c_op_list, [])
+    result = mesolve(H, psi0, tlist, c_op_list, e_ops=[])
 
     return result
 ```

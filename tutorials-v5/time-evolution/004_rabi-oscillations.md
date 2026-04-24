@@ -124,7 +124,7 @@ c_op_list.append(np.sqrt(rate) * sm)
 Here we evolve the system with the Lindblad master equation solver `qutip.mesolve`, and we request that the expectation values of the operators $a^\dagger a$ and $\sigma_+\sigma_-$ are returned by the solver by passing the list `[a.dag()*a, sm.dag()*sm]` as the fifth argument to the solver.
 
 ```python
-output = mesolve(H, psi0, tlist, c_op_list, [a.dag() * a, sm.dag() * sm])
+output = mesolve(H, psi0, tlist, c_op_list, e_ops=[a.dag() * a, sm.dag() * sm])
 ```
 
 ### Visualize the results
@@ -158,7 +158,7 @@ rate = gamma
 c_op_list.append(np.sqrt(rate) * sm)
 
 # evolve system
-output_temp = mesolve(H, psi0, tlist, c_op_list, [a.dag() * a, sm.dag() * sm])
+output_temp = mesolve(H, psi0, tlist, c_op_list, e_ops=[a.dag() * a, sm.dag() * sm])
 
 # plot
 fig, ax = plt.subplots(figsize=(8, 5))
@@ -184,7 +184,7 @@ atom_and_cavity = np.array(output.expect[0]) + np.array(output.expect[1])
 assert np.all(np.diff(atom_and_cavity) <= 0.0)
 
 # frequency for analytical solution (with RWA)
-output_no_cops = mesolve(H, psi0, tlist, [], [a.dag() * a, sm.dag() * sm])
+output_no_cops = mesolve(H, psi0, tlist, [], e_ops=[a.dag() * a, sm.dag() * sm])
 freq = 1 / 4 * np.sqrt(g**2 * (N + 1))
 assert np.allclose(output_no_cops.expect[1],
                    (np.cos(tlist * freq)) ** 2, atol=10**-3)

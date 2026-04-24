@@ -126,7 +126,7 @@ def solve(d, psi0):
     times = np.linspace(0, 250, 1000)
     L = liouvillian(H, c_ops)
     opt = {"nsteps": 5000, "store_states": True}
-    result = mesolve(H, psi0, times, c_ops, e_ops, options=opt)
+    result = mesolve(H, psi0, times, c_ops, e_ops=e_ops, options=opt)
     return result, H, L
 ```
 
