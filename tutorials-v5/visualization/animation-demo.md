@@ -51,7 +51,7 @@ psi0 = (ket('10')+ket('01')).unit()
 # list of times for which the solver should store the state vector
 tlist = np.linspace(0, 3*np.pi, 100)
 
-results = mesolve(H, psi0, tlist, [], [])
+results = mesolve(H, psi0, tlist, [], e_ops=[])
 
 fig, ani = anim_schmidt(results)
 ```

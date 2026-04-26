@@ -157,7 +157,7 @@ def process_rho(tau, psi):
 ```python
 # Evolve the system, request the solver to call process_rho at each time step.
 
-mesolve(h_t, psi0, taulist, [], process_rho, args)
+mesolve(h_t, psi0, taulist, [], e_ops=process_rho, args=args)
 ```
 
 ## Visualize the results

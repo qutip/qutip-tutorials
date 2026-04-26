@@ -66,7 +66,7 @@ also use comments in the code section to separate the operations you perform.
 # simulate the unitary dynamics
 H = sigmaz()
 times = np.linspace(0, 10, 100)
-result = sesolve(H, psi, times, [sigmay()])
+result = sesolve(H, psi, times, e_ops=[sigmay()])
 
 # plot the expectation value
 plt.plot(times, result.expect[0])

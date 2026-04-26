@@ -186,6 +186,6 @@ about()
 
 ```python
 # compute prediction using sesolve
-res_sesolve = sesolve(H, psi0, tlist_10_periods, [num(2)])
+res_sesolve = sesolve(H, psi0, tlist_10_periods, e_ops=[num(2)])
 assert np.allclose(res_sesolve.expect[0], p_ex, atol=0.15)
 ```

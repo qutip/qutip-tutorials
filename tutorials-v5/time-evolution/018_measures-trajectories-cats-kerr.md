@@ -236,7 +236,7 @@ sol_mc = mcsolve(
     fock(20, 0),
     tlist,
     c_ops,
-    [a.dag() * a, (a + a.dag()) / 2, -1.0j * (a - a.dag()) / 2, parity],
+    e_ops=[a.dag() * a, (a + a.dag()) / 2, -1.0j * (a - a.dag()) / 2, parity],
     ntraj=1,
 )
 ```
@@ -370,7 +370,7 @@ sol_mc_mean = mcsolve(
     fock(20, 0),
     tlist,
     c_ops,
-    [a.dag() * a, (a + a.dag()) / 2, -1.0j * (a - a.dag()) / 2, parity],
+    e_ops=[a.dag() * a, (a + a.dag()) / 2, -1.0j * (a - a.dag()) / 2, parity],
     ntraj=50,
 )
 
