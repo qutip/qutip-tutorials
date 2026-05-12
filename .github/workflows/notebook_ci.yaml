@@ -48,8 +48,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ${{ env.CONDA }}/envs
-        key: conda-${{ runner.os }}--${{ runner.arch }}--${{ steps.get-date.outputs.today }}-${{ hashFiles('test_environment.yml') }}-${{ env.CACHE_NUMBER }}-qutip-${{ matrix.qutip-version }}
-      env:
+        key: conda-${{ runner.os }}--${{ runner.arch }}--${{ steps.get-date.outputs.today }}-${{ hashFiles(format('test_environment-v{0}.yml', matrix.qutip-version)) }}-${{ env.CACHE_NUMBER }}-${{ matrix.label }}
         # Increase this value to reset cache if etc/example-environment.yml has not changed
         CACHE_NUMBER: 0
       id: cache
