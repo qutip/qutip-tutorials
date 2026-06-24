@@ -31,10 +31,10 @@ jobs:
             qip-install-spec: 'git+https://github.com/qutip/qutip-qip@master'
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Setup Conda
-      uses: conda-incubator/setup-miniconda@v3
+      uses: conda-incubator/setup-miniconda@v4
       with:
         miniforge-version: latest
         activate-environment: test-environment-v${{ matrix.qutip-version }}
@@ -45,7 +45,7 @@ jobs:
       shell: bash
 
     - name: Cache Conda env
-      uses: actions/cache@v3
+      uses: actions/cache@v5
       with:
         path: ${{ env.CONDA }}/envs
         key: conda-${{ runner.os }}--${{ runner.arch }}--${{ steps.get-date.outputs.today }}-${{ hashFiles(format('test_environment-v{0}.yml', matrix.qutip-version)) }}-${{ env.CACHE_NUMBER }}-${{ matrix.label }}
@@ -109,7 +109,7 @@ jobs:
       run: cp tutorials-v5/miscellaneous/cuQuantum_backend.ipynb notebooks/miscellaneous/
 
     - name: Create Notebook Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: executed-notebooks-${{ matrix.label }}
         path: |
@@ -119,7 +119,7 @@ jobs:
   markdown-link-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: tcort/github-action-markdown-link-check@v1
         with:
           use-quiet-mode: 'yes'
@@ -133,13 +133,13 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.repository == 'qutip/qutip-tutorials' && github.ref == 'refs/heads/main' }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v7
         with:
           name: executed-notebooks-v4-release
           path: publish/tutorials-v4
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: executed-notebooks-v5-release
           path: publish/tutorials-v5
