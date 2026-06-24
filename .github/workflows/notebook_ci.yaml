@@ -38,6 +38,8 @@ jobs:
       with:
         miniforge-version: latest
         activate-environment: test-environment-v${{ matrix.qutip-version }}
+        channels: conda-forge
+        conda-remove-defaults: "true"
 
     - name: Get Date
       id: get-date
