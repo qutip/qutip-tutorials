@@ -17,7 +17,7 @@ jupyter:
 Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com), Boxi Li (etamin1201@gmail.com), Neill Lambert (nwlambert@gmail.com)
 
 Quantum circuits serve as a standard framework for representing and manipulating quantum algorithms visually and conceptually.
-As a member of the QuTiP family, the QuTiP-QIP [\[1\]](#References) package add this framework and enables several distinctive capabilities.
+As a member of the QuTiP family, the QuTiP-QIP [\[1\]](#references) package add this framework and enables several distinctive capabilities.
 It allows seamless incorporation of circuit-representing unitaries into QuTiP's ecosystem using the `Qobj` class.
 Moreover, it links QuTiP-QOC and the open-system solvers, enabling pulse-level simulations of circuits with realistic noise effects.
 
@@ -129,7 +129,7 @@ We apply them to an initial state and then repeat them $d$ times.
 Depending on the hardware, the type of available physical gates changes.
 Since we will be using a superconducting qubit hardware backend, we will express these gates in terms of RZ (rotation around Z axis), RZX (combined rotation around XZ) and Hadamard gates.
 In general, QuTiP-QIP supports a great variety of gates and also the option for custom gates exists.
-More information on this is presented in the original paper for QuTiP-QIP [\[1\]](#References).
+More information on this is presented in the original paper for QuTiP-QIP [\[1\]](#references).
 
 Of course, the accuracy of our simulation is greatly dependent on the Trotter step size.
 To keep this tutorial at a reasonable execution time, we choose $dt = 4.0$, so errors can be significant.
@@ -232,7 +232,7 @@ plt.show()
 
 ## Lindblad Simulation
 
-To simulate the Lindblad master equation, we consider two recent proposals [\[2, 3\]](#References) where a sequence of unitaries is used to approximate Lindblad dynamics to arbitrary order.
+To simulate the Lindblad master equation, we consider two recent proposals [\[2, 3\]](#references) where a sequence of unitaries is used to approximate Lindblad dynamics to arbitrary order.
 This is realized by employing a ancilla qubits, and measurements / resets, for the Lindblad collapse operators.
 The initial state is a dilated state $\ket{\psi_D(t=0)} = \ket{\psi(t = 0)} \otimes \ket{0}^{\otimes K}$ where $K$ referes to the number of ancillas.
 Every time step, the system and the ancillas interact for a time span $\sqrt{dt}$.
