@@ -32,7 +32,7 @@ Id = qutip.qeye(size)
 
 - [Motivation](#motivation)
 - [Instantiation](#instantiation)
-    * [Functional time dependence](#functional-time-dependence)
+    * [Function time dependence](#function-time-dependence)
     * [String time dependence](#string-time-dependence)
     * [Array dependence](#array-dependence)
 - [Evaluation](#evaluation)
