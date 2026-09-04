@@ -32,7 +32,7 @@ Contrary to a Lindblad equation, the coupling rates $\gamma_n(t)$ may be negativ
 
 In QuTiP v5, the non-Markovian Monte Carlo solver is introduced.
 It enables the mapping of the general master equation given above, to a Lindblad equation on the same Hilbert space.
-This is achieved by the introduction of the so called "influence martingale" which acts as trajectory weighting [\[1, 2, 3\]](#References):
+This is achieved by the introduction of the so called "influence martingale" which acts as trajectory weighting [\[1, 2, 3\]](#references):
 
 $\mu (t) = \exp \left[ \alpha \int_0^t s(\tau) d \tau \right] \Pi_k \dfrac{\gamma_{n_k} (t_k)}{\Gamma_{n_k} (t_k)}$.
 
@@ -68,7 +68,7 @@ from scipy.optimize import root_scalar
 
 To illustrate the application of `nm_mcsolve()`, we want to look at the damped Jaynes-Cumming model.
 It describes a two-level atom coupled to a damped cavity mode.
-Such a model can be accurately model as a two-level system coupled to an environment with the power spectrum [\[4\]](#References):
+Such a model can be accurately model as a two-level system coupled to an environment with the power spectrum [\[4\]](#references):
 
 $S(\omega) = \dfrac{\lambda \Gamma^2}{(\omega_0 - \Delta - \omega)^2 + \Gamma^2}$,
 

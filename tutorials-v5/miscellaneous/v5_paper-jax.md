@@ -19,9 +19,9 @@ Authors: Maximilian Meyer-Mölleringhof (m.meyermoelleringhof@gmail.com), Rochis
 For many years now, GPUs have been a fundamental tool for accelerating numerical tasks.
 Today, many libraries enable off-the-shelf methods to leverage GPUs' potential to speed up costly calculations.
 QuTiP’s flexible data layer can directly be used with many such libraries and thereby drastically reduce computation time.
-Despite a big variety of frameworks, in connection to QuTiP, development has centered on the QuTiP-JAX integration [\[1\]](#References) due to JAX's robust auto-differentiation features and widespread adoption in machine learning.
+Despite a big variety of frameworks, in connection to QuTiP, development has centered on the QuTiP-JAX integration [\[1\]](#references) due to JAX's robust auto-differentiation features and widespread adoption in machine learning.
 
-In these examples we illustrate how JAX naturally integrates into QuTiP v5 [\[2\]](#References) using the QuTiP-JAX package.
+In these examples we illustrate how JAX naturally integrates into QuTiP v5 [\[2\]](#references) using the QuTiP-JAX package.
 As a simple first example, we look at a one-dimensional spin chain and how we might employ `mesolve()` and JAX to solve the related master equation.
 In the second part, we focus on the auto-differentiation capabilities.
 For this we first consider the counting statistics of an open quantum system connected to an environment.
@@ -74,7 +74,7 @@ To revert this setting, we can set the function parameter `revert = True`.
 Before diving into the example, it is worth noting here that GPU acceleration depends heavily on the type of problem.
 GPUs are good at parallelizing many small matrix-vector operations, such as integrating small systems across multiple parameters or simulating quantum circuits with repeated small matrix operations.
 For a single ODE involving large matrices, the advantages are less straightforward since ODE solvers are inherently sequential.
-However, as it is illustrated in the QuTiP v5 paper [\[2\]](#References), there is a cross-over point at which using JAX becomes beneficial.
+However, as it is illustrated in the QuTiP v5 paper [\[2\]](#references), there is a cross-over point at which using JAX becomes beneficial.
 
 ### 1D Ising Spin Chain
 
@@ -85,7 +85,7 @@ $H = \sum_{i=1}^N g_0 \sigma_z^{(n)} - \sum_{n=1}^{N-1} J_0 \sigma_x^{(n)} \sigm
 We hereby consider $N$ spins that share an energy splitting of $g_0$ and have a coupling strength $J_0$.
 The end of the chain connects to an environment described by a Lindbladian dissipator which we model with the collapse operator $\sigma_x^{(N-1)}$ and coupling rate $\gamma$.
 
-As part of the [QuTiPv5 paper](#References), we see an extensive study on the computation time depending on the dimensionality $N$.
+As part of the [QuTiPv5 paper](#references), we see an extensive study on the computation time depending on the dimensionality $N$.
 In this example we cannot replicate the performance of a supercomputer of course, so we rather focus on the correct implementation to solve the Lindblad equation for this system using JAX and `mesolve()`.
 
 ```python
