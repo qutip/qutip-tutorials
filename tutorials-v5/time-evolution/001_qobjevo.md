@@ -30,20 +30,19 @@ Id = qutip.qeye(size)
 
 ## Contents
 
-- [Motivation](#Motivation)
-- [Instantiation](#Instantiation)
-    * [Functional time dependence](#Function-time-dependence)
-    * [String time dependence](#String-time-dependence)
-    * [Array dependence](#Array-dependence)
-- [Evaluation](#Evaluation)
-- [Compilation](#Compilation)
-- [Arguments](#Arguments)
-    * [Function form](#Function-form)
-    * [String form](#String-form)
-    * [Using objects](#Using-objects)
-    * [Dynamic arguments](#Dynamic-arguments)
-- [Mathematics](#Mathematics)
-- [Superoperators](#Superoperators)
+- [Motivation](#motivation)
+- [Instantiation](#instantiation)
+    * [Functional time dependence](#functional-time-dependence)
+    * [String time dependence](#string-time-dependence)
+    * [Array dependence](#array-dependence)
+- [Evaluation](#evaluation)
+- [Arguments](#arguments)
+    * [Function form](#function-form)
+    * [String form](#string-form)
+    * [Using objects](#using-objects)
+    * [Dynamic arguments](#dynamic-arguments)
+- [Mathematics](#mathematics)
+- [Superoperators](#superoperators)
 
 
 ## Motivation

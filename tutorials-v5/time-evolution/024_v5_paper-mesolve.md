@@ -327,7 +327,7 @@ plt.show()
 
 As mentioned before, QuTiP's master equation solver can be used to solve any other master equation.
 By using `spre()`, `spost()` and `sprepost()`, we can manually construct such equations.
-These functions specifically convert the operators from the original Hilbert space to operators in the double space which is internally used by QuTiP to optimize computations (more details on this can be found in the [QuTiPv5 paper](#References)).
+These functions specifically convert the operators from the original Hilbert space to operators in the double space which is internally used by QuTiP to optimize computations (more details on this can be found in the [QuTiPv5 paper](#references)).
 
 For example, the Lindbladian corresponding to the master equation of the previous example can be constructed manually via:
 
@@ -464,7 +464,7 @@ fit_times = np.linspace(0, 5, 1000)  # range for correlation function fit
 
 # Fit correlation function with exponentials
 exp_bath, fit_info = bath.approximate(
-    "cf", fit_times, Ni_max=1, Nr_max=2, target_rmse=None
+    "cf", fit_times, Ni_max=1, Nr_max=3, target_rmse=None
 )
 print(fit_info["summary"])
 ```
@@ -548,7 +548,7 @@ fit_times = np.linspace(0, 5, 1000)  # range for correlation function fit
 
 # Fit correlation function with exponentials
 exp_bath, fit_info = bath.approximate(
-    "cf", fit_times, Ni_max=1, Nr_max=2, target_rmse=None
+    "cf", fit_times, Ni_max=1, Nr_max=3, target_rmse=None
 )
 print(fit_info["summary"])
 ```
