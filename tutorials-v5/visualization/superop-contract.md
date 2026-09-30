@@ -44,7 +44,6 @@ from __future__ import division, print_function
 ### Imports
 
 ```python
-import numpy as np
 import qutip as qt
 
 from qutip.ipynbtools import version_table
@@ -73,14 +72,14 @@ In particular, we will use Hinton diagrams as implemented by [``qutip.visualizat
 show the real parts of matrix elements as squares whose size and color both correspond to the magnitude of each element. To illustrate, we first plot a few density operators.
 
 ```python
-qt.visualization.hinton(qt.identity([2, 3]).unit());
+qt.visualization.hinton(qt.identity([2, 3]).unit())
 ```
 
 ```python
 qt.visualization.hinton(qt.Qobj([
     [1, 0.5],
     [0.5, 1]
-]).unit());
+]).unit())
 ```
 
 We show superoperators as matrices in the *Pauli basis*, such that any Hermicity-preserving map is represented by a real-valued matrix. This is especially convienent for use with Hinton diagrams, as the plot thus carries complete information about the channel.
@@ -88,17 +87,19 @@ We show superoperators as matrices in the *Pauli basis*, such that any Hermicity
 As an example, conjugation by $\sigma_z$ leaves $\mathbb{1}$ and $\sigma_z$ invariant, but flips the sign of $\sigma_x$ and $\sigma_y$. This is indicated in Hinton diagrams by a negative-valued square for the sign change and a positive-valued square for a +1 sign.
 
 ```python
-qt.visualization.hinton(qt.to_super(qt.sigmaz()));
+qt.visualization.hinton(qt.to_super(qt.sigmaz()))
 ```
 
 As a couple more examples, we also consider the supermatrix for a Hadamard transform and for $\sigma_z \otimes H$.
 
 ```python
-qt.visualization.hinton(qt.to_super(hadamard_transform()));
+qt.visualization.hinton(qt.to_super(hadamard_transform()))
 ```
 
 ```python
-qt.visualization.hinton(qt.to_super(qt.tensor(qt.sigmaz(), hadamard_transform())));
+qt.visualization.hinton(
+  qt.to_super(qt.tensor(qt.sigmaz(), hadamard_transform()))
+)
 ```
 
 ## Reduced Channels
@@ -108,7 +109,7 @@ As an example of tensor contraction, we now consider the map $S(\rho) = \Tr_2[\c
 We can think of the $\cnot$ here as a system-environment representation of an open quantum process, in which an environment register is prepared in a state $\rho_{\text{anc}}$, then a unitary acts jointly on the system of interest and environment. Finally, the environment is traced out, leaving a *channel* on the system alone. In terms of [Wood diagrams](http://arxiv.org/abs/1111.6950), this can be represented as the composition of a preparation map, evolution under the system-environment unitary, and then a measurement map.
 
 
-![](files/sprep-wood-diagram.png)
+![Reduced channel construction: prepare an ancilla, apply CNOT, then trace out the environment.](files/sprep-wood-diagram.svg)
 
 
 The two tensor wires on the left indicate where we must take a tensor contraction to obtain the measurement map. Numbering the tensor wires from 0 to 3, this corresponds to a ``tensor_contract`` argument of ``(1, 3)``.
@@ -139,7 +140,9 @@ qt.tensor_contract(qt.to_super(cnot()), (1, 3)) * s_prep
 ```
 
 ```python
-qt.visualization.hinton(qt.tensor_contract(qt.to_super(cnot()), (1, 3)) * s_prep);
+qt.visualization.hinton(
+  qt.tensor_contract(qt.to_super(cnot()), (1, 3)) * s_prep
+)
 ```
 
 ## Epilouge

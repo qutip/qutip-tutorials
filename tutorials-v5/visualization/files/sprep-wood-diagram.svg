@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 220" role="img" aria-labelledby="title description">
+  <title id="title">Reduced channel construction</title>
+  <desc id="description">Prepare an ancilla in the zero state, apply a CNOT to the system and ancilla, then trace out the environment.</desc>
+  <style>
+    text { font: 16px sans-serif; fill: #20242a; }
+    .wire { stroke: #39434d; stroke-width: 2; fill: none; }
+    .operation { fill: #eef3f5; stroke: #39434d; stroke-width: 2; }
+    .label { font-size: 14px; fill: #56616b; }
+  </style>
+  <text x="24" y="79">System</text>
+  <text x="24" y="151">Environment</text>
+  <text x="102" y="79">rho</text>
+  <text x="102" y="151">|0&gt;&lt;0|</text>
+  <path class="wire" d="M145 74 H267 M145 146 H267 M377 74 H538 M377 146 H432 M493 146 H538" />
+  <rect class="operation" x="267" y="45" width="110" height="130" rx="4" />
+  <text x="294" y="111">CNOT</text>
+  <rect class="operation" x="432" y="123" width="61" height="46" rx="4" />
+  <text x="445" y="152">Trace</text>
+  <text class="label" x="538" y="67">System output</text>
+  <path class="wire" d="M538 74 H719 M538 146 H589" />
+  <text class="label" x="603" y="151">Environment discarded</text>
+</svg>
