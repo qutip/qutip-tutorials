@@ -21,7 +21,7 @@ Copyright (C) 2011 and later, Paul D. Nation & Robert J. Johansson
 This notebooks demonstrates how a toffoli gate can be rewritten in terms of CNOT gates and single qubit gates, and verifies the equivalence of the two gate sequences by comparing their matrix representations. For more information about the toffoli decomposition, see Nielsen & Chuang, Sec. 4.3, p178.
 
 
-**Note: The circuit image visualizations require [ImageMagick](https://imagemagick.org/index.php) for display.**
+**Note: The circuit image visualizations require [ImageMagick](https://imagemagick.org/) for display.**
 
 ImageMagick can be easily installed with the command `conda install imagemagick` if you have conda installed.
 Otherwise, please follow the installation instructions on the ImageMagick documentation.

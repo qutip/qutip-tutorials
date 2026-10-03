@@ -20,7 +20,7 @@ kernelspec:
 In this example notebook we outline how to employ the HEOM to
 solve the FMO photosynthetic complex dynamics.
 
-We aim to replicate the results in reference [https://www.pnas.org/content/106/41/17255](https://pubmed.ncbi.nlm.nih.gov/19815512/)
+We aim to replicate the results in reference [https://www.pnas.org/content/106/41/17255](https://doi.org/10.1073/pnas.0908989106)
 and compare them to a Bloch-Redfield (perturbative) solution.
 
 This demonstrates how to to employ the solver for multiple baths, as well as showing how a

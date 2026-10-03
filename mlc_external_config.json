@@ -8,6 +8,9 @@
     "ignorePatterns": [
     {
       "pattern": "^(/|\\.\\/|\\.\\./)"  
+    },
+    {
+      "pattern": "^#"
     }
     ]
 }
