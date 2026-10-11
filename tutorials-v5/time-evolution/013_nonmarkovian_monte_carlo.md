@@ -20,12 +20,12 @@ Authors: B. Donvil and P. Menczel, 2023
 
 In this tutorial, we will discuss two examples where systems are described by time-local non-Markovian master equations, that is, Lindblad-like master equations with "rates" that may become negative.
 We will demonstrate how these master equations arise in physical scenarios and how they can be simulated using QuTiP's Non-Markovian Monte Carlo solver.
-This solver is based on the influence martingale formalism, which is described in Refs. [\[1, 2\]](#References).
-The examples, taken from Ref. [\[1\]](#References), are a two-level atom in a photonic band gap (based on Ref. [\[3\]](#References)) and a Redfield master equation for two non-interacting qubits coupling collectively to a common environment.
+This solver is based on the influence martingale formalism, which is described in Refs. [\[1, 2\]](#references).
+The examples, taken from Ref. [\[1\]](#references), are a two-level atom in a photonic band gap (based on Ref. [\[3\]](#references)) and a Redfield master equation for two non-interacting qubits coupling collectively to a common environment.
 
 An advantage of the quantum Monte Carlo technique is that simulations can be easily parallelized.
 QuTiP is able to interact with the `mpi4py` package, and thus makes it possible to take advantage of the massive parallelization capabilities of high performance computing clusters.
-As part of *Example 2*, we demonstrate [at the end](#Monte-Carlo-Simulations-on-Computing-Clusters-via-MPI) how that example can be run in an MPI environment.
+As part of *Example 2*, we demonstrate [at the end](#monte-carlo-simulations-on-computing-clusters-via-mpi) how that example can be run in an MPI environment.
 
 ```python
 import matplotlib.pyplot as plt
@@ -45,7 +45,7 @@ import os
 <!-- #region -->
 ### Example 1: Two-level Atom in a Photonic Band Gap
 
-We discuss here the master equation for a 2-level atom in a photonic band gap based on Ref. [\[3\]](#References).
+We discuss here the master equation for a 2-level atom in a photonic band gap based on Ref. [\[3\]](#references).
 The total Hamiltonian describing the 2-level system plus the radiation field in a three-dimensional periodic dielectric is 
 
 $$ H = \sum_\lambda \hbar \omega_\lambda a^\dagger_\lambda a_\lambda + \omega \sigma_z + i\hbar \sum_\lambda g_\lambda (a_\lambda^\dagger\sigma_- - \sigma_+ a_\lambda) $$
@@ -67,7 +67,7 @@ where $|1,\{0\}\rangle$ is the excited 2-level state with the radiation field in
 The functions $c_\lambda(t)$ are defined as
 $$c_\lambda(t) = g_\lambda \int_0^t c(\tau) e^{i(\omega_\lambda-\omega)\tau} d\tau$$
 
-and $c(t)$ is the complicated expression defined in the code below (see Eq. (2.21) of Ref. [\[3\]](#References)).
+and $c(t)$ is the complicated expression defined in the code below (see Eq. (2.21) of Ref. [\[3\]](#references)).
 It depends on the two parameters
 
 $$ \begin{aligned}
@@ -76,7 +76,7 @@ $$ \begin{aligned}
 \end{aligned} $$
 where $d$ is the absolute value of the atomic dipole moment.
 
-Finally, the field modes can be traced out exactly [\[4\]](#References) to obtain the master equation
+Finally, the field modes can be traced out exactly [\[4\]](#references) to obtain the master equation
 
 $$ \frac{d}{dt} \rho(t) = -2i S(t) [\sigma_+\sigma_-,\rho(t)] + \Gamma(t) \left(\sigma_-\rho(t)\sigma_+ -\frac{1}{2}\{\sigma_+\sigma_-,\rho(t)\}\right) , $$
 
@@ -334,7 +334,7 @@ Here, $b_k$, $b_k^\dagger$ are bosonic ladder operators and $\sigma^{(j)}_\pm=(\
 Further, $\omega_j$ and $\epsilon_k$ denote the characteristic frequencies of the qubits and the bath modes, and $g_k$ are coupling constants.
 The initial state of the total system is $\rho_{2q}\otimes |0\rangle\langle 0|$, where $\rho_{2q}$ is the two-qubit initial state and $|0\rangle\langle 0|$ the boson bath vacuum state.
 
-Following Ref. [\[5\]](#References), we perform Born-Markov approximations to arrive at the following Redfield master equation for the qubits:
+Following Ref. [\[5\]](#references), we perform Born-Markov approximations to arrive at the following Redfield master equation for the qubits:
 $$ \quad \frac{d}{dt}\rho(t) = -i \sum_{i,j=1}^2 A_{i,j} [\sigma_+^{(j)}\sigma_-^{(i)},\rho(t)] + \sum_{i,j=1}^2B_{i,j}\left( \sigma_-^{(i)}\rho(t)\sigma_+^{(j)} -\frac{1}{2}\{\sigma_+^{(j)}\sigma_-^{(i)},\rho(t)\}\right) . \tag 1 $$
 Here, we introduced the matrices 
 $$ \begin{aligned}
@@ -728,7 +728,7 @@ else:
     print('No result files found.')
 ```
 
-We can now do the following analysis, adopted from Ref. [\[6\]](#References).
+We can now do the following analysis, adopted from Ref. [\[6\]](#references).
 
 Let $k \leq N$, where $N$ is the total number of trajectories.
 Let $I = [0, 10]$ be the total considered time interval, and let

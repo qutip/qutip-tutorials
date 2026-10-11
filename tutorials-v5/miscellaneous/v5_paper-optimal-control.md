@@ -23,9 +23,9 @@ In the case for quantum computing, finding the optimal parameters to achieve a d
 Optimization parameters may include amplitude, frequency, duration, bandwidth, etc. and are generally directly dependent on the considered hardware.
 
 To find these optimal control parameters, several methods have been developed.
-Here, we look at three algorithms: *gradient ascent pulse engineering* (GRAPE) [\[3\]](#References), *chopped random basis* (CRAB) [\[4\]](#References) and *gradient optimization af analytic controls* (GOAT) [\[5\]](#References).
+Here, we look at three algorithms: *gradient ascent pulse engineering* (GRAPE) [\[3\]](#references), *chopped random basis* (CRAB) [\[4\]](#references) and *gradient optimization af analytic controls* (GOAT) [\[5\]](#references).
 Whereas the former two have been part of the `QuTiP-QTRL` package of QuTiPv4, the latter is a new addition in version 5.
-Althogether, these algorithms are now included in the new `QuTiP-QOC` package that also adds `QuTiP-JAX` [\[6\]](#References) integration via the JAX optimization technique (JOPT).
+Althogether, these algorithms are now included in the new `QuTiP-QOC` package that also adds `QuTiP-JAX` [\[6\]](#references) integration via the JAX optimization technique (JOPT).
 
 ```python
 import matplotlib.pyplot as plt
