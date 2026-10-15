@@ -22,7 +22,7 @@ User-defined gate added by: Boxi Li (etamin1201@gmail.com)
 For more information about QuTiP see [http://qutip.org](http://qutip.org)
 
 #### Installation: 
-The circuit image visualization requires LaTeX and [ImageMagick](https://imagemagick.org/index.php) for display. The module automatically process the LaTeX code for plotting the circuit, generate the pdf and convert it to the png format.
+The circuit image visualization requires LaTeX and [ImageMagick](https://imagemagick.org/) for display. The module automatically process the LaTeX code for plotting the circuit, generate the pdf and convert it to the png format.
 On Mac and Linux, ImageMagick can be easily installed with the command `conda install imagemagick` if you have conda installed.
 Otherwise, please follow the installation instructions on the ImageMagick documentation.
 

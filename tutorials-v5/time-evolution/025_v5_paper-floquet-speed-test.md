@@ -322,7 +322,7 @@ plt.show()
 
 ## References
 
-[1] [Floquet, Annales scientifiques de l’École Normale Supérieure (1883)](http://www.numdam.org/articles/10.24033/asens.220/)
+[1] [Floquet, Annales scientifiques de l’École Normale Supérieure (1883)](https://doi.org/10.24033/asens.220)
 
 [2] [Shirley, Phys.Rev. (1965)](https://link.aps.org/doi/10.1103/PhysRev.138.B979)
 
