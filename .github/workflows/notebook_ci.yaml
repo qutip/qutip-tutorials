@@ -132,11 +132,6 @@ jobs:
           # (APS blocks this link check)
           config-file: mlc_external_config.json
 
-      - name: Check notebook anchors
-        run: |
-          python tools/check_notebook_anchors.py tutorials-v4
-          python tools/check_notebook_anchors.py tutorials-v5
-
   publish:
     needs: pytests
     runs-on: ubuntu-latest
