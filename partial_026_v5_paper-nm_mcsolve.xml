@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="4.775" timestamp="2026-04-29T16:10:06.913266+09:00" hostname="BOXI-LAPTOP"><testcase classname="tmp_nbcheck_partial_v5_026_v5_paper-nm_mcsolve.026_v5_paper-nm_mcsolve.references.ipynb" name="026_v5_paper-nm_mcsolve.references.ipynb" time="4.733"><failure message="#x1B[31mPermissionError#x1B[39m: [WinError 5] 拒绝访问。">---------------------------------------------------------------------------
+mc_sol = nm_mcsolve(
+    [[H, A]],
+    initial_state,
+    tlist,
+    ops_and_rates=[(sigmam(), gamma)],
+    ntraj=1_000,
+    options={"map": "parallel"},
+    seeds=0,
+)
+#x1B[31m---------------------------------------------------------------------------#x1B[39m
+#x1B[31mPermissionError#x1B[39m                           Traceback (most recent call last)
+#x1B[36mCell#x1B[39m#x1B[36m #x1B[39m#x1B[32mIn[7]#x1B[39m#x1B[32m, line 1#x1B[39m
+#x1B[32m----&gt; #x1B[39m#x1B[32m1#x1B[39m mc_sol = nm_mcsolve(
+#x1B[32m      2#x1B[39m     [[H, A]],
+#x1B[32m      3#x1B[39m     initial_state,
+#x1B[32m      4#x1B[39m     tlist,
+
+#x1B[36mFile #x1B[39m#x1B[32m~\miniconda3\envs\test-environment-v5\Lib\site-packages\qutip\solver\nm_mcsolve.py:214#x1B[39m, in #x1B[36mnm_mcsolve#x1B[39m#x1B[34m(H, state, tlist, ops_and_rates, _e_ops, _ntraj, e_ops, ntraj, args, options, seeds, target_tol, timeout, **kwargs)#x1B[39m
+#x1B[32m    208#x1B[39m ops_and_rates = [
+#x1B[32m    209#x1B[39m     _parse_op_and_rate(op, rate, tlist=tlist, args=args #x1B[38;5;129;01mor#x1B[39;00m {})
+#x1B[32m    210#x1B[39m     #x1B[38;5;28;01mfor#x1B[39;00m op, rate #x1B[38;5;129;01min#x1B[39;00m ops_and_rates
+#x1B[32m    211#x1B[39m ]
+#x1B[32m    213#x1B[39m nmmc = NonMarkovianMCSolver(H, ops_and_rates, options=options)
+#x1B[32m--&gt; #x1B[39m#x1B[32m214#x1B[39m result = #x1B[30;43mnmmc#x1B[39;49m#x1B[30;43m.#x1B[39;49m#x1B[30;43mrun#x1B[39;49m#x1B[30;43m(#x1B[39;49m#x1B[30;43mstate#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43mtlist#x1B[39;49m#x1B[30;43m=#x1B[39;49m#x1B[30;43mtlist#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43mntraj#x1B[39;49m#x1B[30;43m=#x1B[39;49m#x1B[30;43mntraj#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43me_ops#x1B[39;49m#x1B[30;43m=#x1B[39;49m#x1B[30;43me_ops#x1B[39;49m#x1B[30;43m,#x1B[39;49m
+#x1B[32m    215#x1B[39m #x1B[30;43m                  #x1B[39;49m#x1B[30;43mseeds#x1B[39;49m#x1B[30;43m=#x1B[39;49m#x1B[30;43mseeds#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43mtarget_tol#x1B[39;49m#x1B[30;43m=#x1B[39;49m#x1B[30;43mtarget_tol#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43mtimeout#x1B[39;49m#x1B[30;43m=#x1B[39;49m#x1B[30;43mtimeout#x1B[39;49m#x1B[30;43m)#x1B[39;49m
+#x1B[32m    216#x1B[39m #x1B[38;5;28;01mreturn#x1B[39;00m result
+
+#x1B[36mFile #x1B[39m#x1B[32m~\miniconda3\envs\test-environment-v5\Lib\site-packages\qutip\solver\nm_mcsolve.py:590#x1B[39m, in #x1B[36mNonMarkovianMCSolver.run#x1B[39m#x1B[34m(self, state, tlist, ntraj, args, **kwargs)#x1B[39m
+#x1B[32m    587#x1B[39m #x1B[38;5;28mself#x1B[39m._argument(args)
+#x1B[32m    589#x1B[39m #x1B[38;5;28mself#x1B[39m._martingale.initialize(tlist[#x1B[32m0#x1B[39m], cache=tlist)
+#x1B[32m--&gt; #x1B[39m#x1B[32m590#x1B[39m result = #x1B[30;43msuper#x1B[39;49m#x1B[30;43m(#x1B[39;49m#x1B[30;43m)#x1B[39;49m#x1B[30;43m.#x1B[39;49m#x1B[30;43mrun#x1B[39;49m#x1B[30;43m(#x1B[39;49m#x1B[30;43mstate#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43mtlist#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43mntraj#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43m*#x1B[39;49m#x1B[30;43m*#x1B[39;49m#x1B[30;43mkwargs#x1B[39;49m#x1B[30;43m)#x1B[39;49m
+#x1B[32m    591#x1B[39m #x1B[38;5;28mself#x1B[39m._martingale.reset()
+#x1B[32m    593#x1B[39m #x1B[38;5;28;01mreturn#x1B[39;00m result
+
+#x1B[36mFile #x1B[39m#x1B[32m~\miniconda3\envs\test-environment-v5\Lib\site-packages\qutip\solver\mcsolve.py:699#x1B[39m, in #x1B[36mMCSolver.run#x1B[39m#x1B[34m(self, state, tlist, ntraj, args, e_ops, target_tol, timeout, seeds)#x1B[39m
+#x1B[32m    695#x1B[39m         #x1B[38;5;28;01mreturn#x1B[39;00m #x1B[38;5;28msuper#x1B[39m()._run_mixed(
+#x1B[32m    696#x1B[39m             state, tlist, ntraj, args=args, e_ops=e_ops,
+#x1B[32m    697#x1B[39m             timeout=timeout, seeds=seeds)
+#x1B[32m    698#x1B[39m     #x1B[38;5;28;01melse#x1B[39;00m:
+#x1B[32m--&gt; #x1B[39m#x1B[32m699#x1B[39m         #x1B[38;5;28;01mreturn#x1B[39;00m #x1B[30;43msuper#x1B[39;49m#x1B[30;43m(#x1B[39;49m#x1B[30;43m)#x1B[39;49m#x1B[30;43m.#x1B[39;49m#x1B[30;43mrun#x1B[39;49m#x1B[30;43m(#x1B[39;49m
+#x1B[32m    700#x1B[39m #x1B[30;43m            #x1B[39;49m#x1B[30;43mstate#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43mtlist#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43mntraj#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43margs#x1B[39;49m#x1B[30;43m=#x1B[39;49m#x1B[30;43margs#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43me_ops#x1B[39;49m#x1B[30;43m=#x1B[39;49m#x1B[30;43me_ops#x1B[39;49m#x1B[30;43m,#x1B[39;49m
+#x1B[32m    701#x1B[39m #x1B[30;43m            #x1B[39;49m#x1B[30;43mtarget_tol#x1B[39;49m#x1B[30;43m=#x1B[39;49m#x1B[30;43mtarget_tol#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43mtimeout#x1B[39;49m#x1B[30;43m=#x1B[39;49m#x1B[30;43mtimeout#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43mseeds#x1B[39;49m#x1B[30;43m=#x1B[39;49m#x1B[30;43mseeds#x1B[39;49m#x1B[30;43m)#x1B[39;49m
+#x1B[32m    702#x1B[39m #x1B[38;5;28;01mif#x1B[39;00m is_mixed:
+#x1B[32m    703#x1B[39m     #x1B[38;5;28;01mreturn#x1B[39;00m #x1B[38;5;28mself#x1B[39m._run_improved_sampling_mixed(
+#x1B[32m    704#x1B[39m         state, tlist, ntraj, args=args, e_ops=e_ops,
+#x1B[32m    705#x1B[39m         timeout=timeout, seeds=seeds)
+
+#x1B[36mFile #x1B[39m#x1B[32m~\miniconda3\envs\test-environment-v5\Lib\site-packages\qutip\solver\multitraj.py:250#x1B[39m, in #x1B[36mMultiTrajSolver.run#x1B[39m#x1B[34m(self, state, tlist, ntraj, args, e_ops, target_tol, timeout, seeds)#x1B[39m
+#x1B[32m    240#x1B[39m seeds, result, map_func, map_kw, state0 = #x1B[38;5;28mself#x1B[39m._initialize_run(
+#x1B[32m    241#x1B[39m     state,
+#x1B[32m    242#x1B[39m     ntraj,
+#x1B[32m   (...)#x1B[39m#x1B[32m    247#x1B[39m     seeds=seeds,
+#x1B[32m    248#x1B[39m )
+#x1B[32m    249#x1B[39m start_time = time()
+#x1B[32m--&gt; #x1B[39m#x1B[32m250#x1B[39m #x1B[30;43mmap_func#x1B[39;49m#x1B[30;43m(#x1B[39;49m
+#x1B[32m    251#x1B[39m #x1B[30;43m    #x1B[39;49m#x1B[30;43mself#x1B[39;49m#x1B[30;43m.#x1B[39;49m#x1B[30;43m_run_one_traj#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43mseeds#x1B[39;49m#x1B[30;43m,#x1B[39;49m
+#x1B[32m    252#x1B[39m #x1B[30;43m    #x1B[39;49m#x1B[30;43m(#x1B[39;49m#x1B[30;43mstate0#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43mtlist#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43me_ops#x1B[39;49m#x1B[30;43m)#x1B[39;49m#x1B[30;43m,#x1B[39;49m
+#x1B[32m    253#x1B[39m #x1B[30;43m    #x1B[39;49m#x1B[30;43mreduce_func#x1B[39;49m#x1B[30;43m=#x1B[39;49m#x1B[30;43mresult#x1B[39;49m#x1B[30;43m.#x1B[39;49m#x1B[30;43madd#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43mmap_kw#x1B[39;49m#x1B[30;43m=#x1B[39;49m#x1B[30;43mmap_kw#x1B[39;49m#x1B[30;43m,#x1B[39;49m
+#x1B[32m    254#x1B[39m #x1B[30;43m    #x1B[39;49m#x1B[30;43mprogress_bar#x1B[39;49m#x1B[30;43m=#x1B[39;49m#x1B[30;43mself#x1B[39;49m#x1B[30;43m.#x1B[39;49m#x1B[30;43moptions#x1B[39;49m#x1B[30;43m[#x1B[39;49m#x1B[30;43m"#x1B[39;49m#x1B[30;43mprogress_bar#x1B[39;49m#x1B[30;43m"#x1B[39;49m#x1B[30;43m]#x1B[39;49m#x1B[30;43m,#x1B[39;49m
+#x1B[32m    255#x1B[39m #x1B[30;43m    #x1B[39;49m#x1B[30;43mprogress_bar_kwargs#x1B[39;49m#x1B[30;43m=#x1B[39;49m#x1B[30;43mself#x1B[39;49m#x1B[30;43m.#x1B[39;49m#x1B[30;43moptions#x1B[39;49m#x1B[30;43m[#x1B[39;49m#x1B[30;43m"#x1B[39;49m#x1B[30;43mprogress_kwargs#x1B[39;49m#x1B[30;43m"#x1B[39;49m#x1B[30;43m]#x1B[39;49m
+#x1B[32m    256#x1B[39m #x1B[30;43m#x1B[39;49m#x1B[30;43m)#x1B[39;49m
+#x1B[32m    257#x1B[39m result.stats[#x1B[33m'#x1B[39m#x1B[33mrun time#x1B[39m#x1B[33m'#x1B[39m] = time() - start_time
+#x1B[32m    258#x1B[39m #x1B[38;5;28;01mreturn#x1B[39;00m result
+
+#x1B[36mFile #x1B[39m#x1B[32m~\miniconda3\envs\test-environment-v5\Lib\site-packages\qutip\solver\parallel.py:336#x1B[39m, in #x1B[36mparallel_map#x1B[39m#x1B[34m(task, values, task_args, task_kwargs, reduce_func, map_kw, progress_bar, progress_bar_kwargs)#x1B[39m
+#x1B[32m    331#x1B[39m #x1B[38;5;28;01mdef#x1B[39;00m#x1B[38;5;250m #x1B[39m#x1B[34mshutdown_executor#x1B[39m(executor, _):
+#x1B[32m    332#x1B[39m     #x1B[38;5;66;03m# Since `ProcessPoolExecutor` leaves no other option,#x1B[39;00m
+#x1B[32m    333#x1B[39m     #x1B[38;5;66;03m# we wait for all worker processes to finish their current task#x1B[39;00m
+#x1B[32m    334#x1B[39m     executor.shutdown()
+#x1B[32m--&gt; #x1B[39m#x1B[32m336#x1B[39m #x1B[38;5;28;01mreturn#x1B[39;00m #x1B[30;43m_generic_pmap#x1B[39;49m#x1B[30;43m(#x1B[39;49m
+#x1B[32m    337#x1B[39m #x1B[30;43m    #x1B[39;49m#x1B[30;43mtask#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43mvalues#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43mtask_args#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43mtask_kwargs#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43mreduce_func#x1B[39;49m#x1B[30;43m,#x1B[39;49m
+#x1B[32m    338#x1B[39m #x1B[30;43m    #x1B[39;49m#x1B[30;43mmap_kw#x1B[39;49m#x1B[30;43m[#x1B[39;49m#x1B[30;43m'#x1B[39;49m#x1B[30;43mtimeout#x1B[39;49m#x1B[30;43m'#x1B[39;49m#x1B[30;43m]#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43mmap_kw#x1B[39;49m#x1B[30;43m[#x1B[39;49m#x1B[30;43m'#x1B[39;49m#x1B[30;43mfail_fast#x1B[39;49m#x1B[30;43m'#x1B[39;49m#x1B[30;43m]#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43mmap_kw#x1B[39;49m#x1B[30;43m[#x1B[39;49m#x1B[30;43m'#x1B[39;49m#x1B[30;43mnum_cpus#x1B[39;49m#x1B[30;43m'#x1B[39;49m#x1B[30;43m]#x1B[39;49m#x1B[30;43m,#x1B[39;49m
+#x1B[32m    339#x1B[39m #x1B[30;43m    #x1B[39;49m#x1B[30;43mprogress_bar#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43mprogress_bar_kwargs#x1B[39;49m#x1B[30;43m,#x1B[39;49m
+#x1B[32m    340#x1B[39m #x1B[30;43m    #x1B[39;49m#x1B[30;43msetup_executor#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43mextract_result#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43mshutdown_executor#x1B[39;49m
+#x1B[32m    341#x1B[39m #x1B[30;43m#x1B[39;49m#x1B[30;43m)#x1B[39;49m
+
+#x1B[36mFile #x1B[39m#x1B[32m~\miniconda3\envs\test-environment-v5\Lib\site-packages\qutip\solver\parallel.py:201#x1B[39m, in #x1B[36m_generic_pmap#x1B[39m#x1B[34m(task, values, task_args, task_kwargs, reduce_func, timeout, fail_fast, num_workers, progress_bar, progress_bar_kwargs, setup_executor, extract_result, shutdown_executor)#x1B[39m
+#x1B[32m    199#x1B[39m os.environ[#x1B[33m'#x1B[39m#x1B[33mQUTIP_IN_PARALLEL#x1B[39m#x1B[33m'#x1B[39m] = #x1B[33m'#x1B[39m#x1B[33mTRUE#x1B[39m#x1B[33m'#x1B[39m
+#x1B[32m    200#x1B[39m #x1B[38;5;28;01mtry#x1B[39;00m:
+#x1B[32m--&gt; #x1B[39m#x1B[32m201#x1B[39m     #x1B[38;5;28;01mwith#x1B[39;00m #x1B[30;43msetup_executor#x1B[39;49m#x1B[30;43m(#x1B[39;49m#x1B[30;43m)#x1B[39;49m #x1B[38;5;28;01mas#x1B[39;00m executor:
+#x1B[32m    202#x1B[39m         waiting = #x1B[38;5;28mset#x1B[39m()
+#x1B[32m    203#x1B[39m         i = #x1B[32m0#x1B[39m
+
+#x1B[36mFile #x1B[39m#x1B[32m~\miniconda3\envs\test-environment-v5\Lib\site-packages\qutip\solver\parallel.py:321#x1B[39m, in #x1B[36mparallel_map.&lt;locals&gt;.setup_executor#x1B[39m#x1B[34m()#x1B[39m
+#x1B[32m    320#x1B[39m #x1B[38;5;28;01mdef#x1B[39;00m#x1B[38;5;250m #x1B[39m#x1B[34msetup_executor#x1B[39m():
+#x1B[32m--&gt; #x1B[39m#x1B[32m321#x1B[39m     #x1B[38;5;28;01mreturn#x1B[39;00m #x1B[30;43mconcurrent#x1B[39;49m#x1B[30;43m.#x1B[39;49m#x1B[30;43mfutures#x1B[39;49m#x1B[30;43m.#x1B[39;49m#x1B[30;43mProcessPoolExecutor#x1B[39;49m#x1B[30;43m(#x1B[39;49m
+#x1B[32m    322#x1B[39m #x1B[30;43m        #x1B[39;49m#x1B[30;43mmax_workers#x1B[39;49m#x1B[30;43m=#x1B[39;49m#x1B[30;43mmap_kw#x1B[39;49m#x1B[30;43m[#x1B[39;49m#x1B[30;43m'#x1B[39;49m#x1B[30;43mnum_cpus#x1B[39;49m#x1B[30;43m'#x1B[39;49m#x1B[30;43m]#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43m*#x1B[39;49m#x1B[30;43m*#x1B[39;49m#x1B[30;43mctx_kw#x1B[39;49m#x1B[30;43m,#x1B[39;49m
+#x1B[32m    323#x1B[39m #x1B[30;43m    #x1B[39;49m#x1B[30;43m)#x1B[39;49m
+
+#x1B[36mFile #x1B[39m#x1B[32m~\miniconda3\envs\test-environment-v5\Lib\concurrent\futures\process.py:740#x1B[39m, in #x1B[36mProcessPoolExecutor.__init__#x1B[39m#x1B[34m(self, max_workers, mp_context, initializer, initargs, max_tasks_per_child)#x1B[39m
+#x1B[32m    728#x1B[39m #x1B[38;5;28mself#x1B[39m._cancel_pending_futures = #x1B[38;5;28;01mFalse#x1B[39;00m
+#x1B[32m    730#x1B[39m #x1B[38;5;66;03m# _ThreadWakeup is a communication channel used to interrupt the wait#x1B[39;00m
+#x1B[32m    731#x1B[39m #x1B[38;5;66;03m# of the main loop of executor_manager_thread from another thread (e.g.#x1B[39;00m
+#x1B[32m    732#x1B[39m #x1B[38;5;66;03m# when calling executor.submit or executor.shutdown). We do not use the#x1B[39;00m
+#x1B[32m   (...)#x1B[39m#x1B[32m    738#x1B[39m #x1B[38;5;66;03m# executor_manager_thread, since _ThreadWakeup.clear() is not protected#x1B[39;00m
+#x1B[32m    739#x1B[39m #x1B[38;5;66;03m# by a lock.#x1B[39;00m
+#x1B[32m--&gt; #x1B[39m#x1B[32m740#x1B[39m #x1B[38;5;28mself#x1B[39m._executor_manager_thread_wakeup = #x1B[30;43m_ThreadWakeup#x1B[39;49m#x1B[30;43m(#x1B[39;49m#x1B[30;43m)#x1B[39;49m
+#x1B[32m    742#x1B[39m #x1B[38;5;66;03m# Create communication channels for the executor#x1B[39;00m
+#x1B[32m    743#x1B[39m #x1B[38;5;66;03m# Make the call queue slightly larger than the number of processes to#x1B[39;00m
+#x1B[32m    744#x1B[39m #x1B[38;5;66;03m# prevent the worker processes from idling. But don't make it too big#x1B[39;00m
+#x1B[32m    745#x1B[39m #x1B[38;5;66;03m# because futures in the call queue cannot be cancelled.#x1B[39;00m
+#x1B[32m    746#x1B[39m queue_size = #x1B[38;5;28mself#x1B[39m._max_workers + EXTRA_QUEUED_CALLS
+
+#x1B[36mFile #x1B[39m#x1B[32m~\miniconda3\envs\test-environment-v5\Lib\concurrent\futures\process.py:72#x1B[39m, in #x1B[36m_ThreadWakeup.__init__#x1B[39m#x1B[34m(self)#x1B[39m
+#x1B[32m     70#x1B[39m #x1B[38;5;28mself#x1B[39m._closed = #x1B[38;5;28;01mFalse#x1B[39;00m
+#x1B[32m     71#x1B[39m #x1B[38;5;28mself#x1B[39m._lock = threading.Lock()
+#x1B[32m---&gt; #x1B[39m#x1B[32m72#x1B[39m #x1B[38;5;28mself#x1B[39m._reader, #x1B[38;5;28mself#x1B[39m._writer = #x1B[30;43mmp#x1B[39;49m#x1B[30;43m.#x1B[39;49m#x1B[30;43mPipe#x1B[39;49m#x1B[30;43m(#x1B[39;49m#x1B[30;43mduplex#x1B[39;49m#x1B[30;43m=#x1B[39;49m#x1B[30;43;01mFalse#x1B[39;49;00m#x1B[30;43m)#x1B[39;49m
+
+#x1B[36mFile #x1B[39m#x1B[32m~\miniconda3\envs\test-environment-v5\Lib\multiprocessing\context.py:63#x1B[39m, in #x1B[36mBaseContext.Pipe#x1B[39m#x1B[34m(self, duplex)#x1B[39m
+#x1B[32m     61#x1B[39m #x1B[38;5;250m#x1B[39m#x1B[33;03m'''Returns two connection object connected by a pipe'''#x1B[39;00m
+#x1B[32m     62#x1B[39m #x1B[38;5;28;01mfrom#x1B[39;00m#x1B[38;5;250m #x1B[39m#x1B[34;01m.#x1B[39;00m#x1B[34;01mconnection#x1B[39;00m#x1B[38;5;250m #x1B[39m#x1B[38;5;28;01mimport#x1B[39;00m Pipe
+#x1B[32m---&gt; #x1B[39m#x1B[32m63#x1B[39m #x1B[38;5;28;01mreturn#x1B[39;00m #x1B[30;43mPipe#x1B[39;49m#x1B[30;43m(#x1B[39;49m#x1B[30;43mduplex#x1B[39;49m#x1B[30;43m)#x1B[39;49m
+
+#x1B[36mFile #x1B[39m#x1B[32m~\miniconda3\envs\test-environment-v5\Lib\multiprocessing\connection.py:575#x1B[39m, in #x1B[36mPipe#x1B[39m#x1B[34m(duplex)#x1B[39m
+#x1B[32m    564#x1B[39m     obsize, ibsize = #x1B[32m0#x1B[39m, BUFSIZE
+#x1B[32m    566#x1B[39m h1 = _winapi.CreateNamedPipe(
+#x1B[32m    567#x1B[39m     address, openmode | _winapi.FILE_FLAG_OVERLAPPED |
+#x1B[32m    568#x1B[39m     _winapi.FILE_FLAG_FIRST_PIPE_INSTANCE,
+#x1B[32m   (...)#x1B[39m#x1B[32m    573#x1B[39m     _winapi.NULL
+#x1B[32m    574#x1B[39m     )
+#x1B[32m--&gt; #x1B[39m#x1B[32m575#x1B[39m h2 = #x1B[30;43m_winapi#x1B[39;49m#x1B[30;43m.#x1B[39;49m#x1B[30;43mCreateFile#x1B[39;49m#x1B[30;43m(#x1B[39;49m
+#x1B[32m    576#x1B[39m #x1B[30;43m    #x1B[39;49m#x1B[30;43maddress#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43maccess#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43m0#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43m_winapi#x1B[39;49m#x1B[30;43m.#x1B[39;49m#x1B[30;43mNULL#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43m_winapi#x1B[39;49m#x1B[30;43m.#x1B[39;49m#x1B[30;43mOPEN_EXISTING#x1B[39;49m#x1B[30;43m,#x1B[39;49m
+#x1B[32m    577#x1B[39m #x1B[30;43m    #x1B[39;49m#x1B[30;43m_winapi#x1B[39;49m#x1B[30;43m.#x1B[39;49m#x1B[30;43mFILE_FLAG_OVERLAPPED#x1B[39;49m#x1B[30;43m,#x1B[39;49m#x1B[30;43m #x1B[39;49m#x1B[30;43m_winapi#x1B[39;49m#x1B[30;43m.#x1B[39;49m#x1B[30;43mNULL#x1B[39;49m
+#x1B[32m    578#x1B[39m #x1B[30;43m    #x1B[39;49m#x1B[30;43m)#x1B[39;49m
+#x1B[32m    579#x1B[39m _winapi.SetNamedPipeHandleState(
+#x1B[32m    580#x1B[39m     h2, _winapi.PIPE_READMODE_MESSAGE, #x1B[38;5;28;01mNone#x1B[39;00m, #x1B[38;5;28;01mNone#x1B[39;00m
+#x1B[32m    581#x1B[39m     )
+#x1B[32m    583#x1B[39m overlapped = _winapi.ConnectNamedPipe(h1, overlapped=#x1B[38;5;28;01mTrue#x1B[39;00m)
+
+#x1B[31mPermissionError#x1B[39m: [WinError 5] 拒绝访问。</failure></testcase></testsuite></testsuites>
