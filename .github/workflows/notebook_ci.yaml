@@ -127,7 +127,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: tcort/github-action-markdown-link-check@v1
+      #Temporary fix: pin github-action-markdown-link-check to v1.1.2; see #168
+      - uses: tcort/github-action-markdown-link-check@v1.1.2
         with:
           use-quiet-mode: 'yes'
           folder-path: 'tutorials-v4, tutorials-v5'
