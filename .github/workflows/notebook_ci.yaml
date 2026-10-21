@@ -21,12 +21,11 @@ jobs:
             qutip-version: '4'
             qutip-install-spec: 'qutip==4.*'
             qip-install-spec: 'qutip-qip==0.4.*'
-            jax-install-spec: 'git+https://github.com/qutip/qutip-jax'
           - label: 'v5-release'
             qutip-version: '5'
             qutip-install-spec: 'qutip'
             qip-install-spec: 'qutip-qip'
-            jax-install-spec: 'qutip-jax==0.1.1'
+            jax-install-spec: 'qutip-jax'
           - label: 'v5-master'
             qutip-version: '5'
             qutip-install-spec: 'git+https://github.com/qutip/qutip@master'
@@ -69,7 +68,9 @@ jobs:
         python -m pip install "jax<0.7.0" "jax[cpu]<0.7.0" equinox diffrax
         python -m pip install "${{ matrix.qutip-install-spec }}"
         python -m pip install "${{ matrix.qip-install-spec }}"
-        python -m pip install --no-deps "${{ matrix.jax-install-spec }}"
+        if [[ "${{ matrix.qutip-version == '5' }}" ]]; then
+          python -m pip install --no-deps "${{ matrix.jax-install-spec }}"
+        fi
         python -m pip install --no-deps git+https://github.com/qutip/qutip-qtrl
         python -m pip install --no-deps git+https://github.com/qutip/qutip-qoc
 
@@ -130,8 +131,8 @@ jobs:
         with:
           use-quiet-mode: 'yes'
           folder-path: 'tutorials-v4, tutorials-v5'
-          #use config file to define 403 and 405 errors as valid links
-          #(APS blocks this link check)
+          # Use config file to define 403 and 405 errors as valid links
+          # (APS blocks this link check)
           config-file: mlc_external_config.json
 
   publish:
