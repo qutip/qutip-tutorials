@@ -21,7 +21,7 @@ With these classes, open quantum systems with various interactions and structure
 Most of the time, these solvers are given an initial state, a Hamiltonian and an environment that is often described using rates or coupling strengths.
 QuTiP then uses numerical integration to determine the time evolution of the system.
 
-QuTiP v5 [\[1\]](#References) introduces a unified interface for interacting with these solvers.
+QuTiP v5 [\[1\]](#references) introduces a unified interface for interacting with these solvers.
 This new interface is class-based, allowing users to instantiate a solver object for a specific problem.
 This can be useful when the same Hamiltonian data is reused with different initial conditions, time steps or other options.
 A noticable speed-up can thus be achieved if solvers are reused multiple times.
@@ -327,7 +327,7 @@ plt.show()
 
 As mentioned before, QuTiP's master equation solver can be used to solve any other master equation.
 By using `spre()`, `spost()` and `sprepost()`, we can manually construct such equations.
-These functions specifically convert the operators from the original Hilbert space to operators in the double space which is internally used by QuTiP to optimize computations (more details on this can be found in the [QuTiPv5 paper](#references)).
+These functions specifically convert the operators from the original Hilbert space to operators in the double space which is internally used by QuTiP to optimize computations (more details on this can be found in the [QuTiPv5 paper](#References)).
 
 For example, the Lindbladian corresponding to the master equation of the previous example can be constructed manually via:
 
