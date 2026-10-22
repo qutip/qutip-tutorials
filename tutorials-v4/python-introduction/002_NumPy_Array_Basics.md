@@ -107,7 +107,7 @@ This can also be used to create more complicated arrays
 np.array([2.0 * k**0.563 for k in range(0, 10, 2)])
 ```
 
-### Array Creation in NumPy (see [NumPy Documentation](http://docs.scipy.org/doc/numpy/reference/routines.array-creation.html) for more info.)
+### Array Creation in NumPy (see [NumPy Documentation](https://numpy.org/doc/stable/reference/routines.array-creation.html) for more info.)
 
 
 NumPy has several extremely important array creation functions that will make you life much easier. For example, creating arrays of all zeros or ones is trivial. 
@@ -120,7 +120,7 @@ np.zeros(5)
 np.ones(10)
 ```
 
-However, the most useful functions are [**```arange```**](http://docs.scipy.org/doc/numpy/reference/generated/numpy.arange.html#numpy.arange) which generates evenly spaced values within a given interval in a similar way that the ```range``` function did, and [**```linspace```**](http://docs.scipy.org/doc/numpy/reference/generated/numpy.linspace.html) that makes a linear array of points from a starting to an ending value.
+However, the most useful functions are [**```arange```**](https://numpy.org/doc/stable/reference/generated/numpy.arange.html) which generates evenly spaced values within a given interval in a similar way that the ```range``` function did, and [**```linspace```**](https://numpy.org/doc/stable/reference/generated/numpy.linspace.html) that makes a linear array of points from a starting to an ending value.
 
 ```python
 np.arange(5)
@@ -191,7 +191,7 @@ Recall that none of these operations worked on Python lists.
 ## Using NumPy Functions on Arrays
 
 
-Remember that NumPy has a large builtin [collection of mathematical functions](http://docs.scipy.org/doc/numpy/reference/routines.math.html).  When using NumPy arrays as our data structure, these functions become even more powerful as we can apply the same function elementwise over the entire array very quickly.  Again, this is called vectorization and can speed up your code by many times.
+Remember that NumPy has a large builtin [collection of mathematical functions](https://numpy.org/doc/stable/reference/routines.math.html).  When using NumPy arrays as our data structure, these functions become even more powerful as we can apply the same function elementwise over the entire array very quickly.  Again, this is called vectorization and can speed up your code by many times.
 
 ```python
 x = np.linspace(-np.pi, np.pi, 10)

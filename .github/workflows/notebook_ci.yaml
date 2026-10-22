@@ -25,30 +25,35 @@ jobs:
             qutip-version: '5'
             qutip-install-spec: 'qutip'
             qip-install-spec: 'qutip-qip'
+            jax-install-spec: 'qutip-jax'
           - label: 'v5-master'
             qutip-version: '5'
             qutip-install-spec: 'git+https://github.com/qutip/qutip@master'
             qip-install-spec: 'git+https://github.com/qutip/qutip-qip@master'
+            jax-install-spec: 'git+https://github.com/qutip/qutip-jax'
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Setup Conda
-      uses: conda-incubator/setup-miniconda@v3
+      uses: conda-incubator/setup-miniconda@v4
       with:
         miniforge-version: latest
         activate-environment: test-environment-v${{ matrix.qutip-version }}
+        channels: conda-forge
+        conda-remove-defaults: "true"
 
     - name: Get Date
       id: get-date
-      run: echo "::set-output name=today::$(/bin/date -u '+%Y%m%d')"
+      run: echo "today=$(/bin/date -u '+%Y%m%d')" >> "$GITHUB_OUTPUT"
       shell: bash
 
     - name: Cache Conda env
-      uses: actions/cache@v3
+      uses: actions/cache@v5
       with:
         path: ${{ env.CONDA }}/envs
         key: conda-${{ runner.os }}--${{ runner.arch }}--${{ steps.get-date.outputs.today }}-${{ hashFiles(format('test_environment-v{0}.yml', matrix.qutip-version)) }}-${{ env.CACHE_NUMBER }}-${{ matrix.label }}
+      env:
         # Increase this value to reset cache if etc/example-environment.yml has not changed
         CACHE_NUMBER: 0
       id: cache
@@ -63,7 +68,9 @@ jobs:
         python -m pip install "jax<0.7.0" "jax[cpu]<0.7.0" equinox diffrax
         python -m pip install "${{ matrix.qutip-install-spec }}"
         python -m pip install "${{ matrix.qip-install-spec }}"
-        python -m pip install --no-deps git+https://github.com/qutip/qutip-jax
+        if [[ "${{ matrix.qutip-version == '5' }}" ]]; then
+          python -m pip install --no-deps "${{ matrix.jax-install-spec }}"
+        fi
         python -m pip install --no-deps git+https://github.com/qutip/qutip-qtrl
         python -m pip install --no-deps git+https://github.com/qutip/qutip-qoc
 
@@ -109,7 +116,7 @@ jobs:
       run: cp tutorials-v5/miscellaneous/cuQuantum_backend.ipynb notebooks/miscellaneous/
 
     - name: Create Notebook Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: executed-notebooks-${{ matrix.label }}
         path: |
@@ -119,13 +126,14 @@ jobs:
   markdown-link-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: tcort/github-action-markdown-link-check@v1
+      - uses: actions/checkout@v5
+      #Temporary fix: pin github-action-markdown-link-check to v1.1.2; see #168
+      - uses: tcort/github-action-markdown-link-check@v1.1.2
         with:
           use-quiet-mode: 'yes'
           folder-path: 'tutorials-v4, tutorials-v5'
-          #use config file to define 403 and 405 errors as valid links
-          #(APS blocks this link check)
+          # Use config file to define 403 and 405 errors as valid links
+          # (APS blocks this link check)
           config-file: mlc_external_config.json
 
   publish:
@@ -133,13 +141,13 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.repository == 'qutip/qutip-tutorials' && github.ref == 'refs/heads/main' }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v7
         with:
           name: executed-notebooks-v4-release
           path: publish/tutorials-v4
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: executed-notebooks-v5-release
           path: publish/tutorials-v5

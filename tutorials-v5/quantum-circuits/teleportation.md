@@ -19,7 +19,6 @@ from math import sqrt
 
 from qutip import about, basis, tensor
 from qutip_qip.circuit import QubitCircuit
-from qutip_qip.operations import Measurement
 ```
 
 ## Introduction 
@@ -58,11 +57,12 @@ $|01⟩ \rightarrow Z$ \
 $|10⟩ \rightarrow X$ \
 $|11⟩ \rightarrow ZX$ 
 
-The final circuit mathematically must result in the third qubit taking the state $|\psi⟩$. 
+The final circuit mathematically must result in the third qubit taking the state $|\psi⟩$. To inspect that output, we append a measurement of the third qubit. It reuses `c0` only after the classical controls have been applied, so it does not affect the teleportation protocol.
 
 ```python
 teleportation.add_gate("X", targets=[2], classical_controls=[0])
 teleportation.add_gate("Z", targets=[2], classical_controls=[1])
+teleportation.add_measurement("M2", targets=[2], classical_store=0)
 ```
 
 Finally, our teleportation circuit is ready to run, we can view the circuit structure using the following command. 
@@ -87,25 +87,27 @@ a = 1 / sqrt(2) * basis(2, 0) + 1 / sqrt(2) * basis(2, 1)
 state = tensor(a, basis(2, 0), basis(2, 0))
 ```
 
-We can confirm our state is initialized correctly by observing the measurment statistics on the first qubit, followed by which we run the circuit.
+To inspect the input without changing the teleportation circuit, we use a separate circuit that measures its first qubit. The result contains the collapsed states and their probabilities.
 
 ```python
-initial_measurement = Measurement("start", targets=[0])
-initial_measurement.measurement_comp_basis(state)
+initial_measurement = QubitCircuit(3, num_cbits=1)
+initial_measurement.add_measurement("M", targets=[0], classical_store=0)
+initial_results = initial_measurement.run_statistics(state)
+initial_results.final_states, initial_results.probabilities
 ```
 
-We can run the circuit using the `QubitCircuit.run()` function which provided the initial state-vector (or density matrix) initiates one run on the circuit (including sampling any intermediate measurements) and providing the final results (any classical bits can also be explicitly set using the argument `cbits`). The results are returned as a `Result` object. The result states can be accessed through the `get_states()` function where the argument `index=0` specifies the first(only) result should be returned
+We can run the circuit using `QubitCircuit.run()`. It evolves the supplied state vector (or density matrix), samples intermediate measurements, and returns the final state. Classical bits can be set explicitly with the `cbits` argument.
 
 ```python
 state_final = teleportation.run(state)
 print(state_final)
 ```
 
-After running, we can see the measurement statistics on the last qubit to see that the qubit is teleported correctly. 
+The final measurement is part of the teleportation circuit. Running the circuit statistics shows the collapsed output states and their probabilities.
 
 ```python
-final_measurement = Measurement("start", targets=[2])
-final_measurement.measurement_comp_basis(state_final)
+final_results = teleportation.run_statistics(state)
+final_results.final_states, final_results.probabilities
 ```
 
 ### Example 2 
@@ -113,8 +115,10 @@ final_measurement.measurement_comp_basis(state_final)
 
 ```python
 state = tensor(basis(2, 1), basis(2, 0), basis(2, 0))
-initial_measurement = Measurement("start", targets=[0])
-initial_measurement.measurement_comp_basis(state)
+
+# The same measurement circuit gives the input statistics for |1>.
+initial_results = initial_measurement.run_statistics(state)
+initial_results.final_states, initial_results.probabilities
 ```
 
 ```python
@@ -122,20 +126,11 @@ state_final = teleportation.run(state)
 print(state_final)
 ```
 
-```python
-final_measurement = Measurement("start", targets=[2])
-final_measurement.measurement_comp_basis(state_final)
-```
-
-Another useful feature of the circuit module is the **QubitCircuit.run_statistics()** feature which provides the opportunity to gather all the possible output states of the circuit along with their output probabilities. Again, the results are returned as a `Result` object. The result states and respective probabilites can be accessed through the `get_results()` function. 
+Another useful feature of the circuit module is **`QubitCircuit.run_statistics()`**, which gathers all possible output states and their probabilities. The returned result exposes these through its `final_states` and `probabilities` attributes.
 
 ```python
-results = teleportation.run_statistics(state)
-results.probabilities
-```
-
-```python
-results.final_states
+final_results = teleportation.run_statistics(state)
+final_results.final_states, final_results.probabilities
 ```
 
 ```python

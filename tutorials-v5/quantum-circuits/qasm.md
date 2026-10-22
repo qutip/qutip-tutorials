@@ -22,7 +22,7 @@ This notebook introduces the [OpenQASM](https://github.com/Qiskit/openqasm) impo
 ```python
 import numpy as np
 from qutip import about, basis, rand_ket, tensor
-from qutip_qip.operations import Measurement
+from qutip_qip.circuit import QubitCircuit
 from qutip_qip.operations import gate_sequence_product
 from qutip_qip.qasm import read_qasm, print_qasm
 ```
@@ -114,18 +114,22 @@ teleportation = read_qasm(qasm_str, strmode=True)
 The above warning is expected to inform the user that the import from QASM to QuTiP does not retain any information about the different qubit/classical bit register names. This could potentially be an issue when the circuit is exported if the user wants to maintain the consistency. 
 
 
-We can quickly check that the teleportation circuit works properly by teleporting the first qubit into the third qubit. 
+We can quickly check that the teleportation circuit works properly by teleporting the first qubit into the third qubit. We first measure the input with a separate circuit to obtain its probability distribution. We then append a measurement of the output qubit to the teleportation circuit. This final measurement reuses `c0` after it has been used for classical control, so we can group the final branches by that bit and compare the two distributions.
 
 ```python
 state = tensor(rand_ket(2), basis(2, 0), basis(2, 0))
 
-initial_measurement = Measurement("start", targets=[0])
-_, initial_probabilities = initial_measurement.measurement_comp_basis(state)
+initial_measurement = QubitCircuit(3, num_cbits=1)
+initial_measurement.add_measurement("M", targets=[0], classical_store=0)
+initial_results = initial_measurement.run_statistics(state)
+initial_probabilities = initial_results.get_probabilities()
 
-state_final = teleportation.run(state)
+teleportation.add_measurement("M2", targets=[2], classical_store=0)
+results = teleportation.run_statistics(state)
 
-final_measurement = Measurement("start", targets=[2])
-_, final_probabilities = final_measurement.measurement_comp_basis(state_final)
+final_probabilities = np.zeros(2)
+for probability, cbits in zip(results.get_probabilities(), results.get_cbits()):
+    final_probabilities[cbits[0]] += probability
 
 np.testing.assert_allclose(initial_probabilities, final_probabilities)
 ```
