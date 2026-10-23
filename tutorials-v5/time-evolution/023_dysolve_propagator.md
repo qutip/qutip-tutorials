@@ -502,3 +502,11 @@ plt.legend()
 ```python
 qutip.about()
 ```
+
+### Testing
+
+```python
+assert np.allclose(result_dysolve.expect[0], result_sesolve.expect[0], atol=1e-5)
+assert np.allclose(result_dysolve_2.expect[0], result_sesolve.expect[0], atol=1e-5)
+assert np.allclose(result_dy.expect[0], result_ref.expect[0], atol=1e-5)
+```
