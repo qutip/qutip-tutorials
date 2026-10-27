@@ -44,4 +44,6 @@ This collection of examples from the paper illustrates how to use QuTiP's HEOM t
 
 * [Example 5b: Discrete boson coupled to an impurity + fermionic leads](./heom-5b-fermions-discrete-boson-model.ipynb)
 
+* [Example 6: PETSc Backend for HEOM](./heom-6-petsc-backend.ipynb)
+
 <!-- markdown-link-check-enable -->
