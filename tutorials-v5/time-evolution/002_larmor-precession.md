@@ -92,11 +92,11 @@ We start by defining two functions for the field strength of the magnetic field.
 
 
 ```python
-def linear(t, args):
+def linear(t, **kwargs):
     return 0.3 * t
 
 
-def periodic(t, args):
+def periodic(t, **kwargs):
     return np.cos(0.5 * t)
 
 
