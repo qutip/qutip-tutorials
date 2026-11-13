@@ -19,7 +19,7 @@ Authors: J.R. Johansson and P.D. Nation
 Updated by: M. Gobbo (2024)
 
 ### Introduction
-In this notebook, we will find the steady-state of a driven qubit using the `steadystate()`, `propagator_steadystate()`, and `steadystate_floquet()` solver methods. The results will be compared with the master equation solver `mesolve()` implemented in QuTiP.
+In this notebook, we will find the steady-state of a driven qubit using the `steadystate()`, `propagator_steadystate()`, and `steadystate_fourier()` solver methods. The results will be compared with the master equation solver `mesolve()` implemented in QuTiP.
 
 You can also find more on solving for steady-state solutions with QuTiP [here](https://qutip.readthedocs.io/en/latest/guide/guide-steady.html).
 
@@ -41,7 +41,7 @@ from qutip import (
     propagator_steadystate,
     sigmax,
     sigmaz,
-    steadystate_floquet,
+    steadystate_fourier,
 )
 ```
 
@@ -156,16 +156,16 @@ rho_pss = propagator_steadystate(U)
 prob_pss = expect(psi_1 * psi_1.dag(), rho_pss)
 ```
 
-### Floquet method
-In this last case, the `steadystate_floquet` method computes the effective-steady state for a driven system with a time-dependent sinusoidal term. From `H0` using `c_ops` and `H1` we build their respective Liouvillian superoperator: $\mathcal{L}_0$, $\mathcal{L}_m$ and $\mathcal{L}_p$. The first term is associated with the non-driving Hamiltonian while the last two terms are the positive and negative frequency of the driving Hamiltonian. Overall we have
+### Fourier method
+In this last case, the `steadystate_fourier` method computes the effective-steady state for a driven system with a time-dependent sinusoidal term. From `H0` using `c_ops` and `H1` we build their respective Liouvillian superoperator: $\mathcal{L}_0$, $\mathcal{L}_m$ and $\mathcal{L}_p$. The first term is associated with the non-driving Hamiltonian while the last two terms are the positive and negative frequency of the driving Hamiltonian. Overall we have
 $$
 \mathcal{M} = \mathcal{L}_0 + \mathcal{L}_m e^{-i\omega t} + \mathcal{L}_p e^{i\omega t}
 $$
 where $\omega$ is the drive frequency. Finally, the $\mathcal{M}$ superoperator is used to evaluate the steady-state using the `steadystate` method presented previously.
 
 ```python
-# Evaluate the steady-state using the Floquet method
-rho_fss = steadystate_floquet(H0, c_op_list, H1, w)
+# Evaluate the steady-state using the Fourier method
+rho_fss = steadystate_fourier(H0, c_op_list, H1, w)
 prob_fss = expect(psi_1 * psi_1.dag(), rho_fss)
 ```
 
@@ -179,7 +179,7 @@ fig, ax = plt.subplots(figsize=(12, 6))
 ax.plot(t_list, prob_me, label="Master equation")
 ax.plot(t_list, prob_ss * np.ones(t_list.shape[0]), label="Steady state")
 ax.plot(t_list, prob_pss * np.ones(t_list.shape[0]), label="Propagator steady state")
-ax.plot(t_list, prob_fss * np.ones(t_list.shape[0]), label="Floquet steady state")
+ax.plot(t_list, prob_fss * np.ones(t_list.shape[0]), label="Fourier steady state")
 ax.set_ylim(0, 1)
 
 # Inset
@@ -196,7 +196,7 @@ ax_inset.plot(t_list, prob_ss * np.ones(t_list.shape[0]), label="Steady state")
 ax_inset.plot(
     t_list, prob_pss * np.ones(t_list.shape[0]), label="Propagator steady state"
 )
-ax_inset.plot(t_list, prob_fss * np.ones(t_list.shape[0]), label="Floquet steady state")
+ax_inset.plot(t_list, prob_fss * np.ones(t_list.shape[0]), label="Fourier steady state")
 ax_inset.set_xlim(40, 50)
 ax_inset.set_ylim(0.25, 0.3)
 ax_inset.set_xticks([40, 45, 50])

@@ -103,7 +103,7 @@ class callable_time_dependence:
     def __init__(self, add):
         self.add = add
 
-    def __call__(self, t, args):
+    def __call__(self, t, **kwargs):
         return self.add + np.cos(t)
 
 
@@ -181,8 +181,8 @@ You can pass `args` directly at instantiation, and these will be used in every c
 ### Function form
 
 ```python
-def coeff_with_args(t, args):
-    return t + args["delta"]
+def coeff_with_args(t, **kwargs):
+    return t + kwargs["delta"]
 
 
 td_args = Id * qutip.coefficient(coeff_with_args, args={"delta": 1.0})

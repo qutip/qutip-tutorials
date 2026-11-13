@@ -113,11 +113,11 @@ fig.tight_layout()
 ```
 
 ```python
-def wc_t(t, args=None):
+def wc_t(t, **kwargs):
     return wc
 
 
-def w1_t(t, args=None):
+def w1_t(t, **kwargs):
     return (
         w1
         + step_t(0.0, wc - w1, T0_1, width, t)
@@ -125,7 +125,7 @@ def w1_t(t, args=None):
     )
 
 
-def w2_t(t, args=None):
+def w2_t(t, **kwargs):
     return (
         w2
         + step_t(0.0, wc - w2, T0_2, width, t)
@@ -558,7 +558,7 @@ concurrence(rho_qubits)
 width = 0.25
 
 
-def wc_t(t, args=None):
+def wc_t(t, **kwargs):
     return (
         wc
         - step_t(0.0, wc - w1, T0_1, width, t)

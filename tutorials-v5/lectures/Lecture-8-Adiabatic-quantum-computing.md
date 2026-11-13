@@ -117,8 +117,8 @@ for n in range(N - 1):
 # the time-dependent hamiltonian in list-function format
 args = {"t_max": max(taulist)}
 h_t = [
-    [H0, lambda t, args: (args["t_max"] - t) / args["t_max"]],
-    [H1, lambda t, args: t / args["t_max"]],
+    [H0, lambda t, **kwargs: (kwargs["t_max"] - t) / kwargs["t_max"]],
+    [H1, lambda t, **kwargs: t / kwargs["t_max"]],
 ]
 
 # transform Hamiltonian to QobjEvo
